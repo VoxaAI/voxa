@@ -27,7 +27,7 @@
     "lodash": "^4.13.1",
     "bluebird": "^3.4.1",
     "alexa-helpers": "^1.0.0",
-    "universal-analytics": "^0.3.11",
+    "universal-analytics": "^0.3.11"
   },
   "devDependencies": {
     "mocha": "^2.5.3",

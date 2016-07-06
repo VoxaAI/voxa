@@ -13,4 +13,10 @@ var exports = module.exports = {};
 
 exports.version = '1.0.0';
 
+var stateMachineSkill = require('./lib/StateMachineSkill');
+exports.stateMachineSkill = stateMachineSkill;
 
+var stateMachine = require('./lib/StateMachine');
+exports.stateMachine = stateMachine;
+
+exports.replyWith = stateMachineSkill.replyWith
