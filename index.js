@@ -8,7 +8,7 @@
 var exports = module.exports = {};
 
 /*
- * Alexa helpers version
+ * Alexa state machine version
  */
 
 exports.version = '1.0.0';
