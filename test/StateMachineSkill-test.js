@@ -11,6 +11,8 @@ var assert = require('chai').assert
   // , expect = require('chai').expect
   , alexa = require('../')
   , appId = 'some-app-id'
+  , responses = require('./extras/responses')
+  , variables = require('./extras/variables')
   ;
 
 var sm = new alexa.stateMachine({
@@ -42,11 +44,11 @@ var sm = new alexa.stateMachine({
     }
   }
 });
-var skill = new alexa.stateMachineSkill(appId, sm);
+var skill = new alexa.stateMachineSkill(appId, sm, responses, variables);
 
 describe('StateMachineSkill', function() {
 	itIs('launch', function(res) {
-		console.log(res);
+		assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
 	});
 
 	function itIs(requestFile, cb) {
