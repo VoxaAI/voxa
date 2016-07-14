@@ -1,6 +1,6 @@
 {
   "name": "alexa-statemachine",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "description": "A fsm (state machine) framework for Alexa apps using Node.js",
   "main": "index.js",
   "scripts": {
@@ -26,7 +26,7 @@
   "dependencies": {
     "lodash": "^4.13.1",
     "bluebird": "^3.4.1",
-    "alexa-helpers": "^1.0.0",
+    "alexa-helpers": "^1.0.1",
     "universal-analytics": "^0.3.11"
   },
   "devDependencies": {
