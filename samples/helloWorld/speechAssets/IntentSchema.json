@@ -1,25 +1,10 @@
 {
   "intents": [
     {
-      "intent": "AMAZON.CancelIntent"
-    }
-    , {
-      "intent": "AMAZON.YesIntent"
-    }
-    , {
-      "intent": "AMAZON.NoIntent"
-    }
-    , {
+      "intent": "HelloWorldIntent"
+    },
+    {
       "intent": "AMAZON.HelpIntent"
-    }
-    , {
-      "intent": "AMAZON.StopIntent"
-    }
-    , {
-      "intent": "AMAZON.StartOverIntent"
-    }
-    , {
-      "intent": "AMAZON.RepeatIntent"
     }
   ]
 }
