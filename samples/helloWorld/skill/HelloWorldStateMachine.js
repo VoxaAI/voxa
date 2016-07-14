@@ -13,21 +13,21 @@ module.exports = new alexa.stateMachine({
 				LaunchIntent: 'launch',
 				HelloWorldIntent: 'helloWorld',
 				"AMAZON.HelpIntent": 'help'
-			},
-			launch: {
-				enter: function enter(request) {
-					return replyWith('Intent.Launch', 'helloWorld', request);
-				}
-			},
-			helloWorld: {
-				enter: function enter(request) {
-					return replyWith('Intent.helloWorld', 'die', request);
-				}
-			},
-			help: {
-				enter: function enter(request) {
-					return replyWith('Intent.Help', 'die', request);
-				}
+			}
+		},
+		launch: {
+			enter: function enter(request) {
+				return replyWith('Intent.Launch', 'helloWorld', request);
+			}
+		},
+		helloWorld: {
+			enter: function enter(request) {
+				return replyWith('Intent.HelloWorld', 'die', request);
+			}
+		},
+		help: {
+			enter: function enter(request) {
+				return replyWith('Intent.Help', 'die', request);
 			}
 		}
 	}
