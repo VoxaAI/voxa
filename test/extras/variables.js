@@ -11,7 +11,7 @@ var Promise = require('bluebird')
 var variables = {
   time: function time(data) {
     var today = new Date();
-    var curHr = today.getHours()
+    var curHr = today.getHours();
     var time;
 
     if (curHr < 12) {
@@ -21,12 +21,13 @@ var variables = {
     } else {
       time = 'Evening';
     }
-    
+
     return Promise.resolve(time);
   },
+
   site: function site(data) {
     return Promise.resolve('example.com');
-  }
+  },
 };
 
 module.exports = variables;

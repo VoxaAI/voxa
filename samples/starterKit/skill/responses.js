@@ -1,16 +1,16 @@
 'use strict';
 
-var responses = function () {
+var responses = function() {
 
   return {
     Intent: {
     	Launch: {
-    		tell: "Welcome!",
+    		tell: 'Welcome!',
     	},
     	Help: {
-    		say: "Some help text here.",
-			}
-		}
+    		say: 'Some help text here.',
+			},
+		},
   };
 
 }();

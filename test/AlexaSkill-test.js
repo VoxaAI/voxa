@@ -8,11 +8,12 @@
 'use strict';
 
 var assert = require('chai').assert
+
   // , expect = require('chai').expect
   , AlexaSkill = require('../lib/AlexaSkill')
   ;
 
-describe('AlexaSkill', function () {
+describe('AlexaSkill', function() {
 	// var alexaSkill = new AlexaSkill('some-key');
 	// it('onLaunch needs to be overriden', function() {
 	//   expect(alexaSkill.eventHandlers.onLaunch()).to.throw('onLaunch should be overriden by subclass')

@@ -5,15 +5,15 @@
  * Licensed under the MIT license.
  */
 
-var responses = function () {
+var responses = function() {
   return {
-    "LaunchIntent": {
-      "OpenResponse": { tell: "Hello! Good {time}" }
+    LaunchIntent: {
+      OpenResponse: { tell: 'Hello! Good {time}' },
     },
-    "ExitIntent": {
-      "Farewell": { tell: "Ok. For more info visit {site} site." }
-    }
-  }
+    ExitIntent: {
+      Farewell: { tell: 'Ok. For more info visit {site} site.' },
+    },
+  };
 }();
 
 module.exports = responses;

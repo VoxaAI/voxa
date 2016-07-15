@@ -7,5 +7,5 @@ module.exports = {
   role:             'arn:aws:iam::339121561524:role/lambda_dynamo',
   functionName:     '',	// TODO: fill this with the lambda name you want to use
   timeout:          10,
-  memorySize:       128
+  memorySize:       128,
 };

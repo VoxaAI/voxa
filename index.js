@@ -19,7 +19,7 @@ exports.stateMachineSkill = stateMachineSkill;
 var stateMachine = require('./lib/StateMachine');
 exports.stateMachine = stateMachine;
 
-exports.replyWith = stateMachineSkill.replyWith
+exports.replyWith = stateMachineSkill.replyWith;
 
 var helpers = require('alexa-helpers');
 exports.helpers = helpers;
