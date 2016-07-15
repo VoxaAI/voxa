@@ -6,7 +6,7 @@ var alexa = require('alexa-statemachine')
   ;
 
 module.exports = new alexa.stateMachine({
-	openIntent: 'HelloWorldIntent',
+	openIntent: 'LaunchIntent',
 	states: {
 		entry: {
 			to: {
@@ -17,7 +17,7 @@ module.exports = new alexa.stateMachine({
 		},
 		launch: {
 			enter: function enter(request) {
-				return replyWith('Intent.Launch', 'helloWorld', request);
+				return replyWith('Intent.Launch', 'entry', request);
 			}
 		},
 		helloWorld: {
@@ -27,7 +27,7 @@ module.exports = new alexa.stateMachine({
 		},
 		help: {
 			enter: function enter(request) {
-				return replyWith('Intent.Help', 'die', request);
+				return replyWith('Intent.Help', 'entry', request);
 			}
 		}
 	}

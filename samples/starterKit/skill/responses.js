@@ -3,7 +3,14 @@
 var responses = function () {
 
   return {
-    // TODO Create responses object here
+    Intent: {
+    	Launch: {
+    		tell: "Welcome!",
+    	},
+    	Help: {
+    		say: "Some help text here.",
+			}
+		}
   };
 
 }();
