@@ -18,49 +18,49 @@ gulp.task('run', function() {
 
 // Lambda tasks
 gulp.task('clean', function() {
-	del([
-		'./dist',
-		'./dist.zip',
-		]);
+  del([
+    './dist',
+    './dist.zip',
+    ]);
 });
 
 gulp.task('bundle', function() {
-	gulp
-	  .src('./package.json')
-	  .pipe(gulp.dest('./dist'))
-	  .pipe(install({production: true}))
-	;
+  gulp
+    .src('./package.json')
+    .pipe(gulp.dest('./dist'))
+    .pipe(install({production: true}))
+  ;
 });
 
 gulp.task('compile', function() {
-	var tasks = ['config', 'services', 'skill', 'speechAssets'].map(function(directory) {
-		return gulp
-	    .src(directory + '/**/*')
-	    .pipe(gulp.dest('./dist/' + directory))
-	  ;
-	});
-	return merge(tasks);
+  var tasks = ['config', 'services', 'skill', 'speechAssets'].map(function(directory) {
+    return gulp
+      .src(directory + '/**/*')
+      .pipe(gulp.dest('./dist/' + directory))
+    ;
+  });
+  return merge(tasks);
 });
 
 gulp.task('zip', function() {
-	gulp
-	  .src('./dist/**/*')
-	  .pipe(zip('dist.zip'))
-	  .pipe(gulp.dest('./'));
+  gulp
+    .src('./dist/**/*')
+    .pipe(zip('dist.zip'))
+    .pipe(gulp.dest('./'));
 });
 
 gulp.task('upload', function(callback) {
-	var awsConfig = require('./aws-config');
-	awsLambda.deploy('./dist.zip', awsConfig, callback);
+  var awsConfig = require('./aws-config');
+  awsLambda.deploy('./dist.zip', awsConfig, callback);
 });
 
 // Deploying
 gulp.task('deploy', function(callback) {
-	return runSequence(
-		['clean'],
-		['bundle', 'compile'],
-		['zip'],
-		['upload'],
-		callback
-	);
+  return runSequence(
+    ['clean'],
+    ['bundle', 'compile'],
+    ['zip'],
+    ['upload'],
+    callback
+  );
 });

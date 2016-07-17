@@ -4,13 +4,13 @@ var responses = function() {
 
   return {
     Intent: {
-    	Launch: {
-    		tell: 'Welcome!',
-    	},
-    	Help: {
-    		say: 'Some help text here.',
-			},
-		},
+      Launch: {
+        tell: 'Welcome!',
+      },
+      Help: {
+        say: 'Some help text here.',
+      },
+    },
   };
 
 }();

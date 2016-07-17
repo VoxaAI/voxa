@@ -42,20 +42,20 @@ var sm = new alexa.stateMachine({
     },
     die: { isTerminal: true },
     launch: {
-    	enter: function enter(request) {
-    		return alexa.replyWith('LaunchIntent.OpenResponse', 'die', request);
-    	},
+      enter: function enter(request) {
+        return alexa.replyWith('LaunchIntent.OpenResponse', 'die', request);
+      },
     },
   },
 });
 var skill = new alexa.stateMachineSkill(appId, sm, responses, variables);
 
 describe('StateMachineSkill', function() {
-	itIs('launch', function(res) {
-		assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
-	});
+  itIs('launch', function(res) {
+    assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
+  });
 
-	function itIs(requestFile, cb) {
+  function itIs(requestFile, cb) {
     it(requestFile, function(done) {
       var event = require('./requests/' + requestFile + '.js');
       event.session.application.applicationId = appId;
