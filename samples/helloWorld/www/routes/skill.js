@@ -1,9 +1,9 @@
 'use strict';
 
 var router = exports.router = require('express').Router(),
-  skill = require('../../skill'),
-  config = require('../../config')
-;
+    skill = require('../../skill'),
+    config = require('../../config')
+  ;
 
 exports.mountPath = '/skill';
 

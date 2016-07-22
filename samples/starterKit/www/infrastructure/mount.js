@@ -2,13 +2,14 @@
 
 var fs = require('fs'),
     path = require('path'),
-    S = require('string');
+    S = require('string')
+  ;
 
-module.exports = function(dirname) {
+module.exports = function (dirname) {
   var router = require('express').Router();
 
   var files = fs.readdirSync(dirname);
-  files.forEach(function(route) {
+  files.forEach(function (route) {
     if (S(route).endsWith('index.js')) return;
     var controller = require(path.join(dirname, route));
     if (!controller.router) return;

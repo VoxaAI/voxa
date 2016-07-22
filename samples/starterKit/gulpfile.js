@@ -1,9 +1,14 @@
 'use strict';
 
-var gulp = require('gulp'), nodemon = require('gulp-nodemon'), del = require('del'), install = require('gulp-install'), merge = require('merge-stream'), zip = require('gulp-zip');
+var gulp = require('gulp'),
+  nodemon = require('gulp-nodemon'),
+  del = require('del'),
+  install = require('gulp-install'),
+  merge = require('merge-stream'),
+  zip = require('gulp-zip')
 ;
 
-gulp.task('watch', function() {
+gulp.task('watch', function () {
   nodemon({
     script: 'www/server.js',
     watch: ['www/*', 'config/*', 'services/*', 'skill/*'],
@@ -12,28 +17,28 @@ gulp.task('watch', function() {
   });
 });
 
-gulp.task('run', function() {
+gulp.task('run', function () {
   require('./www/server.js');
 });
 
 // Lambda tasks
-gulp.task('clean', function() {
+gulp.task('clean', function () {
   del([
     './dist',
     './dist.zip',
     ]);
 });
 
-gulp.task('bundle', function() {
+gulp.task('bundle', function () {
   gulp
     .src('./package.json')
     .pipe(gulp.dest('./dist'))
-    .pipe(install({production: true}))
+    .pipe(install({ production: true }))
   ;
 });
 
-gulp.task('compile', function() {
-  var tasks = ['config', 'services', 'skill', 'speechAssets'].map(function(directory) {
+gulp.task('compile', function () {
+  var tasks = ['config', 'services', 'skill', 'speechAssets'].map(function (directory) {
     return gulp
       .src(directory + '/**/*')
       .pipe(gulp.dest('./dist/' + directory))
@@ -42,20 +47,20 @@ gulp.task('compile', function() {
   return merge(tasks);
 });
 
-gulp.task('zip', function() {
+gulp.task('zip', function () {
   gulp
     .src('./dist/**/*')
     .pipe(zip('dist.zip'))
     .pipe(gulp.dest('./'));
 });
 
-gulp.task('upload', function(callback) {
+gulp.task('upload', function (callback) {
   var awsConfig = require('./aws-config');
   awsLambda.deploy('./dist.zip', awsConfig, callback);
 });
 
 // Deploying
-gulp.task('deploy', function(callback) {
+gulp.task('deploy', function (callback) {
   return runSequence(
     ['clean'],
     ['bundle', 'compile'],
