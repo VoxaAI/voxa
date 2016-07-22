@@ -1,6 +1,6 @@
 'use strict';
 
-var responses = function() {
+var responses = (function () {
 
   return {
     Intent: {
@@ -23,5 +23,5 @@ var responses = function() {
     },
   };
 
-}();
+})();
 module.exports = responses;
