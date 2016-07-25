@@ -4,7 +4,8 @@
   "description": "A fsm (state machine) framework for Alexa apps using Node.js",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/*-test.js"
+    "test": "mocha test/*-test.js",
+    "jscs": "jscs -c .jscsrc lib/ samples/*/config/ samples/*/gulpfile.js samples/*/services/ samples/*/skill/ samples/*/speechAssets/ samples/*/test/ samples/*/www/"
   },
   "repository": {
     "type": "git",

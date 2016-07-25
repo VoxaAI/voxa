@@ -7,3 +7,15 @@ A fsm (state machine) framework for Alexa apps using Node.js
 ```bash
 	npm install alexa-statemachine
 ```
+
+# Tests
+
+```bash
+npm run test
+```
+
+# JS Code linting
+
+```bash
+npm run jscs
+```
