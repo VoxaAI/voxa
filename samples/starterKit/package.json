@@ -5,7 +5,8 @@
   "main": "gulpfile.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "node node_modules/gulp/bin/gulp.js watch"
+    "watch": "node node_modules/gulp/bin/gulp.js watch",
+    "jscs": "node_modules/jscs/bin/jscs -c .jscsrc config/ gulpfile.js services/ skill/ speechAssets/ test/ www/"
   },
   "author": "Rain",
   "engines": {
@@ -41,7 +42,8 @@
     "gulp-install": "^0.6.0",
     "merge-stream": "^1.0.0",
     "gulp-zip": "^3.2.0",
-    "node-aws-lambda": "^0.1.7"
+    "node-aws-lambda": "^0.1.7",
+    "jscs": "^3.0.7"
   },
   "directories": {
     "test": "test"
