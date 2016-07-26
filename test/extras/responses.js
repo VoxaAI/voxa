@@ -5,7 +5,7 @@
  * Licensed under the MIT license.
  */
 
-var responses = function() {
+var responses = (function () {
   return {
     LaunchIntent: {
       OpenResponse: { tell: 'Hello! Good {time}' },
@@ -14,6 +14,6 @@ var responses = function() {
       Farewell: { tell: 'Ok. For more info visit {site} site.' },
     },
   };
-}();
+}());
 
 module.exports = responses;

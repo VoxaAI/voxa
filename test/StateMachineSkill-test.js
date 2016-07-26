@@ -7,10 +7,11 @@
 
 'use strict';
 
-var assert = require('chai').assert
-
-  // , expect = require('chai').expect
-  , alexa = require('../'), appId = 'some-app-id', responses = require('./extras/responses'), variables = require('./extras/variables')
+var assert = require('chai').assert,
+  alexa = require('../'),
+  appId = 'some-app-id',
+  responses = require('./extras/responses'),
+  variables = require('./extras/variables')
   ;
 
 var sm = new alexa.stateMachine({
@@ -50,17 +51,17 @@ var sm = new alexa.stateMachine({
 });
 var skill = new alexa.stateMachineSkill(appId, sm, responses, variables);
 
-describe('StateMachineSkill', function() {
-  itIs('launch', function(res) {
+describe('StateMachineSkill', function () {
+  itIs('launch', function (res) {
     assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
   });
 
   function itIs(requestFile, cb) {
-    it(requestFile, function(done) {
+    it(requestFile, function (done) {
       var event = require('./requests/' + requestFile + '.js');
       event.session.application.applicationId = appId;
       skill.execute(event, {
-        succeed: function(response) {
+        succeed: function (response) {
           try { cb(response); }
           catch (e) { return done(e);}
 

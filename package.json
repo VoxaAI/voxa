@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha test/*-test.js",
-    "jscs": "node_modules/jscs/bin/jscs -c .jscsrc lib/ samples/*/config/ samples/*/gulpfile.js samples/*/services/ samples/*/skill/ samples/*/speechAssets/ samples/*/test/ samples/*/www/"
+    "jscs": "node_modules/jscs/bin/jscs -c .jscsrc index.js test/ lib/ samples/*/config/ samples/*/gulpfile.js samples/*/services/ samples/*/skill/ samples/*/speechAssets/ samples/*/test/ samples/*/www/"
   },
   "repository": {
     "type": "git",
@@ -33,7 +33,8 @@
   "devDependencies": {
     "mocha": "^2.5.3",
     "chai": "^3.5.0",
-    "jscs": "^3.0.7"
+    "jscs": "^3.0.7",
+    "jshint": "^2.9.2"
   },
   "bugs": {
     "url": "https://github.com/mediarain/alexa-statemachine/issues"
