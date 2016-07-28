@@ -5,7 +5,9 @@ var gulp = require('gulp'),
   del = require('del'),
   install = require('gulp-install'),
   merge = require('merge-stream'),
-  zip = require('gulp-zip')
+  zip = require('gulp-zip'),
+  awsLambda = require('node-aws-lambda'),
+  runSequence = require('run-sequence')
 ;
 
 gulp.task('watch', function () {

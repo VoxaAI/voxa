@@ -11,11 +11,11 @@ var express = require('express'),
   env = require('../config/env.js')
 ;
 
-console.log('Attempting to start.\r\n\t'
-            + 'Node version: '
-            + process.version
-            + '\r\n\tNODE_ENV: '
-            + env);
+console.log('Attempting to start.\r\n\t' +
+            'Node version: ' +
+            process.version +
+            '\r\n\tNODE_ENV: ' +
+            env);
 
 var app = express();
 
