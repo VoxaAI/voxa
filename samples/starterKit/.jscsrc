@@ -1,0 +1,10 @@
+{
+	"preset": "airbnb",
+	"validateIndentation": null,
+	"disallowSpacesInsideParentheses": null,
+	"disallowMultipleVarDecl": false,
+	"disallowSpaceAfterPrefixUnaryOperators": ["++", "--", "+", "-", "~"],
+	"requirePaddingNewLinesAfterBlocks": {
+			"allExcept": ["inCallExpressions"]
+	}
+}

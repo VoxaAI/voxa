@@ -7,21 +7,21 @@
 
 'use strict';
 
-var assert = require('chai').assert
-  // , expect = require('chai').expect
-  , AlexaSkill = require('../lib/AlexaSkill')
+var assert = require('chai').assert,
+  AlexaSkill = require('../lib/AlexaSkill')
   ;
 
 describe('AlexaSkill', function () {
 	// var alexaSkill = new AlexaSkill('some-key');
-	// it('onLaunch needs to be overriden', function() {
-	//   expect(alexaSkill.eventHandlers.onLaunch()).to.throw('onLaunch should be overriden by subclass')
+	// it('onLaunch needs to be overriden', function () {
+	//   expect(alexaSkill.eventHandlers.onLaunch())
+				// .to.throw('onLaunch should be overriden by subclass')
 	// });
 	itIs('Speech output type SSML', AlexaSkill.speechOutputType.SSML, 'SSML');
 });
 
 function itIs(testName, actual, shouldBe) {
-	it(testName, function() {
+	it(testName, function () {
 		assert.equal(actual, shouldBe);
 	});
 }

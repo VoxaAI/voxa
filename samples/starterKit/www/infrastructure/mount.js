@@ -2,7 +2,8 @@
 
 var fs = require('fs'),
     path = require('path'),
-    S = require('string');
+    S = require('string')
+  ;
 
 module.exports = function (dirname) {
   var router = require('express').Router();
@@ -12,6 +13,7 @@ module.exports = function (dirname) {
     if (S(route).endsWith('index.js')) return;
     var controller = require(path.join(dirname, route));
     if (!controller.router) return;
+
     //console.log('Mounting',route,'to',controller.mountPath)
     router.use(controller.mountPath || '', controller.router);
   });

@@ -1,8 +1,8 @@
 'use strict';
 
-var router = exports.router = require('express').Router()
-  , skill = require('../../skill')
-  , config = require('../../config')
+var router = exports.router = require('express').Router(),
+    skill = require('../../skill'),
+    config = require('../../config')
   ;
 
 exports.mountPath = '/skill';
@@ -14,7 +14,7 @@ if (config.server.hostSkill) {
       fail: next,
       succeed: function succeed(msg) {
         res.json(msg);
-      }
+      },
     });
   });
 }
