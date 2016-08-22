@@ -13,6 +13,9 @@ var responses = (function () {
     ExitIntent: {
       Farewell: { tell: 'Ok. For more info visit {site} site.' },
     },
+    HelpIntent: {
+      HelpAboutSkill: { tell: 'For more help visit www.rain.agency' },
+    },
   };
 }());
 
