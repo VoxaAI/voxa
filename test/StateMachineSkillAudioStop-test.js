@@ -11,7 +11,8 @@ var assert = require('chai').assert,
   alexa = require('../'),
   appId = 'some-app-id',
   responses = require('./extras/responses'),
-  variables = require('./extras/variables')
+  variables = require('./extras/variables'),
+  _ = require('lodash')
   ;
 
 var sm = new alexa.stateMachine({
@@ -32,19 +33,15 @@ var sm = new alexa.stateMachine({
     entry: {
       to: {
         LaunchIntent: 'launch',
-        'AMAZON.HelpIntent': 'help',
         'AMAZON.StopIntent': 'exit',
         'AMAZON.CancelIntent': 'exit',
       },
     },
-    help: {
-      enter: function enter(request, context) {
-        return alexa.replyWith('HelpIntent.HelpAboutSkill', 'die', request);
-      },
-    },
     exit: {
       enter: function enter(request, context) {
-        return alexa.replyWith('ExitIntent.Farewell', 'die', request);
+        var directives = {};
+        directives.type = "AudioPlayer.Stop";
+        return alexa.replyWith('ExitIntent.Farewell', 'die', request, null, directives);
       },
     },
     die: { isTerminal: true },
@@ -57,15 +54,15 @@ var sm = new alexa.stateMachine({
 });
 var skill = new alexa.stateMachineSkill(appId, sm, responses, variables);
 
-describe('StateMachineSkill Help test', function () {
-  itIs('help', function (res) {
-    assert.include(res.response.outputSpeech.ssml, 'For more help visit');
+describe('StateMachineSkill', function () {
+  itIs('audioStop', function (res) {
+    assert.include(res.response.outputSpeech.ssml, 'For more info visit');
   });
 
   function itIs(requestFile, cb) {
     it(requestFile, function (done) {
       var event = require('./requests/' + requestFile + '.js');
-      event.session.application.applicationId = appId;
+      event.context.System.application.applicationId = appId;
       skill.execute(event, {
         succeed: function (response) {
           try { cb(response); }

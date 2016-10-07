@@ -11,7 +11,8 @@ var assert = require('chai').assert,
   alexa = require('../'),
   appId = 'some-app-id',
   responses = require('./extras/responses'),
-  variables = require('./extras/variables')
+  variables = require('./extras/variables'),
+  _ = require('lodash')
   ;
 
 var sm = new alexa.stateMachine({
@@ -32,14 +33,36 @@ var sm = new alexa.stateMachine({
     entry: {
       to: {
         LaunchIntent: 'launch',
-        'AMAZON.HelpIntent': 'help',
+        'AMAZON.PreviousIntent': 'previous',
         'AMAZON.StopIntent': 'exit',
         'AMAZON.CancelIntent': 'exit',
       },
     },
-    help: {
+    previous: {
       enter: function enter(request, context) {
-        return alexa.replyWith('HelpIntent.HelpAboutSkill', 'die', request);
+        var index = 0;
+        var shuffle = 0;
+        var loop = 0;
+
+        if (context && context.AudioPlayer) {
+          var token = JSON.parse(context.AudioPlayer.token);
+          index = token.index - 1;
+          shuffle = token.shuffle;
+          loop = token.loop;
+        }
+        
+        if(index === -1) {
+          index = TEST_URLS.length - 1;
+        }
+
+        var directives = {};
+        directives.type = "AudioPlayer.Play";
+        directives.playBehavior = "REPLACE_ALL";
+        directives.token = createToken(index, shuffle, loop);
+        directives.url = TEST_URLS[index];
+        directives.offsetInMilliseconds = 0;
+
+        return alexa.replyWithAudioDirectives('LaunchIntent.OpenResponse', 'die', request, null, directives);
       },
     },
     exit: {
@@ -55,17 +78,33 @@ var sm = new alexa.stateMachine({
     },
   },
 });
+
+function createToken(index, shuffle, loop) {
+  var token = {};
+  token.index = index;
+  token.shuffle = shuffle;
+  token.loop = loop;
+
+  return JSON.stringify(token);
+}
+
 var skill = new alexa.stateMachineSkill(appId, sm, responses, variables);
 
-describe('StateMachineSkill Help test', function () {
-  itIs('help', function (res) {
-    assert.include(res.response.outputSpeech.ssml, 'For more help visit');
+var TEST_URLS = [
+    "https://s3.amazonaws.com/alexa-voice-service/welcome_message.mp3",
+    "https://s3.amazonaws.com/alexa-voice-service/bad_response.mp3",
+    "https://s3.amazonaws.com/alexa-voice-service/goodbye_response.mp3"
+];
+
+describe('StateMachineSkill', function () {
+  itIs('audioPrevious', function (res) {
+    assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
   });
 
   function itIs(requestFile, cb) {
     it(requestFile, function (done) {
       var event = require('./requests/' + requestFile + '.js');
-      event.session.application.applicationId = appId;
+      event.context.System.application.applicationId = appId;
       skill.execute(event, {
         succeed: function (response) {
           try { cb(response); }

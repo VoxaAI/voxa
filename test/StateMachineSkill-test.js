@@ -37,13 +37,13 @@ var sm = new alexa.stateMachine({
       },
     },
     exit: {
-      enter: function enter(request) {
+      enter: function enter(request, context) {
         return alexa.replyWith('ExitIntent.Farewell', 'die', request);
       },
     },
     die: { isTerminal: true },
     launch: {
-      enter: function enter(request) {
+      enter: function enter(request, context) {
         return alexa.replyWith('LaunchIntent.OpenResponse', 'die', request);
       },
     },
