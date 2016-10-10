@@ -99,6 +99,9 @@ var TEST_URLS = [
 describe('StateMachineSkill', function () {
   itIs('audioNext', function (res) {
     assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
+
+    var token = JSON.parse(res.response.directives[0].audioItem.stream.token);
+    assert.equal(token.index, 2, 'AUDIO INDEX 2');
   });
 
   function itIs(requestFile, cb) {

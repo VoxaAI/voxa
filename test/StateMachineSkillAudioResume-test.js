@@ -97,6 +97,12 @@ var TEST_URLS = [
 describe('StateMachineSkill', function () {
   itIs('audioResume', function (res) {
     assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
+
+    var token = JSON.parse(res.response.directives[0].audioItem.stream.token);
+    assert.equal(token.index, 1, 'AUDIO INDEX 1');
+    assert.equal(token.shuffle, 1, 'SHUFFLE OFF');
+    assert.equal(token.loop, 0, 'LOOP OFF');
+    assert.equal(res.response.directives[0].audioItem.stream.offsetInMilliseconds, 353160, 'OFFSETINMILLISECONDS OK');
   });
 
   function itIs(requestFile, cb) {

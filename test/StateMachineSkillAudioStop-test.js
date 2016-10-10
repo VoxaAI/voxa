@@ -41,7 +41,7 @@ var sm = new alexa.stateMachine({
       enter: function enter(request, context) {
         var directives = {};
         directives.type = "AudioPlayer.Stop";
-        return alexa.replyWith('ExitIntent.Farewell', 'die', request, null, directives);
+        return alexa.replyWithAudioDirectives('ExitIntent.Farewell', 'die', request, null, directives);
       },
     },
     die: { isTerminal: true },
@@ -57,6 +57,8 @@ var skill = new alexa.stateMachineSkill(appId, sm, responses, variables);
 describe('StateMachineSkill', function () {
   itIs('audioStop', function (res) {
     assert.include(res.response.outputSpeech.ssml, 'For more info visit');
+
+    assert.equal(res.response.directives[0].type, 'AudioPlayer.Stop', 'AUDIO STOP');
   });
 
   function itIs(requestFile, cb) {

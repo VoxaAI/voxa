@@ -96,6 +96,9 @@ var TEST_URLS = [
 describe('StateMachineSkill', function () {
   itIs('audioShuffleOff', function (res) {
     assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
+
+    var token = JSON.parse(res.response.directives[0].audioItem.stream.token);
+    assert.equal(token.shuffle, 0, 'SHUFFLE OFF');
   });
 
   function itIs(requestFile, cb) {

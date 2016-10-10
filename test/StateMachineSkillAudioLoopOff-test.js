@@ -96,6 +96,9 @@ var TEST_URLS = [
 describe('StateMachineSkill', function () {
   itIs('audioLoopOff', function (res) {
     assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
+
+    var token = JSON.parse(res.response.directives[0].audioItem.stream.token);
+    assert.equal(token.loop, 0, 'LOOP OFF');
   });
 
   function itIs(requestFile, cb) {
