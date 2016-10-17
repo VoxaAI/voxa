@@ -54,13 +54,14 @@ var sm = new alexa.stateMachine({
         }
 
         var directives = {};
-        directives.type = "AudioPlayer.Play";
-        directives.playBehavior = "REPLACE_ALL";
+        directives.type = 'AudioPlayer.Play';
+        directives.playBehavior = 'REPLACE_ALL';
         directives.token = createToken(index, shuffle, loop);
         directives.url = TEST_URLS[index];
         directives.offsetInMilliseconds = offsetInMilliseconds;
 
-        return alexa.replyWithAudioDirectives('LaunchIntent.OpenResponse', 'die', request, null, directives);
+        return alexa.replyWithAudioDirectives('LaunchIntent.OpenResponse', 'die', request,
+          null, directives);
       },
     },
     exit: {
@@ -89,9 +90,9 @@ function createToken(index, shuffle, loop) {
 var skill = new alexa.stateMachineSkill(appId, sm, responses, variables);
 
 var TEST_URLS = [
-    "https://s3.amazonaws.com/alexa-voice-service/welcome_message.mp3",
-    "https://s3.amazonaws.com/alexa-voice-service/bad_response.mp3",
-    "https://s3.amazonaws.com/alexa-voice-service/goodbye_response.mp3"
+    'https://s3.amazonaws.com/alexa-voice-service/welcome_message.mp3',
+    'https://s3.amazonaws.com/alexa-voice-service/bad_response.mp3',
+    'https://s3.amazonaws.com/alexa-voice-service/goodbye_response.mp3',
 ];
 
 describe('StateMachineSkill', function () {
@@ -102,7 +103,8 @@ describe('StateMachineSkill', function () {
     assert.equal(token.index, 1, 'AUDIO INDEX 1');
     assert.equal(token.shuffle, 1, 'SHUFFLE OFF');
     assert.equal(token.loop, 0, 'LOOP OFF');
-    assert.equal(res.response.directives[0].audioItem.stream.offsetInMilliseconds, 353160, 'OFFSETINMILLISECONDS OK');
+    assert.equal(res.response.directives[0].audioItem.stream.offsetInMilliseconds,
+      353160, 'OFFSETINMILLISECONDS OK');
   });
 
   function itIs(requestFile, cb) {

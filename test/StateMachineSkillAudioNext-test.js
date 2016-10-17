@@ -50,19 +50,20 @@ var sm = new alexa.stateMachine({
           shuffle = token.shuffle;
           loop = token.loop;
         }
-        
-        if(index === TEST_URLS.length) {
+
+        if (index === TEST_URLS.length) {
           index = 0;
         }
 
         var directives = {};
-        directives.type = "AudioPlayer.Play";
-        directives.playBehavior = "REPLACE_ALL";
+        directives.type = 'AudioPlayer.Play';
+        directives.playBehavior = 'REPLACE_ALL';
         directives.token = createToken(index, shuffle, loop);
         directives.url = TEST_URLS[index];
         directives.offsetInMilliseconds = 0;
 
-        return alexa.replyWithAudioDirectives('LaunchIntent.OpenResponse', 'die', request, null, directives);
+        return alexa.replyWithAudioDirectives('LaunchIntent.OpenResponse', 'die', request,
+          null, directives);
       },
     },
     exit: {
@@ -91,9 +92,9 @@ function createToken(index, shuffle, loop) {
 var skill = new alexa.stateMachineSkill(appId, sm, responses, variables);
 
 var TEST_URLS = [
-    "https://s3.amazonaws.com/alexa-voice-service/welcome_message.mp3",
-    "https://s3.amazonaws.com/alexa-voice-service/bad_response.mp3",
-    "https://s3.amazonaws.com/alexa-voice-service/goodbye_response.mp3"
+    'https://s3.amazonaws.com/alexa-voice-service/welcome_message.mp3',
+    'https://s3.amazonaws.com/alexa-voice-service/bad_response.mp3',
+    'https://s3.amazonaws.com/alexa-voice-service/goodbye_response.mp3',
 ];
 
 describe('StateMachineSkill', function () {

@@ -40,8 +40,9 @@ var sm = new alexa.stateMachine({
     exit: {
       enter: function enter(request, context) {
         var directives = {};
-        directives.type = "AudioPlayer.Stop";
-        return alexa.replyWithAudioDirectives('ExitIntent.Farewell', 'die', request, null, directives);
+        directives.type = 'AudioPlayer.Stop';
+        return alexa.replyWithAudioDirectives('ExitIntent.Farewell', 'die', request,
+          null, directives);
       },
     },
     die: { isTerminal: true },
