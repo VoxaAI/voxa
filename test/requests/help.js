@@ -16,8 +16,8 @@ module.exports = {
     requestId: 'amzn1.echo-api.request.9cdaa4db-f20e-4c58-8d01-c75322d6c423',
     timestamp: '2015-05-13T12:34:56Z',
     intent: {
-      name: "AMAZON.HelpIntent",
-      slots: {}
-    }
+      name: 'AMAZON.HelpIntent',
+      slots: {},
+    },
   },
 };

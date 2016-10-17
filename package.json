@@ -29,7 +29,7 @@
   "dependencies": {
     "lodash": "^4.13.1",
     "bluebird": "^3.4.1",
-    "alexa-helpers": "^1.0.1",
+    "alexa-helpers": "^1.1.1",
     "universal-analytics": "^0.3.11"
   },
   "devDependencies": {

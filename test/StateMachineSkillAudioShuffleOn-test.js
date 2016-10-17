@@ -11,7 +11,8 @@ var assert = require('chai').assert,
   alexa = require('../'),
   appId = 'some-app-id',
   responses = require('./extras/responses'),
-  variables = require('./extras/variables')
+  variables = require('./extras/variables'),
+  _ = require('lodash')
   ;
 
 var sm = new alexa.stateMachine({
@@ -32,8 +33,34 @@ var sm = new alexa.stateMachine({
     entry: {
       to: {
         LaunchIntent: 'launch',
+        'AMAZON.ShuffleOnIntent': 'shuffleOn',
         'AMAZON.StopIntent': 'exit',
         'AMAZON.CancelIntent': 'exit',
+      },
+    },
+    shuffleOn: {
+      enter: function enter(request, context) {
+        var index = 0;
+        var shuffle = 1;
+        var loop = 0;
+        var offsetInMilliseconds = 0;
+
+        if (context && context.AudioPlayer) {
+          var token = JSON.parse(context.AudioPlayer.token);
+          index = token.index;
+          loop = token.loop;
+          offsetInMilliseconds = context.AudioPlayer.offsetInMilliseconds;
+        }
+
+        var directives = {};
+        directives.type = 'AudioPlayer.Play';
+        directives.playBehavior = 'REPLACE_ALL';
+        directives.token = createToken(index, shuffle, loop);
+        directives.url = TEST_URLS[index];
+        directives.offsetInMilliseconds = offsetInMilliseconds;
+
+        return alexa.replyWithAudioDirectives('LaunchIntent.OpenResponse', 'die', request,
+          null, directives);
       },
     },
     exit: {
@@ -49,17 +76,36 @@ var sm = new alexa.stateMachine({
     },
   },
 });
+
+function createToken(index, shuffle, loop) {
+  var token = {};
+  token.index = index;
+  token.shuffle = shuffle;
+  token.loop = loop;
+
+  return JSON.stringify(token);
+}
+
 var skill = new alexa.stateMachineSkill(appId, sm, responses, variables);
 
+var TEST_URLS = [
+    'https://s3.amazonaws.com/alexa-voice-service/welcome_message.mp3',
+    'https://s3.amazonaws.com/alexa-voice-service/bad_response.mp3',
+    'https://s3.amazonaws.com/alexa-voice-service/goodbye_response.mp3',
+];
+
 describe('StateMachineSkill', function () {
-  itIs('launch', function (res) {
+  itIs('audioShuffleOn', function (res) {
     assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
+
+    var token = JSON.parse(res.response.directives[0].audioItem.stream.token);
+    assert.equal(token.shuffle, 1, 'SHUFFLE ON');
   });
 
   function itIs(requestFile, cb) {
     it(requestFile, function (done) {
       var event = require('./requests/' + requestFile + '.js');
-      event.session.application.applicationId = appId;
+      event.context.System.application.applicationId = appId;
       skill.execute(event, {
         succeed: function (response) {
           try { cb(response); }
