@@ -11,7 +11,7 @@ var exports = module.exports = {};
  * Alexa state machine version
  */
 
-exports.version = '0.1.0';
+exports.version = '0.3.2';
 
 var stateMachineSkill = require('./lib/StateMachineSkill');
 exports.stateMachineSkill = stateMachineSkill;
