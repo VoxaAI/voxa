@@ -4,10 +4,8 @@
   "description": "A fsm (state machine) framework for Alexa apps using Node.js",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/*-test.js",
-    "jscs": "node_modules/jscs/bin/jscs -c .jscsrc index.js test/ lib/ samples/*/config/ samples/*/gulpfile.js samples/*/services/ samples/*/skill/ samples/*/speechAssets/ samples/*/test/ samples/*/www/",
-    "jshint": "node_modules/jshint/bin/jshint -c .jshintrc index.js test/ lib/ samples/*/config/ samples/*/gulpfile.js samples/*/services/ samples/*/skill/ samples/*/speechAssets/ samples/*/test/ samples/*/www/",
-    "lint": "npm run jscs && npm run jshint"
+    "test": "istanbul cover _mocha -- test2/*.spec.js",
+    "lint": "eslint lib2 test2"
   },
   "repository": {
     "type": "git",
@@ -33,10 +31,12 @@
     "universal-analytics": "^0.3.11"
   },
   "devDependencies": {
-    "mocha": "^2.5.3",
     "chai": "^3.5.0",
+    "istanbul": "^0.4.5",
     "jscs": "^3.0.7",
-    "jshint": "^2.9.2"
+    "jshint": "^2.9.2",
+    "mocha": "^2.5.3",
+    "simple-mock": "^0.7.3"
   },
   "bugs": {
     "url": "https://github.com/mediarain/alexa-statemachine/issues"

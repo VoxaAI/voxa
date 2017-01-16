@@ -1,0 +1,24 @@
+{
+  "extends": "airbnb-base",
+  "parserOptions": {
+    "sourceType": "script"
+  },
+  "installedESLint": true,
+  "ecmaFeatures": {
+    "impliedStrict": false
+  },
+  "plugins": [
+    "import"
+    ],
+    "rules": {
+      "no-unused-expressions": "off",
+      "no-use-before-define": "warn",
+      "no-param-reassign": "off",
+      "import/no-extraneous-dependencies": "warn"
+    },
+    "env": {
+      "browser": false,
+      "node": true,
+      "mocha": true
+    }
+}
