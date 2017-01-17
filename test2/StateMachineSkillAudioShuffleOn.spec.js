@@ -31,17 +31,17 @@ const states = {
     },
   },
   shuffleOn: {
-    enter: function enter(request, context) {
+    enter: function enter(request) {
       let index = 0;
       const shuffle = 1;
       let loop = 0;
       let offsetInMilliseconds = 0;
 
-      if (context && context.AudioPlayer) {
-        const token = JSON.parse(context.AudioPlayer.token);
+      if (request.context && request.context.AudioPlayer) {
+        const token = JSON.parse(request.context.AudioPlayer.token);
         index = token.index;
         loop = token.loop;
-        offsetInMilliseconds = context.AudioPlayer.offsetInMilliseconds;
+        offsetInMilliseconds = request.context.AudioPlayer.offsetInMilliseconds;
       }
 
       const directives = {};
@@ -56,13 +56,13 @@ const states = {
     },
   },
   exit: {
-    enter: function enter(request, context) {
+    enter: function enter(request) {
       return alexa.replyWith('ExitIntent.Farewell', 'die', request);
     },
   },
   die: { isTerminal: true },
   launch: {
-    enter: function enter(request, context) {
+    enter: function enter(request) {
       return alexa.replyWith('LaunchIntent.OpenResponse', 'die', request);
     },
   },

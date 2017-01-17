@@ -67,7 +67,7 @@ class AlexaSkill {
        * Called when the user invokes the skill without specifying what they want.
        * The subclass must override this function and provide feedback to the user.
        */
-      onLaunch: (request, response) => {
+      onLaunch: () => {
         throw new Error('onLaunch should be overriden by subclass');
       },
 

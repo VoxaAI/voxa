@@ -1,16 +1,15 @@
 'use strict';
 
-var gulp = require('gulp'),
-  nodemon = require('gulp-nodemon'),
-  del = require('del'),
-  install = require('gulp-install'),
-  merge = require('merge-stream'),
-  zip = require('gulp-zip'),
-  awsLambda = require('node-aws-lambda'),
-  runSequence = require('run-sequence')
-;
+const gulp = require('gulp');
+const nodemon = require('gulp-nodemon');
+const del = require('del');
+const install = require('gulp-install');
+const merge = require('merge-stream');
+const zip = require('gulp-zip');
+const awsLambda = require('node-aws-lambda');
+const runSequence = require('run-sequence');
 
-gulp.task('watch', function () {
+gulp.task('watch', () => {
   nodemon({
     script: 'www/server.js',
     watch: ['www/*', 'config/*', 'services/*', 'skill/*'],
@@ -19,19 +18,19 @@ gulp.task('watch', function () {
   });
 });
 
-gulp.task('run', function () {
+gulp.task('run', () => {
   require('./www/server.js');
 });
 
 // Lambda tasks
-gulp.task('clean', function () {
+gulp.task('clean', () => {
   del([
     './dist',
     './dist.zip',
-    ]);
+  ]);
 });
 
-gulp.task('bundle', function () {
+gulp.task('bundle', () => {
   gulp
     .src('./package.json')
     .pipe(gulp.dest('./dist'))
@@ -39,35 +38,30 @@ gulp.task('bundle', function () {
   ;
 });
 
-gulp.task('compile', function () {
-  var tasks = ['config', 'services', 'skill', 'speechAssets'].map(function (directory) {
-    return gulp
-      .src(directory + '/**/*')
-      .pipe(gulp.dest('./dist/' + directory))
-    ;
-  });
+gulp.task('compile', () => {
+  const tasks = ['config', 'services', 'skill', 'speechAssets'].map(directory => gulp
+      .src(`${directory}/**/*`)
+      .pipe(gulp.dest(`./dist/${directory}`)));
   return merge(tasks);
 });
 
-gulp.task('zip', function () {
+gulp.task('zip', () => {
   gulp
     .src('./dist/**/*')
     .pipe(zip('dist.zip'))
     .pipe(gulp.dest('./'));
 });
 
-gulp.task('upload', function (callback) {
-  var awsConfig = require('./aws-config');
+gulp.task('upload', (callback) => {
+  const awsConfig = require('./aws-config');
   awsLambda.deploy('./dist.zip', awsConfig, callback);
 });
 
 // Deploying
-gulp.task('deploy', function (callback) {
-  return runSequence(
+gulp.task('deploy', callback => runSequence(
     ['clean'],
     ['bundle', 'compile'],
     ['zip'],
     ['upload'],
-    callback
-  );
-});
+    callback,
+  ));

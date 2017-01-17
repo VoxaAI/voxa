@@ -1,16 +1,16 @@
 'use strict';
 
-var fs = require('fs'),
-    path = require('path'),
-    S = require('string');
+const fs = require('fs');
+const path = require('path');
+const S = require('string');
 
-module.exports = function (dirname) {
-  var router = require('express').Router();
+module.exports = function mount(dirname) {
+  const router = require('express').Router();
 
-  var files = fs.readdirSync(dirname);
-  files.forEach(function (route) {
+  const files = fs.readdirSync(dirname);
+  files.forEach((route) => {
     if (S(route).endsWith('index.js')) return;
-    var controller = require(path.join(dirname, route));
+    const controller = require(path.join(dirname, route));
     if (!controller.router) return;
     router.use(controller.mountPath || '', controller.router);
   });
