@@ -97,33 +97,33 @@ class AlexaSkill {
        * This lets your skill verify that playback began successfully.
        * Subclasses could have overriden this function to open any necessary resources.
        */
-      onPlaybackStarted: (request, response) => {},
+      onPlaybackStarted: [],
 
       /**
        * Sent when the stream that Alexa is playing comes to an end on its own.
        * Subclasses could have overriden this function to open any necessary resources.
        */
-      onPlaybackFinished: (request, response) => {},
+      onPlaybackFinished: [],
 
       /**
        * Sent when the currently playing stream is nearly complete and the device
        * is ready to receive a new stream.
        * Subclasses could have overriden this function to open any necessary resources.
        */
-      onPlaybackNearlyFinished: (request, response) => {},
+      onPlaybackNearlyFinished: [],
 
       /**
        * Sent when Alexa stops playing an audio stream in response to a voice
        * request or an AudioPlayer directive.
        * Subclasses could have overriden this function to open any necessary resources.
        */
-      onPlaybackStopped: (request, response) => {},
+      onPlaybackStopped: [],
 
       /**
        * Sent when Alexa encounters an error when attempting to play a stream.
        * Subclasses could have overriden this function to open any necessary resources.
        */
-      onPlaybackFailed: (request, response) => {},
+      onPlaybackFailed: [],
 
     };
   }

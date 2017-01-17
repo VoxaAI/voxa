@@ -9,6 +9,7 @@ module.exports = function Request(event, lambdaContext) {
   this.user = this.session.user;
   this.from = this.session.attributes.state || 'entry';
   this.lambdaContext = lambdaContext;
+  this.context = event.context;
 
   if (event.request.intent) {
     this.intent.params = _(event.request.intent.slots)

@@ -12,9 +12,11 @@
     ],
     "rules": {
       "no-unused-expressions": "off",
-      "no-use-before-define": "warn",
+      "no-use-before-define": "off",
       "no-param-reassign": "off",
-      "import/no-extraneous-dependencies": "warn"
+      "import/no-extraneous-dependencies": "off",
+      "global-require": "off",
+      "import/no-dynamic-require": "off"
     },
     "env": {
       "browser": false,

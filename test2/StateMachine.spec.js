@@ -12,7 +12,7 @@ const Model = require('./model');
 describe('StateMachine', () => {
   let statesDefinition;
   let request;
-  const messageRenderer = MessageRenderer(variables, responses);
+  const messageRenderer = MessageRenderer(responses, variables);
 
   beforeEach(() => {
     request = {
@@ -27,28 +27,28 @@ describe('StateMachine', () => {
       },
     };
     statesDefinition = {
-      entry: { enter: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }) },
-      initState: { enter: () => ({ to: 'endState' }) },
-      secondState: { enter: () => ({ to: 'initState' }) },
-      thirdState: { enter: () => Promise.resolve({ to: 'endState' }) },
-      endState: { enter: () => ({ reply: 'ExitIntent.Farewell'}) },
-      simpleState: { to: { TestIntent: 'endState' } },
+      entry: { enter: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }), name: 'entry' },
+      initState: { enter: () => ({ reply: 'ExitIntent.Farewell', to: 'endState' }), name: 'initState' },
+      secondState: { enter: () => ({ to: 'initState' }), name: 'secondState' },
+      thirdState: { enter: () => Promise.resolve({ to: 'endState' }), name: 'thirdState' },
+      endState: { enter: () => ({ reply: 'ExitIntent.Farewell' }), isTerminal: true, name: 'endState' },
+      simpleState: { to: { TestIntent: 'endState' }, name: 'simpleState' },
     };
   });
 
   it('should transition to endState', () => {
     const stateMachine = new StateMachine(statesDefinition, 'initState', [], messageRenderer);
     return stateMachine.transition(request)
-      .then(() => {
-        expect(stateMachine.currentState).to.equal(statesDefinition.endState);
+      .then((response) => {
+        expect(response.to.name).to.equal(statesDefinition.endState.name);
       });
   });
 
   it('should transition more than one state', () => {
     const stateMachine = new StateMachine(statesDefinition, 'secondState', [], messageRenderer);
     return stateMachine.transition(request)
-      .then(() => {
-        expect(stateMachine.currentState).to.equal(statesDefinition.endState);
+      .then((response) => {
+        expect(response.to.name).to.equal(statesDefinition.endState.name);
       });
   });
 
@@ -58,24 +58,24 @@ describe('StateMachine', () => {
     return stateMachine.transition(request)
       .then(() => {
         expect(onBeforeStateChanged.called).to.be.true;
-        expect(onBeforeStateChanged.callCount).to.equal(3);
+        expect(onBeforeStateChanged.callCount).to.equal(2);
       });
   });
 
   it('should transition on promises change', () => {
     const stateMachine = new StateMachine(statesDefinition, 'thirdState', [], messageRenderer);
     return stateMachine.transition(request)
-      .then(() => {
-        expect(stateMachine.currentState).to.equal(statesDefinition.endState);
+      .then((response) => {
+        expect(response.to.name).to.equal(statesDefinition.endState.name);
       });
   });
 
   it('should transition depending on intent if state.to ', () => {
-    const stateMachine = new StateMachine(statesDefinition, 'simpleState', [],messageRenderer);
+    const stateMachine = new StateMachine(statesDefinition, 'simpleState', [], messageRenderer);
     request.intent.name = 'TestIntent';
     return stateMachine.transition(request)
-      .then(() => {
-        expect(stateMachine.currentState).to.equal(statesDefinition.endState);
+      .then((response) => {
+        expect(response.to.name).to.equal(statesDefinition.endState.name);
       });
   });
 

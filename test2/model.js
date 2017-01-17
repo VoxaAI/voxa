@@ -1,4 +1,5 @@
 'use strict';
+
 const _ = require('lodash');
 
 class Model {
@@ -11,7 +12,9 @@ class Model {
   }
 
   serialize() {
-    return {};
+    const ret = _.omit(this, 'user', 'q', 'pruned', 'analytics');
+
+    return ret;
   }
 }
 

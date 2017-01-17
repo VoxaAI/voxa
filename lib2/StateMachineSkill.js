@@ -3,12 +3,6 @@
 const AlexaSkill = require('./AlexaSkill');
 const StateMachine = require('./StateMachine');
 const MessageRenderer = require('alexa-helpers').messageRenderer;
-const Reply = require('alexa-helpers').reply;
-
-const ERRORS = module.exports.ERRORS = {
-  AUTHORIZATION: 'Authorization Error',
-  BAD_RESPONSE: 'Bad Response Error',
-};
 
 class StateMachineSkill extends AlexaSkill {
   constructor(appId, config) {
@@ -35,7 +29,6 @@ class StateMachineSkill extends AlexaSkill {
           }
 
           trans.reply.write(response);
-          console.dir(trans)
         });
     };
 
@@ -62,8 +55,9 @@ class StateMachineSkill extends AlexaSkill {
     }
   }
 
-  onState(state, stateName) {
+  onState(stateName, state) {
     this.states[stateName] = state;
+    this.states[stateName].name = stateName;
   }
 
   onBeforeStateChanged(callback) {

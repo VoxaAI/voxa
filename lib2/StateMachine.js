@@ -4,6 +4,11 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const Reply = require('alexa-helpers').reply;
 
+const ERRORS = module.exports.ERRORS = {
+  AUTHORIZATION: 'Authorization Error',
+  BAD_RESPONSE: 'Bad Response Error',
+};
+
 class StateMachine {
   constructor(statesDefinition, currentState, onBeforeStateChangedCallbacks, messageRenderer) {
     StateMachine.validateStatesDefinition(statesDefinition);
@@ -19,15 +24,16 @@ class StateMachine {
     }
   }
 
-  replyWith(msgPath, state, request) {
-    return this.renderMessage(msgPath, request.model)
+  replyWith(result, request) {
+    return this.renderMessage(result.reply, request.model)
       .then((msg) => {
         // For AMAZON.RepeatIntent
         let reply = null;
-        if (msg && msg.ask) reply = { msgPath, state };
+        if (msg && msg.ask) reply = { msgPath: result.reply, state: result.to };
         return {
           message: msg,
-          to: state,
+          directives: result.directives,
+          to: result.to,
           session: {
             data: request.model.serialize(),
             startTimestamp: request.session.attributes.startTimestamp,
@@ -60,52 +66,31 @@ class StateMachine {
 
           throw new Error(`Unsupported intent for state ${request.intent.name}`);
         })
-        .then((result) => {
-          console.log(result)
-          if (result && result.to) {
-            this.currentState = this.states[result.to];
-            return runTransition.call(this);
+        .then(result => this.replyWith(result, request))
+        .then((replyResult) => {
+          let to;
+          if (!replyResult) throw new Error(ERRORS.BAD_RESPONSE);
+          if (replyResult.to) {
+            to = replyResult.to = this.states[replyResult.to];
+            path.unshift(to);
+
+            if (replyResult.message) {
+              replyResult.message.directives = replyResult.directives;
+            } else {
+              replyResult.message = { directives: replyResult.directives };
+            }
+
+            reply.append(replyResult.message);
           }
 
-          if (!result) {
-            // If no response try falling back to entry
-            this.currentState = this.states.entry;
-            return runTransition.call(this);
+          request.session.attributes = replyResult.session || request.session.attributes || {};
+
+          if (reply.isYielding() || !replyResult.to || replyResult.to.isTerminal) {
+            return { reply, path, to: path[0] };
           }
 
-          return this.replyWith(result.reply, result.to, request)
-            .then((transitionResult) => {
-              if (!transitionResult) throw new Error('Bad Response');
-              if (transitionResult.to) {
-                to = transitionResult.to = this.states(transitioResultn.to);
-                path.unshift(to);
-
-                if (transitionResult.message) {
-                  transitionResult.message.directives = transitionResult.directives;
-                } else {
-                  transitionResult.message = { directives: transitionResult.directives };
-                }
-
-                reply.append(transitionResult.message);
-              }
-
-              if (!request.session) {
-                request.session = {};
-              }
-
-              request.session.attributes = transitionResult.session || request.session.attributes;
-
-              if (!request.session.attributes) {
-                request.session.attributes = {};
-              }
-
-              if (reply.isYielding() || !transitionResult.to || transitionResult.to.isTerminal) {
-                return { reply: reply, path: path, to: path[0] };
-              }
-
-              this.currentState = this.states[to];
-              return runTransition();
-            });
+          this.currentState = this.states[to.name];
+          return runTransition.call(this);
         });
     }
   }

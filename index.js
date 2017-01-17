@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Alexa State Machine
  *
@@ -5,22 +6,16 @@
  * Licensed under the MIT license.
  */
 
-var exports = module.exports = {};
-
 /*
  * Alexa state machine version
  */
 
-exports.version = '0.3.2';
+module.exports.version = '0.3.2';
 
-var stateMachineSkill = require('./lib/StateMachineSkill');
-exports.stateMachineSkill = stateMachineSkill;
+const stateMachineSkill = require('./lib2/StateMachineSkill');
+const helpers = require('alexa-helpers');
 
-var stateMachine = require('./lib/StateMachine');
-exports.stateMachine = stateMachine;
-
-exports.replyWith = stateMachineSkill.replyWith;
-exports.replyWithAudioDirectives = stateMachineSkill.replyWithAudioDirectives;
-
-var helpers = require('alexa-helpers');
-exports.helpers = helpers;
+module.exports.StateMachineSkill = stateMachineSkill;
+module.exports.helpers = helpers;
+module.exports.replyWith = (reply, to) => ({ reply, to });
+module.exports.replyWithAudioDirectives = (reply, to, request, data, directives) => ({ reply, to, directives });

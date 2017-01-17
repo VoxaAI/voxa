@@ -13,17 +13,14 @@ const variables = {
   time: function time() {
     const today = new Date();
     const curHr = today.getHours();
-    let timeName;
 
     if (curHr < 12) {
-      timeName = 'Morning';
-    } else if (curHr < 18) {
-      timeName = 'Afternoon';
-    } else {
-      timeName = 'Evening';
+      return Promise.resolve('Morning');
     }
-
-    return Promise.resolve(timeName);
+    if (curHr < 18) {
+      return Promise.resolve('Afternoon');
+    }
+    return Promise.resolve('Evening');
   },
 
   site: function site() {

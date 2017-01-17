@@ -34,14 +34,14 @@ describe('StateMachineSkill', () => {
       initState: { enter: () => ({ to: 'endState' }) },
       secondState: { enter: () => ({ to: 'initState' }) },
       thirdState: { enter: () => Promise.resolve({ to: 'endState' }) },
-      endState: { enter: () => ({ reply: 'ExitIntent.Farewell'}) },
+      endState: { enter: () => ({ reply: 'ExitIntent.Farewell' }) },
     };
   });
 
   it('should accept new states', () => {
     const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, responses });
-    function fourthState() { return { to: 'endState' }; }
-    stateMachineSkill.onState(fourthState, 'fourthState');
+    const fourthState = { enter: () => ({ to: 'endState' }) };
+    stateMachineSkill.onState('fourthState', fourthState);
     expect(stateMachineSkill.states.fourthState).to.equal(fourthState);
   });
 
@@ -55,12 +55,11 @@ describe('StateMachineSkill', () => {
       reply: 'ExitIntent.Farewell',
     }) };
     const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, responses });
-    _.map(statesDefinition, (state, stateName) => stateMachineSkill.onState(state, stateName));
+    _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
 
     const context = {
-      succeed: (data) => {
+      succeed: () => {
         expect(statesDefinition.entry.enter.called).to.be.true;
-        console.log(data)
         done();
       },
       fail: done,
@@ -82,9 +81,11 @@ describe('StateMachineSkill', () => {
     statesDefinition.entry = { enter: (request) => {
       expect(request.model).to.not.be.undefined;
       expect(request.model).to.be.an.instanceOf(Model);
+
+      return { reply: 'ExitIntent.Farewell', to: 'die' };
     } };
 
-    _.map(statesDefinition, (state, stateName) => stateMachineSkill.onState(state, stateName));
+    _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
 
     const context = {
       succeed: () => done(),
