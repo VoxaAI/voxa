@@ -40,7 +40,7 @@ const states = {
   },
 };
 
-const skill = new alexa.StateMachineSkill(appId, { responses, variables, Model });
+const skill = new alexa.StateMachineSkill(appId, { responses, variables, Model, openIntent: 'LaunchIntent' });
 _.map(states, (state, name) => {
   skill.onState(name, state);
 });

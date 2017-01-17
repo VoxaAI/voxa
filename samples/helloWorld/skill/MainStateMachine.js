@@ -1,33 +1,47 @@
 'use strict';
 
 // Include the state machine module and the replyWith function
-var alexa = require('alexa-statemachine'), replyWith = alexa.replyWith
-  ;
+const alexa = require('alexa-statemachine');
+const appId = require('../config').alexa.appId;
+const responses = require('./responses');
+const variables = require('./variables');
+const _ = require('lodash');
 
-module.exports = new alexa.stateMachine({
-	openIntent: 'LaunchIntent',
-	states: {
-		entry: {
-			to: {
-				LaunchIntent: 'launch',
-				HelloWorldIntent: 'helloWorld',
-				'AMAZON.HelpIntent': 'help',
-			},
-		},
-		launch: {
-			enter: function enter(request) {
-				return replyWith('Intent.Launch', 'entry', request);
-			},
-		},
-		helloWorld: {
-			enter: function enter(request) {
-				return replyWith('Intent.HelloWorld', 'die', request);
-			},
-		},
-		help: {
-			enter: function enter(request) {
-				return replyWith('Intent.Help', 'entry', request);
-			},
-		},
-	},
+class Model {
+  constructor(data) {
+    _.assign(this, data);
+  }
+
+  static fromRequest(request) {
+    return new Model(request.session.attributes.data);
+  }
+
+  serialize() {
+    const ret = _.omit(this, 'user', 'q', 'pruned', 'analytics');
+
+    return ret;
+  }
+}
+
+const skill = new alexa.StateMachineSkill(appId, { responses, variables, Model, openIntent: 'LaunchIntent' });
+module.exports = skill;
+
+skill.onState('entry', {
+  to: {
+    LaunchIntent: 'launch',
+    HelloWorldIntent: 'helloWorld',
+    'AMAZON.HelpIntent': 'help',
+  },
+});
+
+skill.onState('launch', {
+  enter: () => ({ reply: 'Intent.Launch', to: 'entry' }),
+});
+
+skill.onState('helloWorld', {
+  enter: () => ({ reply: 'Intent.HelloWorld', to: 'die' }),
+});
+
+skill.onState('help', {
+  enter: () => ({ reply: 'Intent.Help', to: 'entry' }),
 });

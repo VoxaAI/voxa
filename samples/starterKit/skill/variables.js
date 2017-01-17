@@ -1,10 +1,11 @@
 'use strict';
 
-var _ = require('lodash'),
-    Promise = require('bluebird'),
-    alexa = require('alexa-statemachine'),
-    lang = alexa.helpers.lang,
-    currency = alexa.helpers.currency
-  ;
+const _ = require('lodash');
+const Promise = require('bluebird');
+const alexa = require('alexa-statemachine');
+
+const lang = alexa.helpers.lang;
+const currency = alexa.helpers.currency;
+
 
 // TODO build variables here

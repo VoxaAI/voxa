@@ -2,14 +2,8 @@
 
 // Include the state machine module, the state machine,
 // the responses and variables to be used in this skill
-var alexa = require('alexa-statemachine'),
-  sm = require('./MainStateMachine'),
-  appId = require('../config').alexa.appId,
-  responses = require('./responses'),
-  variables = require('./variables')
-;
+const skill = require('./MainStateMachine');
 
-exports.handler = function (event, context) {
-  var skill = new alexa.stateMachineSkill(appId, sm, responses, variables);
+exports.handler = function handler(event, context) {
   skill.execute(event, context);
 };

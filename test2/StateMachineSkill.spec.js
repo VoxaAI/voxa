@@ -39,14 +39,14 @@ describe('StateMachineSkill', () => {
   });
 
   it('should accept new states', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, responses });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, responses, openIntent: 'LaunchIntent' });
     const fourthState = { enter: () => ({ to: 'endState' }) };
     stateMachineSkill.onState('fourthState', fourthState);
     expect(stateMachineSkill.states.fourthState).to.equal(fourthState);
   });
 
   it('should accept onBeforeStateChanged callbacks', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, responses });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, responses, openIntent: 'LaunchIntent' });
     stateMachineSkill.onBeforeStateChanged(simple.stub());
   });
 
@@ -54,7 +54,7 @@ describe('StateMachineSkill', () => {
     statesDefinition.entry = { enter: simple.stub().returnWith({
       reply: 'ExitIntent.Farewell',
     }) };
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, responses });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, responses, openIntent: 'LaunchIntent' });
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
 
     const context = {
@@ -73,11 +73,11 @@ describe('StateMachineSkill', () => {
     expect(() => new StateMachineSkill('appId', { Model: { } })).to.throw(Error); // missing from request
     expect(() => new StateMachineSkill('appId', { Model })).to.throw(Error); // missing variables
     expect(() => new StateMachineSkill('appId', { Model, variables })).to.throw(Error); // missing responses
-    expect(() => new StateMachineSkill('appId', { Model, variables, responses })).to.not.throw(Error); // all in there
+    expect(() => new StateMachineSkill('appId', { Model, variables, responses })).to.throw(Error); // missing openIntent
   });
 
   it('should set properties on request and have those available in the state callbacks', (done) => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, responses, variables });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, responses, variables, openIntent: 'LaunchIntent' });
     statesDefinition.entry = { enter: (request) => {
       expect(request.model).to.not.be.undefined;
       expect(request.model).to.be.an.instanceOf(Model);

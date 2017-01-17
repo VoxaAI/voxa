@@ -1,7 +1,6 @@
 'use strict';
 
-var responses = (function () {
-
+const responses = (function () {
   return {
     Intent: {
       Launch: {
@@ -12,6 +11,5 @@ var responses = (function () {
       },
     },
   };
-
-})();
+}());
 module.exports = responses;

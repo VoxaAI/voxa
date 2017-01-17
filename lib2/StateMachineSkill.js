@@ -3,6 +3,7 @@
 const AlexaSkill = require('./AlexaSkill');
 const StateMachine = require('./StateMachine');
 const MessageRenderer = require('alexa-helpers').messageRenderer;
+const _ = require('lodash');
 
 class StateMachineSkill extends AlexaSkill {
   constructor(appId, config) {
@@ -10,8 +11,17 @@ class StateMachineSkill extends AlexaSkill {
     StateMachineSkill.validateConfig(config);
     this.states = {};
     this.messageRenderer = MessageRenderer(config.responses, config.variables);
+    this.openIntent = config.openIntent;
 
     this.eventHandlers.onBeforeStateChanged = [];
+    this.eventHandlers.onLaunch = (request, response) => {
+      const intent = this.openIntent;
+      _.set(request, 'intent.name', intent);
+      _.set(request, 'intent.slots', {});
+
+      return this.eventHandlers.onIntent(request, response);
+    };
+
     this.eventHandlers.onIntent = (request, response) => {
       const fromState = request.session.new ? 'entry' : request.session.attributes.state || 'entry';
       const stateMachine = new StateMachine(
@@ -52,6 +62,10 @@ class StateMachineSkill extends AlexaSkill {
 
     if (!config.responses) {
       throw new Error('Config should include responses');
+    }
+
+    if (!config.openIntent) {
+      throw new Error('Config should include openIntent');
     }
   }
 
