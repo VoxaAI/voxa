@@ -9,34 +9,28 @@ const zip = require('gulp-zip');
 const awsLambda = require('node-aws-lambda');
 const runSequence = require('run-sequence');
 
-gulp.task('watch', () => {
+gulp.task('watch', () =>
   nodemon({
     script: 'www/server.js',
     watch: ['www/*', 'config/*', 'services/*', 'skill/*'],
     ext: 'json js',
     ignore: ['node_modules/**/*'],
-  });
-});
+  }));
 
-gulp.task('run', () => {
-  require('./www/server.js');
-});
+gulp.task('run', () => require('./www/server.js'));
 
 // Lambda tasks
-gulp.task('clean', () => {
+gulp.task('clean', () =>
   del([
     './dist',
     './dist.zip',
-  ]);
-});
+  ]));
 
-gulp.task('bundle', () => {
+gulp.task('bundle', () =>
   gulp
     .src('./package.json')
     .pipe(gulp.dest('./dist'))
-    .pipe(install({ production: true }))
-  ;
-});
+    .pipe(install({ production: true })));
 
 gulp.task('compile', () => {
   const tasks = ['config', 'services', 'skill', 'speechAssets'].map(directory => gulp
@@ -45,12 +39,11 @@ gulp.task('compile', () => {
   return merge(tasks);
 });
 
-gulp.task('zip', () => {
+gulp.task('zip', () =>
   gulp
     .src('./dist/**/*')
     .pipe(zip('dist.zip'))
-    .pipe(gulp.dest('./'));
-});
+    .pipe(gulp.dest('./')));
 
 gulp.task('upload', (callback) => {
   const awsConfig = require('./aws-config');
@@ -63,5 +56,4 @@ gulp.task('deploy', callback => runSequence(
     ['bundle', 'compile'],
     ['zip'],
     ['upload'],
-    callback,
-  ));
+    callback));

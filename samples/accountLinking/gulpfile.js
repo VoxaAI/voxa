@@ -30,13 +30,12 @@ gulp.task('clean', () => {
   ]);
 });
 
-gulp.task('bundle', () => {
+gulp.task('bundle', () =>
   gulp
     .src('./package.json')
     .pipe(gulp.dest('./dist'))
     .pipe(install({ production: true }))
-  ;
-});
+);
 
 gulp.task('compile', () => {
   const tasks = ['config', 'services', 'skill', 'speechAssets'].map(directory => gulp
@@ -45,12 +44,12 @@ gulp.task('compile', () => {
   return merge(tasks);
 });
 
-gulp.task('zip', () => {
+gulp.task('zip', () =>
   gulp
     .src('./dist/**/*')
     .pipe(zip('dist.zip'))
-    .pipe(gulp.dest('./'));
-});
+    .pipe(gulp.dest('./'))
+);
 
 gulp.task('upload', (callback) => {
   const awsConfig = require('./aws-config');
@@ -63,5 +62,4 @@ gulp.task('deploy', callback => runSequence(
     ['bundle', 'compile'],
     ['zip'],
     ['upload'],
-    callback,
-  ));
+    callback));

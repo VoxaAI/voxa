@@ -1,14 +1,11 @@
 'use strict';
 
 const config = require('../config');
+let dynasty;
 
 class UserStorage {
   constructor() {
-    const dynasty = require('dynasty')({
-      accessKeyId: config.awsCredentials.key,
-      secretAccessKey: config.awsCredentials.secret,
-    });
-
+    dynasty = require('dynasty')(config.awsCredentials);
     this.userTable = dynasty.table(config.dynamoDB.tables.users);
   }
 

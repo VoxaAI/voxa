@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
   });
 });
 
-router.post('/', (req, res) => {
+router.post('/', (req, res, next) => {
   const md = new MobileDetect(req.headers['user-agent']);
   const db = new Storage();
   const email = req.body.email;
@@ -38,5 +38,6 @@ router.post('/', (req, res) => {
           redirectUrl: redirect,
         });
       }
-    });
+    })
+    .catch(next);
 });

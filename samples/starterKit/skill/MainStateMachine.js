@@ -31,12 +31,7 @@ skill.onState('entry', {
   },
 });
 
-skill.onState('launch', {
-  enter: () => ({ reply: 'Intent.Launch', to: 'entry' }),
-});
-
-skill.onState('help', {
-  enter: () => ({ reply: 'Intent.Help', to: 'die' }),
-});
+skill.onState('launch',  () => ({ reply: 'Intent.Launch', to: 'entry' }));
+skill.onState('help',  () => ({ reply: 'Intent.Help', to: 'die' }));
 
 module.exports = skill;

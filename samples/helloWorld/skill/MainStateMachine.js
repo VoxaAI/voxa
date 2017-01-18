@@ -34,14 +34,6 @@ skill.onState('entry', {
   },
 });
 
-skill.onState('launch', {
-  enter: () => ({ reply: 'Intent.Launch', to: 'entry' }),
-});
-
-skill.onState('helloWorld', {
-  enter: () => ({ reply: 'Intent.HelloWorld', to: 'die' }),
-});
-
-skill.onState('help', {
-  enter: () => ({ reply: 'Intent.Help', to: 'entry' }),
-});
+skill.onState('launch', () => ({ reply: 'Intent.Launch', to: 'entry' }));
+skill.onState('helloWorld', () => ({ reply: 'Intent.HelloWorld', to: 'die' }));
+skill.onState('help', () => ({ reply: 'Intent.Help', to: 'entry' }));

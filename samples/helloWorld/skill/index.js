@@ -5,5 +5,7 @@
 const skill = require('./MainStateMachine');
 
 exports.handler = function handler(event, context) {
-  skill.execute(event, context);
+  skill.execute(event)
+    .then(context.succeed)
+    .catch(context.fail);
 };
