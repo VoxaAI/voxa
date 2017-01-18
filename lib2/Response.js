@@ -65,29 +65,28 @@ function buildSpeechletResponse(options) {
 
 class Response {
   constructor(request) {
-    this.context = request.lambdaContext;
     this.session = request.session;
   }
 
   tell(speechOutput, card, directives) {
-    this.context.succeed(buildSpeechletResponse({
+    return buildSpeechletResponse({
       card,
       directives,
       session: this.session,
       output: speechOutput,
       shouldEndSession: true,
-    }));
+    });
   }
 
   ask(speechOutput, repromptSpeech, card, directives) {
-    this.context.succeed(buildSpeechletResponse({
+    return buildSpeechletResponse({
       card,
       directives,
       session: this.session,
       output: speechOutput,
       reprompt: repromptSpeech,
       shouldEndSession: false,
-    }));
+    });
   }
 }
 

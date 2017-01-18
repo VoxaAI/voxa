@@ -1,78 +1,61 @@
 'use strict';
 
-const expect = require('chai').expect;
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+
+chai.use(chaiAsPromised);
+
+const expect = chai.expect;
 const AlexaSkill = require('../lib2/AlexaSkill');
 const simple = require('simple-mock');
 
 describe('AlexaSkill', () => {
   it('should throw an exception on wrong appId', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
-    const fn = function execute() {
-      return alexaSkill.execute({ session: { application: { applicationId: 'OTHER APP ID' } } });
-    };
-
-    expect(fn).to.throw(Error);
+    alexaSkill.onLaunch(() => {});
+    const promise = alexaSkill.execute({ session: { application: { applicationId: 'OTHER APP ID' } } });
+    return expect(promise).to.eventually.be.rejectedWith(Error, 'Invalid applicationId');
   });
 
-  it('should throw an exception if onLaunch is not overriden', (done) => {
+  it('should throw an exception if onLaunch is not overriden', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
-    const context = {
-      fail: (err) => {
-        expect(err).to.be.an('error');
-        expect(err.message).to.equal('onLaunch should be overriden by subclass');
-        done();
-      },
-    };
-    alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'LaunchRequest' } }, context);
+    const promise = alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'IntentRequest', intent: { slots: [], name: 'UnsupportedIntent' } } }, context);
+    return expect(promise).to.eventually.be.rejectedWith(Error, 'onLaunch must be implemented');
   });
 
-  it('should throw an exception on unknown event type', (done) => {
+  it('should throw an exception on unknown event type', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
-    const context = {
-      fail: (err) => {
-        expect(err).to.be.an('error');
-        expect(err.message).to.equal('Unkown event type');
-        done();
-      },
-    };
-    alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'UnknownEvent' } }, context);
+    alexaSkill.onLaunch(() => {});
+    const promise = alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'UnknownEvent' } }, context);
+    return expect(promise).to.eventually.be.rejectedWith(Error, 'Unkown event type');
   });
 
-  it('should throw an exception on Unsupported intent', (done) => {
+  it('should throw an exception on Unsupported intent', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
-    const context = {
-      fail: (err) => {
-        expect(err).to.be.an('error');
-        done();
-      },
-    };
-    alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'IntentRequest', intent: { slots: [], name: 'UnsupportedIntent' } } }, context);
+    alexaSkill.onLaunch(() => {});
+    const promise = alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'IntentRequest', intent: { slots: [], name: 'UnsupportedIntent' } } }, context);
+    return expect(promise).to.eventually.be.rejectedWith(Error, 'Unsupported intent = UnsupportedIntent');
   });
 
-  it('should succedd with version on onSessionEnded request', (done) => {
+  it('should succedd with version on onSessionEnded request', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
-    const context = {
-      succeed: (msg) => {
-        expect(msg).to.deep.equal({ version: '1.0' });
-        done();
-      },
-      fail: done,
-    };
-    alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } }, context);
+    alexaSkill.onLaunch(() => {});
+    const promise = alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } }, context);
+    expect(promise).to.eventually.deep.equal({ version: '1.0' });
   });
 
   it('should call onSesionEnded callback', (done) => {
     const alexaSkill = new AlexaSkill('MY APP ID');
+    alexaSkill.onLaunch(() => {});
     const stub = simple.stub().returnWith(1);
     alexaSkill.onSessionEnded(stub);
-    const context = {
-      succeed: () => {
+
+    alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } }, context)
+      .then(() => {
         expect(stub.called).to.be.true;
         done();
-      },
-      fail: done,
-    };
-    alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } }, context);
+      })
+      .catch(done);
   });
 
   it('should accept onRequestStart methods', () => {
@@ -81,36 +64,33 @@ describe('AlexaSkill', () => {
     alexaSkill.onRequestStarted(onRequestStart);
   });
 
-  it('should not call onSessionStarted if not session.new', (done) => {
+  it('should not call onSessionStarted if not session.new', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
+    alexaSkill.onLaunch(() => {});
     const stub = simple.stub().resolveWith(1);
     alexaSkill.onSessionStarted(stub);
-    const context = {
-      succeed: () => {
+
+    return alexaSkill.execute({ session: { new: false, application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } }, context)
+      .then(() => {
         expect(stub.callCount).to.equal(0);
-        done();
-      },
-      fail: done,
-    };
-    alexaSkill.execute({ session: { new: false, application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } }, context);
+      });
   });
 
-  it('should call onSessionStarted if session.new', (done) => {
+  it('should call onSessionStarted if session.new', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
+    alexaSkill.onLaunch(() => {});
     const stub = simple.stub().resolveWith(1);
     alexaSkill.onSessionStarted(stub);
-    const context = {
-      succeed: () => {
+
+    return alexaSkill.execute({ session: { new: true, application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } }, context)
+      .then(() => {
         expect(stub.callCount).to.equal(1);
-        done();
-      },
-      fail: done,
-    };
-    alexaSkill.execute({ session: { new: true, application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } }, context);
+      });
   });
 
-  it('should call all onRequestStartCallbacks', (done) => {
+  it('should call all onRequestStartCallbacks', () => {
     const alexaSkill = new AlexaSkill('appId');
+    alexaSkill.onLaunch(() => {});
     const onRequestStart1 = simple.stub().returnWith(1);
     const onRequestStart2 = simple.stub().returnWith(1);
     const onRequestStart3 = simple.stub().returnWith(1);
@@ -119,32 +99,23 @@ describe('AlexaSkill', () => {
     alexaSkill.onRequestStarted(onRequestStart2);
     alexaSkill.onRequestStarted(onRequestStart3);
 
-    const context = {
-      succeed: () => {
+    return alexaSkill.execute({ session: { new: true, application: { applicationId: 'appId' } }, request: { type: 'SessionEndedRequest' } }, context, context)
+      .then(() => {
         expect(onRequestStart1.called).to.be.true;
         expect(onRequestStart2.called).to.be.true;
         expect(onRequestStart3.called).to.be.true;
-        done();
-      },
-      fail: done,
-    };
-
-    alexaSkill.execute({ session: { new: true, application: { applicationId: 'appId' } }, request: { type: 'SessionEndedRequest' } }, context, context);
+      });
   });
 
-  it('should  call the correct intentHandler', (done) => {
+  it('should  call the correct intentHandler', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
-    const context = {
-      succeed: () => {
-        done();
-      },
-      fail: done,
-    };
+    alexaSkill.onLaunch(() => {});
 
-    alexaSkill.intentHandlers.StartIntent = function StartIntent(request) {
-      request.lambdaContext.succeed();
-    };
+    alexaSkill.intentHandlers.StartIntent = simple.stub();
 
-    alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'IntentRequest', intent: { slots: [], name: 'StartIntent' } } }, context);
+    return alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'IntentRequest', intent: { slots: [], name: 'StartIntent' } } }, context)
+      .then(() => {
+        expect(alexaSkill.intentHandlers.StartIntent.called).to.be.true;
+      });
   });
 });

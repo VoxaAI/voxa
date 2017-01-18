@@ -28,10 +28,11 @@
     "lodash": "^4.13.1",
     "bluebird": "^3.4.1",
     "alexa-helpers": "^1.1.1",
-    "universal-analytics": "^0.3.11"
+    "string": "^3.3.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
     "istanbul": "^0.4.5",
     "jscs": "^3.0.7",
     "jshint": "^2.9.2",

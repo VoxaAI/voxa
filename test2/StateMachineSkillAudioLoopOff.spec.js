@@ -25,40 +25,34 @@ const states = {
       'AMAZON.CancelIntent': 'exit',
     },
   },
-  loopOff: {
-    enter: function enter(request) {
-      let index = 0;
-      let shuffle = 0;
-      const loop = 0;
-      let offsetInMilliseconds = 0;
+  loopOff: function enter(request) {
+    let index = 0;
+    let shuffle = 0;
+    const loop = 0;
+    let offsetInMilliseconds = 0;
 
-      if (request.context && request.context.AudioPlayer) {
-        const token = JSON.parse(request.context.AudioPlayer.token);
-        index = token.index;
-        shuffle = token.shuffle;
-        offsetInMilliseconds = request.context.AudioPlayer.offsetInMilliseconds;
-      }
+    if (request.context && request.context.AudioPlayer) {
+      const token = JSON.parse(request.context.AudioPlayer.token);
+      index = token.index;
+      shuffle = token.shuffle;
+      offsetInMilliseconds = request.context.AudioPlayer.offsetInMilliseconds;
+    }
 
-      const directives = {};
-      directives.type = 'AudioPlayer.Play';
-      directives.playBehavior = 'REPLACE_ALL';
-      directives.token = createToken(index, shuffle, loop);
-      directives.url = TEST_URLS[index];
-      directives.offsetInMilliseconds = offsetInMilliseconds;
+    const directives = {};
+    directives.type = 'AudioPlayer.Play';
+    directives.playBehavior = 'REPLACE_ALL';
+    directives.token = createToken(index, shuffle, loop);
+    directives.url = TEST_URLS[index];
+    directives.offsetInMilliseconds = offsetInMilliseconds;
 
-      return { reply: 'LaunchIntent.OpenResponse', to: 'die', directives };
-    },
+    return { reply: 'LaunchIntent.OpenResponse', to: 'die', directives };
   },
-  exit: {
-    enter: function enter() {
-      return { reply: 'ExitIntent.Farewell', to: 'die' };
-    },
+  exit: function enter() {
+    return { reply: 'ExitIntent.Farewell', to: 'die' };
   },
   die: { isTerminal: true },
-  launch: {
-    enter: function enter() {
-      return { reply: 'LaunchIntent.OpenResponse', to: 'die' };
-    },
+  launch: function enter() {
+    return { reply: 'LaunchIntent.OpenResponse', to: 'die' };
   },
 };
 
@@ -71,11 +65,6 @@ function createToken(index, shuffle, loop) {
   return JSON.stringify(token);
 }
 
-const skill = new alexa.StateMachineSkill(appId, { responses, variables, Model, openIntent: 'LaunchIntent' });
-_.map(states, (state, name) => {
-  skill.onState(name, state);
-});
-
 let TEST_URLS = [
   'https://s3.amazonaws.com/alexa-voice-service/welcome_message.mp3',
   'https://s3.amazonaws.com/alexa-voice-service/bad_response.mp3',
@@ -83,6 +72,15 @@ let TEST_URLS = [
 ];
 
 describe('StateMachineSkill', () => {
+  let skill;
+
+  beforeEach(() => {
+    skill = new alexa.StateMachineSkill(appId, { responses, variables, Model, openIntent: 'LaunchIntent' });
+    _.map(states, (state, name) => {
+      skill.onState(name, state);
+    });
+  });
+
   itIs('audioLoopOff', (res) => {
     expect(res.response.outputSpeech.ssml).to.include('Hello! Good');
 
@@ -91,22 +89,10 @@ describe('StateMachineSkill', () => {
   });
 
   function itIs(requestFile, cb) {
-    it(requestFile, (done) => {
+    it(requestFile, () => {
       const event = require(`./requests/${requestFile}.js`);
       event.context.System.application.applicationId = appId;
-      skill.execute(event, {
-        succeed(response) {
-          try {
-            cb(response);
-          } catch (e) {
-            return done(e);
-          }
-
-          return done();
-        },
-
-        fail: done,
-      });
+      return skill.execute(event).then(cb);
     });
   }
 });

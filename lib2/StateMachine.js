@@ -2,7 +2,7 @@
 
 const Promise = require('bluebird');
 const _ = require('lodash');
-const Reply = require('alexa-helpers').reply;
+const Reply = require('./Reply');
 
 const ERRORS = module.exports.ERRORS = {
   AUTHORIZATION: 'Authorization Error',

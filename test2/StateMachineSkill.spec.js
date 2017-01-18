@@ -1,6 +1,11 @@
 'use strict';
 
-const expect = require('chai').expect;
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+
+chai.use(chaiAsPromised);
+
+const expect = chai.expect;
 const simple = require('simple-mock');
 const StateMachineSkill = require('../lib2/StateMachineSkill.js');
 const Promise = require('bluebird');
@@ -30,19 +35,19 @@ describe('StateMachineSkill', () => {
     };
 
     statesDefinition = {
-      entry: { enter: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }) },
-      initState: { enter: () => ({ to: 'endState' }) },
-      secondState: { enter: () => ({ to: 'initState' }) },
-      thirdState: { enter: () => Promise.resolve({ to: 'endState' }) },
-      endState: { enter: () => ({ reply: 'ExitIntent.Farewell' }) },
+      entry: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }),
+      initState: () => ({ to: 'endState' }),
+      secondState: () => ({ to: 'initState' }),
+      thirdState: () => Promise.resolve({ to: 'endState' }),
+      endState: () => ({ reply: 'ExitIntent.Farewell' }),
     };
   });
 
   it('should accept new states', () => {
     const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, responses, openIntent: 'LaunchIntent' });
-    const fourthState = { enter: () => ({ to: 'endState' }) };
+    const fourthState = () => ({ to: 'endState' });
     stateMachineSkill.onState('fourthState', fourthState);
-    expect(stateMachineSkill.states.fourthState).to.equal(fourthState);
+    expect(stateMachineSkill.states.fourthState.enter).to.equal(fourthState);
   });
 
   it('should accept onBeforeStateChanged callbacks', () => {
@@ -50,49 +55,56 @@ describe('StateMachineSkill', () => {
     stateMachineSkill.onBeforeStateChanged(simple.stub());
   });
 
-  it('should call the entry state on a new session', (done) => {
-    statesDefinition.entry = { enter: simple.stub().returnWith({
+  it('should call the entry state on a new session', () => {
+    statesDefinition.entry = simple.stub().resolveWith({
       reply: 'ExitIntent.Farewell',
-    }) };
+    });
+
     const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, responses, openIntent: 'LaunchIntent' });
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
 
-    const context = {
-      succeed: () => {
-        expect(statesDefinition.entry.enter.called).to.be.true;
-        done();
-      },
-      fail: done,
-    };
-
-    stateMachineSkill.execute(event, context);
+    return stateMachineSkill.execute(event, context)
+      .then(() => {
+        expect(statesDefinition.entry.called).to.be.true;
+      });
   });
 
   it('should throw an error if required properties missing from config', () => {
-    expect(() => new StateMachineSkill('appId', { })).to.throw(Error);
-    expect(() => new StateMachineSkill('appId', { Model: { } })).to.throw(Error); // missing from request
-    expect(() => new StateMachineSkill('appId', { Model })).to.throw(Error); // missing variables
-    expect(() => new StateMachineSkill('appId', { Model, variables })).to.throw(Error); // missing responses
-    expect(() => new StateMachineSkill('appId', { Model, variables, responses })).to.throw(Error); // missing openIntent
+    expect(() => new StateMachineSkill('appId', { })).to.throw(Error, 'Config should include a model');
+    expect(() => new StateMachineSkill('appId', { Model: { } })).to.throw(Error, 'Model should have a fromRequest method');
+    expect(() => new StateMachineSkill('appId', { Model: { fromRequest: () => {} } })).to.throw(Error, 'Model should have a serialize method');
+    expect(() => new StateMachineSkill('appId', { Model: { fromRequest: () => {}, serialize: () => {} } })).to.throw(Error, 'Config should include variables');
+    expect(() => new StateMachineSkill('appId', { Model, variables })).to.throw(Error, 'Config should include responses');
+    expect(() => new StateMachineSkill('appId', { Model, variables, responses })).to.throw(Error, 'Config should include openIntent');
+    expect(() => new StateMachineSkill('appId', { Model, variables, responses, openIntent: 'LaunchIntent' })).to.not.throw(Error);
   });
 
-  it('should set properties on request and have those available in the state callbacks', (done) => {
+  it('should set properties on request and have those available in the state callbacks', () => {
     const stateMachineSkill = new StateMachineSkill('appId', { Model, responses, variables, openIntent: 'LaunchIntent' });
-    statesDefinition.entry = { enter: (request) => {
+    statesDefinition.entry = (request) => {
       expect(request.model).to.not.be.undefined;
       expect(request.model).to.be.an.instanceOf(Model);
 
       return { reply: 'ExitIntent.Farewell', to: 'die' };
-    } };
-
-    _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
-
-    const context = {
-      succeed: () => done(),
-      fail: done,
     };
 
-    stateMachineSkill.execute(event, context);
+    _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
+    return stateMachineSkill.execute(event, context);
+  });
+
+  it('should call entry on a LaunchRequest', () => {
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, responses, variables, openIntent: 'LaunchIntent' });
+
+    event.request.type = 'LaunchRequest';
+    statesDefinition.entry = simple.stub().resolveWith({
+      to: 'die',
+    });
+
+    _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
+    return stateMachineSkill.execute(event, context)
+      .then(() => {
+        expect(statesDefinition.entry.called).to.be.true;
+      });
   });
 });
 

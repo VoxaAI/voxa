@@ -79,12 +79,16 @@ function createToken(index, shuffle, loop) {
   return JSON.stringify(token);
 }
 
-const skill = new alexa.StateMachineSkill(appId, { responses, variables, Model, openIntent: 'LaunchIntent' });
-_.map(states, (state, name) => {
-  skill.onState(name, state);
-});
-
 describe('StateMachineSkill', () => {
+  let skill;
+
+  beforeEach(() => {
+    skill = new alexa.StateMachineSkill(appId, { responses, variables, Model, openIntent: 'LaunchIntent' });
+    _.map(states, (state, name) => {
+      skill.onState(name, state);
+    });
+  });
+
   itIs('audioNext', (res) => {
     assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
 
@@ -93,22 +97,10 @@ describe('StateMachineSkill', () => {
   });
 
   function itIs(requestFile, cb) {
-    it(requestFile, (done) => {
+    it(requestFile, () => {
       const event = require(`./requests/${requestFile}.js`);
       event.context.System.application.applicationId = appId;
-      skill.execute(event, {
-        succeed(response) {
-          try {
-            cb(response);
-          } catch (e) {
-            return done(e);
-          }
-
-          return done();
-        },
-
-        fail: done,
-      });
+      return skill.execute(event).then(cb);
     });
   }
 });

@@ -13,16 +13,9 @@ class StateMachineSkill extends AlexaSkill {
     this.messageRenderer = MessageRenderer(config.responses, config.variables);
     this.openIntent = config.openIntent;
 
+    this.eventHandlers.onIntent = [];
     this.eventHandlers.onBeforeStateChanged = [];
-    this.eventHandlers.onLaunch = (request, response) => {
-      const intent = this.openIntent;
-      _.set(request, 'intent.name', intent);
-      _.set(request, 'intent.slots', {});
-
-      return this.eventHandlers.onIntent(request, response);
-    };
-
-    this.eventHandlers.onIntent = (request, response) => {
+    this.onIntent((request, response) => {
       const fromState = request.session.new ? 'entry' : request.session.attributes.state || 'entry';
       const stateMachine = new StateMachine(
         this.states,
@@ -38,12 +31,20 @@ class StateMachineSkill extends AlexaSkill {
             trans.reply.end();
           }
 
-          trans.reply.write(response);
+          return trans.reply.write(response);
         });
-    };
+    });
 
     this.onRequestStarted((request) => {
       request.model = config.Model.fromRequest(request);
+    });
+
+    this.onLaunch((request, response) => {
+      const intent = this.openIntent;
+      _.set(request, 'intent.name', intent);
+      _.set(request, 'intent.slots', {});
+
+      return this.requestHandlers.IntentRequest(request, response);
     });
   }
 
@@ -54,6 +55,10 @@ class StateMachineSkill extends AlexaSkill {
 
     if (!config.Model.fromRequest) {
       throw new Error('Model should have a fromRequest method');
+    }
+
+    if (!config.Model.serialize && !(config.Model.prototype && config.Model.prototype.serialize)) {
+      throw new Error('Model should have a serialize method');
     }
 
     if (!config.variables) {
@@ -70,7 +75,14 @@ class StateMachineSkill extends AlexaSkill {
   }
 
   onState(stateName, state) {
-    this.states[stateName] = state;
+    if (_.isFunction(state)) {
+      this.states[stateName] = {
+        enter: state,
+      };
+    } else {
+      this.states[stateName] = state;
+    }
+
     this.states[stateName].name = stateName;
   }
 
