@@ -1,5 +1,6 @@
 'use strict';
 
+const Promise = require('bluebird');
 const AlexaSkill = require('./AlexaSkill');
 const StateMachine = require('./StateMachine');
 const MessageRenderer = require('alexa-helpers').messageRenderer;
@@ -13,15 +14,19 @@ class StateMachineSkill extends AlexaSkill {
     this.messageRenderer = MessageRenderer(config.responses, config.variables);
     this.openIntent = config.openIntent;
 
-    this.eventHandlers.onIntent = [];
+    this.eventHandlers.onIntent = []; // we override what the base AlexaSkill had
     this.eventHandlers.onBeforeStateChanged = [];
+    this.eventHandlers.onAfterStateChanged = [];
+    this.eventHandlers.onBeforeReplySent = [];
+
+    // run the intent request through the stateMachine
     this.onIntent((request, response) => {
       const fromState = request.session.new ? 'entry' : request.session.attributes.state || 'entry';
-      const stateMachine = new StateMachine(
-        this.states,
-        fromState,
-        this.eventHandlers.onBeforeStateChanged,
-        this.messageRenderer);
+      const stateMachine = new StateMachine(fromState, {
+        states: this.states,
+        onBeforeStateChanged: this.eventHandlers.onBeforeStateChanged,
+        onAfterStateChanged: this.eventHandlers.onAfterStateChanged,
+      });
 
       return stateMachine.transition(request, response)
         .then((trans) => {
@@ -31,20 +36,56 @@ class StateMachineSkill extends AlexaSkill {
             trans.reply.end();
           }
 
-          return trans.reply.write(response);
+          const reply = trans.reply.write(response);
+          return Promise.mapSeries(this.eventHandlers.onBeforeReplySent,
+            fn => fn(request, response, reply))
+            .then(() => reply);
         });
     });
 
+    // i always want the model to be available in the request
     this.onRequestStarted((request) => {
       request.model = config.Model.fromRequest(request);
     });
 
+    // we treat onLaunch as an intentRequest for the openIntent
     this.onLaunch((request, response) => {
       const intent = this.openIntent;
       _.set(request, 'intent.name', intent);
       _.set(request, 'intent.slots', {});
 
       return this.requestHandlers.IntentRequest(request, response);
+    });
+
+    // my default is to render with the message renderer on state machine
+    // transitions, doing it like this means the state machine doesn't need to
+    // know about rendering or anything like that
+    this.onAfterStateChanged((request, response, result) => {
+      if (!result.reply) {
+        return Promise.resolve(result);
+      }
+
+      return this.messageRenderer(result.reply, request.model)
+        .then((message) => {
+          // For AMAZON.RepeatIntent
+          let reply = null;
+          if (message ) {
+            if (message.ask) {
+              reply = { msgPath: result.reply, state: result.to };
+            }
+
+            message.directives = result.directives;
+          }
+
+          return _.merge(result, {
+            message,
+            session: {
+              data: request.model.serialize(),
+              startTimestamp: request.session.attributes.startTimestamp,
+              reply,
+            },
+          });
+        });
     });
   }
 
@@ -88,6 +129,14 @@ class StateMachineSkill extends AlexaSkill {
 
   onBeforeStateChanged(callback) {
     this.eventHandlers.onBeforeStateChanged.push(callback);
+  }
+
+  onBeforeReplySent(callback) {
+    this.eventHandlers.onBeforeReplySent.push(callback);
+  }
+
+  onAfterStateChanged(callback) {
+    this.eventHandlers.onAfterStateChanged.push(callback);
   }
 
 }

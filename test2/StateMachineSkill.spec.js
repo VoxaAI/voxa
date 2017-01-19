@@ -39,7 +39,6 @@ describe('StateMachineSkill', () => {
       initState: () => ({ to: 'endState' }),
       secondState: () => ({ to: 'initState' }),
       thirdState: () => Promise.resolve({ to: 'endState' }),
-      endState: () => ({ reply: 'ExitIntent.Farewell' }),
     };
   });
 
@@ -90,6 +89,19 @@ describe('StateMachineSkill', () => {
 
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
     return stateMachineSkill.execute(event, context);
+  });
+
+  it('should call onBeforeReplySent callbacks', () => {
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, responses, variables, openIntent: 'LaunchIntent' });
+    _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
+    const onBeforeReplySent = simple.stub();
+    stateMachineSkill.onBeforeReplySent(onBeforeReplySent);
+
+    return stateMachineSkill.execute(event, context)
+      .then(() => {
+        console.dir(onBeforeReplySent.lastCall.args[2]);
+        expect(onBeforeReplySent.called).to.be.true;
+      });
   });
 
   it('should call entry on a LaunchRequest', () => {

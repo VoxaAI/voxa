@@ -10,83 +10,60 @@ const ERRORS = module.exports.ERRORS = {
 };
 
 class StateMachine {
-  constructor(statesDefinition, currentState, onBeforeStateChangedCallbacks, messageRenderer) {
-    StateMachine.validateStatesDefinition(statesDefinition);
-    this.states = statesDefinition;
+  constructor(currentState, config) {
+    StateMachine.validateConfig(config);
+    this.states = config.states;
     this.currentState = this.states[currentState];
-    this.onBeforeStateChangedCallbacks = onBeforeStateChangedCallbacks || [];
-    this.messageRenderer = messageRenderer;
+    this.onBeforeStateChangedCallbacks = config.onBeforeStateChanged || [];
+    this.onAfterStateChangeCallbacks = config.onAfterStateChanged || [];
+
+    // If die event does not exist auto complete it.
+    if (!_.has(this.states, 'die')) {
+      _.assign(this.states, {
+        die: { isTerminal: true },
+      });
+    }
   }
 
-  static validateStatesDefinition(statesDefinition) {
-    if (!_.has(statesDefinition, 'entry')) {
+  static validateConfig(config) {
+    if (!_.has(config, 'states')) {
+      throw new Error('State machine must have a `states` definition.');
+    }
+    if (!_.has(config.states, 'entry')) {
       throw new Error('State machine must have a `entry` state.');
     }
   }
 
-  replyWith(result, request) {
-    return this.renderMessage(result.reply, request.model)
-      .then((msg) => {
-        // For AMAZON.RepeatIntent
-        let reply = null;
-        if (msg && msg.ask) reply = { msgPath: result.reply, state: result.to };
-        return {
-          message: msg,
-          directives: result.directives,
-          to: result.to,
-          session: {
-            data: request.model.serialize(),
-            startTimestamp: request.session.attributes.startTimestamp,
-            reply,
-          },
-        };
-      });
-  }
-
-  renderMessage(msgPath, data) {
-    if (!msgPath) return Promise.resolve(null);
-    return this.messageRenderer(msgPath, data);
-  }
-
   transition(request, response) {
     const reply = new Reply();
-    const path = [];
     return runTransition.call(this);
 
     function runTransition() {
       return Promise.mapSeries(this.onBeforeStateChangedCallbacks, fn => fn(request, response))
         .then(() => {
+          if (this.currentState.to && this.currentState.to[request.intent.name]) {
+            return { to: this.currentState.to[request.intent.name] };
+          }
+
           if (this.currentState.enter) {
             return Promise.resolve(this.currentState.enter(request, response));
           }
 
-          if (this.currentState.to[request.intent.name]) {
-            return { to: this.currentState.to[request.intent.name] };
-          }
-
           throw new Error(`Unsupported intent for state ${request.intent.name}`);
         })
-        .then(result => this.replyWith(result, request))
-        .then((replyResult) => {
+        .then(result => Promise.mapSeries(this.onAfterStateChangeCallbacks, fn => fn(request, response, result)).then(() => result))
+        .then((result) => {
           let to;
-          if (!replyResult) throw new Error(ERRORS.BAD_RESPONSE);
-          if (replyResult.to) {
-            to = replyResult.to = this.states[replyResult.to];
-            path.unshift(to);
-
-            if (replyResult.message) {
-              replyResult.message.directives = replyResult.directives;
-            } else {
-              replyResult.message = { directives: replyResult.directives };
-            }
-
-            reply.append(replyResult.message);
+          if (!result) throw new Error(ERRORS.BAD_RESPONSE);
+          if (result.to) {
+            to = result.to = this.states[result.to];
+            reply.append(result.message);
           }
 
-          request.session.attributes = replyResult.session || request.session.attributes || {};
+          request.session.attributes = result.session || request.session.attributes || {};
 
-          if (reply.isYielding() || !replyResult.to || replyResult.to.isTerminal) {
-            return { reply, path, to: path[0] };
+          if (reply.isYielding() || !result.to || result.to.isTerminal) {
+            return { reply, to };
           }
 
           this.currentState = this.states[to.name];

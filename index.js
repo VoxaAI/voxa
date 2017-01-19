@@ -1,4 +1,3 @@
-'use strict';
 /**
  * Alexa State Machine
  *
@@ -10,12 +9,16 @@
  * Alexa state machine version
  */
 
+'use strict';
+
 module.exports.version = '0.3.2';
 
 const stateMachineSkill = require('./lib2/StateMachineSkill');
 const helpers = require('alexa-helpers');
+const Reply = require('./lib2/Reply');
 
 module.exports.StateMachineSkill = stateMachineSkill;
+module.exports.Reply = Reply;
 module.exports.helpers = helpers;
 module.exports.replyWith = (reply, to) => ({ reply, to });
 module.exports.replyWithAudioDirectives = (reply, to, request, data, directives) => ({ reply, to, directives });

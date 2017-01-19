@@ -61,6 +61,11 @@ class AlexaSkill {
       onSessionEnded: [],
 
       /**
+       * Sent when the state machien failed to return a carrect response
+       */
+      onBadResponse: [],
+
+      /**
        * Sent when Alexa begins playing the audio stream previously sent in a Play directive.
        * This lets your skill verify that playback began successfully.
        */
@@ -121,6 +126,22 @@ class AlexaSkill {
 
   onSessionEnded(callback) {
     this.eventHandlers.onSessionEnded.push(callback);
+  }
+
+  onBadResponse(callback) {
+    this.eventHandlers.onBadResponse.push(callback);
+  }
+
+  onPlaybackFailed(callback) {
+    this.eventHandlers.onPlaybackFailed.push(callback);
+  }
+
+  onPlaybackFinished(callback) {
+    this.eventHandlers.onPlaybackFinished.push(callback);
+  }
+
+  onPlaybackStopped(callback) {
+    this.eventHandlers.onPlaybackStopped.push(callback);
   }
 
   execute(event, context) {
