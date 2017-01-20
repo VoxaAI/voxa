@@ -4,6 +4,7 @@ const Promise = require('bluebird');
 const Response = require('./Response');
 const Request = require('./Request');
 const _ = require('lodash');
+const Reply = require('./Reply');
 
 class AlexaSkill {
   constructor(appId) {
@@ -66,6 +67,11 @@ class AlexaSkill {
       onBadResponse: [],
 
       /**
+       * Sent whenever there's an unhandled error in the onIntent code
+       */
+      onError: [],
+
+      /**
        * Sent when Alexa begins playing the audio stream previously sent in a Play directive.
        * This lets your skill verify that playback began successfully.
        */
@@ -105,6 +111,32 @@ class AlexaSkill {
       }
       throw new Error(`Unsupported intent = ${intentName}`);
     });
+
+    // default onBadResponse action is to just defer to the general error handler
+    this.onBadResponse((request, response, error) => this.handleErrors(request, response, error));
+    this.onError((request, response, error) => new Reply({ tell: 'An unrecoverable error occurred.' }).write(response));
+  }
+
+  handleOnBadResponseErrors(request, response, error) {
+    // iterate on all error handlers and simply return the first one that
+    // generates a response
+    return Promise.reduce(this.eventHandlers.onBadResponse, (result, errorHandler) => {
+      if (result) {
+        return result;
+      }
+      return Promise.resolve(errorHandler(request, response, error));
+    }, null);
+  }
+
+  handleErrors(request, response, error) {
+    // iterate on all error handlers and simply return the first one that
+    // generates a response
+    return Promise.reduce(this.eventHandlers.onError, (result, errorHandler) => {
+      if (result) {
+        return result;
+      }
+      return Promise.resolve(errorHandler(request, response, error));
+    }, null);
   }
 
   onLaunch(callback) {
@@ -129,7 +161,11 @@ class AlexaSkill {
   }
 
   onBadResponse(callback) {
-    this.eventHandlers.onBadResponse.push(callback);
+    this.eventHandlers.onBadResponse.unshift(callback);
+  }
+
+  onError(callback) {
+    this.eventHandlers.onError.unshift(callback);
   }
 
   onPlaybackFailed(callback) {

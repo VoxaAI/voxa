@@ -3,11 +3,7 @@
 const Promise = require('bluebird');
 const _ = require('lodash');
 const Reply = require('./Reply');
-
-const ERRORS = module.exports.ERRORS = {
-  AUTHORIZATION: 'Authorization Error',
-  BAD_RESPONSE: 'Bad Response Error',
-};
+const BadResponse = require('./Errors').BadResponse;
 
 class StateMachine {
   constructor(currentState, config) {
@@ -20,7 +16,7 @@ class StateMachine {
     // If die event does not exist auto complete it.
     if (!_.has(this.states, 'die')) {
       _.assign(this.states, {
-        die: { isTerminal: true },
+        die: { isTerminal: true, name: 'die' },
       });
     }
   }
@@ -51,10 +47,11 @@ class StateMachine {
 
           throw new Error(`Unsupported intent for state ${request.intent.name}`);
         })
-        .then(result => Promise.mapSeries(this.onAfterStateChangeCallbacks, fn => fn(request, response, result)).then(() => result))
+        .then(result => Promise.mapSeries(
+          this.onAfterStateChangeCallbacks, fn => fn(request, response, result)).then(() => result))
         .then((result) => {
           let to;
-          if (!result) throw new Error(ERRORS.BAD_RESPONSE);
+          if (!result) throw new BadResponse();
           if (result.to) {
             to = result.to = this.states[result.to];
             reply.append(result.message);
@@ -63,6 +60,7 @@ class StateMachine {
           request.session.attributes = result.session || request.session.attributes || {};
 
           if (reply.isYielding() || !result.to || result.to.isTerminal) {
+            this.currentState = result.to.name;
             return { reply, to };
           }
 

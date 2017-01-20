@@ -5,6 +5,7 @@ const AlexaSkill = require('./AlexaSkill');
 const StateMachine = require('./StateMachine');
 const MessageRenderer = require('alexa-helpers').messageRenderer;
 const _ = require('lodash');
+const BadResponse = require('./Errors').BadResponse;
 
 class StateMachineSkill extends AlexaSkill {
   constructor(appId, config) {
@@ -37,10 +38,12 @@ class StateMachineSkill extends AlexaSkill {
           }
 
           const reply = trans.reply.write(response);
-          return Promise.mapSeries(this.eventHandlers.onBeforeReplySent,
-            fn => fn(request, response, reply))
+          return Promise.mapSeries(
+            this.eventHandlers.onBeforeReplySent, fn => fn(request, response, reply))
             .then(() => reply);
-        });
+        })
+       .catch(BadResponse, error => this.handleOnBadResponseErrors(request, response, error))
+       .catch(error => this.handleErrors(request, response, error));
     });
 
     // i always want the model to be available in the request
@@ -61,7 +64,7 @@ class StateMachineSkill extends AlexaSkill {
     // transitions, doing it like this means the state machine doesn't need to
     // know about rendering or anything like that
     this.onAfterStateChanged((request, response, result) => {
-      if (!result.reply) {
+      if (!result || !result.reply) {
         return Promise.resolve(result);
       }
 
@@ -69,7 +72,7 @@ class StateMachineSkill extends AlexaSkill {
         .then((message) => {
           // For AMAZON.RepeatIntent
           let reply = null;
-          if (message ) {
+          if (message) {
             if (message.ask) {
               reply = { msgPath: result.reply, state: result.to };
             }
