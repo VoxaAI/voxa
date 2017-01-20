@@ -5,6 +5,7 @@ const Response = require('./Response');
 const Request = require('./Request');
 const _ = require('lodash');
 const Reply = require('./Reply');
+const debug = require('debug')('alexa-statemachine');
 
 class AlexaSkill {
   constructor(appId) {
@@ -19,9 +20,7 @@ class AlexaSkill {
       IntentRequest: (request, response) => Promise.mapSeries(
         this.eventHandlers.onIntent, fn => fn(request, response)).then(_.last),
 
-      SessionEndedRequest: (request, response) => Promise.mapSeries(
-        this.eventHandlers.onSessionEnded, fn => fn(request, response))
-      // Route the request to the proper handler which may have been overriden.
+      SessionEndedRequest: (request, response) => this.handleOnSessionEnded(request, response)
       .then(() => ({ version: '1.0' })),
 
       'AudioPlayer.PlaybackStarted': (request, response) => Promise.mapSeries(this.eventHandlers.onPlaybackStarted, fn => fn(request, response)),
@@ -106,7 +105,7 @@ class AlexaSkill {
       const intentHandler = this.intentHandlers[intentName];
 
       if (intentHandler) {
-        console.log(`dispatch intent = ${intentName}`);
+        debug(`dispatch intent = ${intentName}`);
         return intentHandler(request, response);
       }
       throw new Error(`Unsupported intent = ${intentName}`);
@@ -115,6 +114,10 @@ class AlexaSkill {
     // default onBadResponse action is to just defer to the general error handler
     this.onBadResponse((request, response, error) => this.handleErrors(request, response, error));
     this.onError((request, response, error) => new Reply({ tell: 'An unrecoverable error occurred.' }).write(response));
+  }
+
+  handleOnSessionEnded(request, response) {
+    return Promise.mapSeries(this.eventHandlers.onSessionEnded, fn => fn(request, response));
   }
 
   handleOnBadResponseErrors(request, response, error) {
@@ -181,10 +184,11 @@ class AlexaSkill {
   }
 
   execute(event, context) {
+    debug('Received new event: %s', JSON.stringify(event));
     return Promise.try(() => {
       // Validate that this request originated from authorized source.
       if (this.appId && event.session.application.applicationId !== this.appId) {
-        console.log(`The applicationIds don't match: ${event.session.application.applicationId}  and  ${this.appId}`);
+        debug(`The applicationIds don't match: ${event.session.application.applicationId}  and  ${this.appId}`);
         throw new Error('Invalid applicationId');
       }
 

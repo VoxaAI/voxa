@@ -37,13 +37,21 @@ class StateMachineSkill extends AlexaSkill {
             trans.reply.end();
           }
 
-          const reply = trans.reply.write(response);
-          return Promise.mapSeries(
-            this.eventHandlers.onBeforeReplySent, fn => fn(request, response, reply))
-            .then(() => reply);
+          let promise = Promise.resolve(null);
+          if (trans.to.isTerminal) {
+            promise = this.handleOnSessionEnded(request, response);
+          }
+
+          return promise
+            .then(() => {
+              const reply = trans.reply.write(response);
+              return Promise.mapSeries(
+                this.eventHandlers.onBeforeReplySent, fn => fn(request, response, reply))
+                .then(() => reply);
+            });
         })
-       .catch(BadResponse, error => this.handleOnBadResponseErrors(request, response, error))
-       .catch(error => this.handleErrors(request, response, error));
+        .catch(BadResponse, error => this.handleOnBadResponseErrors(request, response, error))
+        .catch(error => this.handleErrors(request, response, error));
     });
 
     // i always want the model to be available in the request

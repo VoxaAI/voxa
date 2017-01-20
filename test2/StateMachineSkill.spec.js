@@ -91,6 +91,18 @@ describe('StateMachineSkill', () => {
     return stateMachineSkill.execute(event, context);
   });
 
+  it('should call onSessionEnded callbacks if state is die', () => {
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, responses, variables, openIntent: 'LaunchIntent' });
+    _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
+    const onSessionEnded = simple.stub();
+    stateMachineSkill.onSessionEnded(onSessionEnded);
+
+    return stateMachineSkill.execute(event, context)
+      .then(() => {
+        expect(onSessionEnded.called).to.be.true;
+      });
+  });
+
   it('should call onBeforeReplySent callbacks', () => {
     const stateMachineSkill = new StateMachineSkill('appId', { Model, responses, variables, openIntent: 'LaunchIntent' });
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
