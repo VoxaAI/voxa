@@ -17,8 +17,9 @@ const S = require('string');
 
 const SSML = 'SSML';
 
-class Reply {
-  constructor(msg) {
+class Response {
+  constructor(request, msg) {
+    this.session = request.session;
     this.msg = {
       statements: [],
       reprompt: '',
@@ -30,24 +31,37 @@ class Reply {
     this.append(msg);
   }
 
+
+  tell(speechOutput, card, directives) {
+    return buildSpeechletResponse({
+      card,
+      directives,
+      session: this.session,
+      output: speechOutput,
+      shouldEndSession: true,
+    });
+  }
+
+  ask(speechOutput, repromptSpeech, card, directives) {
+    return buildSpeechletResponse({
+      card,
+      directives,
+      session: this.session,
+      output: speechOutput,
+      reprompt: repromptSpeech,
+      shouldEndSession: false,
+    });
+  }
+
   append(msg) {
     if (!msg) return this;
-    if (msg.msg) {
-      this.msg.statements = this.msg.statements.concat(msg.msg.statements);
-      this.msg.reprompt = msg.msg.reprompt || this.msg.reprompt;
-      this.msg.card = msg.msg.card || this.msg.card;
-      this.msg.yield = this.msg.yield || msg.msg.yield;
-      this.msg.hasAnAsk = this.msg.hasAnAsk || msg.msg.hasAnAsk;
-      this.msg.directives = msg.msg.directives || this.msg.directives;
-    } else {
-      const statement = msg.ask || msg.tell || msg.say;
-      if (statement) this.msg.statements.push(statement);
-      this.msg.reprompt = msg.reprompt || this.msg.reprompt;
-      this.msg.card = msg.card || this.msg.card;
-      this.msg.yield = this.msg.yield || !!(msg.ask || msg.tell);
-      this.msg.hasAnAsk = this.msg.hasAnAsk || !!msg.ask;
-      this.msg.directives = msg.directives || this.msg.directives;
-    }
+    const statement = msg.ask || msg.tell || msg.say;
+    if (statement) this.msg.statements.push(statement);
+    this.msg.reprompt = msg.reprompt || this.msg.reprompt;
+    this.msg.card = msg.card || this.msg.card;
+    this.msg.yield = this.msg.yield || !!(msg.ask || msg.tell);
+    this.msg.hasAnAsk = this.msg.hasAnAsk || !!msg.ask;
+    this.msg.directives = msg.directives || this.msg.directives;
     return this;
   }
 
@@ -66,12 +80,12 @@ class Reply {
     return { say, reprompt };
   }
 
-  write(response) {
+  write() {
     const rendered = this.render();
     if (this.msg.hasAnAsk) {
-      return response.ask(rendered.say, rendered.reprompt, this.msg.card, this.msg.directives);
+      return this.ask(rendered.say, rendered.reprompt, this.msg.card, this.msg.directives);
     }
-    return response.tell(rendered.say, this.msg.card, this.msg.directives);
+    return this.tell(rendered.say, this.msg.card, this.msg.directives);
   }
 
 }
@@ -88,4 +102,66 @@ function wrapSpeech(statement) {
   return { speech: statement, type: SSML };
 }
 
-module.exports = Reply;
+function createSpeechObject(optionsParam) {
+  if (!optionsParam) return null;
+  if (optionsParam && optionsParam.type === 'SSML') {
+    return {
+      type: optionsParam.type,
+      ssml: optionsParam.speech,
+    };
+  }
+  return {
+    type: optionsParam.type || 'PlainText',
+    text: optionsParam.speech || optionsParam,
+  };
+}
+
+function buildSpeechletResponse(options) {
+  const alexaResponse = {
+    outputSpeech: createSpeechObject(options.output),
+    shouldEndSession: options.shouldEndSession,
+    card: options.card,
+  };
+
+  if (options.reprompt) {
+    alexaResponse.reprompt = {
+      outputSpeech: createSpeechObject(options.reprompt),
+    };
+  }
+
+  if (options.directives) {
+    if (options.directives.playBehavior) {
+      alexaResponse.directives = [
+        {
+          type: options.directives.type,
+          playBehavior: options.directives.playBehavior,
+          audioItem: {
+            stream: {
+              token: options.directives.token,
+              url: options.directives.url,
+              offsetInMilliseconds: options.directives.offsetInMilliseconds,
+            },
+          },
+        },
+      ];
+    } else if (options.directives.type) {
+      alexaResponse.directives = [
+        {
+          type: options.directives.type,
+        },
+      ];
+    }
+  }
+
+  const returnResult = {
+    version: '1.0',
+    response: alexaResponse,
+  };
+
+  if (options.session && options.session.attributes) {
+    returnResult.sessionAttributes = options.session.attributes;
+  }
+
+  return returnResult;
+}
+module.exports = Response;

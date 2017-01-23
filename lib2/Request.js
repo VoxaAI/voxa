@@ -2,13 +2,12 @@
 
 const _ = require('lodash');
 
-module.exports = function Request(event, lambdaContext) {
+module.exports = function Request(event) {
   _.assign(this, event.request);
   this.session = _.cloneDeep(event.session) || {};
   this.session.attributes = this.session.attributes || {};
   this.user = this.session.user;
   this.from = this.session.attributes.state || 'entry';
-  this.lambdaContext = lambdaContext;
   this.context = event.context;
 
   if (event.request.intent) {

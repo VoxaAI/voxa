@@ -1,11 +1,17 @@
 'use strict';
 
-const expect = require('chai').expect;
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+
+chai.use(chaiAsPromised);
+
+const expect = chai.expect;
 const StateMachine = require('../lib2/StateMachine.js');
+const errors = require('../lib2/Errors');
+const Reply = require('../lib2/Reply');
 const Promise = require('bluebird');
 const simple = require('simple-mock');
-const variables = require('./variables');
-const responses = require('./responses');
+const BadTransition = require('../lib2/Errors').BadTransition;
 const Model = require('./model');
 
 describe('StateMachine', () => {
@@ -35,7 +41,7 @@ describe('StateMachine', () => {
 
   it('should transition to die', () => {
     const stateMachine = new StateMachine('initState', { states });
-    return stateMachine.transition(request)
+    return stateMachine.transition(request, new Reply(request))
       .then((response) => {
         expect(response.to.name).to.equal(states.die.name);
       });
@@ -43,7 +49,7 @@ describe('StateMachine', () => {
 
   it('should transition more than one state', () => {
     const stateMachine = new StateMachine('secondState', { states });
-    return stateMachine.transition(request)
+    return stateMachine.transition(request, new Reply(request))
       .then((response) => {
         expect(response.to.name).to.equal(states.die.name);
       });
@@ -52,7 +58,7 @@ describe('StateMachine', () => {
   it('should call onBeforeStateChangedCallbacks', () => {
     const onBeforeStateChanged = simple.stub();
     const stateMachine = new StateMachine('secondState', { onBeforeStateChanged: [onBeforeStateChanged], states });
-    return stateMachine.transition(request)
+    return stateMachine.transition(request, new Reply(request))
       .then(() => {
         expect(onBeforeStateChanged.called).to.be.true;
         expect(onBeforeStateChanged.callCount).to.equal(2);
@@ -61,33 +67,38 @@ describe('StateMachine', () => {
 
   it('should transition on promises change', () => {
     const stateMachine = new StateMachine('thirdState', { states });
-    return stateMachine.transition(request)
+    return stateMachine.transition(request, new Reply(request))
       .then((response) => {
         expect(response.to.name).to.equal(states.die.name);
       });
   });
 
   it('should transition depending on intent if state.to ', () => {
-    const stateMachine = new StateMachine('simpleState', { states });
+    states.entry = { to: { TestIntent: 'die' }, name: 'entry' };
+    const stateMachine = new StateMachine('entry', { states });
     request.intent.name = 'TestIntent';
-    return stateMachine.transition(request)
+    return stateMachine.transition(request, new Reply(request))
       .then((response) => {
         expect(response.to.name).to.equal(states.die.name);
       });
   });
 
   it('should throw an exception on invalid state  ', () => {
-    const stateMachine = new StateMachine('simpleState', { states });
-    return stateMachine.transition({ intent: { name: 'OtherIntent' } })
-      .then(() => { throw new Error('this should have failed'); })
-      .catch((err) => {
-        expect(err.message).to.equal('Unsupported intent for state OtherIntent');
-        expect(err).to.be.an('error');
-      });
-  });
+    states.entry = { to: { TestIntent: 'die' }, name: 'entry' };
+    const stateMachine = new StateMachine('entry', { states });
+    const promise = stateMachine.transition({ intent: { name: 'OtherIntent' }, session: { attributes: {} } }, new Reply(request));
+    expect(promise)
+    .to.eventually.be.rejectedWith(errors.UnsupportedIntent, 'Unsupported intent: OtherIntent for state entry');
 
+  });
 
   it('should fail if there\'s no entry state', () => {
     expect(() => new StateMachine('initState', { states: {} })).to.throw('State machine must have a `entry` state.');
+  });
+
+  it('should return BadResponse on a falsey response from the state transition', () => {
+    states.entry.enter = () => null;
+    const stateMachine = new StateMachine('entry', { states });
+    return expect(stateMachine.transition({ intent: { name: 'LaunchIntent' } }), new Reply(request)).to.eventually.be.rejectedWith(BadTransition);
   });
 });

@@ -6,22 +6,24 @@ const StateMachine = require('./StateMachine');
 const MessageRenderer = require('alexa-helpers').messageRenderer;
 const _ = require('lodash');
 const BadResponse = require('./Errors').BadResponse;
+const Reply = require('./Reply');
+const debug = require('debug')('alexa-statemachine');
 
 class StateMachineSkill extends AlexaSkill {
   constructor(appId, config) {
     super(appId);
     StateMachineSkill.validateConfig(config);
     this.states = {};
-    this.messageRenderer = MessageRenderer(config.responses, config.variables);
-    this.openIntent = config.openIntent;
+    this.config = config;
 
-    this.eventHandlers.onIntent = []; // we override what the base AlexaSkill had
     this.eventHandlers.onBeforeStateChanged = [];
     this.eventHandlers.onAfterStateChanged = [];
     this.eventHandlers.onBeforeReplySent = [];
+    // Sent whenever there's an unhandled error in the onIntent code
+    this.eventHandlers.onError = [];
 
     // run the intent request through the stateMachine
-    this.onIntent((request, response) => {
+    this.onIntent((request, reply) => {
       const fromState = request.session.new ? 'entry' : request.session.attributes.state || 'entry';
       const stateMachine = new StateMachine(fromState, {
         states: this.states,
@@ -29,29 +31,28 @@ class StateMachineSkill extends AlexaSkill {
         onAfterStateChanged: this.eventHandlers.onAfterStateChanged,
       });
 
-      return stateMachine.transition(request, response)
+      return stateMachine.transition(request, reply)
         .then((trans) => {
           if (trans.to) {
-            response.session.attributes.state = trans.to.name;
+            reply.session.attributes.state = trans.to.name;
           } else {
-            trans.reply.end();
+            reply.end();
           }
 
           let promise = Promise.resolve(null);
           if (trans.to.isTerminal) {
-            promise = this.handleOnSessionEnded(request, response);
+            promise = this.handleOnSessionEnded(request, reply);
           }
 
           return promise
             .then(() => {
-              const reply = trans.reply.write(response);
-              return Promise.mapSeries(
-                this.eventHandlers.onBeforeReplySent, fn => fn(request, response, reply))
-                .then(() => reply);
+              const renderedReply = reply.write();
+              return Promise.mapSeries(this.eventHandlers.onBeforeReplySent, fn => fn(request, reply))
+                .then(() => renderedReply);
             });
         })
-        .catch(BadResponse, error => this.handleOnBadResponseErrors(request, response, error))
-        .catch(error => this.handleErrors(request, response, error));
+        .catch(BadResponse, error => this.handleOnBadResponseErrors(request, reply, error))
+        .catch(error => this.handleErrors(request, reply, error));
     });
 
     // i always want the model to be available in the request
@@ -60,44 +61,22 @@ class StateMachineSkill extends AlexaSkill {
     });
 
     // we treat onLaunch as an intentRequest for the openIntent
-    this.onLaunch((request, response) => {
-      const intent = this.openIntent;
+    this.onLaunch((request, reply) => {
+      const intent = this.config.openIntent;
       _.set(request, 'intent.name', intent);
       _.set(request, 'intent.slots', {});
 
-      return this.requestHandlers.IntentRequest(request, response);
+      return this.requestHandlers.IntentRequest(request, reply);
     });
 
     // my default is to render with the message renderer on state machine
     // transitions, doing it like this means the state machine doesn't need to
     // know about rendering or anything like that
-    this.onAfterStateChanged((request, response, result) => {
-      if (!result || !result.reply) {
-        return Promise.resolve(result);
-      }
+    this.onAfterStateChanged((request, reply, result) => this.render(request, reply, result));
 
-      return this.messageRenderer(result.reply, request.model)
-        .then((message) => {
-          // For AMAZON.RepeatIntent
-          let reply = null;
-          if (message) {
-            if (message.ask) {
-              reply = { msgPath: result.reply, state: result.to };
-            }
-
-            message.directives = result.directives;
-          }
-
-          return _.merge(result, {
-            message,
-            session: {
-              data: request.model.serialize(),
-              startTimestamp: request.session.attributes.startTimestamp,
-              reply,
-            },
-          });
-        });
-    });
+    // default onBadResponse action is to just defer to the general error handler
+    this.onBadResponse((request, reply, error) => this.handleErrors(request, reply, error));
+    this.onError((request, reply, error) => new Reply({ tell: 'An unrecoverable error occurred.' }).write());
   }
 
   static validateConfig(config) {
@@ -126,6 +105,35 @@ class StateMachineSkill extends AlexaSkill {
     }
   }
 
+  render(request, reply, result) {
+    if (!result || !result.reply) {
+      return Promise.resolve(result);
+    }
+
+    const messageRenderer = MessageRenderer(this.config.responses, this.config.variables);
+
+    return messageRenderer(result.reply, request.model)
+      .then((message) => {
+        let msgReply = null;
+        if (message) {
+          if (message.ask) {
+            msgReply = { msgPath: result.reply, state: result.to };
+          }
+
+          message.directives = result.directives;
+        }
+
+        return _.merge(result, {
+          message,
+          session: {
+            data: request.model.serialize(),
+            startTimestamp: request.session.attributes.startTimestamp,
+            reply: msgReply,
+          },
+        });
+      });
+  }
+
   onState(stateName, state) {
     if (_.isFunction(state)) {
       this.states[stateName] = {
@@ -147,7 +155,11 @@ class StateMachineSkill extends AlexaSkill {
   }
 
   onAfterStateChanged(callback) {
-    this.eventHandlers.onAfterStateChanged.push(callback);
+    this.eventHandlers.onAfterStateChanged.unshift(callback);
+  }
+
+  onError(callback) {
+    this.eventHandlers.onError.unshift(callback);
   }
 
 }

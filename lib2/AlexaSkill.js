@@ -1,37 +1,40 @@
 'use strict';
 
 const Promise = require('bluebird');
-const Response = require('./Response');
+const Reply = require('./Reply');
 const Request = require('./Request');
 const _ = require('lodash');
-const Reply = require('./Reply');
 const debug = require('debug')('alexa-statemachine');
 
 class AlexaSkill {
-  constructor(appId) {
-    this.appId = appId;
+  constructor(appIds) {
+    if (_.isArray(appIds)) {
+      this.appIds = appIds;
+    } else {
+      this.appIds = [appIds];
+    }
 
     this.intentHandlers = {};
 
     this.requestHandlers = {
-      LaunchRequest: (request, response) => Promise.mapSeries(
-        this.eventHandlers.onLaunch, fn => fn(request, response)).then(_.last),
+      LaunchRequest: (request, reply) => Promise.mapSeries(
+        this.eventHandlers.onLaunch, fn => fn(request, reply)).then(_.last),
 
-      IntentRequest: (request, response) => Promise.mapSeries(
-        this.eventHandlers.onIntent, fn => fn(request, response)).then(_.last),
+      IntentRequest: (request, reply) => Promise.mapSeries(
+        this.eventHandlers.onIntent, fn => fn(request, reply)).then(_.last),
 
-      SessionEndedRequest: (request, response) => this.handleOnSessionEnded(request, response)
+      SessionEndedRequest: (request, reply) => this.handleOnSessionEnded(request, reply)
       .then(() => ({ version: '1.0' })),
 
-      'AudioPlayer.PlaybackStarted': (request, response) => Promise.mapSeries(this.eventHandlers.onPlaybackStarted, fn => fn(request, response)),
+      'AudioPlayer.PlaybackStarted': (request, reply) => Promise.mapSeries(this.eventHandlers.onPlaybackStarted, fn => fn(request, reply)),
 
-      'AudioPlayer.PlaybackFinished': (request, response) => Promise.mapSeries(this.eventHandlers.onPlaybackFinished, fn => fn(request, response)),
+      'AudioPlayer.PlaybackFinished': (request, reply) => Promise.mapSeries(this.eventHandlers.onPlaybackFinished, fn => fn(request, reply)),
 
-      'AudioPlayer.PlaybackNearlyFinished': (request, response) => Promise.mapSeries(this.eventHandlers.onPlaybackNearlyFinished, fn => fn(request, response)),
+      'AudioPlayer.PlaybackNearlyFinished': (request, reply) => Promise.mapSeries(this.eventHandlers.onPlaybackNearlyFinished, fn => fn(request, reply)),
 
-      'AudioPlayer.PlaybackStopped': (request, response) => Promise.mapSeries(this.eventHandlers.onPlaybackStopped, fn => fn(request, response)),
+      'AudioPlayer.PlaybackStopped': (request, reply) => Promise.mapSeries(this.eventHandlers.onPlaybackStopped, fn => fn(request, reply)),
 
-      'AudioPlayer.PlaybackFailed': (request, response) => Promise.mapSeries(this.eventHandlers.onPlaybackFailed, fn => fn(request, response)),
+      'AudioPlayer.PlaybackFailed': (request, reply) => Promise.mapSeries(this.eventHandlers.onPlaybackFailed, fn => fn(request, reply)),
     };
 
     this.eventHandlers = {
@@ -61,14 +64,9 @@ class AlexaSkill {
       onSessionEnded: [],
 
       /**
-       * Sent when the state machien failed to return a carrect response
+       * Sent when the state machien failed to return a carrect reply
        */
       onBadResponse: [],
-
-      /**
-       * Sent whenever there's an unhandled error in the onIntent code
-       */
-      onError: [],
 
       /**
        * Sent when Alexa begins playing the audio stream previously sent in a Play directive.
@@ -97,48 +95,32 @@ class AlexaSkill {
        * Sent when Alexa encounters an error when attempting to play a stream.
        */
       onPlaybackFailed: [],
-
     };
-
-    this.onIntent((request, response) => {
-      const intentName = request.intent.name;
-      const intentHandler = this.intentHandlers[intentName];
-
-      if (intentHandler) {
-        debug(`dispatch intent = ${intentName}`);
-        return intentHandler(request, response);
-      }
-      throw new Error(`Unsupported intent = ${intentName}`);
-    });
-
-    // default onBadResponse action is to just defer to the general error handler
-    this.onBadResponse((request, response, error) => this.handleErrors(request, response, error));
-    this.onError((request, response, error) => new Reply({ tell: 'An unrecoverable error occurred.' }).write(response));
   }
 
-  handleOnSessionEnded(request, response) {
-    return Promise.mapSeries(this.eventHandlers.onSessionEnded, fn => fn(request, response));
+  handleOnSessionEnded(request, reply) {
+    return Promise.mapSeries(this.eventHandlers.onSessionEnded, fn => fn(request, reply));
   }
 
-  handleOnBadResponseErrors(request, response, error) {
+  handleOnBadResponseErrors(request, reply, error) {
     // iterate on all error handlers and simply return the first one that
-    // generates a response
+    // generates a reply
     return Promise.reduce(this.eventHandlers.onBadResponse, (result, errorHandler) => {
       if (result) {
         return result;
       }
-      return Promise.resolve(errorHandler(request, response, error));
+      return Promise.resolve(errorHandler(request, reply, error));
     }, null);
   }
 
-  handleErrors(request, response, error) {
+  handleErrors(request, reply, error) {
     // iterate on all error handlers and simply return the first one that
-    // generates a response
+    // generates a reply
     return Promise.reduce(this.eventHandlers.onError, (result, errorHandler) => {
       if (result) {
         return result;
       }
-      return Promise.resolve(errorHandler(request, response, error));
+      return Promise.resolve(errorHandler(request, reply, error));
     }, null);
   }
 
@@ -167,10 +149,6 @@ class AlexaSkill {
     this.eventHandlers.onBadResponse.unshift(callback);
   }
 
-  onError(callback) {
-    this.eventHandlers.onError.unshift(callback);
-  }
-
   onPlaybackFailed(callback) {
     this.eventHandlers.onPlaybackFailed.push(callback);
   }
@@ -183,12 +161,12 @@ class AlexaSkill {
     this.eventHandlers.onPlaybackStopped.push(callback);
   }
 
-  execute(event, context) {
+  execute(event) {
     debug('Received new event: %s', JSON.stringify(event));
     return Promise.try(() => {
       // Validate that this request originated from authorized source.
-      if (this.appId && event.session.application.applicationId !== this.appId) {
-        debug(`The applicationIds don't match: ${event.session.application.applicationId}  and  ${this.appId}`);
+      if (!_.includes(this.appIds, event.session.application.applicationId)) {
+        debug(`The applicationIds don't match: ${event.session.application.applicationId}  and  ${this.appIds}`);
         throw new Error('Invalid applicationId');
       }
 
@@ -197,7 +175,7 @@ class AlexaSkill {
       }
 
       const request = new Request(event, context);
-      const response = new Response(request);
+      const reply = new Reply(request);
       const requestHandler = this.requestHandlers[request.type];
 
       switch (request.type) {
@@ -205,17 +183,17 @@ class AlexaSkill {
         case 'IntentRequest':
         case 'SessionEndedRequest': {
           // call all onRequestStarted callbacks serially.
-          return Promise.mapSeries(this.eventHandlers.onRequestStarted, fn => fn(request, response))
+          return Promise.mapSeries(this.eventHandlers.onRequestStarted, fn => fn(request, reply))
             .then(() => {
               if (!request.session.new) {
                 return null;
               }
               // call all onSessionStarted callbacks serially.
               return Promise.mapSeries(this.eventHandlers.onSessionStarted,
-                fn => fn(request, response));
+                fn => fn(request, reply));
             })
           // Route the request to the proper handler which may have been overriden.
-            .then(() => requestHandler(request, response));
+            .then(() => requestHandler(request, reply));
         }
 
         case 'AudioPlayer.PlaybackStarted':
@@ -223,7 +201,7 @@ class AlexaSkill {
         case 'AudioPlayer.PlaybackNearlyFinished':
         case 'AudioPlayer.PlaybackStopped':
         case 'AudioPlayer.PlaybackFailed': {
-          return requestHandler(request, response);
+          return requestHandler(request, reply);
         }
 
         default: {

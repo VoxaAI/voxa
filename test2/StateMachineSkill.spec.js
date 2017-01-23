@@ -111,7 +111,6 @@ describe('StateMachineSkill', () => {
 
     return stateMachineSkill.execute(event, context)
       .then(() => {
-        console.dir(onBeforeReplySent.lastCall.args[2]);
         expect(onBeforeReplySent.called).to.be.true;
       });
   });
@@ -128,6 +127,48 @@ describe('StateMachineSkill', () => {
     return stateMachineSkill.execute(event, context)
       .then(() => {
         expect(statesDefinition.entry.called).to.be.true;
+      });
+  });
+
+  it('should call onBadResponse callbacks when the state machine transition throws a BadResponse error', () => {
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, responses, variables, openIntent: 'LaunchIntent' });
+    const onBadResponse = simple.stub();
+    stateMachineSkill.onBadResponse(onBadResponse);
+
+    event.request.type = 'LaunchRequest';
+    statesDefinition.entry = simple.stub().resolveWith(null);
+
+    _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
+    return stateMachineSkill.execute(event, context)
+      .then(() => {
+        expect(onBadResponse.called).to.be.true;
+      });
+  });
+
+  it('should render all messages after each transition', () => {
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, responses, variables, openIntent: 'LaunchIntent' });
+
+    event.request.type = 'LaunchRequest';
+    statesDefinition.entry = {
+      to: {
+        LaunchIntent: 'fourthState',
+      },
+    };
+
+    statesDefinition.fourthState = (request) => {
+      request.model.count = 0;
+      return { reply: 'Count.Say', to: 'fifthState' };
+    };
+
+    statesDefinition.fifthState = (request) => {
+      request.model.count = 1;
+      return { reply: 'Count.Tell', to: 'die' };
+    };
+
+    _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
+    return stateMachineSkill.execute(event, context)
+      .then((reply) => {
+        expect(reply.response.outputSpeech.ssml).to.equal('<speak>0\n1</speak>');
       });
   });
 });

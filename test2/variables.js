@@ -26,6 +26,10 @@ const variables = {
   site: function site() {
     return Promise.resolve('example.com');
   },
+
+  count: function count(model) {
+    return model.count;
+  },
 };
 
 module.exports = variables;

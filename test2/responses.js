@@ -18,6 +18,10 @@ const responses = (function responses() {
     HelpIntent: {
       HelpAboutSkill: { tell: 'For more help visit www.rain.agency' },
     },
+    Count: {
+      Say: { say: '{count}' },
+      Tell: { tell: '{count}' },
+    },
   };
 }());
 
