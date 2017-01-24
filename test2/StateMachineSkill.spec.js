@@ -42,6 +42,21 @@ describe('StateMachineSkill', () => {
     };
   });
 
+  it('should redirect be able to just pass through some intents to states', () => {
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, responses, openIntent: 'LaunchIntent' });
+    let called = false;
+    stateMachineSkill.onIntent('AMAZON.LoopOffIntent', () => {
+      called = true;
+      return { reply: 'ExitIntent.Farewell', to: 'die' };
+    });
+
+    event.request.intent.name = 'AMAZON.LoopOffIntent';
+    return stateMachineSkill.execute(event)
+      .then(() => {
+        expect(called).to.be.true;
+      });
+  });
+
   it('should accept new states', () => {
     const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, responses, openIntent: 'LaunchIntent' });
     const fourthState = () => ({ to: 'endState' });
@@ -62,7 +77,7 @@ describe('StateMachineSkill', () => {
     const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, responses, openIntent: 'LaunchIntent' });
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
 
-    return stateMachineSkill.execute(event, context)
+    return stateMachineSkill.execute(event)
       .then(() => {
         expect(statesDefinition.entry.called).to.be.true;
       });
@@ -88,7 +103,7 @@ describe('StateMachineSkill', () => {
     };
 
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
-    return stateMachineSkill.execute(event, context);
+    return stateMachineSkill.execute(event);
   });
 
   it('should call onSessionEnded callbacks if state is die', () => {
@@ -97,7 +112,7 @@ describe('StateMachineSkill', () => {
     const onSessionEnded = simple.stub();
     stateMachineSkill.onSessionEnded(onSessionEnded);
 
-    return stateMachineSkill.execute(event, context)
+    return stateMachineSkill.execute(event)
       .then(() => {
         expect(onSessionEnded.called).to.be.true;
       });
@@ -109,7 +124,7 @@ describe('StateMachineSkill', () => {
     const onBeforeReplySent = simple.stub();
     stateMachineSkill.onBeforeReplySent(onBeforeReplySent);
 
-    return stateMachineSkill.execute(event, context)
+    return stateMachineSkill.execute(event)
       .then(() => {
         expect(onBeforeReplySent.called).to.be.true;
       });
@@ -124,7 +139,7 @@ describe('StateMachineSkill', () => {
     });
 
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
-    return stateMachineSkill.execute(event, context)
+    return stateMachineSkill.execute(event)
       .then(() => {
         expect(statesDefinition.entry.called).to.be.true;
       });
@@ -139,7 +154,7 @@ describe('StateMachineSkill', () => {
     statesDefinition.entry = simple.stub().resolveWith(null);
 
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
-    return stateMachineSkill.execute(event, context)
+    return stateMachineSkill.execute(event)
       .then(() => {
         expect(onBadResponse.called).to.be.true;
       });
@@ -166,7 +181,7 @@ describe('StateMachineSkill', () => {
     };
 
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
-    return stateMachineSkill.execute(event, context)
+    return stateMachineSkill.execute(event)
       .then((reply) => {
         expect(reply.response.outputSpeech.ssml).to.equal('<speak>0\n1</speak>');
       });

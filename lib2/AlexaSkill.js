@@ -63,10 +63,8 @@ class AlexaSkill {
        */
       onSessionEnded: [],
 
-      /**
-       * Sent when the state machien failed to return a carrect reply
-       */
-      onBadResponse: [],
+      // Sent whenever there's an unhandled error in the onIntent code
+      onError: [],
 
       /**
        * Sent when Alexa begins playing the audio stream previously sent in a Play directive.
@@ -96,31 +94,23 @@ class AlexaSkill {
        */
       onPlaybackFailed: [],
     };
+
+    this.onError((request, error) => new Reply(request, { tell: 'An unrecoverable error occurred.' }).write());
   }
 
   handleOnSessionEnded(request, reply) {
     return Promise.mapSeries(this.eventHandlers.onSessionEnded, fn => fn(request, reply));
   }
 
-  handleOnBadResponseErrors(request, reply, error) {
-    // iterate on all error handlers and simply return the first one that
-    // generates a reply
-    return Promise.reduce(this.eventHandlers.onBadResponse, (result, errorHandler) => {
-      if (result) {
-        return result;
-      }
-      return Promise.resolve(errorHandler(request, reply, error));
-    }, null);
-  }
 
-  handleErrors(request, reply, error) {
+  handleErrors(request, error) {
     // iterate on all error handlers and simply return the first one that
     // generates a reply
     return Promise.reduce(this.eventHandlers.onError, (result, errorHandler) => {
       if (result) {
         return result;
       }
-      return Promise.resolve(errorHandler(request, reply, error));
+      return Promise.resolve(errorHandler(request, error));
     }, null);
   }
 
@@ -128,7 +118,7 @@ class AlexaSkill {
     this.eventHandlers.onLaunch.push(callback);
   }
 
-  onIntent(callback) {
+  onIntentRequest(callback) {
     this.eventHandlers.onIntent.push(callback);
   }
 
@@ -145,8 +135,8 @@ class AlexaSkill {
     this.eventHandlers.onSessionEnded.push(callback);
   }
 
-  onBadResponse(callback) {
-    this.eventHandlers.onBadResponse.unshift(callback);
+  onError(callback) {
+    this.eventHandlers.onError.unshift(callback);
   }
 
   onPlaybackFailed(callback) {
@@ -163,10 +153,11 @@ class AlexaSkill {
 
   execute(event) {
     debug('Received new event: %s', JSON.stringify(event));
+    const request = new Request(event);
     return Promise.try(() => {
       // Validate that this request originated from authorized source.
       if (!_.includes(this.appIds, event.session.application.applicationId)) {
-        debug(`The applicationIds don't match: ${event.session.application.applicationId}  and  ${this.appIds}`);
+        debug(`The applicationIds don't match: "${event.session.application.applicationId}"  and  "${this.appIds}"`);
         throw new Error('Invalid applicationId');
       }
 
@@ -174,7 +165,6 @@ class AlexaSkill {
         throw new Error('onLaunch must be implemented');
       }
 
-      const request = new Request(event, context);
       const reply = new Reply(request);
       const requestHandler = this.requestHandlers[request.type];
 
@@ -208,7 +198,8 @@ class AlexaSkill {
           throw new Error('Unkown event type');
         }
       }
-    });
+    })
+      .catch(error => this.handleErrors(request, error));
   }
 
 }

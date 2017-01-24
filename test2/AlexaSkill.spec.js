@@ -10,24 +10,57 @@ const AlexaSkill = require('../lib2/AlexaSkill');
 const simple = require('simple-mock');
 
 describe('AlexaSkill', () => {
-  it('should throw an exception on wrong appId', () => {
+  it('should return error message on wrong appId', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
     alexaSkill.onLaunch(() => {});
-    const promise = alexaSkill.execute({ session: { application: { applicationId: 'OTHER APP ID' } } });
-    return expect(promise).to.eventually.be.rejectedWith(Error, 'Invalid applicationId');
+    const promise = alexaSkill.execute({ session: { application: { applicationId: 'OTHER APP ID' } }, request: { intent: { } } });
+    return expect(promise).to.eventually.deep.equal({
+      version: '1.0',
+      sessionAttributes: {},
+      response: {
+        card: null,
+        outputSpeech: {
+          ssml: '<speak>An unrecoverable error occurred.</speak>',
+          type: 'SSML',
+        },
+        shouldEndSession: true,
+      },
+    });
   });
 
-  it('should throw an exception if onLaunch is not overriden', () => {
+  it('should return error message if onLaunch is not overriden', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
     const promise = alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'IntentRequest', intent: { slots: [], name: 'UnsupportedIntent' } } });
-    return expect(promise).to.eventually.be.rejectedWith(Error, 'onLaunch must be implemented');
+    return expect(promise).to.eventually.deep.equal({
+      version: '1.0',
+      sessionAttributes: {},
+      response: {
+        card: null,
+        outputSpeech: {
+          ssml: '<speak>An unrecoverable error occurred.</speak>',
+          type: 'SSML',
+        },
+        shouldEndSession: true,
+      },
+    });
   });
 
-  it('should throw an exception on unknown event type', () => {
+  it('should return error message on unknown event type', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
     alexaSkill.onLaunch(() => {});
     const promise = alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'UnknownEvent' } });
-    return expect(promise).to.eventually.be.rejectedWith(Error, 'Unkown event type');
+    return expect(promise).to.eventually.deep.equal({
+      version: '1.0',
+      sessionAttributes: {},
+      response: {
+        card: null,
+        outputSpeech: {
+          ssml: '<speak>An unrecoverable error occurred.</speak>',
+          type: 'SSML',
+        },
+        shouldEndSession: true,
+      },
+    });
   });
 
   it('should succedd with version on onSessionEnded request', () => {

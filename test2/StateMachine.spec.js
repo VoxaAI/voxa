@@ -39,6 +39,14 @@ describe('StateMachine', () => {
     };
   });
 
+  it('should store the execution flow in the request', () => {
+    const stateMachine = new StateMachine('secondState', { states });
+    return stateMachine.transition(request, new Reply(request))
+      .then(() => {
+        expect(request.flow).to.deep.equal(['secondState', 'initState', 'die']);
+      });
+  });
+
   it('should transition to die', () => {
     const stateMachine = new StateMachine('initState', { states });
     return stateMachine.transition(request, new Reply(request))

@@ -19,46 +19,16 @@ class StateMachineSkill extends AlexaSkill {
     this.eventHandlers.onBeforeStateChanged = [];
     this.eventHandlers.onAfterStateChanged = [];
     this.eventHandlers.onBeforeReplySent = [];
-    // Sent whenever there's an unhandled error in the onIntent code
-    this.eventHandlers.onError = [];
+    // Sent when the state machine failed to return a carrect reply
+    this.eventHandlers.onBadResponse = [];
+    // Sent when a state machine transition fails
+    this.eventHandlers.onStateMachineError = [];
 
-    // run the intent request through the stateMachine
-    this.onIntent((request, reply) => {
-      const fromState = request.session.new ? 'entry' : request.session.attributes.state || 'entry';
-      const stateMachine = new StateMachine(fromState, {
-        states: this.states,
-        onBeforeStateChanged: this.eventHandlers.onBeforeStateChanged,
-        onAfterStateChanged: this.eventHandlers.onAfterStateChanged,
-      });
+    this.onIntentRequest((request, reply) => this.runStateMachine(request, reply));
 
-      return stateMachine.transition(request, reply)
-        .then((trans) => {
-          if (trans.to) {
-            reply.session.attributes.state = trans.to.name;
-          } else {
-            reply.end();
-          }
-
-          let promise = Promise.resolve(null);
-          if (trans.to.isTerminal) {
-            promise = this.handleOnSessionEnded(request, reply);
-          }
-
-          return promise
-            .then(() => {
-              const renderedReply = reply.write();
-              return Promise.mapSeries(this.eventHandlers.onBeforeReplySent, fn => fn(request, reply))
-                .then(() => renderedReply);
-            });
-        })
-        .catch(BadResponse, error => this.handleOnBadResponseErrors(request, reply, error))
-        .catch(error => this.handleErrors(request, reply, error));
-    });
-
-    // i always want the model to be available in the request
-    this.onRequestStarted((request) => {
-      request.model = config.Model.fromRequest(request);
-    });
+    // this can be used to plug new information in the request
+    // default is to just initialize the model
+    this.onRequestStarted((request) => this.transformRequest(request));
 
     // we treat onLaunch as an intentRequest for the openIntent
     this.onLaunch((request, reply) => {
@@ -74,9 +44,9 @@ class StateMachineSkill extends AlexaSkill {
     // know about rendering or anything like that
     this.onAfterStateChanged((request, reply, result) => this.render(request, reply, result));
 
-    // default onBadResponse action is to just defer to the general error handler
-    this.onBadResponse((request, reply, error) => this.handleErrors(request, reply, error));
-    this.onError((request, reply, error) => new Reply({ tell: 'An unrecoverable error occurred.' }).write());
+    // default onBadResponse action is to just defer to the state machine error handler
+    this.onBadResponse((request, reply, error) => this.handleStateMachineErrors(request, reply, error));
+    this.onStateMachineError((request, reply, error) => new Reply({ tell: 'An unrecoverable error occurred.' }).write());
   }
 
   static validateConfig(config) {
@@ -103,6 +73,26 @@ class StateMachineSkill extends AlexaSkill {
     if (!config.openIntent) {
       throw new Error('Config should include openIntent');
     }
+  }
+
+  handleOnBadResponseErrors(request, reply, error) {
+    // iterate on all error handlers and simply return the first one that
+    // generates a reply
+    return Promise.reduce(this.eventHandlers.onBadResponse, (result, errorHandler) => {
+      if (result) {
+        return result;
+      }
+      return Promise.resolve(errorHandler(request, reply, error));
+    }, null);
+  }
+
+  handleStateMachineErrors(request, reply, error) {
+    return Promise.reduce(this.eventHandlers.onStateMachineError, (result, errorHandler) => {
+      if (result) {
+        return result;
+      }
+      return Promise.resolve(errorHandler(request, reply, error));
+    }, null);
   }
 
   render(request, reply, result) {
@@ -146,6 +136,14 @@ class StateMachineSkill extends AlexaSkill {
     this.states[stateName].name = stateName;
   }
 
+  onIntent(intentName, state) {
+    if (!this.states.entry) {
+      this.states.entry = { to: {} };
+    }
+    this.states.entry.to[intentName] = intentName;
+    this.onState(intentName, state);
+  }
+
   onBeforeStateChanged(callback) {
     this.eventHandlers.onBeforeStateChanged.push(callback);
   }
@@ -158,10 +156,53 @@ class StateMachineSkill extends AlexaSkill {
     this.eventHandlers.onAfterStateChanged.unshift(callback);
   }
 
-  onError(callback) {
-    this.eventHandlers.onError.unshift(callback);
+  onBadResponse(callback) {
+    this.eventHandlers.onBadResponse.unshift(callback);
   }
 
+  onStateMachineError(callback) {
+    this.eventHandlers.onStateMachineError.unshift(callback);
+  }
+
+  runStateMachine(request, reply) {
+    const fromState = request.session.new ? 'entry' : request.session.attributes.state || 'entry';
+    const stateMachine = new StateMachine(fromState, {
+      states: this.states,
+      onBeforeStateChanged: this.eventHandlers.onBeforeStateChanged,
+      onAfterStateChanged: this.eventHandlers.onAfterStateChanged,
+    });
+
+    debug('Starting the state machine from %s state', fromState);
+
+    return stateMachine.transition(request, reply)
+      .then((trans) => {
+        if (trans.to) {
+          reply.session.attributes.state = trans.to.name;
+        } else {
+          reply.end();
+        }
+
+        let promise = Promise.resolve(null);
+        if (trans.to.isTerminal) {
+          promise = this.handleOnSessionEnded(request, reply);
+        }
+
+        return promise
+          .then(() => {
+            const renderedReply = reply.write();
+            return Promise.mapSeries(this.eventHandlers.onBeforeReplySent, fn => fn(request, reply))
+              .then(() => renderedReply);
+          });
+      })
+      .catch(BadResponse, error => this.handleOnBadResponseErrors(request, reply, error))
+      .catch(error => this.handleStateMachineErrors(request, reply, error));
+  }
+
+
+  transformRequest(request) {
+    request.model = this.config.Model.fromRequest(request);
+    debug('Initialized model like %s', JSON.stringify(request.model));
+  }
 }
 
 module.exports = StateMachineSkill;

@@ -31,6 +31,10 @@ class StateMachine {
   }
 
   transition(request, reply) {
+    if (!request.flow) {
+      request.flow = [];
+    }
+
     return runTransition.call(this);
 
     function runTransition() {
@@ -64,7 +68,7 @@ class StateMachine {
           request.session.attributes = result.session || request.session.attributes || {};
 
           if (reply.isYielding() || !result.to || result.to.isTerminal) {
-            this.currentState = result.to.name;
+            request.flow.push(to.name);
             return { to };
           }
 
@@ -75,9 +79,10 @@ class StateMachine {
   }
 
   runCurrentState(request) {
+    request.flow.push(this.currentState.name);
     if (this.currentState.enter) {
       debug(`Running ${this.currentState.name} enter function`);
-      return Promise.resolve(this.currentState.enter(request));
+      return Promise.try(() => this.currentState.enter(request));
     }
 
     debug(`Running simpleTransition for ${this.currentState.name}`);
