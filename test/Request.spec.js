@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const Request = require('../lib2/Request');
+const Request = require('../lib/Request');
 
 describe('Request', () => {
   it('should assign all event.request properties', () => {

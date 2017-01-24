@@ -6,12 +6,12 @@ const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 
 const expect = chai.expect;
-const StateMachine = require('../lib2/StateMachine.js');
-const errors = require('../lib2/Errors');
-const Reply = require('../lib2/Reply');
+const StateMachine = require('../lib/StateMachine.js');
+const errors = require('../lib/Errors');
+const Reply = require('../lib/Reply');
 const Promise = require('bluebird');
 const simple = require('simple-mock');
-const BadTransition = require('../lib2/Errors').BadTransition;
+const BadTransition = require('../lib/Errors').BadTransition;
 const Model = require('./model');
 
 describe('StateMachine', () => {
@@ -97,7 +97,6 @@ describe('StateMachine', () => {
     const promise = stateMachine.transition({ intent: { name: 'OtherIntent' }, session: { attributes: {} } }, new Reply(request));
     expect(promise)
     .to.eventually.be.rejectedWith(errors.UnsupportedIntent, 'Unsupported intent: OtherIntent for state entry');
-
   });
 
   it('should fail if there\'s no entry state', () => {

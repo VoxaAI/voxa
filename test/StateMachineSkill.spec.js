@@ -7,7 +7,7 @@ chai.use(chaiAsPromised);
 
 const expect = chai.expect;
 const simple = require('simple-mock');
-const StateMachineSkill = require('../lib2/StateMachineSkill.js');
+const StateMachineSkill = require('../lib/StateMachineSkill.js');
 const Promise = require('bluebird');
 const _ = require('lodash');
 const responses = require('./responses');

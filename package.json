@@ -4,8 +4,8 @@
   "description": "A fsm (state machine) framework for Alexa apps using Node.js",
   "main": "index.js",
   "scripts": {
-    "test": "istanbul cover _mocha -- test2/*.spec.js",
-    "lint": "eslint lib2 test2"
+    "test": "istanbul cover _mocha -- test/*.spec.js",
+    "lint": "eslint lib test"
   },
   "repository": {
     "type": "git",

@@ -6,7 +6,7 @@ const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 
 const expect = chai.expect;
-const AlexaSkill = require('../lib2/AlexaSkill');
+const AlexaSkill = require('../lib/AlexaSkill');
 const simple = require('simple-mock');
 
 describe('AlexaSkill', () => {

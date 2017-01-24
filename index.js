@@ -13,9 +13,9 @@
 
 module.exports.version = '0.3.2';
 
-const stateMachineSkill = require('./lib2/StateMachineSkill');
+const stateMachineSkill = require('./lib/StateMachineSkill');
 const helpers = require('alexa-helpers');
-const Reply = require('./lib2/Reply');
+const Reply = require('./lib/Reply');
 
 module.exports.StateMachineSkill = stateMachineSkill;
 module.exports.Reply = Reply;
