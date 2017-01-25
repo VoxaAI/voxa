@@ -16,6 +16,8 @@ Welcome to alexa-statemachine's documentation!
   variables
   request
   request-flow
+  middleware
+  debugging
 
 Installation
 -------------
