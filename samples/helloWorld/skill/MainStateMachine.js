@@ -3,7 +3,7 @@
 // Include the state machine module and the replyWith function
 const alexa = require('alexa-statemachine');
 const appId = require('../config').alexa.appId;
-const responses = require('./responses');
+const views = require('./views');
 const variables = require('./variables');
 const _ = require('lodash');
 
@@ -23,8 +23,7 @@ class Model {
   }
 }
 
-const skill = new alexa.StateMachineSkill(appId, { responses, variables, Model, openIntent: 'LaunchIntent' });
-module.exports = skill;
+const skill = new alexa.StateMachineSkill(appId, { views, variables, Model, openIntent: 'LaunchIntent' });
 
 skill.onState('entry', {
   to: {
@@ -37,3 +36,5 @@ skill.onState('entry', {
 skill.onState('launch', () => ({ reply: 'Intent.Launch', to: 'entry' }));
 skill.onState('helloWorld', () => ({ reply: 'Intent.HelloWorld', to: 'die' }));
 skill.onState('help', () => ({ reply: 'Intent.Help', to: 'entry' }));
+
+module.exports = skill;

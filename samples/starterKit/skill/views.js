@@ -1,6 +1,6 @@
 'use strict';
 
-const responses = (function () {
+const views = (function views() {
   return {
     Intent: {
       Launch: {
@@ -12,4 +12,4 @@ const responses = (function () {
     },
   };
 }());
-module.exports = responses;
+module.exports = views;

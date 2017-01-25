@@ -3,7 +3,7 @@
 // Include the state machine module and the replyWith function
 const alexa = require('alexa-statemachine');
 const appId = require('../config').alexa.appId;
-const responses = require('./responses');
+const views = require('./views');
 const variables = require('./variables');
 const _ = require('lodash');
 const UserStorage = require('../services/userStorage');
@@ -24,7 +24,7 @@ class Model {
   }
 }
 
-const skill = new alexa.StateMachineSkill(appId, { variables, responses, Model });
+const skill = new alexa.StateMachineSkill(appId, { variables, views, Model });
 skill.onState('entry', {
   to: {
     LaunchIntent: 'launch',
@@ -32,13 +32,9 @@ skill.onState('entry', {
   },
 });
 
-skill.onState('launch', {
-  enter: () => ({ reply: 'Intent.Launch', to: 'entry' }),
-});
+skill.onState('launch', () => ({ reply: 'Intent.Launch', to: 'entry' }));
 
-skill.onState('help', {
-  enter: () => ({ reply: 'Intent.Help', to: 'die' }),
-});
+skill.onState('help', () => ({ reply: 'Intent.Help', to: 'die' }));
 
 skill.onRequestStarted((request) => {
   if (!request.session.user.accessToken) {
