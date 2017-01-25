@@ -1,0 +1,62 @@
+.. _controllers:
+
+Controllers
+=============
+
+Controllers in your application control the logic of your skill, they respond to alexa requests, external resources, manipulate the input and give proper responses using your :ref:`Model <models>`, :ref:`variables` and :ref:`views`
+
+States come in one of two ways, they can be an object with a ``to`` key 
+
+.. code-block:: javascript
+
+  skill.onState('entry', {
+    to: {
+      LaunchIntent: 'launch',
+      'AMAZON.HelpIntent': 'help',
+    },
+  });
+
+
+Or they can be a function that gets a :ref:`request <request>` object
+
+.. code-block:: javascript
+
+  skill.onState('launch', (request) => {
+    return { reply: 'LaunchIntent.OpenResponse', to: 'die' };
+  });
+
+Your state should respond with a ``reply`` that indicates which response it will use and a ``to`` key indicating to which state it should move next.
+
+The ``entry`` controller
+--------------------------
+
+The ``entry`` controller is special in that it's the default state to go to at the beginning of your session and if your state returns no response.
+
+For example in the next snipped there's a ``waiting`` state that expects an ``AMAZON.NextIntent`` or an ``AMAZON.PreviousIntent``, in the case the users says something unexpected like an ``AMAZON.HelpIntent`` the state returns undefined, the State Machine framework handles this situations by redirecting to the ``entry`` state
+
+.. code-block:: javascript
+
+  skill.onState('waiting', (request) => {
+    if (request.intent.name === 'AMAZON.NextIntent') {
+      request.model.index += 1;
+      return { reply: 'Ingredients.Describe', to: 'waiting' }
+    } else if (request.intent.name === 'AMAZON.PreviousIntent') {
+      request.model.index -= 1;
+      return { reply: 'Ingredients.Describe', to: 'waiting' }
+    }
+  });
+
+
+The ``onIntent`` helper
+-----------------------
+
+For the simple pattern of having a controller respond to an specific intent the framework provides the ``onIntent`` helper
+
+.. code-block:: javascript
+
+  skill.onIntent('LaunchIntent', (request) => {
+    return { reply: 'LaunchIntent.OpenResponse', to: 'die' };
+  });
+
+
+Under the hood this creates a new key in the ``entry`` controller and a new state
