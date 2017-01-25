@@ -1,13 +1,13 @@
 'use strict';
 
 /**
- * Responses for tests
+ * Views for tests
  *
  * Copyright (c) 2016 Rain Agency.
  * Licensed under the MIT license.
  */
 
-const responses = (function responses() {
+const views = (function views() {
   return {
     LaunchIntent: {
       OpenResponse: { tell: 'Hello! Good {time}' },
@@ -25,5 +25,5 @@ const responses = (function responses() {
   };
 }());
 
-module.exports = responses;
+module.exports = views;
 

@@ -17,5 +17,5 @@ npm run test
 # JS Code linting
 
 ```bash
-npm run jscs
+npm run lint
 ```

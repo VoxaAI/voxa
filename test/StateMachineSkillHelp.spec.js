@@ -10,7 +10,7 @@
 const Model = require('./model');
 const expect = require('chai').expect;
 const alexa = require('../');
-const responses = require('./responses');
+const views = require('./views');
 const variables = require('./variables');
 const _ = require('lodash');
 
@@ -36,7 +36,7 @@ describe('StateMachineSkill Help test', () => {
   let skill;
 
   beforeEach(() => {
-    skill = new alexa.StateMachineSkill(appId, { responses, variables, Model, openIntent: 'LaunchIntent' });
+    skill = new alexa.StateMachineSkill(appId, { views, variables, Model, openIntent: 'LaunchIntent' });
     _.map(states, (state, name) => {
       skill.onState(name, state);
     });

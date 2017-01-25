@@ -10,7 +10,7 @@ const simple = require('simple-mock');
 const StateMachineSkill = require('../lib/StateMachineSkill.js');
 const Promise = require('bluebird');
 const _ = require('lodash');
-const responses = require('./responses');
+const views = require('./views');
 const variables = require('./variables');
 const Model = require('./model');
 
@@ -43,7 +43,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should redirect be able to just pass through some intents to states', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, responses, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views, openIntent: 'LaunchIntent' });
     let called = false;
     stateMachineSkill.onIntent('AMAZON.LoopOffIntent', () => {
       called = true;
@@ -58,14 +58,14 @@ describe('StateMachineSkill', () => {
   });
 
   it('should accept new states', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, responses, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views, openIntent: 'LaunchIntent' });
     const fourthState = () => ({ to: 'endState' });
     stateMachineSkill.onState('fourthState', fourthState);
     expect(stateMachineSkill.states.fourthState.enter).to.equal(fourthState);
   });
 
   it('should accept onBeforeStateChanged callbacks', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, responses, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views, openIntent: 'LaunchIntent' });
     stateMachineSkill.onBeforeStateChanged(simple.stub());
   });
 
@@ -74,7 +74,7 @@ describe('StateMachineSkill', () => {
       reply: 'ExitIntent.Farewell',
     });
 
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, responses, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views, openIntent: 'LaunchIntent' });
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
 
     return stateMachineSkill.execute(event)
@@ -88,13 +88,12 @@ describe('StateMachineSkill', () => {
     expect(() => new StateMachineSkill('appId', { Model: { } })).to.throw(Error, 'Model should have a fromRequest method');
     expect(() => new StateMachineSkill('appId', { Model: { fromRequest: () => {} } })).to.throw(Error, 'Model should have a serialize method');
     expect(() => new StateMachineSkill('appId', { Model: { fromRequest: () => {}, serialize: () => {} } })).to.throw(Error, 'Config should include variables');
-    expect(() => new StateMachineSkill('appId', { Model, variables })).to.throw(Error, 'Config should include responses');
-    expect(() => new StateMachineSkill('appId', { Model, variables, responses })).to.throw(Error, 'Config should include openIntent');
-    expect(() => new StateMachineSkill('appId', { Model, variables, responses, openIntent: 'LaunchIntent' })).to.not.throw(Error);
+    expect(() => new StateMachineSkill('appId', { Model, variables })).to.throw(Error, 'Config should include views');
+    expect(() => new StateMachineSkill('appId', { Model, variables, views })).to.not.throw(Error);
   });
 
   it('should set properties on request and have those available in the state callbacks', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, responses, variables, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables, openIntent: 'LaunchIntent' });
     statesDefinition.entry = (request) => {
       expect(request.model).to.not.be.undefined;
       expect(request.model).to.be.an.instanceOf(Model);
@@ -107,7 +106,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should call onSessionEnded callbacks if state is die', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, responses, variables, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables, openIntent: 'LaunchIntent' });
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
     const onSessionEnded = simple.stub();
     stateMachineSkill.onSessionEnded(onSessionEnded);
@@ -119,7 +118,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should call onBeforeReplySent callbacks', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, responses, variables, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables, openIntent: 'LaunchIntent' });
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
     const onBeforeReplySent = simple.stub();
     stateMachineSkill.onBeforeReplySent(onBeforeReplySent);
@@ -131,7 +130,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should call entry on a LaunchRequest', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, responses, variables, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables, openIntent: 'LaunchIntent' });
 
     event.request.type = 'LaunchRequest';
     statesDefinition.entry = simple.stub().resolveWith({
@@ -146,7 +145,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should call onBadResponse callbacks when the state machine transition throws a BadResponse error', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, responses, variables, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables, openIntent: 'LaunchIntent' });
     const onBadResponse = simple.stub();
     stateMachineSkill.onBadResponse(onBadResponse);
 
@@ -161,7 +160,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should render all messages after each transition', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, responses, variables, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables, openIntent: 'LaunchIntent' });
 
     event.request.type = 'LaunchRequest';
     statesDefinition.entry = {

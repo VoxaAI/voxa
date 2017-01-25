@@ -24,7 +24,7 @@ class Model {
   }
 }
 
-const skill = new alexa.StateMachineSkill(appId, { openIntent: 'LaunchIntent', variables, responses, Model });
+const skill = new alexa.StateMachineSkill(appId, { variables, responses, Model });
 skill.onState('entry', {
   to: {
     LaunchIntent: 'launch',
