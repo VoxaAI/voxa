@@ -36,7 +36,7 @@ Instantiating a StateMachineSkill requires an applicationId, :ref:`views` , :ref
 
     const alexa = require('alexa-statemachine');
     const Model = require('./model');
-    const responses = require('./responses'):
+    const views = require('./views'):
     const variables = require('./variables');
 
     const stateMachineSkill = new alexa.StateMachineSkill('appId', { 
