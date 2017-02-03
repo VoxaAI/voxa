@@ -6,31 +6,18 @@
 Welcome to alexa-statemachine's documentation!
 ==============================================
 
-.. toctree::
-  :maxdepth: 2
-  :caption: Contents:
-
-  models
-  views
-  controllers
-  variables
-  request
-  request-flow
-  middleware
-  debugging
-
 Installation
 -------------
 Alexa State Machine is distributed via ``npm``
 
 .. code-block:: bash
 
-  npm install alexa-statemachine --save
+  $ npm install alexa-statemachine --save
 
 Initial Configuration
 ---------------------
 
-Instantiating a StateMachineSkill requires an applicationId, :ref:`views` , :ref:`variables` and a :ref:`Model <models>`.
+Instantiating a StateMachineSkill requires an applicationId, :ref:`views-and-variables`, and a :ref:`Model <models>`.
 
 .. code-block:: javascript
 
@@ -61,8 +48,43 @@ Once you have your skill configured responding to events is as simple as calling
       .catch(context.fail);
   };
 
+Project Samples
+----------------
+
+To help you get started the state machine has a number of example projects you can use.
+
+:ref:`Starter Kit <starter-kit>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This is the simplest project, it defines the default directory structure we recommend using with alexa-statemachine projects and has an example ``serverless.yml`` file that can be used to deploy your skill to a lambda function.
+
+:ref:`Hello World <hello-world>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Very similar to the :ref:`starter-kit`, however this also shows how to listen to custom intent and has a different deploy to lambda option
+
+:ref:`Account Linking <account-linking>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A more complex project that shows how to work with account linking and make responses using the model state. It uses serverless to deploy your account linking server and skill to lambda, create a dynamodb table to store your account linking and create an s3 bucket to store your static assets. It also has a gulp task to upload your assets to S3
 
 Links
 ==================
 
 * :ref:`search`
+
+.. toctree::
+  :maxdepth: 2
+  :caption: Contents:
+
+  models
+  views-and-variables
+  controllers
+  request
+  request-flow
+  middleware
+  debugging
+  starter-kit
+  hello-world
+  account-linking
+

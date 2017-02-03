@@ -29,6 +29,9 @@
     },
     "appId": ""
   },
+  "s3": {
+    "bucket": ""
+  },
   "googleAnalytics": {
     "trackingCode": ""
   },

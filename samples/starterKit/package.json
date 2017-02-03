@@ -22,6 +22,7 @@
   ],
   "license": "ISC",
   "dependencies": {
+    "alexa-statemachine": "git@github.com:armonge/alexa-statemachine.git",
     "bluebird": "^3.3.5",
     "body-parser": "^1.15.1",
     "ejs": "^2.4.1",
@@ -30,20 +31,13 @@
     "morgan": "^1.7.0",
     "request": "^2.72.0",
     "serve-static": "^1.10.2",
-    "string": "^3.3.1",
-    "alexa-statemachine": "^0.1"
+    "string": "^3.3.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "gulp": "^3.9.1",
     "gulp-nodemon": "^2.0.7",
     "mocha": "^2.4.5",
-    "del": "^2.2.0",
-    "gulp-install": "^0.6.0",
-    "merge-stream": "^1.0.0",
-    "run-sequence": "^1.1.5",
-    "gulp-zip": "^3.2.0",
-    "node-aws-lambda": "^0.1.7"
   },
   "directories": {
     "test": "test"
