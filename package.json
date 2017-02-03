@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "istanbul cover _mocha -- test/*.spec.js",
+    "test-jenkins": "JUNIT_REPORT_PATH=junit.xml istanbul cover _mocha -- --recursive --colors --reporter mocha-jenkins-reporter test",
+    "cobertura": "istanbul report cobertura --root coverage",
     "lint": "eslint lib test"
   },
   "repository": {
@@ -34,10 +36,14 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
+    "eslint": "3.15.0",
+    "eslint-config-airbnb-base": "11.0.1",
+    "eslint-plugin-import": "2.2.0",
     "istanbul": "^0.4.5",
     "jscs": "^3.0.7",
     "jshint": "^2.9.2",
     "mocha": "^2.5.3",
+    "mocha-jenkins-reporter": "0.3.6",
     "simple-mock": "^0.7.3"
   },
   "bugs": {

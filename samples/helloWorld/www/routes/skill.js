@@ -14,6 +14,9 @@ if (config.server.hostSkill) {
       succeed: function succeed(msg) {
         res.json(msg);
       },
+    }, function callback(error, msg) {
+      if(error) return next(error);
+      return res.json(msg);
     });
   });
 }

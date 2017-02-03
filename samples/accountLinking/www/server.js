@@ -1,30 +1,14 @@
 'use strict';
 
 const express = require('express');
-const bodyParser = require('body-parser');
-const morgan = require('morgan');
 const http = require('http');
-const routes = require('./routes');
-const config = require('../config');
+const app = require('./app');
 const env = require('../config/env.js');
-
-console.log(`Attempting to start.\r\n\tNode version: ${process.version}\r\n\tNODE_ENV: ${env}`);
-
-const app = express();
-
-app.use(morgan('dev'));
-app.set('views', `${__dirname}/views`);
-app.set('view engine', 'ejs');
-
-// req.body is, by default, undefined, and is populated when you
-// use body-parsing middleware such as body-parser and multer.
-// more http://expressjs.com/en/api.html#req.body
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-
-app.use(routes.router);
+const config = require('../config');
 
 const server = http.createServer(app);
+console.log(`Attempting to start.\r\n\tNode version: ${process.version}\r\n\tNODE_ENV: ${env}`);
+
 server.listen(config.server.port, () => {
   console.log('Server listening on port %d.', config.server.port);
 });

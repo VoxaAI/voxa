@@ -5,33 +5,7 @@ const alexa = require('alexa-statemachine');
 const appId = require('../config').alexa.appId;
 const views = require('./views');
 const variables = require('./variables');
-const _ = require('lodash');
-
-class Model {
-  constructor(data) {
-    _.assign(this, data);
-  }
-
-  static fromRequest(request) {
-    return new Model(request.session.attributes.data);
-  }
-
-  serialize() {
-    const ret = _.omit(this, 'user', 'q', 'pruned', 'analytics');
-
-    return ret;
-  }
-}
+const Model = require('./model');
 
 const skill = new alexa.StateMachineSkill(appId, { openIntent: 'LaunchIntent', variables, views, Model });
-skill.onState('entry', {
-  to: {
-    LaunchIntent: 'launch',
-    'AMAZON.HelpIntent': 'help',
-  },
-});
-
-skill.onState('launch',  () => ({ reply: 'Intent.Launch', to: 'entry' }));
-skill.onState('help',  () => ({ reply: 'Intent.Help', to: 'die' }));
-
 module.exports = skill;

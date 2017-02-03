@@ -82,3 +82,4 @@ jspm_packages
 /src
 /www/public
 /config/local.json
+.serverless
