@@ -35,7 +35,6 @@ describe('StateMachine', () => {
       initState: { enter: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }), name: 'initState' },
       secondState: { enter: () => ({ to: 'initState' }), name: 'secondState' },
       thirdState: { enter: () => Promise.resolve({ to: 'die' }), name: 'thirdState' },
-      simpleState: { to: { TestIntent: 'die' }, name: 'simpleState' },
     };
   });
 
@@ -97,6 +96,16 @@ describe('StateMachine', () => {
     const promise = stateMachine.transition({ intent: { name: 'OtherIntent' }, session: { attributes: {} } }, new Reply(request));
     expect(promise)
     .to.eventually.be.rejectedWith(errors.UnsupportedIntent, 'Unsupported intent: OtherIntent for state entry');
+  });
+
+  it('should transition to die if result is not an object', () => {
+    states.thirdState.enter = () => 'LaunchIntent.OpenResponse';
+
+    const stateMachine = new StateMachine('thirdState', { states });
+    return stateMachine.transition(request, new Reply(request))
+      .then((response) => {
+        expect(response.to.name).to.equal(states.die.name);
+      });
   });
 
   it('should fail if there\'s no entry state', () => {

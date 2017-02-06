@@ -43,7 +43,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should redirect be able to just pass through some intents to states', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
     let called = false;
     stateMachineSkill.onIntent('AMAZON.LoopOffIntent', () => {
       called = true;
@@ -58,14 +58,14 @@ describe('StateMachineSkill', () => {
   });
 
   it('should accept new states', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
     const fourthState = () => ({ to: 'endState' });
     stateMachineSkill.onState('fourthState', fourthState);
     expect(stateMachineSkill.states.fourthState.enter).to.equal(fourthState);
   });
 
   it('should accept onBeforeStateChanged callbacks', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
     stateMachineSkill.onBeforeStateChanged(simple.stub());
   });
 
@@ -74,7 +74,7 @@ describe('StateMachineSkill', () => {
       reply: 'ExitIntent.Farewell',
     });
 
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
 
     return stateMachineSkill.execute(event)
@@ -93,7 +93,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should set properties on request and have those available in the state callbacks', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
     statesDefinition.entry = (request) => {
       expect(request.model).to.not.be.undefined;
       expect(request.model).to.be.an.instanceOf(Model);
@@ -106,7 +106,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should call onSessionEnded callbacks if state is die', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
     const onSessionEnded = simple.stub();
     stateMachineSkill.onSessionEnded(onSessionEnded);
@@ -118,7 +118,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should call onBeforeReplySent callbacks', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
     const onBeforeReplySent = simple.stub();
     stateMachineSkill.onBeforeReplySent(onBeforeReplySent);
@@ -130,7 +130,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should call entry on a LaunchRequest', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
 
     event.request.type = 'LaunchRequest';
     statesDefinition.entry = simple.stub().resolveWith({
@@ -145,7 +145,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should call onBadResponse callbacks when the state machine transition throws a BadResponse error', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
     const onBadResponse = simple.stub();
     stateMachineSkill.onBadResponse(onBadResponse);
 
@@ -159,8 +159,22 @@ describe('StateMachineSkill', () => {
       });
   });
 
+  it('should add a reply to session if reply is an ask', () => {
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
+    stateMachineSkill.onIntent('AskIntent', () => ({ to: 'exit', reply: 'Question.Ask' }));
+    stateMachineSkill.onState('exit', () => 'ExitIntent.Farewell');
+    event.request.intent.name = 'AskIntent';
+    return stateMachineSkill.execute((event))
+      .then((result) => {
+        expect(result.sessionAttributes.reply).to.deep.equal({
+          msgPath: 'Question.Ask',
+          state: 'exit',
+        });
+      });
+  });
+
   it('should render all messages after each transition', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables, openIntent: 'LaunchIntent' });
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
 
     event.request.type = 'LaunchRequest';
     statesDefinition.entry = {

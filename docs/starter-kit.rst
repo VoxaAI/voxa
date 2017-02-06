@@ -71,6 +71,11 @@ www
 
 A standard express project configured to serve your skill in the ``/skill`` route. Combined with  `ngrok <https://ngrok.com/>`_ this is a great tool when developing or debugging.
 
+services
+^^^^^^^^
+
+Just a common place to put models and libraries
+
 test
 ^^^^^
 
@@ -99,8 +104,8 @@ Running the project
 
 3. Make sure you're running node 4.3, this is easiest with `nvm <https://github.com/creationix/nvm>`_
 
-4. Create a `config/local.json` file using `config/local.json.example` as default and modify your `alexa.appId`
+4. Create a ``config/local.json`` file using ``config/local.json.example`` as default and modify your ``alexa.appId``
 
 5. Run the project with ``gulp watch``
 
-6. At this point you should start ``ngrok http 3000`` and configure your skill in the Amazon Developer panel to use the ngrok https endpoint
+6. At this point you should start ``ngrok http 3000`` and configure your skill in the Amazon Developer panel to use the ngrok https endpoint.

@@ -12,6 +12,9 @@ const views = (function views() {
     LaunchIntent: {
       OpenResponse: { tell: 'Hello! Good {time}' },
     },
+    Question: {
+      Ask: { ask: 'What time is it?' },
+    },
     ExitIntent: {
       Farewell: { tell: 'Ok. For more info visit {site} site.' },
     },

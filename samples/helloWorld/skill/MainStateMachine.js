@@ -1,29 +1,12 @@
 'use strict';
 
-// Include the state machine module and the replyWith function
 const alexa = require('alexa-statemachine');
 const appId = require('../config').alexa.appId;
 const views = require('./views');
 const variables = require('./variables');
-const _ = require('lodash');
+const Model = require('../services/model');
 
-class Model {
-  constructor(data) {
-    _.assign(this, data);
-  }
-
-  static fromRequest(request) {
-    return new Model(request.session.attributes.data);
-  }
-
-  serialize() {
-    const ret = _.omit(this, 'user', 'q', 'pruned', 'analytics');
-
-    return ret;
-  }
-}
-
-const skill = new alexa.StateMachineSkill(appId, { views, variables, Model, openIntent: 'LaunchIntent' });
+const skill = new alexa.StateMachineSkill(appId, { views, variables, Model });
 
 skill.onState('entry', {
   to: {
