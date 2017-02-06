@@ -3,8 +3,6 @@
 const skill = require('../skill/MainStateMachine');
 const expect = require('chai').expect;
 
-require('../skill/states');
-
 describe('Skill', () => {
   it('should reply with Intent.Launch', () => {
     const event = {

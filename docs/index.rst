@@ -87,4 +87,5 @@ Links
   starter-kit
   hello-world
   account-linking
+  api
 

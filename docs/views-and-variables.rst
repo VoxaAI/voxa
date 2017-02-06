@@ -29,8 +29,6 @@ There are 5 responses in the following snippet: ``LaunchIntent.OpenResponse``, `
     },
   };
 
-.. _variables:
-
 Variables
 -----------
 
