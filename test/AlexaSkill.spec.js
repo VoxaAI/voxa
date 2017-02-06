@@ -16,7 +16,6 @@ describe('AlexaSkill', () => {
     const promise = alexaSkill.execute({ session: { application: { applicationId: 'OTHER APP ID' } }, request: { intent: { } } });
     return expect(promise).to.eventually.deep.equal({
       version: '1.0',
-      sessionAttributes: {},
       response: {
         card: null,
         outputSpeech: {
@@ -33,7 +32,6 @@ describe('AlexaSkill', () => {
     const promise = alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'IntentRequest', intent: { slots: [], name: 'UnsupportedIntent' } } });
     return expect(promise).to.eventually.deep.equal({
       version: '1.0',
-      sessionAttributes: {},
       response: {
         card: null,
         outputSpeech: {
@@ -45,13 +43,60 @@ describe('AlexaSkill', () => {
     });
   });
 
+  it('should return error message on malformed request', () => {
+    const alexaSkill = new AlexaSkill('MY APP ID');
+    alexaSkill.onLaunch(() => {});
+    const promise = alexaSkill.execute({});
+    return expect(promise).to.eventually.deep.equal({
+      version: '1.0',
+      response: {
+        card: null,
+        outputSpeech: {
+          ssml: '<speak>An unrecoverable error occurred.</speak>',
+          type: 'SSML',
+        },
+        shouldEndSession: true,
+      },
+    });
+  });
+
+  it('should iterate through error handlers and return the first with a truthy response', () => {
+    const alexaSkill = new AlexaSkill('MY APP ID');
+    alexaSkill.onLaunch(() => {});
+
+    const handler1 = simple.stub().returnWith(null);
+    const handler2 = simple.stub().returnWith(null);
+    const handler3 = simple.stub().returnWith({
+      version: '1.0',
+      response: {
+        card: null,
+        outputSpeech: {
+          ssml: '<speak>An unrecoverable error occurred.</speak>',
+          type: 'SSML',
+        },
+        shouldEndSession: true,
+      },
+    });
+    alexaSkill.onError(handler3);
+    alexaSkill.onError(handler2);
+    alexaSkill.onError(handler1);
+
+
+    return alexaSkill.execute({})
+      .then((response) => {
+        expect(handler1.called).to.be.true;
+        expect(handler2.called).to.be.true;
+        expect(handler3.called).to.be.true;
+        expect(response).to.deep.equal(handler3());
+      });
+  });
+
   it('should return error message on unknown event type', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
     alexaSkill.onLaunch(() => {});
     const promise = alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'UnknownEvent' } });
     return expect(promise).to.eventually.deep.equal({
       version: '1.0',
-      sessionAttributes: {},
       response: {
         card: null,
         outputSpeech: {
