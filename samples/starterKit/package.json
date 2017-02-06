@@ -37,7 +37,7 @@
     "chai": "^3.5.0",
     "gulp": "^3.9.1",
     "gulp-nodemon": "^2.0.7",
-    "mocha": "^2.4.5",
+    "mocha": "^2.4.5"
   },
   "directories": {
     "test": "test"
