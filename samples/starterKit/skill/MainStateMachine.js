@@ -7,5 +7,5 @@ const views = require('./views');
 const variables = require('./variables');
 const Model = require('./model');
 
-const skill = new alexa.StateMachineSkill(appId, { openIntent: 'LaunchIntent', variables, views, Model });
+const skill = new alexa.StateMachineSkill(appId, { variables, views, Model });
 module.exports = skill;

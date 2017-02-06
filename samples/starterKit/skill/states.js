@@ -1,6 +1,6 @@
 'use strict';
 
-const skill = require('./MainStateMachine')
+const skill = require('./MainStateMachine');
 
 skill.onState('entry', {
   to: {
@@ -9,6 +9,6 @@ skill.onState('entry', {
   },
 });
 
-skill.onState('launch',  () => ({ reply: 'Intent.Launch', to: 'entry' }));
-skill.onState('help',  () => ({ reply: 'Intent.Help', to: 'die' }));
+skill.onState('launch', () => ({ reply: 'Intent.Launch', to: 'entry' }));
+skill.onState('help', () => ({ reply: 'Intent.Help', to: 'die' }));
 
