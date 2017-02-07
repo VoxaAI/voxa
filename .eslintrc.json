@@ -11,6 +11,7 @@
     "import"
     ],
     "rules": {
+      "max-len": "warn",
       "no-unused-expressions": "off",
       "no-use-before-define": "off",
       "no-param-reassign": "off",

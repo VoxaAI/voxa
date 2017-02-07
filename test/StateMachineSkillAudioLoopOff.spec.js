@@ -75,7 +75,7 @@ describe('StateMachineSkill', () => {
   let skill;
 
   beforeEach(() => {
-    skill = new alexa.StateMachineSkill(appId, { views, variables, Model, openIntent: 'LaunchIntent' });
+    skill = new alexa.StateMachineSkill(appId, { views, variables, Model });
     _.map(states, (state, name) => {
       skill.onState(name, state);
     });

@@ -112,6 +112,10 @@ describe('StateMachine', () => {
     expect(() => new StateMachine('initState', { states: {} })).to.throw('State machine must have a `entry` state.');
   });
 
+  it('should fail if there\'s no states', () => {
+    expect(() => new StateMachine('initState', { })).to.throw('State machine must have a `states` definition.');
+  });
+
   it('should return BadResponse on a falsey response from the state transition', () => {
     states.entry.enter = () => null;
     const stateMachine = new StateMachine('entry', { states });
