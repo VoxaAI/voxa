@@ -4,7 +4,7 @@
   "description": "A fsm (state machine) framework for Alexa apps using Node.js",
   "main": "index.js",
   "scripts": {
-    "test": "istanbul cover _mocha -- test/*.spec.js",
+    "test": "istanbul cover _mocha -- --recursive test",
     "test-jenkins": "JUNIT_REPORT_PATH=junit.xml istanbul cover _mocha -- --recursive --colors --reporter mocha-jenkins-reporter test",
     "cobertura": "istanbul report cobertura --root coverage",
     "lint": "eslint lib test"
@@ -30,6 +30,7 @@
     "alexa-helpers": "^1.1.1",
     "bluebird": "^3.4.1",
     "debug": "^2.6.0",
+    "i18next": "^7.0.0",
     "lodash": "^4.13.1",
     "string": "^3.3.1"
   },
