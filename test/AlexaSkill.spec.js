@@ -8,11 +8,12 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 const AlexaSkill = require('../lib/AlexaSkill');
 const simple = require('simple-mock');
+const _ = require('lodash');
 
 describe('AlexaSkill', () => {
   it('should return error message on wrong appId', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
-    alexaSkill.onLaunch(() => {});
+    alexaSkill.onLaunchRequest(() => {});
     const promise = alexaSkill.execute({ session: { application: { applicationId: 'OTHER APP ID' } }, request: { intent: { } } });
     return expect(promise).to.eventually.deep.equal({
       version: '1.0',
@@ -27,25 +28,31 @@ describe('AlexaSkill', () => {
     });
   });
 
-  it('should return error message if onLaunch is not overriden', () => {
+  it('should return error message if onLaunchRequest is not overriden', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
-    const promise = alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'IntentRequest', intent: { slots: [], name: 'UnsupportedIntent' } } });
-    return expect(promise).to.eventually.deep.equal({
-      version: '1.0',
-      response: {
-        card: null,
-        outputSpeech: {
-          ssml: '<speak>An unrecoverable error occurred.</speak>',
-          type: 'SSML',
-        },
-        shouldEndSession: true,
-      },
-    });
+    const stub = simple.stub();
+    alexaSkill.onError(stub);
+    return alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'IntentRequest', intent: { slots: [], name: 'UnsupportedIntent' } } })
+      .then((result) => {
+        expect(stub.lastCall.args[1]).to.be.an('error');
+        expect(stub.lastCall.args[1].message).to.equal('onLaunchRequest must be implemented');
+        expect(result).to.deep.equal({
+          version: '1.0',
+          response: {
+            card: null,
+            outputSpeech: {
+              ssml: '<speak>An unrecoverable error occurred.</speak>',
+              type: 'SSML',
+            },
+            shouldEndSession: true,
+          },
+        });
+      });
   });
 
   it('should return error message on malformed request', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
-    alexaSkill.onLaunch(() => {});
+    alexaSkill.onLaunchRequest(() => {});
     const promise = alexaSkill.execute({});
     return expect(promise).to.eventually.deep.equal({
       version: '1.0',
@@ -62,7 +69,7 @@ describe('AlexaSkill', () => {
 
   it('should iterate through error handlers and return the first with a truthy response', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
-    alexaSkill.onLaunch(() => {});
+    alexaSkill.onLaunchRequest(() => {});
 
     const handler1 = simple.stub().returnWith(null);
     const handler2 = simple.stub().returnWith(null);
@@ -91,36 +98,68 @@ describe('AlexaSkill', () => {
       });
   });
 
+  _.map([
+    'AudioPlayer.PlaybackStarted',
+    'AudioPlayer.PlaybackFinished',
+    'AudioPlayer.PlaybackNearlyFinished',
+    'AudioPlayer.PlaybackStopped',
+    'AudioPlayer.PlaybackFailed',
+    'System.ExceptionEncountered',
+    'PlaybackController.NextCommandIssued',
+    'PlaybackController.PauseCommandIssued',
+    'PlaybackController.PlayCommandIssued',
+    'PlaybackController.PreviousCommandIssued',
+  ], (requestType) => {
+    it(`should call the correct handler for ${requestType}`, () => {
+      const alexaSkill = new AlexaSkill('MY APP ID');
+      alexaSkill.onLaunchRequest(() => {});
+      const stub = simple.stub().resolveWith(`RequestType: ${requestType}`);
+      alexaSkill[`on${requestType}`](stub);
+      const event = { session: { application: { applicationId: 'MY APP ID' } }, request: { type: requestType } };
+
+      return alexaSkill.execute(event)
+        .then((result) => {
+          expect(stub.called).to.be.true;
+          expect(result).to.equal(`RequestType: ${requestType}`);
+        });
+    });
+  });
+
   it('should return error message on unknown event type', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
-    alexaSkill.onLaunch(() => {});
-    const promise = alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'UnknownEvent' } });
-    return expect(promise).to.eventually.deep.equal({
-      version: '1.0',
-      response: {
-        card: null,
-        outputSpeech: {
-          ssml: '<speak>An unrecoverable error occurred.</speak>',
-          type: 'SSML',
-        },
-        shouldEndSession: true,
-      },
-    });
+    alexaSkill.onLaunchRequest(() => {});
+    const stub = simple.stub();
+    alexaSkill.onError(stub);
+    return alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'UnknownEvent' } })
+      .then((result) => {
+        expect(stub.lastCall.args[1]).to.be.an('error');
+        expect(stub.lastCall.args[1].message).to.equal('Unkown request type: UnknownEvent');
+        expect(result).to.deep.equal({
+          version: '1.0',
+          response: {
+            card: null,
+            outputSpeech: {
+              ssml: '<speak>An unrecoverable error occurred.</speak>',
+              type: 'SSML',
+            },
+            shouldEndSession: true,
+          },
+        });
+      });
   });
 
   it('should succedd with version on onSessionEnded request', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
-    alexaSkill.onLaunch(() => {});
+    alexaSkill.onLaunchRequest(() => {});
     const promise = alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } });
     expect(promise).to.eventually.deep.equal({ version: '1.0' });
   });
 
   it('should call onSesionEnded callback', (done) => {
     const alexaSkill = new AlexaSkill('MY APP ID');
-    alexaSkill.onLaunch(() => {});
+    alexaSkill.onLaunchRequest(() => {});
     const stub = simple.stub().returnWith(1);
     alexaSkill.onSessionEnded(stub);
-
     alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } })
       .then(() => {
         expect(stub.called).to.be.true;
@@ -137,7 +176,7 @@ describe('AlexaSkill', () => {
 
   it('should not call onSessionStarted if not session.new', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
-    alexaSkill.onLaunch(() => {});
+    alexaSkill.onLaunchRequest(() => {});
     const stub = simple.stub().resolveWith(1);
     alexaSkill.onSessionStarted(stub);
 
@@ -149,7 +188,7 @@ describe('AlexaSkill', () => {
 
   it('should call onSessionStarted if session.new', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
-    alexaSkill.onLaunch(() => {});
+    alexaSkill.onLaunchRequest(() => {});
     const stub = simple.stub().resolveWith(1);
     alexaSkill.onSessionStarted(stub);
 
@@ -161,7 +200,7 @@ describe('AlexaSkill', () => {
 
   it('should call all onRequestStartCallbacks', () => {
     const alexaSkill = new AlexaSkill('appId');
-    alexaSkill.onLaunch(() => {});
+    alexaSkill.onLaunchRequest(() => {});
     const onRequestStart1 = simple.stub().returnWith(1);
     const onRequestStart2 = simple.stub().returnWith(1);
     const onRequestStart3 = simple.stub().returnWith(1);
@@ -180,7 +219,7 @@ describe('AlexaSkill', () => {
 
   it('should accept an array of appIds', () => {
     const alexaSkill = new AlexaSkill(['appId1', 'appId2']);
-    alexaSkill.onLaunch(() => {});
+    alexaSkill.onLaunchRequest(() => {});
     return alexaSkill.execute({ session: { new: true, application: { applicationId: 'appId2' } }, request: { type: 'SessionEndedRequest' } });
   });
 });

@@ -30,7 +30,7 @@ This can be useful to track analytics
     analytics.trackSessionStarted(request);
   });
 
-``onLaunch``
+``onLaunchRequest``
 ------------------------------------------
 
 Adds a callback to be executed when processing a ``LaunchRequest``, the default behavior is to fake the request as an ``IntentRequest`` with a ``LaunchIntent`` and just defer to the ``onIntentRequest`` handlers. You generally don't need to override this.
@@ -76,6 +76,35 @@ This middleware is executed when the stateMachine transition is finished, just b
       analytics.track(request, rendered)
     });
 
+``onAudioPlayer.PlaybackStarted``
+---------------------------------
+
+``onAudioPlayer.PlaybackFinished``
+----------------------------------
+
+``onAudioPlayer.PlaybackNearlyFinished``
+-----------------------------------------
+
+``onAudioPlayer.PlaybackStopped``
+----------------------------------
+
+``onAudioPlayer.PlaybackFailed``
+-----------------------------------------
+
+``onSystem.ExceptionEncountered``
+----------------------------------
+
+``onPlaybackController.NextCommandIssued``
+------------------------------------------
+
+``onPlaybackController.PauseCommandIssued``
+------------------------------------------
+
+``onPlaybackController.PlayCommandIssued``
+------------------------------------------
+
+``onPlaybackController.PreviousCommandIssued``
+----------------------------------------------
 
 Error handlers
 ------------------------------------------
@@ -107,12 +136,3 @@ This handler will catch all errors generated when trying to make transitions in 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This is the more general handler and will catch all unhandled errors in the framework, it gets ``(request, error)`` parameters as arguments
-
-``onPlaybackFailed``
-------------------------------------------
-
-``onPlaybackFinished``
-------------------------------------------
-
-``onPlaybackStopped``
-------------------------------------------
