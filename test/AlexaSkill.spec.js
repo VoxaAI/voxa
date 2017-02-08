@@ -148,7 +148,7 @@ describe('AlexaSkill', () => {
       });
   });
 
-  it('should succedd with version on onSessionEnded request', () => {
+  it('should succeed with version on onSessionEnded request', () => {
     const alexaSkill = new AlexaSkill('MY APP ID');
     alexaSkill.onLaunchRequest(() => {});
     const promise = alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } });

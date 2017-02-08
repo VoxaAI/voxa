@@ -57,12 +57,7 @@ const states = {
 };
 
 function createToken(index, shuffle, loop) {
-  const token = {};
-  token.index = index;
-  token.shuffle = shuffle;
-  token.loop = loop;
-
-  return JSON.stringify(token);
+  return JSON.stringify({ index, shuffle, loop });
 }
 
 let TEST_URLS = [
