@@ -173,6 +173,73 @@ describe('StateMachineSkill', () => {
       });
   });
 
+  it('should include all directives in the reply', () => {
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
+
+    const directives = {
+      type: 'AudioPlayer.Play',
+      playBehavior: 'REPLACE_ALL',
+      offsetInMilliseconds: 0,
+      url: 'url',
+      token: '123',
+    };
+
+    stateMachineSkill.onIntent('SomeIntent', () => ({
+      reply: 'ExitIntent.Farewell',
+      to: 'entry',
+      directives,
+    }));
+
+    return stateMachineSkill.execute(event)
+      .then((result) => {
+        expect(result.response.directives).to.not.be.undefined;
+        expect(result.response.directives[0]).to.deep.equal({
+          type: 'AudioPlayer.Play',
+          playBehavior: 'REPLACE_ALL',
+          audioItem: {
+            stream: {
+              offsetInMilliseconds: 0,
+              token: '123',
+              url: 'url',
+            },
+          },
+        });
+      });
+  });
+
+  it('should include all directives in the reply even if die', () => {
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
+
+    const directives = {
+      type: 'AudioPlayer.Play',
+      playBehavior: 'REPLACE_ALL',
+      offsetInMilliseconds: 0,
+      url: 'url',
+      token: '123',
+    };
+
+    stateMachineSkill.onIntent('SomeIntent', () => ({
+      reply: 'ExitIntent.Farewell',
+      directives,
+    }));
+
+    return stateMachineSkill.execute(event)
+      .then((result) => {
+        expect(result.response.directives).to.not.be.undefined;
+        expect(result.response.directives[0]).to.deep.equal({
+          type: 'AudioPlayer.Play',
+          playBehavior: 'REPLACE_ALL',
+          audioItem: {
+            stream: {
+              offsetInMilliseconds: 0,
+              token: '123',
+              url: 'url',
+            },
+          },
+        });
+      });
+  });
+
   it('should render all messages after each transition', () => {
     const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
 
