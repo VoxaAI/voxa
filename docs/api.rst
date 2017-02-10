@@ -46,3 +46,4 @@ API
 .. js:function:: StateMachineSkill.onError(callback)
 
 .. js:function:: StateMachineSkill.execute(event)
+  

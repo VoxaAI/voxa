@@ -18,14 +18,14 @@ gulp.task('run', () => {
   require('./www/server.js');
 });
 
-gulp.task("upload", function() {
-  gulp.src("./www/public/**")
+gulp.task('upload', () => {
+  gulp.src('./www/public/**')
     .pipe(s3({
       Bucket: config.s3.bucket, //  Required
-      ACL:    'public-read'       //  Needs to be user-defined
+      ACL: 'public-read',       //  Needs to be user-defined
     }, {
       // S3 Constructor Options, ie:
-      maxRetries: 5
+      maxRetries: 5,
     }))
   ;
 });

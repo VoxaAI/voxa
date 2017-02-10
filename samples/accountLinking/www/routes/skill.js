@@ -13,7 +13,7 @@ if (config.server.hostSkill) {
       succeed: function succeed(msg) {
         res.json(msg);
       },
-    }, function(err, msg) {
+    }, (err, msg) => {
       if (err) return next(err);
       return res.json(msg);
     });

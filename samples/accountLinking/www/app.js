@@ -18,7 +18,7 @@ if (process.env.AWS_LAMBDA_FUNCTION_NAME) {
     next();
   });
 } else {
-  app.use('/static', express.static(__dirname + '/public'));
+  app.use('/static', express.static(`${__dirname}/public`));
   app.use((req, res, next) => {
     res.locals.staticRoot = '/static/';
     next();

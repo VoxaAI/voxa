@@ -35,14 +35,13 @@
   "googleAnalytics": {
     "trackingCode": ""
   },
-  "awsCredentials": {
-    "accessKeyId": "",
-    "secretAccessKey": ""
-  },
   "dynamoDB": {
     "tables": {
       "users": ""
     }
+  },
+  "aws": {
+    "region": "us-east-1"
   },
   "verbose": true
 }

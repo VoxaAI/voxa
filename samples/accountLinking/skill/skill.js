@@ -1,6 +1,5 @@
 'use strict';
 
-// Include the state machine module and the replyWith function
 const alexa = require('alexa-statemachine');
 const appId = require('../config').alexa.appId;
 const views = require('./views');
@@ -16,9 +15,9 @@ skill.onState('entry', {
   },
 });
 
-skill.onState('launch', () => ({ reply: 'Intent.Launch', to: 'entry' }));
+skill.onState('launch', () => ({ reply: 'Intent.Launch' }));
 
-skill.onState('help', () => ({ reply: 'Intent.Help', to: 'die' }));
+skill.onState('help', () => ({ reply: 'Intent.Help' }));
 
 skill.onRequestStarted((request) => {
   if (!request.session.user.accessToken) {

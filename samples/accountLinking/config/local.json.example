@@ -32,5 +32,8 @@
   "googleAnalytics": {
     "trackingCode": ""
   },
+  "aws": {
+    "region": "us-east-1"
+  },
   "verbose": true
 }

@@ -76,35 +76,47 @@ This middleware is executed when the stateMachine transition is finished, just b
       analytics.track(request, rendered)
     });
 
+Audio Player Requests
+------------------------
+
+This middleware handle requests from the `AudioPlayer interface <https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/custom-audioplayer-interface-reference#requests>`_
+
 ``onAudioPlayer.PlaybackStarted``
----------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``onAudioPlayer.PlaybackFinished``
-----------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``onAudioPlayer.PlaybackNearlyFinished``
------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``onAudioPlayer.PlaybackStopped``
-----------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``onAudioPlayer.PlaybackFailed``
------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``onSystem.ExceptionEncountered``
 ----------------------------------
 
+This middleware handles requests for the `System.ExceptionEncountered <https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/custom-audioplayer-interface-reference#system-exceptionencountered>`_ request that is sent to your skill when a response to an ``AudioPlayer`` request causes an error
+
+Playback Controller Requests
+-----------------------------
+
+This middleware handles requests from the `Playback Controller interface <https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/custom-playbackcontroller-interface-reference#requests>`_
+
 ``onPlaybackController.NextCommandIssued``
-------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``onPlaybackController.PauseCommandIssued``
-------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``onPlaybackController.PlayCommandIssued``
-------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``onPlaybackController.PreviousCommandIssued``
-----------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Error handlers
 ------------------------------------------
@@ -132,7 +144,20 @@ They're executed sequentially and will stop when the first handler returns a rep
 
 This handler will catch all errors generated when trying to make transitions in the stateMachine, this could include errors in the state machine controllers, , the handlers get ``(request, reply, error)`` parameters
 
+.. code-block:: javascript
+
+  skill.onStateMachineError((request, reply, error) => {
+    // it gets the current reply, which could be incomplete due to an error.
+    return new Reply(request, { tell: 'An error in the controllers code' }).write();
+  });
+
 ``onError``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This is the more general handler and will catch all unhandled errors in the framework, it gets ``(request, error)`` parameters as arguments
+
+.. code-block:: javascript
+
+  skill.onError((request, error) => {
+    return new Reply(request, { tell: 'An unrecoverable error occurred.' }).write();
+  });

@@ -1,22 +1,29 @@
 'use strict';
 
+const npdynamodb = require('npdynamodb');
+const AWS = require('aws-sdk');
 const config = require('../config');
-let dynasty;
+
 
 class UserStorage {
   constructor() {
-    dynasty = require('dynasty')(config.awsCredentials);
-    this.userTable = dynasty.table(config.dynamoDB.tables.users);
+    const dynamodb = new AWS.DynamoDB({
+      apiVersion: '2012-08-10',
+    });
+    this.npd = npdynamodb.createClient(dynamodb);
+    this.userTable = this.npd()
+      .table(config.dynamoDB.tables.users);
   }
 
   get(id) {
-    return this.userTable.find(id);
+    return this.userTable.where('id', id)
+      .first()
+      .then(result => result.Item);
   }
 
   put(data) {
-    return this.userTable.insert(data);
+    return this.userTable.create(data);
   }
 }
 
 module.exports = UserStorage;
-

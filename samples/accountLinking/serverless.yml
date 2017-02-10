@@ -95,12 +95,12 @@ resources:
     S3BucketAccountLinking:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${file(./serverless.js):config.s3.bucket}
+        BucketName: ${file(./config/index.js):asFunction.s3.bucket}
         AccessControl: PublicRead
     DynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${file(./serverless.js):config.dynamoDB.tables.users}
+        TableName: ${file(./config/index.js):asFunction.dynamoDB.tables.users}
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -123,7 +123,7 @@ resources:
                 - dynamodb:GetItem
                 - dynamodb:PutItem
                 - dynamodb:DescribeTable
-              Resource: arn:aws:dynamodb:*:*:table/${file(./serverless.js):config.dynamoDB.tables.users}
+              Resource: arn:aws:dynamodb:*:*:table/${file(./config/index.js):asFunction.dynamoDB.tables.users}
         Roles:
           - Ref: IamRoleLambdaExecution
 
