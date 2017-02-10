@@ -7,6 +7,9 @@ API
 
   :param string/array appId: The application id that amazon gives you in the developer website
   :param object config: Configuration for your skill, it should include a :ref:`models` and :ref:`views-and-variables`
+    optionally it can also take an ``env`` parameter.
+
+    If ``env === 'production'`` the framework will require ``request.application.applicationId`` to equal ``appId``.
 
 .. js:function:: StateMachineSkill.onState(stateName, handler)
 
