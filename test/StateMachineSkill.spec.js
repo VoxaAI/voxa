@@ -266,5 +266,20 @@ describe('StateMachineSkill', () => {
         expect(reply.response.outputSpeech.ssml).to.equal('<speak>0\n1</speak>');
       });
   });
+
+  it('should call onIntentRequest callbacks before the statemachine', () => {
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
+    _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
+    const stubResponse = 'STUB RESPONSE';
+    const stub = simple.stub().resolveWith(stubResponse);
+    stateMachineSkill.onIntentRequest(stub);
+
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        expect(stub.called).to.be.true;
+        expect(reply).to.not.equal(stubResponse);
+        expect(reply.response.outputSpeech.ssml).to.equal('<speak>Ok. For more info visit example.com site.</speak>');
+      });
+  });
 });
 

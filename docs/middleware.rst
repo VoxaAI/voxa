@@ -3,7 +3,7 @@
 Middleware
 =============
 
-The framework offers a number of different options to add functionality to your skill application using middleware, much of the default behavior in the framework uses this same middleware, for example rendering the controllers result into a reply object is done in the ``onAfterStateChanged`` middleware, same goes for initializing the ``model`` and adding it to the request, that happens in a ``onRequestStarted`` middleware.
+The framework offers a number of different options to add functionality to your skill application using middleware, much of the default behavior in the framework uses this same middleware, for example rendering the controllers result into a reply object is done in the ``onAfterStateChanged`` middleware, same goes for initializing the ``model`` and adding it to the :ref:`request`, that happens in a ``onRequestStarted`` middleware.
 
 ``onRequestStarted``
 ------------------------------------------
@@ -51,12 +51,12 @@ It should return the result object at the end;
 
 .. code-block:: javascript
 
-  skill.onAfterStateChanged((request, reply, result) => {
-    if (result.reply === 'LaunchIntent.PlayTodayLesson') {
-      result.reply = _.sample(['LaunchIntent.PlayTodayLesson1', 'LaunchIntent.PlayTodayLesson2']);
+  skill.onAfterStateChanged((request, reply, transition) => {
+    if (transition.reply === 'LaunchIntent.PlayTodayLesson') {
+      transition.reply = _.sample(['LaunchIntent.PlayTodayLesson1', 'LaunchIntent.PlayTodayLesson2']);
     }
 
-    return result;
+    return transition;
   });
 
 ``onSessionEnded``
