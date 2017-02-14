@@ -23,51 +23,42 @@ const TEST_URLS = [
 
 const states = {
   entry: {
-    to: {
-      LaunchIntent: 'launch',
-      'AMAZON.PreviousIntent': 'previous',
-      'AMAZON.StopIntent': 'exit',
-      'AMAZON.CancelIntent': 'exit',
-    },
+    LaunchIntent: 'launch',
+    'AMAZON.PreviousIntent': 'previous',
+    'AMAZON.StopIntent': 'exit',
+    'AMAZON.CancelIntent': 'exit',
   },
-  previous: {
-    enter: function enter(request) {
-      let index = 0;
-      let shuffle = 0;
-      let loop = 0;
+  previous: function enter(request) {
+    let index = 0;
+    let shuffle = 0;
+    let loop = 0;
 
-      if (request.context && request.context.AudioPlayer) {
-        const token = JSON.parse(request.context.AudioPlayer.token);
-        index = token.index - 1;
-        shuffle = token.shuffle;
-        loop = token.loop;
-      }
+    if (request.context && request.context.AudioPlayer) {
+      const token = JSON.parse(request.context.AudioPlayer.token);
+      index = token.index - 1;
+      shuffle = token.shuffle;
+      loop = token.loop;
+    }
 
-      if (index === -1) {
-        index = TEST_URLS.length - 1;
-      }
+    if (index === -1) {
+      index = TEST_URLS.length - 1;
+    }
 
-      const directives = {};
-      directives.type = 'AudioPlayer.Play';
-      directives.playBehavior = 'REPLACE_ALL';
-      directives.token = createToken(index, shuffle, loop);
-      directives.url = TEST_URLS[index];
-      directives.offsetInMilliseconds = 0;
+    const directives = {};
+    directives.type = 'AudioPlayer.Play';
+    directives.playBehavior = 'REPLACE_ALL';
+    directives.token = createToken(index, shuffle, loop);
+    directives.url = TEST_URLS[index];
+    directives.offsetInMilliseconds = 0;
 
-      return alexa.replyWithAudioDirectives('LaunchIntent.OpenResponse', 'die', request,
+    return alexa.replyWithAudioDirectives('LaunchIntent.OpenResponse', 'die', request,
         null, directives);
-    },
   },
-  exit: {
-    enter: function enter(request) {
-      return alexa.replyWith('ExitIntent.Farewell', 'die', request);
-    },
+  exit: function enter(request) {
+    return alexa.replyWith('ExitIntent.Farewell', 'die', request);
   },
-  die: { isTerminal: true },
-  launch: {
-    enter: function enter(request) {
-      return alexa.replyWith('LaunchIntent.OpenResponse', 'die', request);
-    },
+  launch: function enter(request) {
+    return alexa.replyWith('LaunchIntent.OpenResponse', 'die', request);
   },
 };
 

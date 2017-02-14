@@ -248,9 +248,7 @@ describe('StateMachineSkill', () => {
 
     event.request.type = 'LaunchRequest';
     statesDefinition.entry = {
-      to: {
-        LaunchIntent: 'fourthState',
-      },
+      LaunchIntent: 'fourthState',
     };
 
     statesDefinition.fourthState = (request) => {

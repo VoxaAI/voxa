@@ -9,11 +9,9 @@ const Model = require('../services/model');
 const skill = new alexa.StateMachineSkill(appId, { views, variables, Model });
 
 skill.onState('entry', {
-  to: {
-    LaunchIntent: 'launch',
-    HelloWorldIntent: 'helloWorld',
-    'AMAZON.HelpIntent': 'help',
-  },
+  LaunchIntent: 'launch',
+  HelloWorldIntent: 'helloWorld',
+  'AMAZON.HelpIntent': 'help',
 });
 
 skill.onState('launch', () => ({ reply: 'Intent.Launch', to: 'entry' }));

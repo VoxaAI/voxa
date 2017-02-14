@@ -18,25 +18,18 @@ const appId = 'some-app-id';
 
 const states = {
   entry: {
-    to: {
-      LaunchIntent: 'launch',
-      'AMAZON.StopIntent': 'exit',
-      'AMAZON.CancelIntent': 'exit',
-    },
+    LaunchIntent: 'launch',
+    'AMAZON.StopIntent': 'exit',
+    'AMAZON.CancelIntent': 'exit',
   },
-  exit: {
-    enter: function enter(request) {
-      const directives = {};
-      directives.type = 'AudioPlayer.Stop';
-      return alexa.replyWithAudioDirectives('ExitIntent.Farewell', 'die', request,
+  exit: function enter(request) {
+    const directives = {};
+    directives.type = 'AudioPlayer.Stop';
+    return alexa.replyWithAudioDirectives('ExitIntent.Farewell', 'die', request,
         null, directives);
-    },
   },
-  die: { isTerminal: true },
-  launch: {
-    enter: function enter(request) {
-      return alexa.replyWith('LaunchIntent.OpenResponse', 'die', request);
-    },
+  launch: function enter(request) {
+    return alexa.replyWith('LaunchIntent.OpenResponse', 'die', request);
   },
 };
 
