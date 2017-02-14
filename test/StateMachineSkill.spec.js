@@ -94,15 +94,18 @@ describe('StateMachineSkill', () => {
 
   it('should set properties on request and have those available in the state callbacks', () => {
     const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
-    statesDefinition.entry = (request) => {
+    statesDefinition.entry = simple.spy((request) => {
       expect(request.model).to.not.be.undefined;
       expect(request.model).to.be.an.instanceOf(Model);
 
       return { reply: 'ExitIntent.Farewell', to: 'die' };
-    };
+    });
 
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
-    return stateMachineSkill.execute(event);
+    return stateMachineSkill.execute(event)
+      .then((response) => {
+        expect(statesDefinition.entry.called).to.be.true;
+      });
   });
 
   it('should call onSessionEnded callbacks if state is die', () => {
@@ -112,7 +115,7 @@ describe('StateMachineSkill', () => {
     stateMachineSkill.onSessionEnded(onSessionEnded);
 
     return stateMachineSkill.execute(event)
-      .then(() => {
+      .then((reply) => {
         expect(onSessionEnded.called).to.be.true;
       });
   });
@@ -144,18 +147,18 @@ describe('StateMachineSkill', () => {
       });
   });
 
-  it('should call onBadResponse callbacks when the state machine transition throws a BadResponse error', () => {
+  it('should call onUnhandledState callbacks when the state machine transition throws a UnhandledState error', () => {
     const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
-    const onBadResponse = simple.stub();
-    stateMachineSkill.onBadResponse(onBadResponse);
+    const onUnhandledState = simple.stub();
+    stateMachineSkill.onUnhandledState(onUnhandledState);
 
     event.request.type = 'LaunchRequest';
     statesDefinition.entry = simple.stub().resolveWith(null);
 
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
     return stateMachineSkill.execute(event)
-      .then(() => {
-        expect(onBadResponse.called).to.be.true;
+      .then((response) => {
+        expect(onUnhandledState.called).to.be.true;
       });
   });
 
@@ -279,6 +282,58 @@ describe('StateMachineSkill', () => {
         expect(stub.called).to.be.true;
         expect(reply).to.not.equal(stubResponse);
         expect(reply.response.outputSpeech.ssml).to.equal('<speak>Ok. For more info visit example.com site.</speak>');
+      });
+  });
+
+  it('should return the onError response for exceptions thrown in onAfterStateChanged', () => {
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
+    _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
+    const spy = simple.spy(() => {
+      throw new Error('FAIL!');
+    });
+
+    stateMachineSkill.onAfterStateChanged(spy);
+
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        expect(spy.called).to.be.true;
+        expect(reply).to.deep.equal({
+          version: '1.0',
+          sessionAttributes: { },
+          response: {
+            card: null,
+            outputSpeech: {
+              ssml: '<speak>An unrecoverable error occurred.</speak>',
+              type: 'SSML',
+            },
+            shouldEndSession: true,
+          },
+        });
+      });
+  });
+
+  it('should return the onError response for exceptions thrown in onRequestStarted', () => {
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
+    const spy = simple.spy(() => {
+      throw new Error('FAIL!');
+    });
+
+    stateMachineSkill.onRequestStarted(spy);
+
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        expect(spy.called).to.be.true;
+        expect(reply).to.deep.equal({
+          version: '1.0',
+          response: {
+            card: null,
+            outputSpeech: {
+              ssml: '<speak>An unrecoverable error occurred.</speak>',
+              type: 'SSML',
+            },
+            shouldEndSession: true,
+          },
+        });
       });
   });
 });

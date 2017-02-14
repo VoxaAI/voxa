@@ -33,7 +33,7 @@ API
 
 .. js:function:: StateMachineSkill.onAfterStateChanged(callback)
 
-.. js:function:: StateMachineSkill.onBadResponse(callback)
+.. js:function:: StateMachineSkill.onUnHandled(callback)
 
 .. js:function:: StateMachineSkill.onStateMachineError(callback)
 

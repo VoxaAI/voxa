@@ -11,7 +11,6 @@ const errors = require('../lib/Errors');
 const Reply = require('../lib/Reply');
 const Promise = require('bluebird');
 const simple = require('simple-mock');
-const BadTransition = require('../lib/Errors').BadTransition;
 const Model = require('./model');
 
 describe('StateMachine', () => {
@@ -116,9 +115,34 @@ describe('StateMachine', () => {
     expect(() => new StateMachine('initState', { })).to.throw('State machine must have a `states` definition.');
   });
 
-  it('should return BadResponse on a falsey response from the state transition', () => {
+  it('should throw UnhandledState on a falsey response from the state transition', () => {
     states.entry.enter = () => null;
     const stateMachine = new StateMachine('entry', { states });
-    return expect(stateMachine.transition({ intent: { name: 'LaunchIntent' } }), new Reply(request)).to.eventually.be.rejectedWith(BadTransition);
+    return expect(stateMachine.transition({ intent: { name: 'LaunchIntent' } }), new Reply(request)).to.eventually.be.rejectedWith(errors.UnhandledState);
+  });
+
+  it('should throw UnknownState when transition.to goes to an undefined state', () => {
+    states.entry = { to: { LaunchIntent: 'undefinedState' } };
+    const stateMachine = new StateMachine('entry', { states });
+    return expect(stateMachine.transition({ intent: { name: 'LaunchIntent' } }), new Reply(request)).to.eventually.be.rejectedWith(errors.UnknownState);
+  });
+
+  it('should fallback to entry on no response', () => {
+    states.someState = {
+      enter: simple.stub().returnWith(null),
+      name: 'someState',
+    };
+
+    const stateMachine = new StateMachine('someState', { states });
+    return stateMachine.transition({ intent: { name: 'LaunchIntent' } }, new Reply(request))
+      .then((transition) => {
+        expect(states.someState.enter.called).to.be.true;
+        expect(transition).to.deep.equal({
+          to: {
+            isTerminal: true,
+            name: 'die',
+          },
+        });
+      });
   });
 });
