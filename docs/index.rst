@@ -21,6 +21,7 @@ Instantiating a StateMachineSkill requires an applicationId, :ref:`views-and-var
 
 .. code-block:: javascript
 
+    'use strict';
     const alexa = require('alexa-statemachine');
     const Model = require('./model');
     const views = require('./views'):
@@ -32,14 +33,13 @@ Instantiating a StateMachineSkill requires an applicationId, :ref:`views-and-var
       views,
     });
 
-Responding to event requests
+Responding to alexa requests
 -----------------------------
 
 Once you have your skill configured responding to events is as simple as calling the ``skill.execute`` method
 
 .. code-block:: javascript
 
-  'use strict';
   const skill = require('./MainStateMachine');
 
   exports.handler = function handler(event, context) {
@@ -47,6 +47,19 @@ Once you have your skill configured responding to events is as simple as calling
       .then(context.succeed)
       .catch(context.fail);
   };
+
+Responding to an intent request
+--------------------------------
+
+.. code-block:: javascript
+
+  skill.onIntent('HelpIntent', (request) => {
+    return { reply: 'HelpIntent.HelpAboutSkill' };
+  });
+
+  skill.onIntent('ExitIntent', (request) => {
+    return { reply: 'ExitIntent.Farewell' };
+  });
 
 Project Samples
 ----------------
@@ -80,6 +93,7 @@ Links
   models
   views-and-variables
   controllers
+  transition
   request
   reply
   request-flow

@@ -33,7 +33,9 @@ API
 
 .. js:function:: StateMachineSkill.onAfterStateChanged(callback)
 
-.. js:function:: StateMachineSkill.onUnHandled(callback)
+.. js:function:: StateMachineSkill.onUnHandledState(callback)
+
+  A callback to handle the event of a state not returning a proper transition, it gets the :ref:`request <request>` object and the name of the current state, it should return a :ref:`transition response <transition>` just like the state controllers
 
 .. js:function:: StateMachineSkill.onStateMachineError(callback)
 
@@ -46,4 +48,3 @@ API
 .. js:function:: StateMachineSkill.onError(callback)
 
 .. js:function:: StateMachineSkill.execute(event)
-  
