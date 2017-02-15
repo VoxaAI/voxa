@@ -30,6 +30,7 @@ describe('AlexaSkill', () => {
 
     return alexaSkill.execute({ session: { application: { applicationId: 'OTHER APP ID' } }, request: { intent: { } } })
       .then((result) => {
+        expect(stub.called).to.be.true;
         expect(stub.lastCall.args[1]).to.be.an('error');
         expect(stub.lastCall.args[1].message).to.equal('Invalid applicationId');
         expect(result).to.deep.equal({
@@ -179,7 +180,7 @@ describe('AlexaSkill', () => {
     const stub = simple.stub().returnWith(1);
     alexaSkill.onSessionEnded(stub);
     alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } })
-      .then(() => {
+      .then((reply) => {
         expect(stub.called).to.be.true;
         done();
       })

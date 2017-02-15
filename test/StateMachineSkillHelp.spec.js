@@ -18,16 +18,13 @@ const appId = 'some-app-id';
 
 const states = {
   entry: {
-    to: {
-      LaunchIntent: 'launch',
-      'AMAZON.HelpIntent': 'help',
-      'AMAZON.StopIntent': 'exit',
-      'AMAZON.CancelIntent': 'exit',
-    },
+    LaunchIntent: 'launch',
+    'AMAZON.HelpIntent': 'help',
+    'AMAZON.StopIntent': 'exit',
+    'AMAZON.CancelIntent': 'exit',
   },
   help: () => ({ reply: 'HelpIntent.HelpAboutSkill', to: 'die' }),
   exit: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }),
-  die: { isTerminal: true },
   launch: () => ({ reply: 'LaunchIntent.OpenResponse', to: 'die' }),
 };
 

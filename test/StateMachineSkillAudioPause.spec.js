@@ -18,23 +18,14 @@ const appId = 'some-app-id';
 
 const states = {
   entry: {
-    to: {
-      LaunchIntent: 'launch',
-      'AMAZON.PauseIntent': 'pause',
-      'AMAZON.StopIntent': 'exit',
-      'AMAZON.CancelIntent': 'exit',
-    },
+    LaunchIntent: 'launch',
+    'AMAZON.PauseIntent': 'pause',
+    'AMAZON.StopIntent': 'exit',
+    'AMAZON.CancelIntent': 'exit',
   },
-  pause: {
-    enter: () => ({ reply: 'LaunchIntent.OpenResponse', to: 'die' }),
-  },
-  exit: {
-    enter: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }),
-  },
-  die: { isTerminal: true },
-  launch: {
-    enter: () => ({ reply: 'LaunchIntent.OpenResponse', to: 'die' }),
-  },
+  pause: () => ({ reply: 'LaunchIntent.OpenResponse', to: 'die' }),
+  exit: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }),
+  launch: () => ({ reply: 'LaunchIntent.OpenResponse', to: 'die' }),
 };
 
 describe('StateMachineSkill', () => {

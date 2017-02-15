@@ -5,15 +5,13 @@ Controllers
 
 Controllers in your application control the logic of your skill, they respond to alexa requests, external resources, manipulate the input and give proper responses using your :ref:`Model <models>`, :ref:`variables` and :ref:`views`
 
-States come in one of two ways, they can be an object with a ``to`` key 
+States come in one of two ways, they can be an object of mappings from intent name to state
 
 .. code-block:: javascript
 
   skill.onState('entry', {
-    to: {
-      LaunchIntent: 'launch',
-      'AMAZON.HelpIntent': 'help',
-    },
+    LaunchIntent: 'launch',
+    'AMAZON.HelpIntent': 'help',
   });
 
 

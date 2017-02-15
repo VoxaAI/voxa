@@ -3,7 +3,7 @@
 Middleware
 =============
 
-The framework offers a number of different options to add functionality to your skill application using middleware, much of the default behavior in the framework uses this same middleware, for example rendering the controllers result into a reply object is done in the ``onAfterStateChanged`` middleware, same goes for initializing the ``model`` and adding it to the request, that happens in a ``onRequestStarted`` middleware.
+The framework offers a number of different options to add functionality to your skill application using middleware, much of the default behavior in the framework uses this same middleware, for example rendering the controllers result into a reply object is done in the ``onAfterStateChanged`` middleware, same goes for initializing the ``model`` and adding it to the :ref:`request <request>`, that happens in a ``onRequestStarted`` middleware.
 
 ``onRequestStarted``
 ------------------------------------------
@@ -33,7 +33,7 @@ This can be useful to track analytics
 ``onLaunchRequest``
 ------------------------------------------
 
-Adds a callback to be executed when processing a ``LaunchRequest``, the default behavior is to fake the request as an ``IntentRequest`` with a ``LaunchIntent`` and just defer to the ``onIntentRequest`` handlers. You generally don't need to override this.
+Adds a callback to be executed when processing a ``LaunchRequest``, the default behavior is to fake the :ref:`request <request>` as an ``IntentRequest`` with a ``LaunchIntent`` and just defer to the ``onIntentRequest`` handlers. You generally don't need to override this.
 
 ``onIntentRequest``
 ------------------------------------------
@@ -51,12 +51,12 @@ It should return the result object at the end;
 
 .. code-block:: javascript
 
-  skill.onAfterStateChanged((request, reply, result) => {
-    if (result.reply === 'LaunchIntent.PlayTodayLesson') {
-      result.reply = _.sample(['LaunchIntent.PlayTodayLesson1', 'LaunchIntent.PlayTodayLesson2']);
+  skill.onAfterStateChanged((request, reply, transition) => {
+    if (transition.reply === 'LaunchIntent.PlayTodayLesson') {
+      transition.reply = _.sample(['LaunchIntent.PlayTodayLesson1', 'LaunchIntent.PlayTodayLesson2']);
     }
 
-    return result;
+    return transition;
   });
 
 ``onSessionEnded``
@@ -75,6 +75,11 @@ This middleware is executed when the stateMachine transition is finished, just b
       const rendered = reply.write();
       analytics.track(request, rendered)
     });
+
+``onUnHandledState``
+------------------------------------------
+
+Adds a callback to be executed when a state transition fails to generate a result, this usually happens when redirecting to a missing state or an entry call for a non configured intent, the handlers get a :ref:`request <request>` parameter and should return a :ref:`transition <response>` the same as a state controller would.
 
 Audio Player Requests
 ------------------------
@@ -134,10 +139,6 @@ They're executed sequentially and will stop when the first handler returns a rep
     return Promise.resolve(errorHandler(request, error));
   }, null);
 
-``onBadResponse``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-``onBadResponse`` is thrown whenever a state transition fails to generate a result, this usually happens when redirecting to a missing state or an entry call for a non configured intent, the handlers get ``(request, reply, error)`` parameters
 
 ``onStateMachineError``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -148,7 +149,8 @@ This handler will catch all errors generated when trying to make transitions in 
 
   skill.onStateMachineError((request, reply, error) => {
     // it gets the current reply, which could be incomplete due to an error.
-    return new Reply(request, { tell: 'An error in the controllers code' }).write();
+    return new Reply(request, { tell: 'An error in the controllers code' })
+      .write();
   });
 
 ``onError``
@@ -159,5 +161,6 @@ This is the more general handler and will catch all unhandled errors in the fram
 .. code-block:: javascript
 
   skill.onError((request, error) => {
-    return new Reply(request, { tell: 'An unrecoverable error occurred.' }).write();
+    return new Reply(request, { tell: 'An unrecoverable error occurred.' })
+      .write();
   });

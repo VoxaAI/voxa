@@ -18,12 +18,10 @@ const appId = 'some-app-id';
 
 const states = {
   entry: {
-    to: {
-      LaunchIntent: 'launch',
-      'AMAZON.LoopOffIntent': 'loopOff',
-      'AMAZON.StopIntent': 'exit',
-      'AMAZON.CancelIntent': 'exit',
-    },
+    LaunchIntent: 'launch',
+    'AMAZON.LoopOffIntent': 'loopOff',
+    'AMAZON.StopIntent': 'exit',
+    'AMAZON.CancelIntent': 'exit',
   },
   loopOff: function enter(request) {
     let index = 0;

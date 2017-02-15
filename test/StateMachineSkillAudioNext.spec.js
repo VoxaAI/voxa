@@ -23,50 +23,41 @@ const TEST_URLS = [
 
 const states = {
   entry: {
-    to: {
-      LaunchIntent: 'launch',
-      'AMAZON.NextIntent': 'next',
-      'AMAZON.StopIntent': 'exit',
-      'AMAZON.CancelIntent': 'exit',
-    },
+    LaunchIntent: 'launch',
+    'AMAZON.NextIntent': 'next',
+    'AMAZON.StopIntent': 'exit',
+    'AMAZON.CancelIntent': 'exit',
   },
-  next: {
-    enter: function enter(request) {
-      let index = 0;
-      let shuffle = 0;
-      let loop = 0;
+  next: function enter(request) {
+    let index = 0;
+    let shuffle = 0;
+    let loop = 0;
 
-      if (request.context && request.context.AudioPlayer) {
-        const token = JSON.parse(request.context.AudioPlayer.token);
-        index = token.index + 1;
-        shuffle = token.shuffle;
-        loop = token.loop;
-      }
+    if (request.context && request.context.AudioPlayer) {
+      const token = JSON.parse(request.context.AudioPlayer.token);
+      index = token.index + 1;
+      shuffle = token.shuffle;
+      loop = token.loop;
+    }
 
-      if (index === TEST_URLS.length) {
-        index = 0;
-      }
+    if (index === TEST_URLS.length) {
+      index = 0;
+    }
 
-      const directives = {};
-      directives.type = 'AudioPlayer.Play';
-      directives.playBehavior = 'REPLACE_ALL';
-      directives.token = createToken(index, shuffle, loop);
-      directives.url = TEST_URLS[index];
-      directives.offsetInMilliseconds = 0;
+    const directives = {};
+    directives.type = 'AudioPlayer.Play';
+    directives.playBehavior = 'REPLACE_ALL';
+    directives.token = createToken(index, shuffle, loop);
+    directives.url = TEST_URLS[index];
+    directives.offsetInMilliseconds = 0;
 
-      return { reply: 'LaunchIntent.OpenResponse', to: 'die', directives };
-    },
+    return { reply: 'LaunchIntent.OpenResponse', to: 'die', directives };
   },
-  exit: {
-    enter: function enter() {
-      return { reply: 'ExitIntent.Farewell', to: 'die' };
-    },
+  exit: function enter() {
+    return { reply: 'ExitIntent.Farewell', to: 'die' };
   },
-  die: { isTerminal: true },
-  launch: {
-    enter: function enter() {
-      return { reply: 'LaunchIntent.OpenResponse', to: 'die' };
-    },
+  launch: function enter() {
+    return { reply: 'LaunchIntent.OpenResponse', to: 'die' };
   },
 };
 

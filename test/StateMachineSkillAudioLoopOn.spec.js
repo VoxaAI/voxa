@@ -24,44 +24,35 @@ const TEST_URLS = [
 
 const states = {
   entry: {
-    to: {
-      LaunchIntent: 'launch',
-      'AMAZON.LoopOnIntent': 'loopOn',
-      'AMAZON.StopIntent': 'exit',
-      'AMAZON.CancelIntent': 'exit',
-    },
+    LaunchIntent: 'launch',
+    'AMAZON.LoopOnIntent': 'loopOn',
+    'AMAZON.StopIntent': 'exit',
+    'AMAZON.CancelIntent': 'exit',
   },
-  loopOn: {
-    enter: function enter(request) {
-      let index = 0;
-      let shuffle = 0;
-      const loop = 1;
-      let offsetInMilliseconds = 0;
+  loopOn: function enter(request) {
+    let index = 0;
+    let shuffle = 0;
+    const loop = 1;
+    let offsetInMilliseconds = 0;
 
-      if (request.context && request.context.AudioPlayer) {
-        const token = JSON.parse(request.context.AudioPlayer.token);
-        index = token.index;
-        shuffle = token.shuffle;
-        offsetInMilliseconds = request.context.AudioPlayer.offsetInMilliseconds;
-      }
+    if (request.context && request.context.AudioPlayer) {
+      const token = JSON.parse(request.context.AudioPlayer.token);
+      index = token.index;
+      shuffle = token.shuffle;
+      offsetInMilliseconds = request.context.AudioPlayer.offsetInMilliseconds;
+    }
 
-      const directives = {};
-      directives.type = 'AudioPlayer.Play';
-      directives.playBehavior = 'REPLACE_ALL';
-      directives.token = createToken(index, shuffle, loop);
-      directives.url = TEST_URLS[index];
-      directives.offsetInMilliseconds = offsetInMilliseconds;
+    const directives = {};
+    directives.type = 'AudioPlayer.Play';
+    directives.playBehavior = 'REPLACE_ALL';
+    directives.token = createToken(index, shuffle, loop);
+    directives.url = TEST_URLS[index];
+    directives.offsetInMilliseconds = offsetInMilliseconds;
 
-      return { reply: 'LaunchIntent.OpenResponse', to: 'die', directives };
-    },
+    return { reply: 'LaunchIntent.OpenResponse', to: 'die', directives };
   },
-  exit: {
-    enter: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }),
-  },
-  die: { isTerminal: true },
-  launch: {
-    enter: () => ({ reply: 'LaunchIntent.OpenResponse', to: 'die' }),
-  },
+  exit: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }),
+  launch: () => ({ reply: 'LaunchIntent.OpenResponse', to: 'die' }),
 };
 
 function createToken(index, shuffle, loop) {
