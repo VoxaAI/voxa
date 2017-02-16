@@ -13,6 +13,7 @@ const _ = require('lodash');
 const views = require('./views');
 const variables = require('./variables');
 const Model = require('./model');
+const Reply = require('../lib/Reply');
 
 describe('StateMachineSkill', () => {
   let statesDefinition;
@@ -40,6 +41,39 @@ describe('StateMachineSkill', () => {
       secondState: () => ({ to: 'initState' }),
       thirdState: () => Promise.resolve({ to: 'endState' }),
     };
+  });
+
+  it('should add the message key from the transition to the reply', () => {
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
+    stateMachineSkill.onIntent('LaunchIntent', () => ({ message: { tell: 'This is my message' } }));
+    event.request.type = 'LaunchRequest';
+
+    return stateMachineSkill.execute(event)
+      .then((result) => {
+        expect(result).to.deep.equal({ version: '1.0',
+          response:
+          { outputSpeech: { type: 'SSML', ssml: '<speak>This is my message</speak>' },
+            shouldEndSession: true,
+            card: null },
+          sessionAttributes: { state: 'die' } });
+      });
+  });
+
+  it('should add usea append the reply key to the Reply if it\'s a Reply object', () => {
+    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
+    const reply = new Reply({ }, { tell: 'This is my message' });
+    stateMachineSkill.onIntent('LaunchIntent', () => ({ reply }));
+    event.request.type = 'LaunchRequest';
+
+    return stateMachineSkill.execute(event)
+      .then((result) => {
+        expect(result).to.deep.equal({ version: '1.0',
+          response:
+          { outputSpeech: { type: 'SSML', ssml: '<speak>This is my message</speak>' },
+            shouldEndSession: true,
+            card: null },
+          sessionAttributes: { state: 'die' } });
+      });
   });
 
   it('should redirect be able to just pass through some intents to states', () => {
