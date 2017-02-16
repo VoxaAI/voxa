@@ -178,7 +178,7 @@ exports.register = function register(skill) {
     console.log('onAudioPlayer.PlaybackFinished', JSON.stringify(request, null, 2));
   });
 
-  skill['onAudioPlayer.PlaybackNearlyFinished'](request => {
+  skill.onIntent('onAudioPlayer.PlaybackNearlyFinished', request => {
     console.log('onAudioPlayer.PlaybackNearlyFinished', JSON.stringify(request, null, 2));
 
     const token = JSON.parse(request.context.AudioPlayer.token);
@@ -199,7 +199,27 @@ exports.register = function register(skill) {
 
     const directives = buildEnqueueDirective(podcast[index].url, index, shuffle, loop);
 
-    return { reply: 'Intent.NextAudio', to: 'die', directives };
+    return { reply: 'Intent.NextAudio', directives };
+  });
+
+  skill.onState('loopOff', request => {
+    if (request.context) {
+      const token = JSON.parse(request.context.AudioPlayer.token);
+      const shuffle = 0;
+      const loop = token.loop;
+      const offsetInMilliseconds = request.context.AudioPlayer.offsetInMilliseconds;
+      let index = token.index;
+
+      if (index === podcast.length) {
+        index = 0;
+      }
+
+      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
+
+      return { reply: 'Intent.ShuffleDeactivated', to: 'die', directives };
+    }
+
+    return { reply: 'Intent.Exit', to: 'die' };
   });
 
   skill['onAudioPlayer.PlaybackStopped'](request => {
