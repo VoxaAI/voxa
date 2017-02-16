@@ -3,9 +3,9 @@
 Controllers
 =============
 
-Controllers in your application control the logic of your skill, they respond to alexa requests, external resources, manipulate the input and give proper responses using your :ref:`Model <models>`, :ref:`variables` and :ref:`views`
+Controllers in your application control the logic of your skill, they respond to alexa requests, external resources, manipulate the input and give proper responses using your :ref:`Model <models>`, :ref:`variables` and :ref:`views`.
 
-States come in one of two ways, they can be an object of mappings from intent name to state
+States come in one of two ways, they can be an object of mappings from intent name to state.
 
 .. code-block:: javascript
 
@@ -15,7 +15,7 @@ States come in one of two ways, they can be an object of mappings from intent na
   });
 
 
-Or they can be a function that gets a :ref:`request <request>` object
+Or they can be a function that gets a :ref:`request <request>` object.
 
 .. code-block:: javascript
 
@@ -23,7 +23,7 @@ Or they can be a function that gets a :ref:`request <request>` object
     return { reply: 'LaunchIntent.OpenResponse', to: 'die' };
   });
 
-Your state should respond with a ``reply`` that indicates which response it will use and a ``to`` key indicating to which state it should move next.
+Your state should respond with a :ref:`transition <transition>`. The transition is a plain object that can take  ``directives``, ``to`` and ``reply`` keys.
 
 The ``entry`` controller
 --------------------------
