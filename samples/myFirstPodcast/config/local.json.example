@@ -1,0 +1,36 @@
+{
+  "server": {
+    "port": 3000,
+    "hostSkill": true
+  },
+  "app": {
+    "key": "",
+    "secret": "",
+    "endpoint": "",
+    "web": "",
+    "site": "",
+    "version": "",
+    "verbose": true,
+    "logsAreInsensitive": true,
+    "callsPerSecond": 50,
+    "platform": "echo",
+    "defaultCredentials": {
+      "username": "",
+      "password": ""
+    }
+  },
+  "alexa": {
+    "auth": {
+      "redirectUrl": "",
+      "clientId": "",
+      "clientSecret": "",
+      "codeKey": "",
+      "token_expiration": 1576800000
+    },
+    "appId": ""
+  },
+  "googleAnalytics": {
+    "trackingCode": ""
+  },
+  "verbose": true
+}
