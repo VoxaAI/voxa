@@ -32,7 +32,15 @@ There are 5 responses in the following snippet: ``LaunchIntent.OpenResponse``, `
 Variables
 -----------
 
-Variables are the different values that can be interpolated in your views, they're a dictionany of functions that when evaluated take your model as a parameter. They can return a promise if async is needed.
+Variables are the rendering engine way of adding logic into your views. They're dessigned to be very simple since most of your logic should be in your :ref:`model <models>` or :ref:`controllers <controllers>`.
+
+A variable signature is:
+
+.. js:function:: variable(model, request)
+
+  :param model: The instance of your :ref:`model <models>` for the current request.
+  :param request: The current :ref:`request <request>`.
+  :returns: The value to be rendered or a promise resolving to a value to be rendered in the view.
 
 .. code-block:: javascript
 
@@ -44,5 +52,8 @@ Variables are the different values that can be interpolated in your views, they'
       count: function count(model) {
         return model.count;
       },
-    };
 
+      locale: function locale(model, request) {
+        return request.locale;
+      }
+    };

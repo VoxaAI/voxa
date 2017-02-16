@@ -121,9 +121,8 @@ describe('StateMachineSkill', () => {
     expect(() => new StateMachineSkill('appId', { })).to.throw(Error, 'Config should include a model');
     expect(() => new StateMachineSkill('appId', { Model: { } })).to.throw(Error, 'Model should have a fromRequest method');
     expect(() => new StateMachineSkill('appId', { Model: { fromRequest: () => {} } })).to.throw(Error, 'Model should have a serialize method');
-    expect(() => new StateMachineSkill('appId', { Model: { fromRequest: () => {}, serialize: () => {} } })).to.throw(Error, 'Config should include variables');
-    expect(() => new StateMachineSkill('appId', { Model, variables })).to.throw(Error, 'Config should include views');
-    expect(() => new StateMachineSkill('appId', { Model, variables, views })).to.not.throw(Error);
+    expect(() => new StateMachineSkill('appId', { Model })).to.throw(Error, 'DefaultRenderer config should include views');
+    expect(() => new StateMachineSkill('appId', { Model, views })).to.not.throw(Error);
   });
 
   it('should set properties on request and have those available in the state callbacks', () => {
@@ -349,7 +348,11 @@ describe('StateMachineSkill', () => {
           expect(spy.called).to.be.true;
           expect(reply).to.deep.equal({
             version: '1.0',
-            sessionAttributes: { },
+            sessionAttributes: {
+              data: {},
+              reply: null,
+              startTimestamp: undefined,
+            },
             response: {
               card: null,
               outputSpeech: {

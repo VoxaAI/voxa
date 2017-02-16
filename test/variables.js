@@ -30,6 +30,16 @@ const variables = {
   count: function count(model) {
     return model.count;
   },
+
+  numberOne: function numberOne(model, request) {
+    if (request.locale === 'en-us') {
+      return 'one';
+    } else if (request.locale === 'de-de') {
+      return 'ein';
+    }
+
+    return 1;
+  },
 };
 
 module.exports = variables;

@@ -13,6 +13,9 @@ const views = (function views() {
         ExitIntent: {
           Farewell: { tell: 'Ok. For more info visit {site} site.' },
         },
+        Number: {
+          One: { tell: '{numberOne}' },
+        },
       },
     },
     'de-de': {
@@ -25,6 +28,9 @@ const views = (function views() {
         },
         ExitIntent: {
           Farewell: { tell: 'Ok für weitere Infos besuchen {site} Website' },
+        },
+        Number: {
+          One: { tell: '{numberOne}' },
         },
       },
     },

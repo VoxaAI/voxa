@@ -89,14 +89,6 @@ describe('StateMachine', () => {
       });
   });
 
-  it('should throw an exception on invalid state  ', () => {
-    states.entry = { to: { TestIntent: 'die' }, name: 'entry' };
-    const stateMachine = new StateMachine('entry', { states });
-    const promise = stateMachine.transition({ intent: { name: 'OtherIntent' }, session: { attributes: {} } }, new Reply(request));
-    expect(promise)
-    .to.eventually.be.rejectedWith(errors.UnsupportedIntent, 'Unsupported intent: OtherIntent for state entry');
-  });
-
   it('should transition to die if result is not an object', () => {
     states.thirdState.enter = () => 'LaunchIntent.OpenResponse';
 
@@ -115,10 +107,33 @@ describe('StateMachine', () => {
     expect(() => new StateMachine('initState', { })).to.throw('State machine must have a `states` definition.');
   });
 
-  it('should throw UnhandledState on a falsey response from the state transition', () => {
-    states.entry.enter = () => null;
-    const stateMachine = new StateMachine('entry', { states });
-    return expect(stateMachine.transition({ intent: { name: 'LaunchIntent' } }), new Reply(request)).to.eventually.be.rejectedWith(errors.UnhandledState);
+  describe('UnhandledState', () => {
+    it('should throw UnhandledState on a falsey response from the state transition', () => {
+      states.entry.enter = () => null;
+      const stateMachine = new StateMachine('entry', { states });
+      const promise = stateMachine.transition({ intent: { name: 'LaunchIntent' } }, new Reply(request));
+      return expect(promise).to.eventually.be.rejectedWith(errors.UnhandledState);
+    });
+
+    it('should throw an exception on invalid transition from pojo controller', () => {
+      states.entry = { to: { TestIntent: 'die' }, name: 'entry' };
+      const stateMachine = new StateMachine('entry', { states });
+      const promise = stateMachine.transition({ intent: { name: 'OtherIntent' }, session: { attributes: { } } }, new Reply(request));
+      return expect(promise).to.eventually.be.rejectedWith(errors.UnhandledState, 'Transition from entry resulted in undefined');
+    });
+
+    it('should execute the onUnhandledState callbacks on invalid transition from pojo controller', () => {
+      states.entry = { to: { TestIntent: 'die' }, name: 'entry' };
+      const onUnhandledState = simple.spy(() => ({ to: 'die' }));
+      const stateMachine = new StateMachine('entry', { states, onUnhandledState: [onUnhandledState] });
+      const promise = stateMachine.transition({ intent: { name: 'OtherIntent' }, session: { attributes: { } } }, new Reply(request));
+      return expect(promise).to.eventually.deep.equal({
+        to: {
+          isTerminal: true,
+          name: 'die',
+        },
+      });
+    });
   });
 
   it('should throw UnknownState when transition.to goes to an undefined state', () => {
