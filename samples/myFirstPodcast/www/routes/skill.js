@@ -14,8 +14,6 @@ if (config.server.hostSkill) {
         res.json(msg);
       },
     }, (err, msg) => {
-        console.log('RESPONSE TO ALEXA err', JSON.stringify(err, null, 2));
-        console.log('RESPONSE TO ALEXA', JSON.stringify(msg, null, 2));
       if (err) return next(err);
       return res.json(msg);
     });

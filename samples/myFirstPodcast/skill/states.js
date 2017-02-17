@@ -3,11 +3,6 @@
 const podcast = require('./data/podcast');
 
 exports.register = function register(skill) {
-  skill.onStateMachineError((request, reply, error) => {
-    console.log(error);
-    console.log(error.trace);
-  });
-
   skill.onState('entry', {
     LaunchIntent: 'launch',
     'AMAZON.PreviousIntent': 'previous',
@@ -33,22 +28,22 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Help', to: 'optionsReview' };
   });
 
-  skill.onState('optionsReview', request => {
-  	if (request.intent.name === 'AMAZON.YesIntent') {
+  skill.onState('optionsReview', (request) => {
+    if (request.intent.name === 'AMAZON.YesIntent') {
       const index = 0;
       const shuffle = 0;
       const loop = 0;
       const offsetInMilliseconds = 0;
 
-  		const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
+      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
 
-  		return { reply: 'Intent.PlayAudio', to: 'die', directives };
-  	} else if (request.intent.name === 'AMAZON.NoIntent') {
+      return { reply: 'Intent.PlayAudio', to: 'die', directives };
+    } else if (request.intent.name === 'AMAZON.NoIntent') {
       return { reply: 'Intent.Exit', to: 'die' };
     }
   });
 
-  skill.onState('previous', request => {
+  skill.onState('previous', (request) => {
     if (request.context) {
       const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = token.shuffle;
@@ -63,15 +58,15 @@ exports.register = function register(skill) {
       }
 
       const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
+      request.model.audioTitle = podcast[index].title;
 
       return { reply: 'Intent.PreviousAudio', to: 'die', directives };
     }
 
-    request.model.audioTitle = podcast[index].title;
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onState('next', request => {
+  skill.onState('next', (request) => {
     if (request.context) {
       const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = token.shuffle;
@@ -94,7 +89,7 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onState('loopOn', request => {
+  skill.onState('loopOn', (request) => {
     if (request.context) {
       const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = token.shuffle;
@@ -114,7 +109,7 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onState('loopOff', request => {
+  skill.onState('loopOff', (request) => {
     if (request.context) {
       const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = token.shuffle;
@@ -134,7 +129,7 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onState('shuffleOn', request => {
+  skill.onState('shuffleOn', (request) => {
     if (request.context) {
       const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = 1;
@@ -154,7 +149,7 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onState('loopOff', request => {
+  skill.onState('loopOff', (request) => {
     if (request.context) {
       const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = 0;
@@ -174,7 +169,7 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onState('resume', request => {
+  skill.onState('resume', (request) => {
     if (request.context) {
       const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = token.shuffle;
@@ -191,27 +186,25 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onState('stop', request => {
+  skill.onState('stop', (request) => {
     const directives = buildStopDirective();
 
     return { reply: 'Intent.Pause', to: 'die', directives };
   });
 
-  skill['onAudioPlayer.PlaybackStarted'](request => {
+  skill['onAudioPlayer.PlaybackStarted']((request) => {
     console.log('onAudioPlayer.PlaybackStarted', JSON.stringify(request, null, 2));
   });
 
-  skill['onAudioPlayer.PlaybackFinished'](request => {
+  skill['onAudioPlayer.PlaybackFinished']((request) => {
     console.log('onAudioPlayer.PlaybackFinished', JSON.stringify(request, null, 2));
   });
 
-  skill.onIntent('onAudioPlayer.PlaybackNearlyFinished', request => {
-    console.log('onAudioPlayer.PlaybackNearlyFinished', JSON.stringify(request, null, 2));
-
+  skill['onAudioPlayer.PlaybackNearlyFinished']((request, reply) => {
     const token = JSON.parse(request.context.AudioPlayer.token);
 
     if (token.loop === 0) {
-      return {};
+      return reply.write();
     }
 
     const shuffle = token.shuffle;
@@ -225,19 +218,18 @@ exports.register = function register(skill) {
     }
 
     const directives = buildEnqueueDirective(podcast[index].url, index, shuffle, loop);
-
-    return { directives };
+    return reply.append({ directives }).write();
   });
 
-  skill['onAudioPlayer.PlaybackStopped'](request => {
+  skill['onAudioPlayer.PlaybackStopped']((request) => {
     console.log('onAudioPlayer.PlaybackStopped', JSON.stringify(request, null, 2));
   });
 
-  skill['onAudioPlayer.PlaybackFailed'](request => {
+  skill['onAudioPlayer.PlaybackFailed']((request) => {
     console.log('onAudioPlayer.PlaybackFailed', JSON.stringify(request, null, 2));
   });
 
-  skill['onSystem.ExceptionEncountered'](request => {
+  skill['onSystem.ExceptionEncountered']((request) => {
     console.log('onSystem.ExceptionEncountered', JSON.stringify(request, null, 2));
   });
 };
@@ -276,5 +268,5 @@ function buildStopDirective() {
 }
 
 function randomIntInc(low, high) {
-    return Math.floor((Math.random() * high) + low);
+  return Math.floor((Math.random() * high) + low);
 }

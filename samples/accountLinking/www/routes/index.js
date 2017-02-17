@@ -1,10 +1,12 @@
 'use strict';
 
 const uuidV4 = require('uuid/v4');
-const router = exports.router = require('../infrastructure/mount.js')(__dirname);
+const router = require('../infrastructure/mount.js')(__dirname);
 const Storage = require('../../services/userStorage.js');
 const config = require('../../config');
 const MobileDetect = require('mobile-detect');
+
+exports.router = router;
 
 router.get('/', (req, res) => {
   res.render('auth/index', {
