@@ -55,7 +55,7 @@ describe('StateMachineSkill', () => {
           { outputSpeech: { type: 'SSML', ssml: '<speak>This is my message</speak>' },
             shouldEndSession: true,
             card: undefined },
-          sessionAttributes: { state: 'die', data: {}, reply: null, startTimestamp: undefined } });
+          sessionAttributes: { state: 'die', data: { } } });
       });
   });
 
@@ -72,7 +72,7 @@ describe('StateMachineSkill', () => {
           { outputSpeech: { type: 'SSML', ssml: '<speak>This is my message</speak>' },
             shouldEndSession: true,
             card: undefined },
-          sessionAttributes: { state: 'die', data: {}, reply: null, startTimestamp: undefined } });
+          sessionAttributes: { state: 'die', data: { } } });
       });
   });
 
@@ -206,7 +206,7 @@ describe('StateMachineSkill', () => {
               shouldEndSession: true,
               card: undefined,
             },
-            sessionAttributes: { data: {}, startTimestamp: undefined, reply: null, state: 'die' },
+            sessionAttributes: { data: { }, state: 'die' },
           });
         });
     });
@@ -348,11 +348,7 @@ describe('StateMachineSkill', () => {
           expect(spy.called).to.be.true;
           expect(reply).to.deep.equal({
             version: '1.0',
-            sessionAttributes: {
-              data: {},
-              reply: null,
-              startTimestamp: undefined,
-            },
+            sessionAttributes: { },
             response: {
               card: undefined,
               outputSpeech: {
