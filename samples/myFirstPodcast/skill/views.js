@@ -29,6 +29,12 @@ const views = (function views() {
       ShuffleDeactivated: {
         tell: 'Shuffle mode is off',
       },
+      Resume: {
+        tell: 'Excellent! You were listening to {audioTitle}. Let\'s continue.',
+      },
+      Pause: {
+        tell: 'Ok. You can come back any time to the podcast. Just say: Alexa, resume. Or, Alexa, continue.',
+      },
       Help: {
         ask: 'Come on! <say-as interpret-as="interjection">really</say-as>? <break time="1s"/> <say-as interpret-as="interjection">nah</say-as>. ' +
         '<say-as interpret-as="interjection">just kidding</say-as> <break time="0.5s"/>. With this example you will be able to implement a podcast, and add features like: ' +

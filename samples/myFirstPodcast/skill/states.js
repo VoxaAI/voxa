@@ -16,6 +16,10 @@ exports.register = function register(skill) {
     'AMAZON.LoopOffIntent': 'loopOff',
     'AMAZON.ShuffleOnIntent': 'shuffleOn',
     'AMAZON.ShuffleOffIntent': 'shuffleOff',
+    'AMAZON.ResumeIntent': 'resume',
+    'AMAZON.PauseIntent': 'stop',
+    'AMAZON.StopIntent': 'stop',
+    'AMAZON.CancelIntent': 'stop',
     'AMAZON.HelpIntent': 'help',
   });
 
@@ -170,6 +174,29 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
+  skill.onState('resume', request => {
+    if (request.context) {
+      const token = JSON.parse(request.context.AudioPlayer.token);
+      const shuffle = token.shuffle;
+      const loop = token.loop;
+      const index = token.index;
+      const offsetInMilliseconds = request.context.AudioPlayer.offsetInMilliseconds;
+
+      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
+
+      request.model.audioTitle = podcast[index].title;
+      return { reply: 'Intent.Resume', to: 'die', directives };
+    }
+
+    return { reply: 'Intent.Exit', to: 'die' };
+  });
+
+  skill.onState('stop', request => {
+    const directives = buildStopDirective();
+
+    return { reply: 'Intent.Pause', to: 'die', directives };
+  });
+
   skill['onAudioPlayer.PlaybackStarted'](request => {
     console.log('onAudioPlayer.PlaybackStarted', JSON.stringify(request, null, 2));
   });
@@ -184,12 +211,12 @@ exports.register = function register(skill) {
     const token = JSON.parse(request.context.AudioPlayer.token);
 
     if (token.loop === 0) {
-      return;
+      return {};
     }
 
     const shuffle = token.shuffle;
     const loop = token.loop;
-    let index = token.index;
+    let index = token.index + 1;
 
     if (shuffle === 1) {
       index = randomIntInc(0, podcast.length - 1);
@@ -199,27 +226,7 @@ exports.register = function register(skill) {
 
     const directives = buildEnqueueDirective(podcast[index].url, index, shuffle, loop);
 
-    return { reply: 'Intent.NextAudio', directives };
-  });
-
-  skill.onState('loopOff', request => {
-    if (request.context) {
-      const token = JSON.parse(request.context.AudioPlayer.token);
-      const shuffle = 0;
-      const loop = token.loop;
-      const offsetInMilliseconds = request.context.AudioPlayer.offsetInMilliseconds;
-      let index = token.index;
-
-      if (index === podcast.length) {
-        index = 0;
-      }
-
-      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
-
-      return { reply: 'Intent.ShuffleDeactivated', to: 'die', directives };
-    }
-
-    return { reply: 'Intent.Exit', to: 'die' };
+    return { directives };
   });
 
   skill['onAudioPlayer.PlaybackStopped'](request => {
@@ -261,7 +268,7 @@ function buildEnqueueDirective(url, index, shuffle, loop) {
   return directives;
 }
 
-function buildStopDirective(url, index, shuffle, loop) {
+function buildStopDirective() {
   const directives = {};
   directives.type = 'AudioPlayer.Stop';
 

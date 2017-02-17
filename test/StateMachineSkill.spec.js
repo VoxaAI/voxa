@@ -54,8 +54,8 @@ describe('StateMachineSkill', () => {
           response:
           { outputSpeech: { type: 'SSML', ssml: '<speak>This is my message</speak>' },
             shouldEndSession: true,
-            card: null },
-          sessionAttributes: { state: 'die' } });
+            card: undefined },
+          sessionAttributes: { state: 'die', data: {}, reply: null, startTimestamp: undefined } });
       });
   });
 
@@ -71,8 +71,8 @@ describe('StateMachineSkill', () => {
           response:
           { outputSpeech: { type: 'SSML', ssml: '<speak>This is my message</speak>' },
             shouldEndSession: true,
-            card: null },
-          sessionAttributes: { state: 'die' } });
+            card: undefined },
+          sessionAttributes: { state: 'die', data: {}, reply: null, startTimestamp: undefined } });
       });
   });
 
@@ -204,7 +204,7 @@ describe('StateMachineSkill', () => {
                 ssml: '<speak>Ok. For more info visit example.com site.</speak>',
               },
               shouldEndSession: true,
-              card: null,
+              card: undefined,
             },
             sessionAttributes: { data: {}, startTimestamp: undefined, reply: null, state: 'die' },
           });
@@ -354,7 +354,7 @@ describe('StateMachineSkill', () => {
               startTimestamp: undefined,
             },
             response: {
-              card: null,
+              card: undefined,
               outputSpeech: {
                 ssml: '<speak>An unrecoverable error occurred.</speak>',
                 type: 'SSML',
@@ -381,7 +381,7 @@ describe('StateMachineSkill', () => {
           expect(reply).to.deep.equal({
             version: '1.0',
             response: {
-              card: null,
+              card: undefined,
               outputSpeech: {
                 ssml: '<speak>An unrecoverable error occurred.</speak>',
                 type: 'SSML',
