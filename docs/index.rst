@@ -71,10 +71,9 @@ To help you get started the state machine has a number of example projects you c
 
 This is the simplest project, it defines the default directory structure we recommend using with alexa-statemachine projects and has an example ``serverless.yml`` file that can be used to deploy your skill to a lambda function.
 
-:ref:`Hello World <hello-world>`
+:ref:`My First Podcast <my-first-Podcast>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Very similar to the :ref:`starter-kit`, however this also shows how to listen to custom intent and has a different deploy to lambda option
 
 :ref:`Account Linking <account-linking>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -101,7 +100,7 @@ Links
   i18n
   debugging
   starter-kit
-  hello-world
+  my-first-podcast
   account-linking
   api
 
