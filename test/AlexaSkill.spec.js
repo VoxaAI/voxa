@@ -103,10 +103,10 @@ describe('AlexaSkill', () => {
         shouldEndSession: true,
       },
     });
-    alexaSkill.onError(handler3);
-    alexaSkill.onError(handler2);
-    alexaSkill.onError(handler1);
 
+    alexaSkill.onError(handler1);
+    alexaSkill.onError(handler2);
+    alexaSkill.onError(handler3);
 
     return alexaSkill.execute({})
       .then((response) => {

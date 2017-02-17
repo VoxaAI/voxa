@@ -204,7 +204,7 @@ exports.register = function register(skill) {
     const token = JSON.parse(request.context.AudioPlayer.token);
 
     if (token.loop === 0) {
-      return reply.write();
+      return reply;
     }
 
     const shuffle = token.shuffle;
@@ -218,7 +218,7 @@ exports.register = function register(skill) {
     }
 
     const directives = buildEnqueueDirective(podcast[index].url, index, shuffle, loop);
-    return reply.append({ directives }).write();
+    return reply.append({ directives });
   });
 
   skill['onAudioPlayer.PlaybackStopped']((request) => {

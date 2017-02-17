@@ -212,6 +212,33 @@ describe('StateMachineSkill', () => {
     });
   });
 
+  describe('onStateMachineError', () => {
+    it('should call onStateMachineError handlers for exceptions thrown inside a state', () => {
+      const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
+      const spy = simple.spy((request, reply, error) => new Reply(request, { tell: 'My custom response' }));
+      stateMachineSkill.onStateMachineError(spy);
+      stateMachineSkill.onIntent('AskIntent', () => abc); // eslint-disable-line no-undef
+
+      event.request.intent.name = 'AskIntent';
+      return stateMachineSkill.execute((event))
+        .then((result) => {
+          expect(spy.called).to.be.true;
+          expect(result).to.deep.equal({
+            response: {
+              card: undefined,
+              outputSpeech: {
+                ssml: '<speak>My custom response</speak>',
+                type: 'SSML',
+              },
+              shouldEndSession: true,
+            },
+            sessionAttributes: {},
+            version: '1.0',
+          });
+        });
+    });
+  });
+
   it('should add a reply to session if reply is an ask', () => {
     const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
     stateMachineSkill.onIntent('AskIntent', () => ({ to: 'exit', reply: 'Question.Ask' }));
