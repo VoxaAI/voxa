@@ -9,7 +9,7 @@
 
 var assert = require('chai').assert,
   alexa = require('../'),
-  appId = 'some-app-id',
+  appId = ['some-app-id'],
   responses = require('./extras/responses'),
   variables = require('./extras/variables')
   ;
@@ -49,9 +49,11 @@ var sm = new alexa.stateMachine({
     },
   },
 });
-var skill = new alexa.stateMachineSkill(appId, sm, responses, variables);
 
-describe('StateMachineSkill', function () {
+var skillSingleAppId = new alexa.stateMachineSkill(appId[0], sm, responses, variables);
+var skillMultipleAppId = new alexa.stateMachineSkill(appId, sm, responses, variables);
+
+describe('StateMachineSkill with single appId', function () {
   itIs('launch', function (res) {
     assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
   });
@@ -59,8 +61,8 @@ describe('StateMachineSkill', function () {
   function itIs(requestFile, cb) {
     it(requestFile, function (done) {
       var event = require('./requests/' + requestFile + '.js');
-      event.session.application.applicationId = appId;
-      skill.execute(event, {
+      event.session.application.applicationId = appId[0];
+      skillSingleAppId.execute(event, {
         succeed: function (response) {
           try { cb(response); }
           catch (e) { return done(e);}
@@ -69,6 +71,52 @@ describe('StateMachineSkill', function () {
         },
 
         fail: done,
+      });
+    });
+  }
+});
+
+describe('StateMachineSkill with multiple appId', function () {
+  itIs('launch', function (res) {
+    assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
+  });
+
+  function itIs(requestFile, cb) {
+    it(requestFile, function (done) {
+      var event = require('./requests/' + requestFile + '.js');
+      event.session.application.applicationId = appId[0];
+      skillMultipleAppId.execute(event, {
+        succeed: function (response) {
+          try { cb(response); }
+          catch (e) { return done(e);}
+
+          done();
+        },
+
+        fail: done,
+      });
+    });
+  }
+});
+
+describe('StateMachineSkill with multiple appId invalid appId', function () {
+  itIs('launch', function (res) {
+    assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
+  });
+
+  function itIs(requestFile, cb) {
+    it(requestFile, function (done) {
+      var event = require('./requests/' + requestFile + '.js');
+      event.session.application.applicationId = 'FAKE ID';
+      skillMultipleAppId.execute(event, {
+        succeed: function (response) {
+          done(new Error('Should throw invalid application id'));
+        },
+
+        fail: function (e) {
+          assert.equal(e, 'Invalid applicationId');
+          done();
+        },
       });
     });
   }
