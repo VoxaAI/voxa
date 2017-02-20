@@ -39,13 +39,11 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "eslint": "3.15.0",
-    "eslint-config-airbnb-base": "11.0.1",
+    "eslint-config-airbnb-base": "11.1.0",
     "eslint-plugin-import": "2.2.0",
     "istanbul": "^0.4.5",
-    "jscs": "^3.0.7",
-    "jshint": "^2.9.2",
-    "mocha": "^2.5.3",
-    "mocha-jenkins-reporter": "0.3.6",
+    "mocha": "3.2.0",
+    "mocha-jenkins-reporter": "0.3.7",
     "simple-mock": "^0.7.3"
   },
   "bugs": {

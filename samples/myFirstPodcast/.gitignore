@@ -79,7 +79,7 @@ jspm_packages
 .node_repl_history
 
 #### Project
-/dist
-/dist.zip
+/src
 /www/public
 /config/local.json
+.serverless

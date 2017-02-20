@@ -54,8 +54,8 @@ describe('StateMachineSkill', () => {
           response:
           { outputSpeech: { type: 'SSML', ssml: '<speak>This is my message</speak>' },
             shouldEndSession: true,
-            card: null },
-          sessionAttributes: { state: 'die' } });
+            card: undefined },
+          sessionAttributes: { state: 'die', data: { } } });
       });
   });
 
@@ -71,8 +71,8 @@ describe('StateMachineSkill', () => {
           response:
           { outputSpeech: { type: 'SSML', ssml: '<speak>This is my message</speak>' },
             shouldEndSession: true,
-            card: null },
-          sessionAttributes: { state: 'die' } });
+            card: undefined },
+          sessionAttributes: { state: 'die', data: { } } });
       });
   });
 
@@ -204,9 +204,36 @@ describe('StateMachineSkill', () => {
                 ssml: '<speak>Ok. For more info visit example.com site.</speak>',
               },
               shouldEndSession: true,
-              card: null,
+              card: undefined,
             },
-            sessionAttributes: { data: {}, startTimestamp: undefined, reply: null, state: 'die' },
+            sessionAttributes: { data: { }, state: 'die' },
+          });
+        });
+    });
+  });
+
+  describe('onStateMachineError', () => {
+    it('should call onStateMachineError handlers for exceptions thrown inside a state', () => {
+      const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
+      const spy = simple.spy((request, reply, error) => new Reply(request, { tell: 'My custom response' }));
+      stateMachineSkill.onStateMachineError(spy);
+      stateMachineSkill.onIntent('AskIntent', () => abc); // eslint-disable-line no-undef
+
+      event.request.intent.name = 'AskIntent';
+      return stateMachineSkill.execute((event))
+        .then((result) => {
+          expect(spy.called).to.be.true;
+          expect(result).to.deep.equal({
+            response: {
+              card: undefined,
+              outputSpeech: {
+                ssml: '<speak>My custom response</speak>',
+                type: 'SSML',
+              },
+              shouldEndSession: true,
+            },
+            sessionAttributes: {},
+            version: '1.0',
           });
         });
     });
@@ -348,13 +375,9 @@ describe('StateMachineSkill', () => {
           expect(spy.called).to.be.true;
           expect(reply).to.deep.equal({
             version: '1.0',
-            sessionAttributes: {
-              data: {},
-              reply: null,
-              startTimestamp: undefined,
-            },
+            sessionAttributes: { },
             response: {
-              card: null,
+              card: undefined,
               outputSpeech: {
                 ssml: '<speak>An unrecoverable error occurred.</speak>',
                 type: 'SSML',
@@ -381,7 +404,7 @@ describe('StateMachineSkill', () => {
           expect(reply).to.deep.equal({
             version: '1.0',
             response: {
-              card: null,
+              card: undefined,
               outputSpeech: {
                 ssml: '<speak>An unrecoverable error occurred.</speak>',
                 type: 'SSML',

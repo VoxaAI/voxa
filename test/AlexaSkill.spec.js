@@ -36,7 +36,7 @@ describe('AlexaSkill', () => {
         expect(result).to.deep.equal({
           version: '1.0',
           response: {
-            card: null,
+            card: undefined,
             outputSpeech: {
               ssml: '<speak>An unrecoverable error occurred.</speak>',
               type: 'SSML',
@@ -58,7 +58,7 @@ describe('AlexaSkill', () => {
         expect(result).to.deep.equal({
           version: '1.0',
           response: {
-            card: null,
+            card: undefined,
             outputSpeech: {
               ssml: '<speak>An unrecoverable error occurred.</speak>',
               type: 'SSML',
@@ -76,7 +76,7 @@ describe('AlexaSkill', () => {
     return expect(promise).to.eventually.deep.equal({
       version: '1.0',
       response: {
-        card: null,
+        card: undefined,
         outputSpeech: {
           ssml: '<speak>An unrecoverable error occurred.</speak>',
           type: 'SSML',
@@ -95,7 +95,7 @@ describe('AlexaSkill', () => {
     const handler3 = simple.stub().returnWith({
       version: '1.0',
       response: {
-        card: null,
+        card: undefined,
         outputSpeech: {
           ssml: '<speak>An unrecoverable error occurred.</speak>',
           type: 'SSML',
@@ -103,10 +103,10 @@ describe('AlexaSkill', () => {
         shouldEndSession: true,
       },
     });
-    alexaSkill.onError(handler3);
-    alexaSkill.onError(handler2);
-    alexaSkill.onError(handler1);
 
+    alexaSkill.onError(handler1);
+    alexaSkill.onError(handler2);
+    alexaSkill.onError(handler3);
 
     return alexaSkill.execute({})
       .then((response) => {
@@ -156,7 +156,7 @@ describe('AlexaSkill', () => {
         expect(result).to.deep.equal({
           version: '1.0',
           response: {
-            card: null,
+            card: undefined,
             outputSpeech: {
               ssml: '<speak>An unrecoverable error occurred.</speak>',
               type: 'SSML',

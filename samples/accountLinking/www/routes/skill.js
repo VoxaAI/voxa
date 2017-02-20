@@ -1,9 +1,10 @@
 'use strict';
 
-const router = exports.router = require('express').Router();
+const router = require('express').Router();
 const skill = require('../../skill');
 const config = require('../../config');
 
+exports.router = router;
 exports.mountPath = '/skill';
 
 if (config.server.hostSkill) {

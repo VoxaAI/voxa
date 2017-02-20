@@ -11,8 +11,8 @@
     "import"
     ],
     "rules": {
-      "no-multi-assign": "warn",
       "max-len": "warn",
+      "consistent-return": "warn",
       "no-unused-expressions": "off",
       "no-use-before-define": "off",
       "no-param-reassign": "off",

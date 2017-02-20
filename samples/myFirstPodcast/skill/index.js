@@ -6,6 +6,6 @@ const skill = require('./MainStateMachine');
 
 exports.handler = function handler(event, context, callback) {
   skill.execute(event)
-    .then(result => callback(null, result))
-    .catch(callback);
+    .then(response => callback(null, response))
+    .catch(error => callback(error));
 };

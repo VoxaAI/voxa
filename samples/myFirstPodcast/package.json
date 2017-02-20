@@ -1,10 +1,10 @@
 {
-  "name": "hello-world-sm",
-  "version": "1.0.0",
-  "description": "A hello world fsm (state machine) sample",
+  "name": "alexaproject-sm",
+  "version": "0.1.0",
+  "description": "",
   "main": "gulpfile.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --recursive test/**/*.spec.js",
     "watch": "node node_modules/gulp/bin/gulp.js watch",
     "lint": "eslint config/ gulpfile.js services/ skill/ speechAssets/ test/ www/"
   },
@@ -22,6 +22,7 @@
   ],
   "license": "ISC",
   "dependencies": {
+    "alexa-statemachine": "git@github.com:omenocal/alexa-statemachine.git#6c6dc9b48ec3d670a28194fa98dae380e934622c",
     "bluebird": "^3.3.5",
     "body-parser": "^1.15.1",
     "ejs": "^2.4.1",
@@ -30,20 +31,16 @@
     "morgan": "^1.7.0",
     "request": "^2.72.0",
     "serve-static": "^1.10.2",
-    "string": "^3.3.1",
-    "alexa-statemachine": "^0.1"
+    "string": "^3.3.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "eslint": "^3.15.0",
+    "eslint-config-airbnb-base": "^11.1.0",
+    "eslint-plugin-import": "^2.2.0",
     "gulp": "^3.9.1",
     "gulp-nodemon": "^2.0.7",
-    "mocha": "^2.4.5",
-    "del": "^2.2.0",
-    "gulp-install": "^0.6.0",
-    "merge-stream": "^1.0.0",
-    "run-sequence": "^1.1.5",
-    "gulp-zip": "^3.2.0",
-    "node-aws-lambda": "^0.1.7"
+    "mocha": "^2.4.5"
   },
   "directories": {
     "test": "test"

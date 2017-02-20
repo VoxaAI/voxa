@@ -27,7 +27,7 @@ describe('Reply', () => {
       reply.append({ ask: 'ask' });
       expect(reply.write()).to.deep.equal({
         response: {
-          card: null,
+          card: undefined,
           outputSpeech: {
             ssml: '<speak>ask</speak>',
             type: 'SSML',
@@ -41,7 +41,7 @@ describe('Reply', () => {
       reply.append({ tell: 'tell' });
       expect(reply.write()).to.deep.equal({
         response: {
-          card: null,
+          card: undefined,
           outputSpeech: {
             ssml: '<speak>tell</speak>',
             type: 'SSML',

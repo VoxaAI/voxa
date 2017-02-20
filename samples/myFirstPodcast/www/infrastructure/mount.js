@@ -12,6 +12,8 @@ module.exports = function mount(dirname) {
     if (S(route).endsWith('index.js')) return;
     const controller = require(path.join(dirname, route));
     if (!controller.router) return;
+
+    // console.log('Mounting',route,'to',controller.mountPath)
     router.use(controller.mountPath || '', controller.router);
   });
   return router;

@@ -153,6 +153,7 @@ describe('StateMachine', () => {
       .then((transition) => {
         expect(states.someState.enter.called).to.be.true;
         expect(transition).to.deep.equal({
+          reply: 'ExitIntent.Farewell',
           to: {
             isTerminal: true,
             name: 'die',

@@ -86,6 +86,14 @@ Audio Player Requests
 
 This middleware handle requests from the `AudioPlayer interface <https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/custom-audioplayer-interface-reference#requests>`_
 
+.. js:function:: audioPlayerCallback(request, reply)
+  
+  All audio player middleware callbacks get a :ref:`request <request>` and a :ref:`reply <reply>` object
+
+  :param object request: The :ref:`request <request>` sent by Alexa
+  :param object reply: A reply to be sent as a response
+  :returns object write: Your request handler should return an appropriate response according to the request type, this generally means appending to the :ref:`reply <reply>` object and then returning ``reply.write()``
+
 ``onAudioPlayer.PlaybackStarted``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -94,6 +102,22 @@ This middleware handle requests from the `AudioPlayer interface <https://develop
 
 ``onAudioPlayer.PlaybackNearlyFinished``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In the following example the request handler returns a ``REPLACE_ENQUEUED`` directive to a ``PlaybackNearlyFinished`` request.
+
+.. code-block:: javascript
+
+  skill['onAudioPlayer.PlaybackNearlyFinished']((request, reply) => {
+    const directives = {
+      type: 'AudioPlayer.Play',
+      playBehavior"" 'REPLACE_ENQUEUED',
+      token: "",
+      url: 'https://www.dl-sounds.com/wp-content/uploads/edd/2016/09/Classical-Bed3-preview.mp3',
+      offsetInMilliseconds: 0,
+    };
+
+    return reply.append({ directives }).write();
+  });
 
 ``onAudioPlayer.PlaybackStopped``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
