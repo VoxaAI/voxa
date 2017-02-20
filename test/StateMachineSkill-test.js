@@ -9,7 +9,7 @@
 
 var assert = require('chai').assert,
   alexa = require('../'),
-  appId = 'some-app-id',
+  appId = ['some-app-id'],
   responses = require('./extras/responses'),
   variables = require('./extras/variables')
   ;
@@ -59,7 +59,7 @@ describe('StateMachineSkill', function () {
   function itIs(requestFile, cb) {
     it(requestFile, function (done) {
       var event = require('./requests/' + requestFile + '.js');
-      event.session.application.applicationId = appId;
+      event.session.application.applicationId = appId[0];
       skill.execute(event, {
         succeed: function (response) {
           try { cb(response); }
@@ -69,6 +69,29 @@ describe('StateMachineSkill', function () {
         },
 
         fail: done,
+      });
+    });
+  }
+});
+
+describe('StateMachineSkill', function () {
+  itIs('launch', function (res) {
+    assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
+  });
+
+  function itIs(requestFile, cb) {
+    it(requestFile, function (done) {
+      var event = require('./requests/' + requestFile + '.js');
+      event.session.application.applicationId = 'FAKE ID';
+      skill.execute(event, {
+        succeed: function (response) {
+          done(new Error('Should throw invalid application id'));
+        },
+
+        fail: function (e) {
+          assert.equal(e, 'Invalid applicationId');
+          done();
+        },
       });
     });
   }

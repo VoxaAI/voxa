@@ -1,6 +1,6 @@
 {
   "name": "alexa-statemachine",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "A fsm (state machine) framework for Alexa apps using Node.js",
   "main": "index.js",
   "scripts": {
