@@ -49,9 +49,11 @@ var sm = new alexa.stateMachine({
     },
   },
 });
-var skill = new alexa.stateMachineSkill(appId, sm, responses, variables);
 
-describe('StateMachineSkill', function () {
+var skillSingleAppId = new alexa.stateMachineSkill(appId[0], sm, responses, variables);
+var skillMultipleAppId = new alexa.stateMachineSkill(appId, sm, responses, variables);
+
+describe('StateMachineSkill with single appId', function () {
   itIs('launch', function (res) {
     assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
   });
@@ -60,7 +62,7 @@ describe('StateMachineSkill', function () {
     it(requestFile, function (done) {
       var event = require('./requests/' + requestFile + '.js');
       event.session.application.applicationId = appId[0];
-      skill.execute(event, {
+      skillSingleAppId.execute(event, {
         succeed: function (response) {
           try { cb(response); }
           catch (e) { return done(e);}
@@ -74,7 +76,30 @@ describe('StateMachineSkill', function () {
   }
 });
 
-describe('StateMachineSkill', function () {
+describe('StateMachineSkill with multiple appId', function () {
+  itIs('launch', function (res) {
+    assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
+  });
+
+  function itIs(requestFile, cb) {
+    it(requestFile, function (done) {
+      var event = require('./requests/' + requestFile + '.js');
+      event.session.application.applicationId = appId[0];
+      skillMultipleAppId.execute(event, {
+        succeed: function (response) {
+          try { cb(response); }
+          catch (e) { return done(e);}
+
+          done();
+        },
+
+        fail: done,
+      });
+    });
+  }
+});
+
+describe('StateMachineSkill with multiple appId invalid appId', function () {
   itIs('launch', function (res) {
     assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
   });
@@ -83,7 +108,7 @@ describe('StateMachineSkill', function () {
     it(requestFile, function (done) {
       var event = require('./requests/' + requestFile + '.js');
       event.session.application.applicationId = 'FAKE ID';
-      skill.execute(event, {
+      skillMultipleAppId.execute(event, {
         succeed: function (response) {
           done(new Error('Should throw invalid application id'));
         },
