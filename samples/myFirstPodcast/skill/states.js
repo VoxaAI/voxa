@@ -11,6 +11,7 @@ exports.register = function register(skill) {
     'AMAZON.LoopOffIntent': 'loopOff',
     'AMAZON.ShuffleOnIntent': 'shuffleOn',
     'AMAZON.ShuffleOffIntent': 'shuffleOff',
+    'AMAZON.StartOverIntent': 'startover',
     'AMAZON.ResumeIntent': 'resume',
     'AMAZON.PauseIntent': 'stop',
     'AMAZON.StopIntent': 'stop',
@@ -164,6 +165,23 @@ exports.register = function register(skill) {
       const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
 
       return { reply: 'Intent.ShuffleDeactivated', to: 'die', directives };
+    }
+
+    return { reply: 'Intent.Exit', to: 'die' };
+  });
+
+  skill.onState('startover', (request) => {
+    if (request.context) {
+      const token = JSON.parse(request.context.AudioPlayer.token);
+      const shuffle = token.shuffle;
+      const loop = token.loop;
+      const index = token.index;
+      const offsetInMilliseconds = 0;
+
+      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
+
+      request.model.audioTitle = podcast[index].title;
+      return { reply: 'Intent.StartOver', to: 'die', directives };
     }
 
     return { reply: 'Intent.Exit', to: 'die' };

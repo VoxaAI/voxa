@@ -29,6 +29,9 @@ const views = (function views() {
       ShuffleDeactivated: {
         tell: 'Shuffle mode is off',
       },
+      StartOver: {
+        tell: 'Ok! Let\'s start listening to {audioTitle}.',
+      },
       Resume: {
         tell: 'Excellent! You were listening to {audioTitle}. Let\'s continue.',
       },

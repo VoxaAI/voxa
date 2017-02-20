@@ -71,9 +71,10 @@ To help you get started the state machine has a number of example projects you c
 
 This is the simplest project, it defines the default directory structure we recommend using with alexa-statemachine projects and has an example ``serverless.yml`` file that can be used to deploy your skill to a lambda function.
 
-:ref:`My First Podcast <my-first-Podcast>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+:ref:`My First Podcast <my-first-podcast>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+In this example you will see how to implement a podcast skill by having a list of audios in a file (`podcast.js`) with titles and urls. It implements all audio intents allowed by the audio background feature and handles all the playback requests dispatched by Alexa once an audio has started, stopped, failed, finished or nearly to finish. Keep in mind the audios must be hosted in a secure server.
 
 :ref:`Account Linking <account-linking>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
