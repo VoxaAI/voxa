@@ -25,6 +25,12 @@ const views = (function views() {
       Say: { say: '{count}' },
       Tell: { tell: '{count}' },
     },
+    BadInput: {
+      RepeatLastAskReprompt: { say: 'I\'m sorry. I didn\'t understand.' },
+    },
+    Playing: {
+      SayStop: { ask: 'Say stop if you want to finish the playback' },
+    },
   };
 }());
 
