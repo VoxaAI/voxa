@@ -19,6 +19,8 @@ const Reply = require('./lib/Reply');
 const DefaultRenderer = require('./lib/renderers/DefaultRenderer');
 const I18NRenderer = require('./lib/renderers/I18NRenderer');
 
+const badResponseReprompt = require('./lib/plugins/reprompt-on-bad-response');
+
 module.exports.StateMachineSkill = stateMachineSkill;
 module.exports.Reply = Reply;
 module.exports.helpers = helpers;
@@ -27,3 +29,7 @@ module.exports.replyWithAudioDirectives = (reply, to, request, data, directives)
 
 module.exports.I18NRenderer = I18NRenderer;
 module.exports.DefaultRenderer = DefaultRenderer;
+
+module.exports.plugins = {
+  badResponseReprompt,
+};
