@@ -3,28 +3,12 @@
 const podcast = require('./data/podcast');
 
 exports.register = function register(skill) {
-  skill.onState('entry', {
-    LaunchIntent: 'launch',
-    'AMAZON.PreviousIntent': 'previous',
-    'AMAZON.NextIntent': 'next',
-    'AMAZON.LoopOnIntent': 'loopOn',
-    'AMAZON.LoopOffIntent': 'loopOff',
-    'AMAZON.ShuffleOnIntent': 'shuffleOn',
-    'AMAZON.ShuffleOffIntent': 'shuffleOff',
-    'AMAZON.StartOverIntent': 'startover',
-    'AMAZON.ResumeIntent': 'resume',
-    'AMAZON.PauseIntent': 'stop',
-    'AMAZON.StopIntent': 'stop',
-    'AMAZON.CancelIntent': 'stop',
-    'AMAZON.HelpIntent': 'help',
-  });
-
-  skill.onState('launch', (request) => {
+  skill.onIntent('LaunchIntent', (request) => {
     request.model.audioTitle = podcast[0].title;
     return { reply: 'Intent.Launch', to: 'optionsReview' };
   });
 
-  skill.onState('help', (request) => {
+  skill.onIntent('AMAZON.HelpIntent', (request) => {
     request.model.audioTitle = podcast[0].title;
     return { reply: 'Intent.Help', to: 'optionsReview' };
   });
@@ -44,7 +28,7 @@ exports.register = function register(skill) {
     }
   });
 
-  skill.onState('previous', (request) => {
+  skill.onIntent('AMAZON.PreviousIntent', (request) => {
     if (request.context) {
       const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = token.shuffle;
@@ -67,7 +51,7 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onState('next', (request) => {
+  skill.onIntent('AMAZON.NextIntent', (request) => {
     if (request.context) {
       const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = token.shuffle;
@@ -90,7 +74,7 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onState('loopOn', (request) => {
+  skill.onIntent('AMAZON.LoopOnIntent', (request) => {
     if (request.context) {
       const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = token.shuffle;
@@ -110,7 +94,7 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onState('loopOff', (request) => {
+  skill.onIntent('AMAZON.LoopOffIntent', (request) => {
     if (request.context) {
       const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = token.shuffle;
@@ -130,7 +114,7 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onState('shuffleOn', (request) => {
+  skill.onIntent('AMAZON.ShuffleOnIntent', (request) => {
     if (request.context) {
       const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = 1;
@@ -150,7 +134,7 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onState('loopOff', (request) => {
+  skill.onIntent('AMAZON.ShuffleOffIntent', (request) => {
     if (request.context) {
       const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = 0;
@@ -170,7 +154,7 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onState('startover', (request) => {
+  skill.onIntent('AMAZON.StartOverIntent', (request) => {
     if (request.context) {
       const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = token.shuffle;
@@ -187,7 +171,7 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onState('resume', (request) => {
+  skill.onIntent('AMAZON.ResumeIntent', (request) => {
     if (request.context) {
       const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = token.shuffle;

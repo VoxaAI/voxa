@@ -3,7 +3,6 @@
 const uuidV4 = require('uuid/v4');
 const router = require('../infrastructure/mount.js')(__dirname);
 const Storage = require('../../services/userStorage.js');
-const config = require('../../config');
 const MobileDetect = require('mobile-detect');
 
 exports.router = router;
@@ -27,7 +26,7 @@ router.post('/', (req, res, next) => {
 
   return db.put(params)
     .then(() => {
-      const redirect = `${config.alexa.auth.redirectUrl}#state=${req.query.state}&access_token=${code}&token_type=Bearer`;
+      const redirect = `${req.query.redirect_uri}#state=${req.query.state}&access_token=${code}&token_type=Bearer`;
 
       if (md.is('AndroidOS')) {
         console.log(`redirecting android to: ${redirect}`);

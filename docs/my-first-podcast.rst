@@ -3,7 +3,7 @@
 My First Podcast
 ==================
 
-This project is designed to be a simple template for your new skills. With some well thought defaults that have proven useful when developing real life skills.
+This project will help you build a podcast skill using the Audio directives template. You will be able to manage loop, shuffle requests as well as offer the user the possibility to start an audio over, pause, stop it or play the next or previous audio from a podcast list.
 
 Directory Structure
 ---------------------

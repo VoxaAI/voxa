@@ -29,11 +29,11 @@
     },
     "appId": ""
   },
-  "s3": {
-    "bucket": ""
-  },
   "googleAnalytics": {
     "trackingCode": ""
+  },
+  "s3": {
+    "bucket": ""
   },
   "dynamoDB": {
     "tables": {

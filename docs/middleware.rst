@@ -79,7 +79,7 @@ This middleware is executed when the stateMachine transition is finished, just b
 ``onUnhandledState``
 ------------------------------------------
 
-Adds a callback to be executed when a state transition fails to generate a result, this usually happens when redirecting to a missing state or an entry call for a non configured intent, the handlers get a :ref:`request <request>` parameter and should return a :ref:`transition <response>` the same as a state controller would.
+Adds a callback to be executed when a state transition fails to generate a result, this usually happens when redirecting to a missing state or an entry call for a non configured intent, the handlers get a :ref:`request <request>` parameter and should return a :ref:`transition <transition>` the same as a state controller would.
 
 Audio Player Requests
 ------------------------
