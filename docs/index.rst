@@ -99,6 +99,7 @@ Links
   request-flow
   middleware
   i18n
+  plugins
   debugging
   starter-kit
   my-first-podcast

@@ -19,7 +19,11 @@ const Reply = require('./lib/Reply');
 const DefaultRenderer = require('./lib/renderers/DefaultRenderer');
 const I18NRenderer = require('./lib/renderers/I18NRenderer');
 
+/**
+ * Plugins
+ */
 const badResponseReprompt = require('./lib/plugins/reprompt-on-bad-response');
+const replaceIntent = require('./lib/plugins/replace-intent');
 
 module.exports.StateMachineSkill = stateMachineSkill;
 module.exports.Reply = Reply;
@@ -32,4 +36,5 @@ module.exports.DefaultRenderer = DefaultRenderer;
 
 module.exports.plugins = {
   badResponseReprompt,
+  replaceIntent,
 };
