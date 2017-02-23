@@ -34,7 +34,7 @@ skill.onIntent('LaunchIntent', (request) => {
 // lambda handler
 exports.handler = function handler(event, context, callback) {
   return skill.execute(event, context)
-    .then(result => callback(null, result)
+    .then(result => callback(null, result))
     .catch(callback);
 }
 
