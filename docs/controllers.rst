@@ -3,7 +3,7 @@
 Controllers
 =============
 
-Controllers in your application control the logic of your skill, they respond to alexa requests, external resources, manipulate the input and give proper responses using your :ref:`Model <models>`, :ref:`variables` and :ref:`views`.
+Controllers in your application control the logic of your skill, they respond to alexa requests, external resources, manipulate the input and give proper responses using your :ref:`Model <models>`, :ref:`views-and-variables`.
 
 States come in one of two ways, they can be an object of mappings from intent name to state.
 

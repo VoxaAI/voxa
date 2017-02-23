@@ -59,7 +59,7 @@ What environment you're is determined in the ``config/env.js`` module using the 
 skill
 ^^^^^
 
-This is where your code to handle alexa requests goes, you will usually have a State Machine definition, this will include :ref:`states <controllers>`, :ref:`middleware` and a :ref:`Model <models>`, :ref:`views-and-variables`
+This is where your code to handle alexa requests goes, you will usually have a State Machine definition, this will include :ref:`states <controllers>`, :ref:`middleware <statemachine-skill>` and a :ref:`Model <models>`, :ref:`views-and-variables`
 
 speechAssets
 ^^^^^^^^^^^^^

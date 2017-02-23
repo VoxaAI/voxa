@@ -171,7 +171,7 @@ In case the user has activated the loop mode by dispatching the `AMAZON.LoopOnIn
 
 The `buildEnqueueDirective` function is in charge to build a directive object with a queue behavior, which will allow the skill to play the next audio as soon as the current one is finished.
 
-This is where your code to handle alexa requests goes, you will usually have a State Machine definition, this will include :ref:`states <controllers>`, :ref:`middleware` and a :ref:`Model <models>`, :ref:`views-and-variables`.
+This is where your code to handle alexa requests goes, you will usually have a State Machine definition, this will include :ref:`states <controllers>`, :ref:`middleware <statemachine-skill>` and a :ref:`Model <models>`, :ref:`views-and-variables`.
 
 
 data/podcast.js

@@ -24,6 +24,7 @@ const I18NRenderer = require('./lib/renderers/I18NRenderer');
  */
 const badResponseReprompt = require('./lib/plugins/reprompt-on-bad-response');
 const replaceIntent = require('./lib/plugins/replace-intent');
+const stateFlow = require('./lib/plugins/state-flow');
 
 module.exports.StateMachineSkill = stateMachineSkill;
 module.exports.Reply = Reply;
@@ -37,4 +38,5 @@ module.exports.DefaultRenderer = DefaultRenderer;
 module.exports.plugins = {
   badResponseReprompt,
   replaceIntent,
+  stateFlow,
 };
