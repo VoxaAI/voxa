@@ -1,0 +1,62 @@
+{
+  "name": "alexaproject-sm",
+  "version": "0.1.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "mocha --recursive test",
+    "watch": "node node_modules/gulp/bin/gulp.js watch",
+    "lint": "eslint config/ gulpfile.js services/ skill/ speechAssets/ test/ www/"
+  },
+  "author": "Rain",
+  "engines": {
+    "node": "4.3.2"
+  },
+  "keywords": [
+    "alexa",
+    "skills",
+    "apps",
+    "framework",
+    "echo",
+    "amazon"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "alexa-statemachine": "^1.0.0",
+    "aws-sdk": "^2.7.23",
+    "aws-serverless-express": "1.3.0",
+    "bluebird": "^3.3.5",
+    "body-parser": "^1.15.1",
+    "ejs": "^2.4.1",
+    "express": "^4.13.4",
+    "lodash": "^4.13.1",
+    "mobile-detect": "^1.3.5",
+    "morgan": "^1.7.0",
+    "npdynamodb": "^0.2.14",
+    "request": "^2.72.0",
+    "serve-static": "^1.10.2",
+    "string": "^3.3.1",
+    "uuid": "^3.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.15.0",
+    "eslint-config-airbnb-base": "^11.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "chai": "^3.5.0",
+    "gulp": "^3.9.1",
+    "gulp-s3-upload": "1.6.4",
+    "gulp-nodemon": "^2.0.7",
+    "mocha": "^2.4.5"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mediarain/alexa-statemachine.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mediarain/alexa-statemachine/issues"
+  },
+  "homepage": "https://github.com/mediarain/alexa-statemachine#readme"
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="<%= staticRoot %>css/main.css" rel="stylesheet">
+</head>
+<body>
+
+<section class="setup">
+  <div id='loading' class="loading hidden" >
+  </div>
+    <h2>Set-up Your Contact Info</h2>
+    <p>In order to complete account linking with Alexa, we'll need a little information. Enter your email address .</p>
+    <div id="errorDiv" class="error hide">
+      <h2>Sign in error</h2>
+      <p>Please fill out the require fields below.</p>
+    </div>
+    <form method="POST" name="info">
+      <label id="emailLabel" for="email">Email Address:*</label>
+      <br />
+      <input id="email" class="textinput" type="text" name="email" placeholder="">
+      <br />
+      <button class="submitinput" type="submit" name="submit">SUBMIT</button>
+      <br />
+      <p>* indicates required information</p>
+    </form>
+</section>
+
+</body>
+</html>

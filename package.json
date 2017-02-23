@@ -1,13 +1,13 @@
 {
   "name": "alexa-statemachine",
-  "version": "0.3.4",
+  "version": "1.0.0",
   "description": "A fsm (state machine) framework for Alexa apps using Node.js",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/*-test.js",
-    "jscs": "node_modules/jscs/bin/jscs -c .jscsrc index.js test/ lib/ samples/*/config/ samples/*/gulpfile.js samples/*/services/ samples/*/skill/ samples/*/speechAssets/ samples/*/test/ samples/*/www/",
-    "jshint": "node_modules/jshint/bin/jshint -c .jshintrc index.js test/ lib/ samples/*/config/ samples/*/gulpfile.js samples/*/services/ samples/*/skill/ samples/*/speechAssets/ samples/*/test/ samples/*/www/",
-    "lint": "npm run jscs && npm run jshint"
+    "test": "istanbul cover _mocha -- --recursive test",
+    "test-jenkins": "JUNIT_REPORT_PATH=junit.xml istanbul cover _mocha -- --recursive --colors --reporter mocha-jenkins-reporter test",
+    "cobertura": "istanbul report cobertura --root coverage",
+    "lint": "eslint lib test"
   },
   "repository": {
     "type": "git",
@@ -27,16 +27,24 @@
   },
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.13.1",
-    "bluebird": "^3.4.1",
     "alexa-helpers": "^1.1.1",
-    "universal-analytics": "^0.3.11"
+    "bluebird": "^3.4.1",
+    "capitalize": "^1.0.0",
+    "debug": "^2.6.0",
+    "i18next": "^7.0.0",
+    "lodash": "^4.13.1",
+    "string": "^3.3.1"
   },
   "devDependencies": {
-    "mocha": "^2.5.3",
     "chai": "^3.5.0",
-    "jscs": "^3.0.7",
-    "jshint": "^2.9.2"
+    "chai-as-promised": "^6.0.0",
+    "eslint": "3.15.0",
+    "eslint-config-airbnb-base": "11.1.0",
+    "eslint-plugin-import": "2.2.0",
+    "istanbul": "^0.4.5",
+    "mocha": "3.2.0",
+    "mocha-jenkins-reporter": "0.3.7",
+    "simple-mock": "^0.7.3"
   },
   "bugs": {
     "url": "https://github.com/mediarain/alexa-statemachine/issues"

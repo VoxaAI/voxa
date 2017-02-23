@@ -1,0 +1,33 @@
+.. _i18n:
+
+I18N
+=====
+
+Internationalization support is done using the `i18next <http://i18next.com/>`_ library, the same the Amazon Alexa Node SDK uses.
+
+
+Configuring the skill for I18N
+-------------------------------
+
+To use it you need to configure your skill to use the ``I18NRenderer`` class instead of the default renderer class.
+
+.. code-block:: javascript
+
+  const I18NRenderer = require('alexa-statemachine').I18NRenderer;
+  const skill = new StateMachineSkill('appId', { Model, variables, views, RenderClass: I18NRenderer });
+
+The framework takes care of selecting the correct locale on every request by looking at the ``request.locale`` property.
+
+Changes in your views
+----------------------
+
+The other change you will need is to define your views using the `i18next translate <http://i18next.com/translate/>`_ format:
+
+.. literalinclude:: ../test/i18n/views.js
+
+Variables
+----------
+
+Variables should work mostly the same as with the ``DefaultRenderer``, with the exception that variables will now get a ``locale`` key
+
+.. literalinclude:: ../test/variables.js

@@ -5,22 +5,38 @@
  * Licensed under the MIT license.
  */
 
-var exports = module.exports = {};
-
 /*
  * Alexa state machine version
  */
 
-exports.version = '0.3.2';
+'use strict';
 
-var stateMachineSkill = require('./lib/StateMachineSkill');
-exports.stateMachineSkill = stateMachineSkill;
+module.exports.version = '0.3.2';
 
-var stateMachine = require('./lib/StateMachine');
-exports.stateMachine = stateMachine;
+const stateMachineSkill = require('./lib/StateMachineSkill');
+const helpers = require('alexa-helpers');
+const Reply = require('./lib/Reply');
+const DefaultRenderer = require('./lib/renderers/DefaultRenderer');
+const I18NRenderer = require('./lib/renderers/I18NRenderer');
 
-exports.replyWith = stateMachineSkill.replyWith;
-exports.replyWithAudioDirectives = stateMachineSkill.replyWithAudioDirectives;
+/**
+ * Plugins
+ */
+const badResponseReprompt = require('./lib/plugins/reprompt-on-bad-response');
+const replaceIntent = require('./lib/plugins/replace-intent');
+const stateFlow = require('./lib/plugins/state-flow');
 
-var helpers = require('alexa-helpers');
-exports.helpers = helpers;
+module.exports.StateMachineSkill = stateMachineSkill;
+module.exports.Reply = Reply;
+module.exports.helpers = helpers;
+module.exports.replyWith = (reply, to) => ({ reply, to });
+module.exports.replyWithAudioDirectives = (reply, to, request, data, directives) => ({ reply, to, directives });
+
+module.exports.I18NRenderer = I18NRenderer;
+module.exports.DefaultRenderer = DefaultRenderer;
+
+module.exports.plugins = {
+  badResponseReprompt,
+  replaceIntent,
+  stateFlow,
+};

@@ -1,3 +1,5 @@
+# Sphinx documentation
+docs/_build/
 #### Vim
 # swap
 [._]*.s[a-w][a-z]
