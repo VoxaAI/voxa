@@ -11,7 +11,6 @@ const expect = require('chai').expect;
 const alexa = require('../');
 const views = require('./views');
 const variables = require('./variables');
-const Model = require('./model');
 const _ = require('lodash');
 
 const appId = 'some-app-id';
@@ -70,7 +69,7 @@ describe('StateMachineSkill', () => {
   let skill;
 
   beforeEach(() => {
-    skill = new alexa.StateMachineSkill(appId, { views, variables, Model, openIntent: 'LaunchIntent' });
+    skill = new alexa.StateMachineSkill(appId, { views, variables });
     _.map(states, (state, name) => {
       skill.onState(name, state);
     });

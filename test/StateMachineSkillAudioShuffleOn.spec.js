@@ -12,7 +12,6 @@ const alexa = require('../');
 const views = require('./views');
 const variables = require('./variables');
 const _ = require('lodash');
-const Model = require('./model');
 
 const appId = 'some-app-id';
 const TEST_URLS = [
@@ -66,7 +65,7 @@ describe('StateMachineSkill', () => {
   let skill;
 
   beforeEach(() => {
-    skill = new alexa.StateMachineSkill(appId, { views, variables, Model, openIntent: 'LaunchIntent' });
+    skill = new alexa.StateMachineSkill(appId, { views, variables });
     _.map(states, (state, name) => {
       skill.onState(name, state);
     });

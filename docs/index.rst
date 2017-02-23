@@ -17,17 +17,16 @@ Alexa State Machine is distributed via ``npm``
 Initial Configuration
 ---------------------
 
-Instantiating a StateMachineSkill requires an applicationId, :ref:`views-and-variables`, and a :ref:`Model <models>`.
+Instantiating a StateMachineSkill requires an applicationId and a configuration specifying your :ref:`views-and-variables`.
 
 .. code-block:: javascript
 
     'use strict';
     const alexa = require('alexa-statemachine');
-    const Model = require('./model');
     const views = require('./views'):
     const variables = require('./variables');
 
-    const stateMachineSkill = new alexa.StateMachineSkill('appId', { Model, variables, views });
+    const stateMachineSkill = new alexa.StateMachineSkill('appId', { variables, views });
 
 Responding to alexa requests
 -----------------------------

@@ -6,7 +6,7 @@ StateMachineSkill
 .. js:class:: StateMachineSkill(appId, config)
 
   :param string/array appId: The application id that amazon gives you in the developer website
-  :param object config: Configuration for your skill, it should include a :ref:`models` and :ref:`views-and-variables`
+  :param object config: Configuration for your skill, it should include :ref:`views-and-variables` and optionally a :ref:`model <models>`
     optionally it can also take an ``env`` parameter.
 
     If ``env === 'production'`` the framework will require ``request.application.applicationId`` to equal ``appId``.
@@ -209,7 +209,7 @@ Handle requests from the `AudioPlayer interface <https://developer.amazon.com/pu
     skill['onAudioPlayer.PlaybackNearlyFinished']((request, reply) => {
       const directives = {
         type: 'AudioPlayer.Play',
-        playBehavior"" 'REPLACE_ENQUEUED',
+        playBehavior: 'REPLACE_ENQUEUED',
         token: "",
         url: 'https://www.dl-sounds.com/wp-content/uploads/edd/2016/09/Classical-Bed3-preview.mp3',
         offsetInMilliseconds: 0,

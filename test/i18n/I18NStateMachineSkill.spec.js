@@ -10,7 +10,6 @@ const StateMachineSkill = require('../../lib/StateMachineSkill');
 const I18NRenderer = require('../../lib/renderers/I18NRenderer');
 const views = require('./views');
 const variables = require('./../variables');
-const Model = require('../model');
 const _ = require('lodash');
 
 describe('I18NStateMachineSkill', () => {
@@ -60,7 +59,7 @@ describe('I18NStateMachineSkill', () => {
       let skill;
 
       beforeEach(() => {
-        skill = new StateMachineSkill('appId', { Model, variables, views, RenderClass: I18NRenderer });
+        skill = new StateMachineSkill('appId', { variables, views, RenderClass: I18NRenderer });
       });
 
       it(`should return the correct translation for ${locale}`, () => {

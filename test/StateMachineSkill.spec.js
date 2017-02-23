@@ -12,7 +12,7 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const views = require('./views');
 const variables = require('./variables');
-const Model = require('./model');
+const Model = require('../lib/Model');
 const Reply = require('../lib/Reply');
 
 describe('StateMachineSkill', () => {
@@ -44,7 +44,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should add the message key from the transition to the reply', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
+    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
     stateMachineSkill.onIntent('LaunchIntent', () => ({ message: { tell: 'This is my message' } }));
     event.request.type = 'LaunchRequest';
 
@@ -60,7 +60,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should add usea append the reply key to the Reply if it\'s a Reply object', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
+    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
     const reply = new Reply({ }, { tell: 'This is my message' });
     stateMachineSkill.onIntent('LaunchIntent', () => ({ reply }));
     event.request.type = 'LaunchRequest';
@@ -77,7 +77,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should redirect be able to just pass through some intents to states', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
+    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
     let called = false;
     stateMachineSkill.onIntent('AMAZON.LoopOffIntent', () => {
       called = true;
@@ -92,14 +92,14 @@ describe('StateMachineSkill', () => {
   });
 
   it('should accept new states', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
+    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
     const fourthState = () => ({ to: 'endState' });
     stateMachineSkill.onState('fourthState', fourthState);
     expect(stateMachineSkill.states.fourthState.enter).to.equal(fourthState);
   });
 
   it('should accept onBeforeStateChanged callbacks', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
+    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
     stateMachineSkill.onBeforeStateChanged(simple.stub());
   });
 
@@ -108,7 +108,7 @@ describe('StateMachineSkill', () => {
       reply: 'ExitIntent.Farewell',
     });
 
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
+    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
 
     return stateMachineSkill.execute(event)
@@ -118,7 +118,6 @@ describe('StateMachineSkill', () => {
   });
 
   it('should throw an error if required properties missing from config', () => {
-    expect(() => new StateMachineSkill('appId', { })).to.throw(Error, 'Config should include a model');
     expect(() => new StateMachineSkill('appId', { Model: { } })).to.throw(Error, 'Model should have a fromRequest method');
     expect(() => new StateMachineSkill('appId', { Model: { fromRequest: () => {} } })).to.throw(Error, 'Model should have a serialize method');
     expect(() => new StateMachineSkill('appId', { Model })).to.throw(Error, 'DefaultRenderer config should include views');
@@ -126,7 +125,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should set properties on request and have those available in the state callbacks', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
+    const stateMachineSkill = new StateMachineSkill('appId', { views, variables });
     statesDefinition.entry = simple.spy((request) => {
       expect(request.model).to.not.be.undefined;
       expect(request.model).to.be.an.instanceOf(Model);
