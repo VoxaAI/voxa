@@ -41,8 +41,6 @@ exports.handler = function handler(event, context, callback) {
 
 ```
 
-
-
 Tests
 ------
 
@@ -58,3 +56,10 @@ JS Code linting
 ```bash
 npm run lint
 ```
+
+Resources
+----------
+
+* [Documentation](http://alexa-statemachine.readthedocs.io/en/latest/)
+* [Bug Tracker](https://github.com/mediarain/alexa-statemachine/issues)
+* [IRC](irc://chat.freenode.net/sentry) (chat.freenode.net, #alexa-statemachine)
