@@ -22,7 +22,7 @@
   ],
   "license": "ISC",
   "dependencies": {
-    "alexa-statemachine": "git@github.com:armonge/alexa-statemachine.git",
+    "alexa-statemachine": "^1.0.0",
     "aws-sdk": "^2.7.23",
     "aws-serverless-express": "1.3.0",
     "bluebird": "^3.3.5",
