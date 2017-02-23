@@ -9,12 +9,11 @@ const expect = chai.expect;
 const StateMachineSkill = require('../../lib/StateMachineSkill');
 const badResponseReprompt = require('../../lib/plugins/reprompt-on-bad-response');
 const views = require('../views');
-const Model = require('../model');
 const variables = require('../variables');
 
 describe('BadResponseRepromptPlugin', () => {
   it('should send the last reprompt on UnhandledIntent', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
+    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
     stateMachineSkill.onIntent('entry', { });
     stateMachineSkill.onState('playing', (request) => {
       if (request.intent.name === 'AMAZON.StopIntent') {
@@ -51,7 +50,7 @@ describe('BadResponseRepromptPlugin', () => {
   });
 
   it('should prepend the startView', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
+    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
     stateMachineSkill.onIntent('entry', { });
     stateMachineSkill.onState('playing', (request) => {
       if (request.intent.name === 'AMAZON.StopIntent') {
@@ -90,7 +89,7 @@ describe('BadResponseRepromptPlugin', () => {
   });
 
   it('should just exit if no reprompt', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
+    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
     stateMachineSkill.onIntent('entry', { });
     stateMachineSkill.onState('playing', (request) => {
       if (request.intent.name === 'AMAZON.StopIntent') {

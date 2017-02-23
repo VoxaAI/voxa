@@ -11,7 +11,6 @@ const simple = require('simple-mock');
 const StateMachineSkill = require('../../lib/StateMachineSkill');
 const stateFlow = require('../../lib/plugins/state-flow');
 const views = require('../views');
-const Model = require('../model');
 const variables = require('../variables');
 
 describe('StateFlow plugin', () => {
@@ -40,7 +39,7 @@ describe('StateFlow plugin', () => {
   });
 
   it('should store the execution flow in the request', () => {
-    const skill = new StateMachineSkill('appId', { Model, variables, views });
+    const skill = new StateMachineSkill('appId', { variables, views });
     let request;
     const spy = simple.spy((_request) => {
       request = _request;

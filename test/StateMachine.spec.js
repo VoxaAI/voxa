@@ -11,7 +11,6 @@ const errors = require('../lib/Errors');
 const Reply = require('../lib/Reply');
 const Promise = require('bluebird');
 const simple = require('simple-mock');
-const Model = require('./model');
 
 describe('StateMachine', () => {
   let states;
@@ -19,7 +18,6 @@ describe('StateMachine', () => {
 
   beforeEach(() => {
     request = {
-      model: new Model(),
       intent: {
 
       },

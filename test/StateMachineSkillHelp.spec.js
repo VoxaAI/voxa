@@ -7,7 +7,6 @@
 
 'use strict';
 
-const Model = require('./model');
 const expect = require('chai').expect;
 const alexa = require('../');
 const views = require('./views');
@@ -33,7 +32,7 @@ describe('StateMachineSkill Help test', () => {
   let skill;
 
   beforeEach(() => {
-    skill = new alexa.StateMachineSkill(appId, { views, variables, Model, openIntent: 'LaunchIntent' });
+    skill = new alexa.StateMachineSkill(appId, { views, variables });
     _.map(states, (state, name) => {
       skill.onState(name, state);
     });
