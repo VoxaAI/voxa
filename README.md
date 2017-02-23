@@ -16,7 +16,6 @@ Usage
 ------
 
 ```javascript
-const _ = require('lodash');
 const alexa = require('alexa-statemachine');
 
 // Views are used by your controller to send responses to the user
