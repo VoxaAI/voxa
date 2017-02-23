@@ -27,16 +27,12 @@ Instantiating a StateMachineSkill requires an applicationId, :ref:`views-and-var
     const views = require('./views'):
     const variables = require('./variables');
 
-    const stateMachineSkill = new alexa.StateMachineSkill('appId', { 
-      Model, 
-      variables, 
-      views,
-    });
+    const stateMachineSkill = new alexa.StateMachineSkill('appId', { Model, variables, views });
 
 Responding to alexa requests
 -----------------------------
 
-Once you have your skill configured responding to events is as simple as calling the ``skill.execute`` method
+Once you have your skill configured responding to events is as simple as calling the :js:func:`skill.execute <StateMachineSkill.execute>` method
 
 .. code-block:: javascript
 
@@ -96,13 +92,12 @@ Links
   transition
   request
   reply
+  statemachine-skill
   request-flow
-  middleware
   i18n
   plugins
   debugging
   starter-kit
   my-first-podcast
   account-linking
-  api
 

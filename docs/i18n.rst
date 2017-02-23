@@ -21,7 +21,7 @@ The framework takes care of selecting the correct locale on every request by loo
 Changes in your views
 ----------------------
 
-The other change you will need is to define your views using the `i18next <http://i18next.com/translate/>`_ format:
+The other change you will need is to define your views using the `i18next translate <http://i18next.com/translate/>`_ format:
 
 .. literalinclude:: ../test/i18n/views.js
 

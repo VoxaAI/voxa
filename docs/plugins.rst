@@ -27,34 +27,49 @@ After instatiating a StateMachineSkill you can register plugins on it. Built in 
     alexa.plugins.replaceIntent(stateMachineSkill);
 
 
+State Flow plugin
+------------------
+
+Stores the state transitions for every request in an array.
+
+.. js:function:: stateFlow(skill)
+
+  State Flow attaches callbacks to :js:func:`~StateMachineSkill.onRequestStarted`, :js:func:`~StateMachineSkill.onBeforeStateChanged` and :js:func:`~StateMachineSkill.onBeforeReplySent` to track state transitions in a ``request.flow`` array
+
+  :param StateMachineSkill skill: The skill object
+
+
+Usage
+******
+
+.. code-block:: javascript
+
+  skill.onBeforeReplySent((request) => {
+    console.log(request.flow.join(' > ')); // entry > firstState > secondState > die
+  });
+
+
+
 Replace intent plugin
 ----------------------
 
 It allows you to rename an intent name based on a regular expression. By default it will match ``/(.*)OnlyIntent$/`` and replace it with ``$1Intent``.
 
 
-Params
-******
-
-
 .. js:function:: replaceIntent(skill, [config])
   
-  Replace Intent plugin uses ``skill.onIntentRequest`` to modify the incomming request intent name
+  Replace Intent plugin uses :js:func:`~StateMachineSkill.onIntentRequest` to modify the incomming request intent name
 
   :param object skill: The stateMachineSkill
   :param object config: An object with the ``regex`` to look for and the ``replace`` value.
 
 
-How to use it
-*************
+Usage
+******
 
 .. code-block:: javascript
 
-    const stateMachineSkill = new alexa.StateMachineSkill('appId', { 
-      Model, 
-      variables, 
-      views,
-    });
+    const stateMachineSkill = new alexa.StateMachineSkill('appId', { Model, variables, views });
 
     stateMachineSkill.plugins.replaceIntent(stateMachineSkill, { regex: /(.*)OnlyIntent$/, replace: '$1Intent' });
     stateMachineSkill.plugins.replaceIntent(stateMachineSkill, { regex: /^VeryLong(.*)/, replace: 'Long$1' });
@@ -69,7 +84,7 @@ so you should have an `intent` called ``ZipCodeIntent``. But you still have to m
 
 Our utterance file will be like this: 
 
-.. code-block:: txt
+.. code-block:: text
 
     ZipCodeIntent here is my {ZipCodeSlot}
     ZipCodeIntent my zip is {ZipCodeSlot}
