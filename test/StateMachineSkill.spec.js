@@ -135,8 +135,28 @@ describe('StateMachineSkill', () => {
 
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
     return stateMachineSkill.execute(event)
-      .then((response) => {
+      .then(() => {
         expect(statesDefinition.entry.called).to.be.true;
+        expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
+      });
+  });
+
+  it('permit the model.fromRequest to return a Promise', () => {
+    class PromisyModel extends Model {
+      static fromRequest() { return Promise.resolve(new PromisyModel()); }
+    }
+    const stateMachineSkill = new StateMachineSkill('appId', { views, variables, Model: PromisyModel });
+    statesDefinition.entry = simple.spy((request) => {
+      expect(request.model).to.not.be.undefined;
+      expect(request.model).to.be.an.instanceOf(Model);
+      return { reply: 'ExitIntent.Farewell', to: 'die' };
+    });
+
+    _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
+    return stateMachineSkill.execute(event)
+      .then(() => {
+        expect(statesDefinition.entry.called).to.be.true;
+        expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
       });
   });
 
