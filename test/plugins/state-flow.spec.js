@@ -39,7 +39,7 @@ describe('StateFlow plugin', () => {
   });
 
   it('should store the execution flow in the request', () => {
-    const skill = new StateMachineSkill('appId', { variables, views });
+    const skill = new StateMachineSkill({ variables, views });
     let request;
     const spy = simple.spy((_request) => {
       request = _request;

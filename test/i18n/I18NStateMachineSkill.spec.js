@@ -59,7 +59,7 @@ describe('I18NStateMachineSkill', () => {
       let skill;
 
       beforeEach(() => {
-        skill = new StateMachineSkill('appId', { variables, views, RenderClass: I18NRenderer });
+        skill = new StateMachineSkill({ variables, views, RenderClass: I18NRenderer });
       });
 
       it(`should return the correct translation for ${locale}`, () => {

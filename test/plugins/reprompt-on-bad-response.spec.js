@@ -13,7 +13,7 @@ const variables = require('../variables');
 
 describe('BadResponseRepromptPlugin', () => {
   it('should send the last reprompt on UnhandledIntent', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
     stateMachineSkill.onIntent('entry', { });
     stateMachineSkill.onState('playing', (request) => {
       if (request.intent.name === 'AMAZON.StopIntent') {
@@ -50,7 +50,7 @@ describe('BadResponseRepromptPlugin', () => {
   });
 
   it('should prepend the startView', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
     stateMachineSkill.onIntent('entry', { });
     stateMachineSkill.onState('playing', (request) => {
       if (request.intent.name === 'AMAZON.StopIntent') {
@@ -89,7 +89,7 @@ describe('BadResponseRepromptPlugin', () => {
   });
 
   it('should just exit if no reprompt', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
     stateMachineSkill.onIntent('entry', { });
     stateMachineSkill.onState('playing', (request) => {
       if (request.intent.name === 'AMAZON.StopIntent') {

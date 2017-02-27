@@ -44,7 +44,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should add the message key from the transition to the reply', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
     stateMachineSkill.onIntent('LaunchIntent', () => ({ message: { tell: 'This is my message' } }));
     event.request.type = 'LaunchRequest';
 
@@ -60,7 +60,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should add usea append the reply key to the Reply if it\'s a Reply object', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
     const reply = new Reply({ }, { tell: 'This is my message' });
     stateMachineSkill.onIntent('LaunchIntent', () => ({ reply }));
     event.request.type = 'LaunchRequest';
@@ -77,7 +77,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should redirect be able to just pass through some intents to states', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
     let called = false;
     stateMachineSkill.onIntent('AMAZON.LoopOffIntent', () => {
       called = true;
@@ -92,14 +92,14 @@ describe('StateMachineSkill', () => {
   });
 
   it('should accept new states', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
     const fourthState = () => ({ to: 'endState' });
     stateMachineSkill.onState('fourthState', fourthState);
     expect(stateMachineSkill.states.fourthState.enter).to.equal(fourthState);
   });
 
   it('should accept onBeforeStateChanged callbacks', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
     stateMachineSkill.onBeforeStateChanged(simple.stub());
   });
 
@@ -108,7 +108,7 @@ describe('StateMachineSkill', () => {
       reply: 'ExitIntent.Farewell',
     });
 
-    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
 
     return stateMachineSkill.execute(event)
@@ -118,14 +118,14 @@ describe('StateMachineSkill', () => {
   });
 
   it('should throw an error if required properties missing from config', () => {
-    expect(() => new StateMachineSkill('appId', { Model: { } })).to.throw(Error, 'Model should have a fromRequest method');
-    expect(() => new StateMachineSkill('appId', { Model: { fromRequest: () => {} } })).to.throw(Error, 'Model should have a serialize method');
-    expect(() => new StateMachineSkill('appId', { Model })).to.throw(Error, 'DefaultRenderer config should include views');
-    expect(() => new StateMachineSkill('appId', { Model, views })).to.not.throw(Error);
+    expect(() => new StateMachineSkill({ Model: { } })).to.throw(Error, 'Model should have a fromRequest method');
+    expect(() => new StateMachineSkill({ Model: { fromRequest: () => {} } })).to.throw(Error, 'Model should have a serialize method');
+    expect(() => new StateMachineSkill({ Model })).to.throw(Error, 'DefaultRenderer config should include views');
+    expect(() => new StateMachineSkill({ Model, views })).to.not.throw(Error);
   });
 
   it('should set properties on request and have those available in the state callbacks', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { views, variables });
+    const stateMachineSkill = new StateMachineSkill({ views, variables });
     statesDefinition.entry = simple.spy((request) => {
       expect(request.model).to.not.be.undefined;
       expect(request.model).to.be.an.instanceOf(Model);
@@ -145,7 +145,7 @@ describe('StateMachineSkill', () => {
     class PromisyModel extends Model {
       static fromRequest() { return Promise.resolve(new PromisyModel()); }
     }
-    const stateMachineSkill = new StateMachineSkill('appId', { views, variables, Model: PromisyModel });
+    const stateMachineSkill = new StateMachineSkill({ views, variables, Model: PromisyModel });
     statesDefinition.entry = simple.spy((request) => {
       expect(request.model).to.not.be.undefined;
       expect(request.model).to.be.an.instanceOf(Model);
@@ -161,7 +161,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should call onSessionEnded callbacks if state is die', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
+    const stateMachineSkill = new StateMachineSkill({ Model, views, variables });
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
     const onSessionEnded = simple.stub();
     stateMachineSkill.onSessionEnded(onSessionEnded);
@@ -173,7 +173,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should call onBeforeReplySent callbacks', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
+    const stateMachineSkill = new StateMachineSkill({ Model, views, variables });
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
     const onBeforeReplySent = simple.stub();
     stateMachineSkill.onBeforeReplySent(onBeforeReplySent);
@@ -185,7 +185,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should call entry on a LaunchRequest', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
+    const stateMachineSkill = new StateMachineSkill({ Model, views, variables });
 
     event.request.type = 'LaunchRequest';
     statesDefinition.entry = simple.stub().resolveWith({
@@ -201,7 +201,7 @@ describe('StateMachineSkill', () => {
 
   describe('onUnhandledState', () => {
     it('should call onUnhandledState callbacks when the state machine transition throws a UnhandledState error', () => {
-      const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
+      const stateMachineSkill = new StateMachineSkill({ Model, views, variables });
       const onUnhandledState = simple.stub().resolveWith({
         reply: 'ExitIntent.Farewell',
       });
@@ -233,7 +233,7 @@ describe('StateMachineSkill', () => {
 
   describe('onStateMachineError', () => {
     it('should call onStateMachineError handlers for exceptions thrown inside a state', () => {
-      const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
+      const stateMachineSkill = new StateMachineSkill({ Model, views, variables });
       const spy = simple.spy((request, reply, error) => new Reply(request, { tell: 'My custom response' }));
       stateMachineSkill.onStateMachineError(spy);
       stateMachineSkill.onIntent('AskIntent', () => abc); // eslint-disable-line no-undef
@@ -259,7 +259,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should add a reply to session if reply is an ask', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
+    const stateMachineSkill = new StateMachineSkill({ Model, views, variables });
     stateMachineSkill.onIntent('AskIntent', () => ({ to: 'exit', reply: 'Question.Ask' }));
     stateMachineSkill.onState('exit', () => 'ExitIntent.Farewell');
     event.request.intent.name = 'AskIntent';
@@ -273,7 +273,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should include all directives in the reply', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
+    const stateMachineSkill = new StateMachineSkill({ Model, variables, views });
 
     const directives = {
       type: 'AudioPlayer.Play',
@@ -307,7 +307,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should include all directives in the reply even if die', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, variables, views });
+    const stateMachineSkill = new StateMachineSkill({ Model, variables, views });
 
     const directives = {
       type: 'AudioPlayer.Play',
@@ -340,7 +340,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should render all messages after each transition', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
+    const stateMachineSkill = new StateMachineSkill({ Model, views, variables });
 
     event.request.type = 'LaunchRequest';
     statesDefinition.entry = {
@@ -365,7 +365,7 @@ describe('StateMachineSkill', () => {
   });
 
   it('should call onIntentRequest callbacks before the statemachine', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
+    const stateMachineSkill = new StateMachineSkill({ Model, views, variables });
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
     const stubResponse = 'STUB RESPONSE';
     const stub = simple.stub().resolveWith(stubResponse);
@@ -381,7 +381,7 @@ describe('StateMachineSkill', () => {
 
   describe('onAfterStateChanged', () => {
     it('should return the onError response for exceptions thrown in onAfterStateChanged', () => {
-      const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
+      const stateMachineSkill = new StateMachineSkill({ Model, views, variables });
       _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
       const spy = simple.spy(() => {
         throw new Error('FAIL!');
@@ -410,7 +410,7 @@ describe('StateMachineSkill', () => {
 
   describe('onRequestStarted', () => {
     it('should return the onError response for exceptions thrown in onRequestStarted', () => {
-      const stateMachineSkill = new StateMachineSkill('appId', { Model, views, variables });
+      const stateMachineSkill = new StateMachineSkill({ Model, views, variables });
       const spy = simple.spy(() => {
         throw new Error('FAIL!');
       });

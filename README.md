@@ -24,7 +24,7 @@ const views = {
 }
 
 // initialize the skill
-const skill = new alexa.StateMachineSkill('appId', { views })
+const skill = new alexa.StateMachineSkill({ views })
 
 // respond to a LaunchIntent
 skill.onIntent('LaunchIntent', (request) => {

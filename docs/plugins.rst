@@ -18,11 +18,7 @@ After instatiating a StateMachineSkill you can register plugins on it. Built in 
     const views = require('./views'):
     const variables = require('./variables');
 
-    const stateMachineSkill = new alexa.StateMachineSkill('appId', { 
-      Model, 
-      variables, 
-      views,
-    });
+    const stateMachineSkill = new alexa.StateMachineSkill({ Model, variables, views });
 
     alexa.plugins.replaceIntent(stateMachineSkill);
 
@@ -69,7 +65,7 @@ Usage
 
 .. code-block:: javascript
 
-    const stateMachineSkill = new alexa.StateMachineSkill('appId', { Model, variables, views });
+    const stateMachineSkill = new alexa.StateMachineSkill({ Model, variables, views });
 
     stateMachineSkill.plugins.replaceIntent(stateMachineSkill, { regex: /(.*)OnlyIntent$/, replace: '$1Intent' });
     stateMachineSkill.plugins.replaceIntent(stateMachineSkill, { regex: /^VeryLong(.*)/, replace: 'Long$1' });
@@ -119,11 +115,7 @@ How to use it
 .. code-block:: javascript
 
     const AWS = require('aws-sdk');
-    const stateMachineSkill = new alexa.StateMachineSkill('appId', { 
-      Model, 
-      variables, 
-      views,
-    });
+    const stateMachineSkill = new alexa.StateMachineSkill({ Model, variables, views });
 
     const cloudwatch = new AWS.CloudWatch({});
     const eventMetric = { Namespace: 'fooBarSkill' };
