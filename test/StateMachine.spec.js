@@ -75,7 +75,7 @@ describe('StateMachine', () => {
   it('should transition depending on intent if state.to ', () => {
     states.entry = { to: { TestIntent: 'die' }, name: 'entry' };
     const stateMachine = new StateMachine('entry', { states });
-    request.request.intent.name = 'TestIntent';
+    request.intent.name = 'TestIntent';
     return stateMachine.transition(request, new Reply(request))
       .then((response) => {
         expect(response.to.name).to.equal(states.die.name);
@@ -111,7 +111,7 @@ describe('StateMachine', () => {
     it('should throw an exception on invalid transition from pojo controller', () => {
       states.entry = { to: { TestIntent: 'die' }, name: 'entry' };
       const stateMachine = new StateMachine('entry', { states });
-      request.request.intent.name = 'OtherIntent';
+      request.intent.name = 'OtherIntent';
       const promise = stateMachine.transition(request, new Reply(request));
       return expect(promise).to.eventually.be.rejectedWith(errors.UnhandledState, 'Transition from entry resulted in undefined');
     });
@@ -120,7 +120,7 @@ describe('StateMachine', () => {
       states.entry = { to: { TestIntent: 'die' }, name: 'entry' };
       const onUnhandledState = simple.spy(() => ({ to: 'die' }));
       const stateMachine = new StateMachine('entry', { states, onUnhandledState: [onUnhandledState] });
-      request.request.intent.name = 'OtherIntent';
+      request.intent.name = 'OtherIntent';
       const promise = stateMachine.transition(request, new Reply(request));
       return expect(promise).to.eventually.deep.equal({
         to: {
@@ -134,7 +134,7 @@ describe('StateMachine', () => {
   it('should throw UnknownState when transition.to goes to an undefined state', () => {
     states.entry = { to: { LaunchIntent: 'undefinedState' } };
     const stateMachine = new StateMachine('entry', { states });
-    request.request.intent.name = 'LaunchIntent';
+    request.intent.name = 'LaunchIntent';
     return expect(stateMachine.transition(request, new Reply(request))).to.eventually.be.rejectedWith(errors.UnknownState);
   });
 
@@ -145,7 +145,7 @@ describe('StateMachine', () => {
     };
 
     const stateMachine = new StateMachine('someState', { states });
-    request.request.intent.name = 'LaunchIntent';
+    request.intent.name = 'LaunchIntent';
     return stateMachine.transition(request, new Reply(request))
       .then((transition) => {
         expect(states.someState.enter.called).to.be.true;

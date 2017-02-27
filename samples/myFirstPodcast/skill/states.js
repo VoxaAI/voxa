@@ -29,8 +29,8 @@ exports.register = function register(skill) {
   });
 
   skill.onIntent('AMAZON.PreviousIntent', (request) => {
-    if (request.request.context) {
-      const token = JSON.parse(request.request.context.AudioPlayer.token);
+    if (request.context) {
+      const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = token.shuffle;
       const loop = token.loop;
       const offsetInMilliseconds = 0;
@@ -52,8 +52,8 @@ exports.register = function register(skill) {
   });
 
   skill.onIntent('AMAZON.NextIntent', (request) => {
-    if (request.request.context) {
-      const token = JSON.parse(request.request.context.AudioPlayer.token);
+    if (request.context) {
+      const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = token.shuffle;
       const loop = token.loop;
       const offsetInMilliseconds = 0;
@@ -75,11 +75,11 @@ exports.register = function register(skill) {
   });
 
   skill.onIntent('AMAZON.LoopOnIntent', (request) => {
-    if (request.request.context) {
-      const token = JSON.parse(request.request.context.AudioPlayer.token);
+    if (request.context) {
+      const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = token.shuffle;
       const loop = 1;
-      const offsetInMilliseconds = request.request.context.AudioPlayer.offsetInMilliseconds;
+      const offsetInMilliseconds = request.context.AudioPlayer.offsetInMilliseconds;
       let index = token.index;
 
       if (index === podcast.length) {
@@ -95,11 +95,11 @@ exports.register = function register(skill) {
   });
 
   skill.onIntent('AMAZON.LoopOffIntent', (request) => {
-    if (request.request.context) {
-      const token = JSON.parse(request.request.context.AudioPlayer.token);
+    if (request.context) {
+      const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = token.shuffle;
       const loop = 0;
-      const offsetInMilliseconds = request.request.context.AudioPlayer.offsetInMilliseconds;
+      const offsetInMilliseconds = request.context.AudioPlayer.offsetInMilliseconds;
       let index = token.index;
 
       if (index === podcast.length) {
@@ -115,11 +115,11 @@ exports.register = function register(skill) {
   });
 
   skill.onIntent('AMAZON.ShuffleOnIntent', (request) => {
-    if (request.request.context) {
-      const token = JSON.parse(request.request.context.AudioPlayer.token);
+    if (request.context) {
+      const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = 1;
       const loop = token.loop;
-      const offsetInMilliseconds = request.request.context.AudioPlayer.offsetInMilliseconds;
+      const offsetInMilliseconds = request.context.AudioPlayer.offsetInMilliseconds;
       let index = token.index;
 
       if (index === podcast.length) {
@@ -135,11 +135,11 @@ exports.register = function register(skill) {
   });
 
   skill.onIntent('AMAZON.ShuffleOffIntent', (request) => {
-    if (request.request.context) {
-      const token = JSON.parse(request.request.context.AudioPlayer.token);
+    if (request.context) {
+      const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = 0;
       const loop = token.loop;
-      const offsetInMilliseconds = request.request.context.AudioPlayer.offsetInMilliseconds;
+      const offsetInMilliseconds = request.context.AudioPlayer.offsetInMilliseconds;
       let index = token.index;
 
       if (index === podcast.length) {
@@ -155,8 +155,8 @@ exports.register = function register(skill) {
   });
 
   skill.onIntent('AMAZON.StartOverIntent', (request) => {
-    if (request.request.context) {
-      const token = JSON.parse(request.request.context.AudioPlayer.token);
+    if (request.context) {
+      const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = token.shuffle;
       const loop = token.loop;
       const index = token.index;
@@ -172,12 +172,12 @@ exports.register = function register(skill) {
   });
 
   skill.onIntent('AMAZON.ResumeIntent', (request) => {
-    if (request.request.context) {
-      const token = JSON.parse(request.request.context.AudioPlayer.token);
+    if (request.context) {
+      const token = JSON.parse(request.context.AudioPlayer.token);
       const shuffle = token.shuffle;
       const loop = token.loop;
       const index = token.index;
-      const offsetInMilliseconds = request.request.context.AudioPlayer.offsetInMilliseconds;
+      const offsetInMilliseconds = request.context.AudioPlayer.offsetInMilliseconds;
 
       const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
 
@@ -203,7 +203,7 @@ exports.register = function register(skill) {
   });
 
   skill['onAudioPlayer.PlaybackNearlyFinished']((request, reply) => {
-    const token = JSON.parse(request.request.context.AudioPlayer.token);
+    const token = JSON.parse(request.context.AudioPlayer.token);
 
     if (token.loop === 0) {
       return reply;

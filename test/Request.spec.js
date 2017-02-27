@@ -12,6 +12,6 @@ describe('Request', () => {
 
   it('should format intent slots', () => {
     const request = new Request({ request: { intent: { slots: [{ name: 'Dish', value: 'Fried Chicken' }] } } });
-    expect(request.intentParams).to.deep.equal({ Dish: 'Fried Chicken' });
+    expect(request.intent.params).to.deep.equal({ Dish: 'Fried Chicken' });
   });
 });
