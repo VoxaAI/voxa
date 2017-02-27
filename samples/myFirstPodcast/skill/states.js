@@ -14,7 +14,7 @@ exports.register = function register(skill) {
   });
 
   skill.onState('optionsReview', (request) => {
-    if (request.request.intent.name === 'AMAZON.YesIntent') {
+    if (request.intent.name === 'AMAZON.YesIntent') {
       const index = 0;
       const shuffle = 0;
       const loop = 0;
