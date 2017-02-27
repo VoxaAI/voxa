@@ -42,7 +42,7 @@ describe('CloudwatchPlugin', () => {
     return stateMachineSkill.execute(event)
       .then((reply) => {
         expect(spySkill.called).to.be.true;
-        expect(spySkill.lastCall.args[0].request.intent.name).to.equal('SomeIntent');
+        expect(spySkill.lastCall.args[0].intent.name).to.equal('SomeIntent');
         expect(reply.response.outputSpeech.ssml).to.equal('<speak>An unrecoverable error occurred.</speak>');
         expect(cloudwatchMock.called).to.be.true;
         expect(cloudwatchMock.callCount).to.be.at.most(1);

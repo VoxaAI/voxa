@@ -16,7 +16,7 @@ describe('BadResponseRepromptPlugin', () => {
     const stateMachineSkill = new StateMachineSkill({ variables, views });
     stateMachineSkill.onIntent('entry', { });
     stateMachineSkill.onState('playing', (request) => {
-      if (request.request.intent.name === 'AMAZON.StopIntent') {
+      if (request.intent.name === 'AMAZON.StopIntent') {
         return { reply: 'ExitIntent.Farewell' };
       }
 
@@ -53,7 +53,7 @@ describe('BadResponseRepromptPlugin', () => {
     const stateMachineSkill = new StateMachineSkill({ variables, views });
     stateMachineSkill.onIntent('entry', { });
     stateMachineSkill.onState('playing', (request) => {
-      if (request.request.intent.name === 'AMAZON.StopIntent') {
+      if (request.intent.name === 'AMAZON.StopIntent') {
         return { reply: 'ExitIntent.Farewell' };
       }
 
@@ -92,7 +92,7 @@ describe('BadResponseRepromptPlugin', () => {
     const stateMachineSkill = new StateMachineSkill({ variables, views });
     stateMachineSkill.onIntent('entry', { });
     stateMachineSkill.onState('playing', (request) => {
-      if (request.request.intent.name === 'AMAZON.StopIntent') {
+      if (request.intent.name === 'AMAZON.StopIntent') {
         return { reply: 'ExitIntent.Farewell' };
       }
 
