@@ -104,7 +104,7 @@ Running the project
 
 3. Make sure you're running node 4.3, this is easiest with `nvm <https://github.com/creationix/nvm>`_
 
-4. Create a ``config/local.json`` file using ``config/local.json.example`` as default and modify your ``alexa.appId``
+4. Create a ``config/local.json`` file using ``config/local.json.example`` as an example
 
 5. Run the project with ``gulp watch``
 

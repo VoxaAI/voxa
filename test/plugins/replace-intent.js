@@ -15,7 +15,7 @@ const variables = require('../variables');
 
 describe('ReplaceIntentPlugin', () => {
   it('should send to intent with Only', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
     const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
     stateMachineSkill.onIntent('SomeIntent', spy);
 
@@ -45,7 +45,7 @@ describe('ReplaceIntentPlugin', () => {
 
 
   it('shouldn\'t affect non matching intents', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
     const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
     stateMachineSkill.onIntent('OnlySomeIntent', spy);
 
@@ -74,7 +74,7 @@ describe('ReplaceIntentPlugin', () => {
   });
 
   it('should use provided regex', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
     const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
     stateMachineSkill.onIntent('SomeHolderIntent', spy);
 
@@ -103,7 +103,7 @@ describe('ReplaceIntentPlugin', () => {
   });
 
   it('should use multiple regex', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
     const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
     stateMachineSkill.onIntent('LongIntent', spy);
 

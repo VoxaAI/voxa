@@ -14,7 +14,7 @@ To use it you need to configure your skill to use the ``I18NRenderer`` class ins
 .. code-block:: javascript
 
   const I18NRenderer = require('alexa-statemachine').I18NRenderer;
-  const skill = new StateMachineSkill('appId', { Model, variables, views, RenderClass: I18NRenderer });
+  const skill = new StateMachineSkill({ Model, variables, views, RenderClass: I18NRenderer });
 
 The framework takes care of selecting the correct locale on every request by looking at the ``request.locale`` property.
 
