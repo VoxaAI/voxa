@@ -94,3 +94,38 @@ Our utterance file will be like this:
 
 
 But now we have two states which are basically the same. Replace intent plugin will rename all incoming requests intents from ``ZipCodeOnlyIntent`` to ``ZipCodeIntent``.
+
+
+Cloudwatch plugin
+------------------
+
+It logs a CloudWatch metric when the skill catches an error.
+
+Params
+******
+
+.. js:function:: cloudwatch(skill, cloudwatch, [eventMetric])
+  
+  Cloudwatch plugin uses ``skill.onError`` to log a metric
+
+  :param object skill: The stateMachineSkill
+  :param object cloudwatch: A new `AWS.CloudWatch <http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#constructor-property/>`_ object. 
+  :param object putMetricDataParams: Params for `putMetricData< http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#putMetricData-property>`_
+
+
+How to use it
+**************
+
+.. code-block:: javascript
+
+    const AWS = require('aws-sdk');
+    const stateMachineSkill = new alexa.StateMachineSkill('appId', { 
+      Model, 
+      variables, 
+      views,
+    });
+
+    const cloudwatch = new AWS.CloudWatch({});
+    const eventMetric = { Namespace: 'fooBarSkill' };
+
+    stateMachineSkill.plugins.cloudwatch(stateMachineSkill, cloudwatch, eventMetric);
