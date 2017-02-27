@@ -11,17 +11,6 @@ const simple = require('simple-mock');
 const _ = require('lodash');
 
 describe('AlexaSkill', () => {
-  it('should not return error message on wrong appId', () => {
-    const alexaSkill = new AlexaSkill('MY APP ID', {});
-    alexaSkill.onLaunchRequest(() => {});
-    const stub = simple.stub();
-    alexaSkill.onError(stub);
-
-    return alexaSkill.execute({ session: { application: { applicationId: 'OTHER APP ID' } }, request: { type: 'IntentRequest', intent: { } } })
-      .then(() => {
-        expect(stub.called).to.be.false;
-      });
-  });
   it('should return error message on wrong appId if config.appIds is defined', () => {
     const alexaSkill = new AlexaSkill({ appIds: ['MY APP ID'] });
     alexaSkill.onLaunchRequest(() => {});
