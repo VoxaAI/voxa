@@ -6,14 +6,13 @@ StateMachineSkill
 .. js:class:: StateMachineSkill(appId, config)
 
   :param string/array appId: The application id that amazon gives you in the developer website
-  :param object config: Configuration for your skill, it should include :ref:`views-and-variables` and optionally a :ref:`model <models>`
-    optionally it can also take an ``env`` parameter.
+  :param object config: Configuration for your skill, it should include :ref:`views-and-variables` and optionally a :ref:`model <models>` and a list of appIds.
 
-    If ``env === 'production'`` the framework will require ``request.application.applicationId`` to equal ``appId``.
+  If appIds is present then the framework will check every request and enforce the request application id to match one of the specified application ids.
 
   .. code-block:: javascript
 
-    const skill = new alexa.StateMachineSkill('appId', { Model, variables, views, });
+    const skill = new alexa.StateMachineSkill({ Model, variables, views, appIds });
 
 .. js:function:: StateMachineSkill.execute(event)
   

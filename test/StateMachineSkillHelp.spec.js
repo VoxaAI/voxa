@@ -13,8 +13,6 @@ const views = require('./views');
 const variables = require('./variables');
 const _ = require('lodash');
 
-const appId = 'some-app-id';
-
 const states = {
   entry: {
     LaunchIntent: 'launch',
@@ -32,7 +30,7 @@ describe('StateMachineSkill Help test', () => {
   let skill;
 
   beforeEach(() => {
-    skill = new alexa.StateMachineSkill(appId, { views, variables });
+    skill = new alexa.StateMachineSkill({ views, variables });
     _.map(states, (state, name) => {
       skill.onState(name, state);
     });
@@ -45,7 +43,6 @@ describe('StateMachineSkill Help test', () => {
   function itIs(requestFile, cb) {
     it(requestFile, () => {
       const event = require(`./requests/${requestFile}.js`);
-      event.session.application.applicationId = appId;
       return skill.execute(event).then(cb);
     });
   }

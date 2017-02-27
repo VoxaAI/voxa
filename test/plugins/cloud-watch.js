@@ -15,7 +15,7 @@ const variables = require('../variables');
 
 describe('CloudwatchPlugin', () => {
   it('should use plugin to log error onError Flow', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { variables, views });
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
     const spySkill = simple.stub().throwWith(new Error('foo random error'));
     const cloudwatch = { putMetricData: (data, callback) => callback(null, 'foobar') };
     const cloudwatchMock = simple.mock(cloudwatch, 'putMetricData');
@@ -54,7 +54,7 @@ describe('CloudwatchPlugin', () => {
   });
 
   it('should use plugin to log error onStateMachineError Flow', () => {
-    const stateMachineSkill = new StateMachineSkill('appId', { env: 'production', variables, views });
+    const stateMachineSkill = new StateMachineSkill({ env: 'production', variables, views });
     const cloudwatch = { putMetricData: (data, callback) => callback(null, 'foobar') };
     const cloudwatchMock = simple.mock(cloudwatch, 'putMetricData');
     const eventMetric = { Namespace: 'fooBarSkill' };

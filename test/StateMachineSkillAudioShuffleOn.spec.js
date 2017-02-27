@@ -13,7 +13,6 @@ const views = require('./views');
 const variables = require('./variables');
 const _ = require('lodash');
 
-const appId = 'some-app-id';
 const TEST_URLS = [
   'https://s3.amazonaws.com/alexa-voice-service/welcome_message.mp3',
   'https://s3.amazonaws.com/alexa-voice-service/bad_response.mp3',
@@ -65,7 +64,7 @@ describe('StateMachineSkill', () => {
   let skill;
 
   beforeEach(() => {
-    skill = new alexa.StateMachineSkill(appId, { views, variables });
+    skill = new alexa.StateMachineSkill({ views, variables });
     _.map(states, (state, name) => {
       skill.onState(name, state);
     });
@@ -81,7 +80,6 @@ describe('StateMachineSkill', () => {
   function itIs(requestFile, cb) {
     it(requestFile, () => {
       const event = require(`./requests/${requestFile}.js`);
-      event.context.System.application.applicationId = appId;
       return skill.execute(event).then(cb);
     });
   }
