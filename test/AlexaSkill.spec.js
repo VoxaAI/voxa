@@ -28,7 +28,7 @@ describe('AlexaSkill', () => {
     const stub = simple.stub();
     alexaSkill.onError(stub);
 
-    return alexaSkill.execute({ session: { application: { applicationId: 'OTHER APP ID' } }, request: { intent: { } } })
+    return alexaSkill.execute({ context: { application: { applicationId: 'OTHER APP ID' } }, request: { intent: { } } })
       .then((result) => {
         expect(stub.called).to.be.true;
         expect(stub.lastCall.args[1]).to.be.an('error');
@@ -51,7 +51,7 @@ describe('AlexaSkill', () => {
     const alexaSkill = new AlexaSkill({ appIds: 'MY APP ID' });
     const stub = simple.stub();
     alexaSkill.onError(stub);
-    return alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'IntentRequest', intent: { slots: [], name: 'UnsupportedIntent' } } })
+    return alexaSkill.execute({ context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'IntentRequest', intent: { slots: [], name: 'UnsupportedIntent' } } })
       .then((result) => {
         expect(stub.lastCall.args[1]).to.be.an('error');
         expect(stub.lastCall.args[1].message).to.equal('onLaunchRequest must be implemented');
@@ -134,7 +134,7 @@ describe('AlexaSkill', () => {
       alexaSkill.onLaunchRequest(() => {});
       const stub = simple.stub().resolveWith(`RequestType: ${requestType}`);
       alexaSkill[`on${requestType}`](stub);
-      const event = { session: { application: { applicationId: 'MY APP ID' } }, request: { type: requestType } };
+      const event = { context: { application: { applicationId: 'MY APP ID' } }, request: { type: requestType } };
 
       return alexaSkill.execute(event)
         .then((result) => {
@@ -149,7 +149,7 @@ describe('AlexaSkill', () => {
     alexaSkill.onLaunchRequest(() => {});
     const stub = simple.stub();
     alexaSkill.onError(stub);
-    return alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'UnknownEvent' } })
+    return alexaSkill.execute({ context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'UnknownEvent' } })
       .then((result) => {
         expect(stub.lastCall.args[1]).to.be.an('error');
         expect(stub.lastCall.args[1].message).to.equal('Unkown request type: UnknownEvent');
@@ -179,7 +179,7 @@ describe('AlexaSkill', () => {
     alexaSkill.onLaunchRequest(() => {});
     const stub = simple.stub().returnWith(1);
     alexaSkill.onSessionEnded(stub);
-    alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } })
+    alexaSkill.execute({ context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } })
       .then((reply) => {
         expect(stub.called).to.be.true;
         done();
@@ -199,7 +199,7 @@ describe('AlexaSkill', () => {
     const stub = simple.stub().resolveWith(1);
     alexaSkill.onSessionStarted(stub);
 
-    return alexaSkill.execute({ session: { new: false, application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } })
+    return alexaSkill.execute({ session: { new: false }, context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } })
       .then(() => {
         expect(stub.callCount).to.equal(0);
       });
@@ -211,7 +211,7 @@ describe('AlexaSkill', () => {
     const stub = simple.stub().resolveWith(1);
     alexaSkill.onSessionStarted(stub);
 
-    return alexaSkill.execute({ session: { new: true, application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } })
+    return alexaSkill.execute({ session: { new: true }, context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } })
       .then(() => {
         expect(stub.callCount).to.equal(1);
       });
@@ -228,7 +228,7 @@ describe('AlexaSkill', () => {
     alexaSkill.onRequestStarted(onRequestStart2);
     alexaSkill.onRequestStarted(onRequestStart3);
 
-    return alexaSkill.execute({ session: { new: true, application: { applicationId: 'appId' } }, request: { type: 'SessionEndedRequest' } })
+    return alexaSkill.execute({ session: { new: true }, context: { application: { applicationId: 'appId' } }, request: { type: 'SessionEndedRequest' } })
       .then(() => {
         expect(onRequestStart1.called).to.be.true;
         expect(onRequestStart2.called).to.be.true;
@@ -239,6 +239,6 @@ describe('AlexaSkill', () => {
   it('should accept an array of appIds', () => {
     const alexaSkill = new AlexaSkill({ appIds: ['appId1', 'appId2'] });
     alexaSkill.onLaunchRequest(() => {});
-    return alexaSkill.execute({ session: { new: true, application: { applicationId: 'appId2' } }, request: { type: 'SessionEndedRequest' } });
+    return alexaSkill.execute({ session: { new: true }, context: { application: { applicationId: 'appId2' } }, request: { type: 'SessionEndedRequest' } });
   });
 });
