@@ -11,22 +11,25 @@ const errors = require('../lib/Errors');
 const Reply = require('../lib/Reply');
 const Promise = require('bluebird');
 const simple = require('simple-mock');
+const Request = require('../lib/Request');
 
 describe('StateMachine', () => {
   let states;
   let request;
 
   beforeEach(() => {
-    request = {
-      intent: {
+    request = new Request({
+      request: {
+        intent: {
 
+        },
       },
       session: {
         attributes: {
 
         },
       },
-    };
+    });
     states = {
       entry: { enter: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }), name: 'entry' },
       initState: { enter: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }), name: 'initState' },
@@ -72,7 +75,7 @@ describe('StateMachine', () => {
   it('should transition depending on intent if state.to ', () => {
     states.entry = { to: { TestIntent: 'die' }, name: 'entry' };
     const stateMachine = new StateMachine('entry', { states });
-    request.intent.name = 'TestIntent';
+    request.request.intent.name = 'TestIntent';
     return stateMachine.transition(request, new Reply(request))
       .then((response) => {
         expect(response.to.name).to.equal(states.die.name);
@@ -108,7 +111,8 @@ describe('StateMachine', () => {
     it('should throw an exception on invalid transition from pojo controller', () => {
       states.entry = { to: { TestIntent: 'die' }, name: 'entry' };
       const stateMachine = new StateMachine('entry', { states });
-      const promise = stateMachine.transition({ intent: { name: 'OtherIntent' }, session: { attributes: { } } }, new Reply(request));
+      request.request.intent.name = 'OtherIntent';
+      const promise = stateMachine.transition(request, new Reply(request));
       return expect(promise).to.eventually.be.rejectedWith(errors.UnhandledState, 'Transition from entry resulted in undefined');
     });
 
@@ -116,7 +120,8 @@ describe('StateMachine', () => {
       states.entry = { to: { TestIntent: 'die' }, name: 'entry' };
       const onUnhandledState = simple.spy(() => ({ to: 'die' }));
       const stateMachine = new StateMachine('entry', { states, onUnhandledState: [onUnhandledState] });
-      const promise = stateMachine.transition({ intent: { name: 'OtherIntent' }, session: { attributes: { } } }, new Reply(request));
+      request.request.intent.name = 'OtherIntent';
+      const promise = stateMachine.transition(request, new Reply(request));
       return expect(promise).to.eventually.deep.equal({
         to: {
           isTerminal: true,
@@ -129,7 +134,8 @@ describe('StateMachine', () => {
   it('should throw UnknownState when transition.to goes to an undefined state', () => {
     states.entry = { to: { LaunchIntent: 'undefinedState' } };
     const stateMachine = new StateMachine('entry', { states });
-    return expect(stateMachine.transition({ intent: { name: 'LaunchIntent' } }), new Reply(request)).to.eventually.be.rejectedWith(errors.UnknownState);
+    request.request.intent.name = 'LaunchIntent';
+    return expect(stateMachine.transition(request, new Reply(request))).to.eventually.be.rejectedWith(errors.UnknownState);
   });
 
   it('should fallback to entry on no response', () => {
@@ -139,7 +145,8 @@ describe('StateMachine', () => {
     };
 
     const stateMachine = new StateMachine('someState', { states });
-    return stateMachine.transition({ intent: { name: 'LaunchIntent' } }, new Reply(request))
+    request.request.intent.name = 'LaunchIntent';
+    return stateMachine.transition(request, new Reply(request))
       .then((transition) => {
         expect(states.someState.enter.called).to.be.true;
         expect(transition).to.deep.equal({

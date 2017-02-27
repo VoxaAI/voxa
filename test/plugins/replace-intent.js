@@ -38,7 +38,7 @@ describe('ReplaceIntentPlugin', () => {
     return stateMachineSkill.execute(event)
       .then((reply) => {
         expect(spy.called).to.be.true;
-        expect(spy.lastCall.args[0].intent.name).to.equal('SomeIntent');
+        expect(spy.lastCall.args[0].request.intent.name).to.equal('SomeIntent');
         expect(reply.response.outputSpeech.ssml).to.include('Hello! Good ');
       });
   });
@@ -68,7 +68,7 @@ describe('ReplaceIntentPlugin', () => {
     return stateMachineSkill.execute(event)
       .then((reply) => {
         expect(spy.called).to.be.true;
-        expect(spy.lastCall.args[0].intent.name).to.equal('OnlySomeIntent');
+        expect(spy.lastCall.args[0].request.intent.name).to.equal('OnlySomeIntent');
         expect(reply.response.outputSpeech.ssml).to.include('Hello! Good ');
       });
   });
@@ -97,7 +97,7 @@ describe('ReplaceIntentPlugin', () => {
     return stateMachineSkill.execute(event)
       .then((reply) => {
         expect(spy.called).to.be.true;
-        expect(spy.lastCall.args[0].intent.name).to.equal('SomeHolderIntent');
+        expect(spy.lastCall.args[0].request.intent.name).to.equal('SomeHolderIntent');
         expect(reply.response.outputSpeech.ssml).to.include('Hello! Good ');
       });
   });
@@ -129,7 +129,7 @@ describe('ReplaceIntentPlugin', () => {
     return stateMachineSkill.execute(event)
       .then((reply) => {
         expect(spy.called).to.be.true;
-        expect(spy.lastCall.args[0].intent.name).to.equal('LongIntent');
+        expect(spy.lastCall.args[0].request.intent.name).to.equal('LongIntent');
         expect(reply.response.outputSpeech.ssml).to.include('Hello! Good ');
       });
   });

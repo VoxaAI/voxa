@@ -32,9 +32,9 @@ const variables = {
   },
 
   numberOne: function numberOne(model, request) {
-    if (request.locale === 'en-us') {
+    if (request.request.locale === 'en-us') {
       return 'one';
-    } else if (request.locale === 'de-de') {
+    } else if (request.request.locale === 'de-de') {
       return 'ein';
     }
 
