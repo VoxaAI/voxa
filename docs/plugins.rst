@@ -109,7 +109,7 @@ Params
 
   :param object skill: The stateMachineSkill
   :param object cloudwatch: A new `AWS.CloudWatch <http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#constructor-property/>`_ object. 
-  :param object putMetricDataParams: Params for `putMetricData< http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#putMetricData-property>`_
+  :param object putMetricDataParams: Params for `putMetricData <http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#putMetricData-property>`_
 
 
 How to use it

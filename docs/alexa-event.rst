@@ -11,6 +11,6 @@ The ``alexaEvent`` object contains all the information from the Alexa event, it'
 The default middleware instantiates a ``Model`` and makes it available through ``alexaEvent.model``
 
 ``alexaEvent.intent.params``
--------------------------
+-----------------------------
 
 The alexaEvent object makes ``intent.slots`` available through ``intent.params`` after aplying a simple transformation so ``{ slots: [{ name: 'Dish', value: 'Fried Chicken' }] }`` becomes ``{ Dish: 'Fried Chicken' }``

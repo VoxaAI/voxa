@@ -39,7 +39,7 @@ A variable signature is:
 .. js:function:: variable(model, alexaEvent)
 
   :param model: The instance of your :ref:`model <models>` for the current alexa event.
-  :param AlexaEvent: The current :ref:`alexa event <alexaEvent>`.
+  :param AlexaEvent: The current :ref:`alexa event <alexa-event>`.
   :returns: The value to be rendered or a promise resolving to a value to be rendered in the view.
 
 .. code-block:: javascript

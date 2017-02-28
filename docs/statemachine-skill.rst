@@ -197,7 +197,7 @@ Handle events from the `AudioPlayer interface <https://developer.amazon.com/publ
   
   All audio player middleware callbacks get a :ref:`alexa event <alexa-event>` and a :ref:`reply <reply>` object
 
-  :param AlexaEvent alexaEvent: The :ref:`alexa event <alexaEvent>` sent by Alexa
+  :param AlexaEvent alexaEvent: The :ref:`alexa event <alexa-event>` sent by Alexa
   :param object reply: A reply to be sent as a response
   :returns object write: Your alexa event handler should return an appropriate response according to the event type, this generally means appending to the :ref:`reply <reply>` object
 
