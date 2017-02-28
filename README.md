@@ -27,7 +27,7 @@ const views = {
 const skill = new alexa.StateMachineSkill({ views })
 
 // respond to a LaunchIntent
-skill.onIntent('LaunchIntent', (alexaEvent) => {
+skill.onIntent('LaunchIntent', (event) => {
   return { reply: 'LaunchIntent' };
 });
 
