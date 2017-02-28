@@ -90,16 +90,16 @@ The audio intents handled in this example are:
 - AMAZON.ShuffleOnIntent
 - AMAZON.StartOverIntent
 
-You can track the values for loop, shuffle and current URL playing in the token property of the Alexa request in the path `request.context.AudioPlayer.token`:
+You can track the values for loop, shuffle and current URL playing in the token property of the Alexa event in the path `alexaEvent.context.AudioPlayer.token`:
 
 .. code-block:: javascript
 
-	skill.onState('loopOff', (request) => {
-		if (request.context) {
-		  const token = JSON.parse(request.context.AudioPlayer.token);
+	skill.onState('loopOff', (alexaEvent) => {
+		if (alexaEvent.context) {
+		  const token = JSON.parse(alexaEvent.context.AudioPlayer.token);
 		  const shuffle = token.shuffle;
 		  const loop = 0;
-		  const offsetInMilliseconds = request.context.AudioPlayer.offsetInMilliseconds;
+		  const offsetInMilliseconds = alexaEvent.context.AudioPlayer.offsetInMilliseconds;
 		  let index = token.index;
 
 		  if (index === podcast.length) {
@@ -128,16 +128,16 @@ You're not allowed to respond with a reply object since it's just an event most 
 
 .. code-block:: javascript
 
-	skill['onAudioPlayer.PlaybackStarted']((request) => {
-		console.log('onAudioPlayer.PlaybackStarted', JSON.stringify(request, null, 2));
+	skill['onAudioPlayer.PlaybackStarted']((alexaEvent) => {
+		console.log('onAudioPlayer.PlaybackStarted', JSON.stringify(alexaEvent, null, 2));
 	});
 
 In case the user has activated the loop mode by dispatching the `AMAZON.LoopOnIntent` intent, you can implement a queue list in the `AudioPlayer.PlaybackNearlyFinished` this way:
 
 .. code-block:: javascript
 
-	skill['onAudioPlayer.PlaybackNearlyFinished']((request, reply) => {
-		const token = JSON.parse(request.context.AudioPlayer.token);
+	skill['onAudioPlayer.PlaybackNearlyFinished']((alexaEvent, reply) => {
+		const token = JSON.parse(alexaEvent.context.AudioPlayer.token);
 
 		if (token.loop === 0) {
 		  return reply;
@@ -171,7 +171,7 @@ In case the user has activated the loop mode by dispatching the `AMAZON.LoopOnIn
 
 The `buildEnqueueDirective` function is in charge to build a directive object with a queue behavior, which will allow the skill to play the next audio as soon as the current one is finished.
 
-This is where your code to handle alexa requests goes, you will usually have a State Machine definition, this will include :ref:`states <controllers>`, :ref:`middleware <statemachine-skill>` and a :ref:`Model <models>`, :ref:`views-and-variables`.
+This is where your code to handle alexa events goes, you will usually have a State Machine definition, this will include :ref:`states <controllers>`, :ref:`middleware <statemachine-skill>` and a :ref:`Model <models>`, :ref:`views-and-variables`.
 
 
 data/podcast.js

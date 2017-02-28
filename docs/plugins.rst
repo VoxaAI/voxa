@@ -3,7 +3,7 @@
 Plugins
 =========
 
-Plugins allow you to modify how the StateMachineSkill handles a request. When a plugin is registered it will use the different hook points in your skill to add functionality. If you have several skills with similar behavior then your answer is to create a plugin.
+Plugins allow you to modify how the StateMachineSkill handles an alexa event. When a plugin is registered it will use the different hook points in your skill to add functionality. If you have several skills with similar behavior then your answer is to create a plugin.
 
 Using a plugin
 ----------------------------
@@ -26,11 +26,11 @@ After instatiating a StateMachineSkill you can register plugins on it. Built in 
 State Flow plugin
 ------------------
 
-Stores the state transitions for every request in an array.
+Stores the state transitions for every alexa event in an array.
 
 .. js:function:: stateFlow(skill)
 
-  State Flow attaches callbacks to :js:func:`~StateMachineSkill.onRequestStarted`, :js:func:`~StateMachineSkill.onBeforeStateChanged` and :js:func:`~StateMachineSkill.onBeforeReplySent` to track state transitions in a ``request.flow`` array
+  State Flow attaches callbacks to :js:func:`~StateMachineSkill.onRequestStarted`, :js:func:`~StateMachineSkill.onBeforeStateChanged` and :js:func:`~StateMachineSkill.onBeforeReplySent` to track state transitions in a ``alexaEvent.flow`` array
 
   :param StateMachineSkill skill: The skill object
 
@@ -40,8 +40,11 @@ Usage
 
 .. code-block:: javascript
 
-  skill.onBeforeReplySent((request) => {
-    console.log(request.flow.join(' > ')); // entry > firstState > secondState > die
+  const alexa = require('alexa-statemachine');
+  alexa.plugins.stateFlow.register(skill)
+
+  skill.onBeforeReplySent((alexaEvent) => {
+    console.log(alexaEvent.flow.join(' > ')); // entry > firstState > secondState > die
   });
 
 

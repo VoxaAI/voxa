@@ -8,7 +8,7 @@ StateMachineSkill
   :param string/array appId: The application id that amazon gives you in the developer website
   :param object config: Configuration for your skill, it should include :ref:`views-and-variables` and optionally a :ref:`model <models>` and a list of appIds.
 
-  If appIds is present then the framework will check every request and enforce the request application id to match one of the specified application ids.
+  If appIds is present then the framework will check every alexa event and enforce the application id to match one of the specified application ids.
 
   .. code-block:: javascript
 
@@ -43,7 +43,7 @@ StateMachineSkill
       'AMAZON.HelpIntent': 'help',
     });
 
-    skill.onState('launch', (request) => {
+    skill.onState('launch', (alexaEvent) => {
       return { reply: 'LaunchIntent.OpenResponse', to: 'die' };
     });
 
@@ -57,7 +57,7 @@ StateMachineSkill
 
   .. code-block:: javascript
 
-    skill.onIntent('HelpIntent', (request) => {
+    skill.onIntent('HelpIntent', (alexaEvent) => {
       return { reply: 'HelpIntent.HelpAboutSkill' };
     });
 
@@ -71,11 +71,11 @@ StateMachineSkill
 
 .. js:function:: StateMachineSkill.onLaunchRequest(callback, [atLast])
 
-  Adds a callback to be executed when processing a ``LaunchRequest``, the default behavior is to fake the :ref:`request <request>` as an ``IntentRequest`` with a ``LaunchIntent`` and just defer to the ``onIntentRequest`` handlers. You generally don't need to override this.
+  Adds a callback to be executed when processing a ``LaunchRequest``, the default behavior is to fake the :ref:`alexa event <alexa-event>` as an ``IntentRequest`` with a ``LaunchIntent`` and just defer to the ``onIntentRequest`` handlers. You generally don't need to override this.
 
 .. js:function:: StateMachineSkill.onBeforeStateChanged(callback, [atLast])
 
-  This is executed before entering every state, it can be used to track state changes or make changes to the :ref:`request <request>` object
+  This is executed before entering every state, it can be used to track state changes or make changes to the :ref:`alexa event <alexa-event>` object
 
 .. js:function:: StateMachineSkill.onBeforeReplySent(callback, [atLast])
 
@@ -85,20 +85,20 @@ StateMachineSkill
 
   .. code-block:: javascript
 
-      skill.onBeforeReplySent((request, reply) => {
+      skill.onBeforeReplySent((alexaEvent, reply) => {
         const rendered = reply.write();
-        analytics.track(request, rendered)
+        analytics.track(alexaEvent, rendered)
       });
 
 .. js:function:: StateMachineSkill.onAfterStateChanged(callback, [atLast])
 
   Adds callbacks to be executed on the result of a state transition, this are called after every transition and internally it's used to render the :ref:`transition <transition>` ``reply`` using the :ref:`views and variables <views-and-variables>`
 
-  The callbacks get ``request``, ``reply`` and ``transition`` params, it should return the transition object
+  The callbacks get ``alexaEvent``, ``reply`` and ``transition`` params, it should return the transition object
 
   .. code-block:: javascript
 
-    skill.onAfterStateChanged((request, reply, transition) => {
+    skill.onAfterStateChanged((alexaEvent, reply, transition) => {
       if (transition.reply === 'LaunchIntent.PlayTodayLesson') {
         transition.reply = _.sample(['LaunchIntent.PlayTodayLesson1', 'LaunchIntent.PlayTodayLesson2']);
       }
@@ -109,28 +109,28 @@ StateMachineSkill
 
 .. js:function:: StateMachineSkill.onUnhandledState(callback, [atLast])
 
-  Adds a callback to be executed when a state transition fails to generate a result, this usually happens when redirecting to a missing state or an entry call for a non configured intent, the handlers get a :ref:`request <request>` parameter and should return a :ref:`transition <transition>` the same as a state controller would.
+  Adds a callback to be executed when a state transition fails to generate a result, this usually happens when redirecting to a missing state or an entry call for a non configured intent, the handlers get a :ref:`alexa event <alexa-event>` parameter and should return a :ref:`transition <transition>` the same as a state controller would.
 
 .. js:function:: StateMachineSkill.onSessionStarted(callback, [atLast])
 
-  Adds a callback to the ``onSessinStarted`` event, this executes for all events where ``request.session.new === true``
+  Adds a callback to the ``onSessinStarted`` event, this executes for all events where ``alexaEvent.session.new === true``
 
   This can be useful to track analytics
 
   .. code-block:: javascript
 
-    skill.onSessionStarted((request, reply) => {
-      analytics.trackSessionStarted(request);
+    skill.onSessionStarted((alexaEvent, reply) => {
+      analytics.trackSessionStarted(alexaEvent);
     });
 
 .. js:function:: StateMachineSkill.onRequestStarted(callback, [atLast])
 
-  Adds a callback to be executed whenever there's a ``LaunchRequest``, ``IntentRequest`` or a ``SessionEndedRequest``, this can be used to initialize your analytics or get your account linking user data. Internally it's used to initialize the model based on the request session
+  Adds a callback to be executed whenever there's a ``LaunchRequest``, ``IntentRequest`` or a ``SessionEndedRequest``, this can be used to initialize your analytics or get your account linking user data. Internally it's used to initialize the model based on the event session
 
   .. code-block:: javascript
 
-    skill.onRequestStarted((request, reply) => {
-      request.model = this.config.Model.fromRequest(request);
+    skill.onRequestStarted((alexaEvent, reply) => {
+      alexaEvent.model = this.config.Model.fromEvent(alexaEvent);
     });
 
 
@@ -142,7 +142,7 @@ StateMachineSkill
 
 .. js:function:: StateMachineSkill.onSystem.ExceptionEncountered(callback, [atLast])
 
-  This handles `System.ExceptionEncountered <https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/custom-audioplayer-interface-reference#system-exceptionencountered>`_ requests that are sent to your skill when a response to an ``AudioPlayer`` request causes an error
+  This handles `System.ExceptionEncountered <https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/custom-audioplayer-interface-reference#system-exceptionencountered>`_ event that are sent to your skill when a response to an ``AudioPlayer`` event causes an error
 
 
   .. code-block:: javascript
@@ -151,7 +151,7 @@ StateMachineSkill
       if (result) {
         return result;
       }
-      return Promise.resolve(errorHandler(request, error));
+      return Promise.resolve(errorHandler(alexaEvent, error));
     }, null);
 
 
@@ -165,24 +165,24 @@ They're executed sequentially and will stop when the first handler returns a rep
 
 .. js:function:: StateMachineSkill.onStateMachineError(callback, [atLast])
 
-  This handler will catch all errors generated when trying to make transitions in the stateMachine, this could include errors in the state machine controllers, , the handlers get ``(request, reply, error)`` parameters
+  This handler will catch all errors generated when trying to make transitions in the stateMachine, this could include errors in the state machine controllers, , the handlers get ``(alexaEvent, reply, error)`` parameters
 
   .. code-block:: javascript
 
-    skill.onStateMachineError((request, reply, error) => {
+    skill.onStateMachineError((alexaEvent, reply, error) => {
       // it gets the current reply, which could be incomplete due to an error.
-      return new Reply(request, { tell: 'An error in the controllers code' })
+      return new Reply(alexaEvent, { tell: 'An error in the controllers code' })
         .write();
     });
 
 .. js:function:: StateMachineSkill.onError(callback, [atLast])
 
-  This is the more general handler and will catch all unhandled errors in the framework, it gets ``(request, error)`` parameters as arguments
+  This is the more general handler and will catch all unhandled errors in the framework, it gets ``(alexaEvent, error)`` parameters as arguments
 
   .. code-block:: javascript
 
-    skill.onError((request, error) => {
-      return new Reply(request, { tell: 'An unrecoverable error occurred.' })
+    skill.onError((alexaEvent, error) => {
+      return new Reply(alexaEvent, { tell: 'An unrecoverable error occurred.' })
         .write();
     });
 
@@ -191,21 +191,21 @@ They're executed sequentially and will stop when the first handler returns a rep
 Playback Controller handlers
 -----------------------------
 
-Handle requests from the `AudioPlayer interface <https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/custom-audioplayer-interface-reference#requests>`_
+Handle events from the `AudioPlayer interface <https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/custom-audioplayer-interface-reference#requests>`_
 
-.. js:function:: audioPlayerCallback(request, reply)
+.. js:function:: audioPlayerCallback(alexaEvent, reply)
   
-  All audio player middleware callbacks get a :ref:`request <request>` and a :ref:`reply <reply>` object
+  All audio player middleware callbacks get a :ref:`alexa event <alexa-event>` and a :ref:`reply <reply>` object
 
-  :param object request: The :ref:`request <request>` sent by Alexa
+  :param AlexaEvent alexaEvent: The :ref:`alexa event <alexaEvent>` sent by Alexa
   :param object reply: A reply to be sent as a response
-  :returns object write: Your request handler should return an appropriate response according to the request type, this generally means appending to the :ref:`reply <reply>` object
+  :returns object write: Your alexa event handler should return an appropriate response according to the event type, this generally means appending to the :ref:`reply <reply>` object
 
-  In the following example the request handler returns a ``REPLACE_ENQUEUED`` directive to a :js:func:`~StateMachineSkill.onAudioPlayer.PlaybackNearlyFinished` request.
+  In the following example the alexa event handler returns a ``REPLACE_ENQUEUED`` directive to a :js:func:`~StateMachineSkill.onAudioPlayer.PlaybackNearlyFinished` event.
 
   .. code-block:: javascript
 
-    skill['onAudioPlayer.PlaybackNearlyFinished']((request, reply) => {
+    skill['onAudioPlayer.PlaybackNearlyFinished']((alexaEvent, reply) => {
       const directives = {
         type: 'AudioPlayer.Play',
         playBehavior: 'REPLACE_ENQUEUED',

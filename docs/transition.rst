@@ -40,6 +40,6 @@ The ``reply`` key can take 2 forms, a simple string pointing to one of your view
 
   return { reply: 'LaunchIntent.OpenResponse' };
 
-  const reply = new Reply(request, { tell: 'Hi there!' });
+  const reply = new Reply(alexaEvent, { tell: 'Hi there!' });
   return { reply };
 

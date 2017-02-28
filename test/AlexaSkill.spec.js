@@ -159,8 +159,8 @@ describe('AlexaSkill', () => {
   it('should succeed with version on onSessionEnded request', () => {
     const alexaSkill = new AlexaSkill({ appIds: 'MY APP ID' });
     alexaSkill.onLaunchRequest(() => {});
-    const promise = alexaSkill.execute({ session: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } });
-    expect(promise).to.eventually.deep.equal({ version: '1.0' });
+    const promise = alexaSkill.execute({ context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } });
+    return expect(promise).to.eventually.deep.equal({ version: '1.0' });
   });
 
   it('should call onSesionEnded callback', (done) => {
