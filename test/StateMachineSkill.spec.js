@@ -131,14 +131,41 @@ describe('StateMachineSkill', () => {
       });
   });
 
-  it('permit the model.fromRequest to return a Promise', () => {
+  it('should allow async serialization in Model', () => {
     class PromisyModel extends Model {
-      static fromRequest() { return Promise.resolve(new PromisyModel()); }
+      serialize() { // eslint-disable-line class-methods-use-this
+        return Promise.resolve({
+          value: 1,
+        });
+      }
+    }
+
+    const stateMachineSkill = new StateMachineSkill({ views, variables, Model: PromisyModel });
+    statesDefinition.entry = simple.spy((request) => {
+      expect(request.model).to.not.be.undefined;
+      expect(request.model).to.be.an.instanceOf(PromisyModel);
+      return { reply: 'Question.Ask', to: 'initState' };
+    });
+
+    _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        expect(statesDefinition.entry.called).to.be.true;
+        expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
+        expect(reply.session.attributes.data).to.deep.equal({ value: 1 });
+      });
+  });
+
+  it('should let  model.fromRequest to return a Promise', () => {
+    class PromisyModel extends Model {
+      static fromEvent() {
+        return Promise.resolve(new PromisyModel());
+      }
     }
     const stateMachineSkill = new StateMachineSkill({ views, variables, Model: PromisyModel });
     statesDefinition.entry = simple.spy((request) => {
       expect(request.model).to.not.be.undefined;
-      expect(request.model).to.be.an.instanceOf(Model);
+      expect(request.model).to.be.an.instanceOf(PromisyModel);
       return { reply: 'ExitIntent.Farewell', to: 'die' };
     });
 
