@@ -1,6 +1,8 @@
 Voxa
 ====================
 
+[![Coverage Status](https://coveralls.io/repos/github/armonge/voxa/badge.svg?branch=master)](https://coveralls.io/github/armonge/voxa?branch=master)
+
 A fsm (state machine) framework for Alexa apps using Node.js
 
 Installation
