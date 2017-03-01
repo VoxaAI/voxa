@@ -2,9 +2,9 @@
 #
 
 # You can set these variables from the command line.
-SPHINXOPTS    = -n
+SPHINXOPTS    = -n -a
 SPHINXBUILD   = sphinx-build
-SPHINXPROJ    = alexa-statemachine
+SPHINXPROJ    = voxa
 SOURCEDIR     = .
 BUILDDIR      = _build
 

@@ -8,7 +8,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const alexa = require('../');
+const Voxa = require('../');
 const views = require('./views');
 const variables = require('./variables');
 const _ = require('lodash');
@@ -49,14 +49,13 @@ const states = {
     directives.url = TEST_URLS[index];
     directives.offsetInMilliseconds = 0;
 
-    return alexa.replyWithAudioDirectives('LaunchIntent.OpenResponse', 'die', request,
-        null, directives);
+    return { reply: 'LaunchIntent.OpenResponse', directives };
   },
-  exit: function enter(request) {
-    return alexa.replyWith('ExitIntent.Farewell', 'die', request);
+  exit: function enter() {
+    return { reply: 'ExitIntent.Farewell' };
   },
-  launch: function enter(request) {
-    return alexa.replyWith('LaunchIntent.OpenResponse', 'die', request);
+  launch: function enter() {
+    return { reply: 'LaunchIntent.OpenResponse' };
   },
 };
 
@@ -68,7 +67,7 @@ describe('StateMachineSkill', () => {
   let skill;
 
   beforeEach(() => {
-    skill = new alexa.StateMachineSkill({ views, variables });
+    skill = new Voxa({ views, variables });
     _.map(states, (state, name) => {
       skill.onState(name, state);
     });

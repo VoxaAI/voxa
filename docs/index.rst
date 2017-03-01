@@ -1,18 +1,18 @@
-.. alexa-statemachine documentation master file, created by
+.. voxa documentation master file, created by
    sphinx-quickstart on Tue Jan 24 15:18:17 2017.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to alexa-statemachine's documentation!
+Welcome to Voxa's documentation!
 ==============================================
 
 Installation
 -------------
-Alexa State Machine is distributed via ``npm``
+Voxa is distributed via ``npm``
 
 .. code-block:: bash
 
-  $ npm install alexa-statemachine --save
+  $ npm install voxa --save
 
 Initial Configuration
 ---------------------
@@ -22,16 +22,16 @@ Instantiating a StateMachineSkill requires a configuration specifying your :ref:
 .. code-block:: javascript
 
     'use strict';
-    const alexa = require('alexa-statemachine');
+    const Voxa = require('voxa');
     const views = require('./views'):
     const variables = require('./variables');
 
-    const stateMachineSkill = new alexa.StateMachineSkill({ variables, views });
+    const skill = new Voxa({ variables, views });
 
 Responding to alexa events
 -----------------------------
 
-Once you have your skill configured responding to events is as simple as calling the :js:func:`skill.execute <StateMachineSkill.execute>` method
+Once you have your skill configured responding to events is as simple as calling the :js:func:`skill.execute <Voxa.execute>` method
 
 .. code-block:: javascript
 
@@ -64,7 +64,7 @@ To help you get started the state machine has a number of example projects you c
 :ref:`Starter Kit <starter-kit>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This is the simplest project, it defines the default directory structure we recommend using with alexa-statemachine projects and has an example ``serverless.yml`` file that can be used to deploy your skill to a lambda function.
+This is the simplest project, it defines the default directory structure we recommend using with voxa projects and has an example ``serverless.yml`` file that can be used to deploy your skill to a lambda function.
 
 :ref:`My First Podcast <my-first-podcast>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -8,7 +8,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const alexa = require('../');
+const Voxa = require('../');
 const views = require('./views');
 const variables = require('./variables');
 const _ = require('lodash');
@@ -65,7 +65,7 @@ describe('StateMachineSkill', () => {
   let skill;
 
   beforeEach(() => {
-    skill = new alexa.StateMachineSkill({ views, variables });
+    skill = new Voxa({ views, variables });
     _.map(states, (state, name) => {
       skill.onState(name, state);
     });

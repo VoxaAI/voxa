@@ -1,4 +1,4 @@
-# Alexa Statemachine Projects
+# Voxa Sample Projects
 
 ### Development Setup
 

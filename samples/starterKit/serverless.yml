@@ -28,5 +28,5 @@ functions:
     events:
       - alexaSkill
     environment: 
-      DEBUG: alexa-statemachine
+      DEBUG: voxa
 

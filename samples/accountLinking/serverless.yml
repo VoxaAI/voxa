@@ -59,8 +59,11 @@ functions:
     events:
       - alexaSkill
     environment: 
-      DEBUG: alexa-statemachine
+      DEBUG: voxa
+      NODE_ENV: ${env:NODE_ENV}
   accountLinking: 
+    environment: 
+      NODE_ENV: ${env:NODE_ENV}
     handler: www/index.handler
     events: 
       - http:

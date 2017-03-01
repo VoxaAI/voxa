@@ -1,5 +1,5 @@
 {
-  "name": "alexa-statemachine",
+  "name": "voxa",
   "version": "1.0.0",
   "description": "A fsm (state machine) framework for Alexa apps using Node.js",
   "main": "index.js",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mediarain/alexa-statemachine.git"
+    "url": "git+https://github.com/mediarain/voxa.git"
   },
   "keywords": [
     "alexa",
@@ -47,7 +47,7 @@
     "simple-mock": "^0.7.3"
   },
   "bugs": {
-    "url": "https://github.com/mediarain/alexa-statemachine/issues"
+    "url": "https://github.com/mediarain/voxa/issues"
   },
-  "homepage": "https://github.com/mediarain/alexa-statemachine#readme"
+  "homepage": "https://github.com/mediarain/voxa#readme"
 }

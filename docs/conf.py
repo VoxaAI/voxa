@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# alexa-statemachine documentation build configuration file, created by
+# voxa documentation build configuration file, created by
 # sphinx-quickstart on Tue Jan 24 15:18:17 2017.
 #
 # This file is execfile()d with the current directory set to its
@@ -45,7 +45,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'alexa-statemachine'
+project = u'voxa'
 copyright = u'2017, Rain Agency'
 author = u'Rain Agency'
 
@@ -99,7 +99,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'alexa-statemachinedoc'
+htmlhelp_basename = 'voxadoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -126,7 +126,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'alexa-statemachine.tex', u'alexa-statemachine Documentation',
+    (master_doc, 'voxa.tex', u'Voxa Documentation',
      u'Rain Agency', 'manual'),
 ]
 
@@ -136,7 +136,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'alexa-statemachine', u'alexa-statemachine Documentation',
+    (master_doc, 'voxa', u'Voxa Documentation',
      [author], 1)
 ]
 
@@ -147,8 +147,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'alexa-statemachine', u'alexa-statemachine Documentation',
-     author, 'alexa-statemachine', 'A fsm (state machine) framework for Alexa apps using Node.js',
+    (master_doc, 'Voxa', u'Voxa Documentation',
+     author, 'Voxa', 'A fsm (state machine) framework for Alexa apps using Node.js',
      'Miscellaneous'),
 ]
 

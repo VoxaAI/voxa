@@ -13,7 +13,7 @@
 
 module.exports.version = '0.3.2';
 
-const stateMachineSkill = require('./lib/StateMachineSkill');
+const StateMachineSkill = require('./lib/StateMachineSkill');
 const helpers = require('alexa-helpers');
 const Reply = require('./lib/Reply');
 const DefaultRenderer = require('./lib/renderers/DefaultRenderer');
@@ -27,7 +27,7 @@ const replaceIntent = require('./lib/plugins/replace-intent');
 const stateFlow = require('./lib/plugins/state-flow');
 const cloudWatch = require('./lib/plugins/cloud-watch');
 
-module.exports.StateMachineSkill = stateMachineSkill;
+module.exports = StateMachineSkill;
 module.exports.Reply = Reply;
 module.exports.helpers = helpers;
 module.exports.replyWith = (reply, to) => ({ reply, to });
@@ -42,3 +42,4 @@ module.exports.plugins = {
   stateFlow,
   cloudWatch,
 };
+

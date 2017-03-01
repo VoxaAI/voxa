@@ -1,4 +1,4 @@
-Alexa State Machine
+Voxa
 ====================
 
 A fsm (state machine) framework for Alexa apps using Node.js
@@ -6,17 +6,17 @@ A fsm (state machine) framework for Alexa apps using Node.js
 Installation
 -------------
 
-Just install from [npm](https://www.npmjs.com/package/alexa-statemachine)
+Just install from [npm](https://www.npmjs.com/package/voxa)
 
 ```bash
-npm install --save alexa-statemachine
+npm install --save voxa
 ```
 
 Usage
 ------
 
 ```javascript
-const alexa = require('alexa-statemachine');
+const Voxa = require('voxa');
 
 // Views are used by your controller to send responses to the user
 const views = {
@@ -24,7 +24,7 @@ const views = {
 }
 
 // initialize the skill
-const skill = new alexa.StateMachineSkill({ views })
+const skill = new Voxa({ views })
 
 // respond to a LaunchIntent
 skill.onIntent('LaunchIntent', (event) => {
@@ -59,6 +59,6 @@ npm run lint
 Resources
 ----------
 
-* [Documentation](http://alexa-statemachine.readthedocs.io/en/latest/)
-* [Bug Tracker](https://github.com/mediarain/alexa-statemachine/issues)
-* [IRC](irc://chat.freenode.net/alexa-statemachine) (chat.freenode.net, #alexa-statemachine)
+* [Documentation](http://voxa.readthedocs.io/en/latest/)
+* [Bug Tracker](https://github.com/mediarain/voxa/issues)
+* [IRC](irc://chat.freenode.net/voxa) (chat.freenode.net, #voxa)

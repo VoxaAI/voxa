@@ -22,7 +22,7 @@
   ],
   "license": "ISC",
   "dependencies": {
-    "alexa-statemachine": "^1.0.0",
+    "voxa": "^1.0.0",
     "aws-sdk": "^2.7.23",
     "aws-serverless-express": "1.3.0",
     "bluebird": "^3.3.5",
@@ -53,10 +53,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mediarain/alexa-statemachine.git"
+    "url": "git+https://github.com/mediarain/voxa.git"
   },
   "bugs": {
-    "url": "https://github.com/mediarain/alexa-statemachine/issues"
+    "url": "https://github.com/mediarain/voxa/issues"
   },
-  "homepage": "https://github.com/mediarain/alexa-statemachine#readme"
+  "homepage": "https://github.com/mediarain/voxa#readme"
 }
