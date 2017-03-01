@@ -118,8 +118,8 @@ describe('StateMachineSkill', () => {
   });
 
   it('should throw an error if required properties missing from config', () => {
-    expect(() => new StateMachineSkill({ Model: { } })).to.throw(Error, 'Model should have a fromRequest method');
-    expect(() => new StateMachineSkill({ Model: { fromRequest: () => {} } })).to.throw(Error, 'Model should have a serialize method');
+    expect(() => new StateMachineSkill({ Model: { } })).to.throw(Error, 'Model should have a fromEvent method');
+    expect(() => new StateMachineSkill({ Model: { fromEvent: () => {} } })).to.throw(Error, 'Model should have a serialize method');
     expect(() => new StateMachineSkill({ Model })).to.throw(Error, 'DefaultRenderer config should include views');
     expect(() => new StateMachineSkill({ Model, views })).to.not.throw(Error);
   });

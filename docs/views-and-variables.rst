@@ -36,10 +36,10 @@ Variables are the rendering engine way of adding logic into your views. They're 
 
 A variable signature is:
 
-.. js:function:: variable(model, request)
+.. js:function:: variable(model, alexaEvent)
 
-  :param model: The instance of your :ref:`model <models>` for the current request.
-  :param request: The current :ref:`request <request>`.
+  :param model: The instance of your :ref:`model <models>` for the current alexa event.
+  :param AlexaEvent: The current :ref:`alexa event <alexa-event>`.
   :returns: The value to be rendered or a promise resolving to a value to be rendered in the view.
 
 .. code-block:: javascript
@@ -53,7 +53,7 @@ A variable signature is:
         return model.count;
       },
 
-      locale: function locale(model, request) {
-        return request.locale;
+      locale: function locale(model, alexaEvent) {
+        return alexaEvent.locale;
       }
     };

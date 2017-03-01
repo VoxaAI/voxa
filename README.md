@@ -27,7 +27,7 @@ const views = {
 const skill = new alexa.StateMachineSkill({ views })
 
 // respond to a LaunchIntent
-skill.onIntent('LaunchIntent', (request) => {
+skill.onIntent('LaunchIntent', (event) => {
   return { reply: 'LaunchIntent' };
 });
 
@@ -61,4 +61,4 @@ Resources
 
 * [Documentation](http://alexa-statemachine.readthedocs.io/en/latest/)
 * [Bug Tracker](https://github.com/mediarain/alexa-statemachine/issues)
-* [IRC](irc://chat.freenode.net/sentry) (chat.freenode.net, #alexa-statemachine)
+* [IRC](irc://chat.freenode.net/alexa-statemachine) (chat.freenode.net, #alexa-statemachine)

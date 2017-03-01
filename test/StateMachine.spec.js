@@ -11,22 +11,25 @@ const errors = require('../lib/Errors');
 const Reply = require('../lib/Reply');
 const Promise = require('bluebird');
 const simple = require('simple-mock');
+const AlexaEvent = require('../lib/AlexaEvent');
 
 describe('StateMachine', () => {
   let states;
-  let request;
+  let alexaEvent;
 
   beforeEach(() => {
-    request = {
-      intent: {
+    alexaEvent = new AlexaEvent({
+      request: {
+        intent: {
 
+        },
       },
       session: {
         attributes: {
 
         },
       },
-    };
+    });
     states = {
       entry: { enter: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }), name: 'entry' },
       initState: { enter: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }), name: 'initState' },
@@ -37,7 +40,7 @@ describe('StateMachine', () => {
 
   it('should transition to die', () => {
     const stateMachine = new StateMachine('initState', { states });
-    return stateMachine.transition(request, new Reply(request))
+    return stateMachine.transition(alexaEvent, new Reply(alexaEvent))
       .then((response) => {
         expect(response.to.name).to.equal(states.die.name);
       });
@@ -45,7 +48,7 @@ describe('StateMachine', () => {
 
   it('should transition more than one state', () => {
     const stateMachine = new StateMachine('secondState', { states });
-    return stateMachine.transition(request, new Reply(request))
+    return stateMachine.transition(alexaEvent, new Reply(alexaEvent))
       .then((response) => {
         expect(response.to.name).to.equal(states.die.name);
       });
@@ -54,7 +57,7 @@ describe('StateMachine', () => {
   it('should call onBeforeStateChangedCallbacks', () => {
     const onBeforeStateChanged = simple.stub();
     const stateMachine = new StateMachine('secondState', { onBeforeStateChanged: [onBeforeStateChanged], states });
-    return stateMachine.transition(request, new Reply(request))
+    return stateMachine.transition(alexaEvent, new Reply(alexaEvent))
       .then(() => {
         expect(onBeforeStateChanged.called).to.be.true;
         expect(onBeforeStateChanged.callCount).to.equal(2);
@@ -63,7 +66,7 @@ describe('StateMachine', () => {
 
   it('should transition on promises change', () => {
     const stateMachine = new StateMachine('thirdState', { states });
-    return stateMachine.transition(request, new Reply(request))
+    return stateMachine.transition(alexaEvent, new Reply(alexaEvent))
       .then((response) => {
         expect(response.to.name).to.equal(states.die.name);
       });
@@ -72,8 +75,8 @@ describe('StateMachine', () => {
   it('should transition depending on intent if state.to ', () => {
     states.entry = { to: { TestIntent: 'die' }, name: 'entry' };
     const stateMachine = new StateMachine('entry', { states });
-    request.intent.name = 'TestIntent';
-    return stateMachine.transition(request, new Reply(request))
+    alexaEvent.intent.name = 'TestIntent';
+    return stateMachine.transition(alexaEvent, new Reply(alexaEvent))
       .then((response) => {
         expect(response.to.name).to.equal(states.die.name);
       });
@@ -83,7 +86,7 @@ describe('StateMachine', () => {
     states.thirdState.enter = () => 'LaunchIntent.OpenResponse';
 
     const stateMachine = new StateMachine('thirdState', { states });
-    return stateMachine.transition(request, new Reply(request))
+    return stateMachine.transition(alexaEvent, new Reply(alexaEvent))
       .then((response) => {
         expect(response.to.name).to.equal(states.die.name);
       });
@@ -101,14 +104,15 @@ describe('StateMachine', () => {
     it('should throw UnhandledState on a falsey response from the state transition', () => {
       states.entry.enter = () => null;
       const stateMachine = new StateMachine('entry', { states });
-      const promise = stateMachine.transition({ intent: { name: 'LaunchIntent' } }, new Reply(request));
+      const promise = stateMachine.transition({ intent: { name: 'LaunchIntent' } }, new Reply(alexaEvent));
       return expect(promise).to.eventually.be.rejectedWith(errors.UnhandledState);
     });
 
     it('should throw an exception on invalid transition from pojo controller', () => {
       states.entry = { to: { TestIntent: 'die' }, name: 'entry' };
       const stateMachine = new StateMachine('entry', { states });
-      const promise = stateMachine.transition({ intent: { name: 'OtherIntent' }, session: { attributes: { } } }, new Reply(request));
+      alexaEvent.intent.name = 'OtherIntent';
+      const promise = stateMachine.transition(alexaEvent, new Reply(alexaEvent));
       return expect(promise).to.eventually.be.rejectedWith(errors.UnhandledState, 'Transition from entry resulted in undefined');
     });
 
@@ -116,7 +120,8 @@ describe('StateMachine', () => {
       states.entry = { to: { TestIntent: 'die' }, name: 'entry' };
       const onUnhandledState = simple.spy(() => ({ to: 'die' }));
       const stateMachine = new StateMachine('entry', { states, onUnhandledState: [onUnhandledState] });
-      const promise = stateMachine.transition({ intent: { name: 'OtherIntent' }, session: { attributes: { } } }, new Reply(request));
+      alexaEvent.intent.name = 'OtherIntent';
+      const promise = stateMachine.transition(alexaEvent, new Reply(alexaEvent));
       return expect(promise).to.eventually.deep.equal({
         to: {
           isTerminal: true,
@@ -129,7 +134,8 @@ describe('StateMachine', () => {
   it('should throw UnknownState when transition.to goes to an undefined state', () => {
     states.entry = { to: { LaunchIntent: 'undefinedState' } };
     const stateMachine = new StateMachine('entry', { states });
-    return expect(stateMachine.transition({ intent: { name: 'LaunchIntent' } }), new Reply(request)).to.eventually.be.rejectedWith(errors.UnknownState);
+    alexaEvent.intent.name = 'LaunchIntent';
+    return expect(stateMachine.transition(alexaEvent, new Reply(alexaEvent))).to.eventually.be.rejectedWith(errors.UnknownState);
   });
 
   it('should fallback to entry on no response', () => {
@@ -139,7 +145,8 @@ describe('StateMachine', () => {
     };
 
     const stateMachine = new StateMachine('someState', { states });
-    return stateMachine.transition({ intent: { name: 'LaunchIntent' } }, new Reply(request))
+    alexaEvent.intent.name = 'LaunchIntent';
+    return stateMachine.transition(alexaEvent, new Reply(alexaEvent))
       .then((transition) => {
         expect(states.someState.enter.called).to.be.true;
         expect(transition).to.deep.equal({

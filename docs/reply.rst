@@ -4,11 +4,11 @@ The ``reply`` Object
 ====================
 
 
-.. js:class:: Reply(request, [message])
+.. js:class:: Reply(alexaEvent, [message])
 
   The ``reply`` object is used by the framework to render Alexa responses, it takes all of your ``statements``, ``cards`` and ``directives`` and generates a proper json response for Alexa
 
-  :param object request: :ref:`request`
+  :param AlexaEvent alexaEvent: :ref:`alexa-event`
   :param object message: A message object
 
 .. js:function:: Reply.append(message)

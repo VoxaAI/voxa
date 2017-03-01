@@ -28,7 +28,7 @@ Instantiating a StateMachineSkill requires a configuration specifying your :ref:
 
     const stateMachineSkill = new alexa.StateMachineSkill({ variables, views });
 
-Responding to alexa requests
+Responding to alexa events
 -----------------------------
 
 Once you have your skill configured responding to events is as simple as calling the :js:func:`skill.execute <StateMachineSkill.execute>` method
@@ -43,16 +43,16 @@ Once you have your skill configured responding to events is as simple as calling
       .catch(context.fail);
   };
 
-Responding to an intent request
+Responding to an intent event
 --------------------------------
 
 .. code-block:: javascript
 
-  skill.onIntent('HelpIntent', (request) => {
+  skill.onIntent('HelpIntent', (alexaEvent) => {
     return { reply: 'HelpIntent.HelpAboutSkill' };
   });
 
-  skill.onIntent('ExitIntent', (request) => {
+  skill.onIntent('ExitIntent', (alexaEvent) => {
     return { reply: 'ExitIntent.Farewell' };
   });
 
@@ -89,7 +89,7 @@ Links
   views-and-variables
   controllers
   transition
-  request
+  alexa-event
   reply
   statemachine-skill
   request-flow
