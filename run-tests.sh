@@ -5,6 +5,6 @@ npm run test-ci
 npm run cobertura
 npm run lint
 
-if [ "${CI}" = "false" ]; then
+if [ "${CI}" = "true" ]; then
   cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 fi
