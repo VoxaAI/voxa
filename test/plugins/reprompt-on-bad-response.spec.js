@@ -45,7 +45,7 @@ describe('BadResponseRepromptPlugin', () => {
     badResponseReprompt(stateMachineSkill);
     return stateMachineSkill.execute(event)
       .then((reply) => {
-        expect(reply.response.outputSpeech.ssml).to.equal('<speak>Say stop if you want to finish the playback</speak>');
+        expect(reply.msg.statements[0]).to.equal('Say stop if you want to finish the playback');
       });
   });
 
@@ -84,7 +84,7 @@ describe('BadResponseRepromptPlugin', () => {
     });
     return stateMachineSkill.execute(event)
       .then((reply) => {
-        expect(reply.response.outputSpeech.ssml).to.equal('<speak>I\'m sorry. I didn\'t understand.\nSay stop if you want to finish the playback</speak>');
+        expect(reply.msg.statements).to.deep.equal(['I\'m sorry. I didn\'t understand.', 'Say stop if you want to finish the playback']);
       });
   });
 
@@ -122,7 +122,7 @@ describe('BadResponseRepromptPlugin', () => {
     });
     return stateMachineSkill.execute(event)
       .then((reply) => {
-        expect(reply.response.outputSpeech.ssml).to.equal('<speak>An unrecoverable error occurred.</speak>');
+        expect(reply.msg.statements).to.deep.equal(['An unrecoverable error occurred.']);
       });
   });
 });

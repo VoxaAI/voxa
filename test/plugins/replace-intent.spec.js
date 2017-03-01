@@ -39,7 +39,7 @@ describe('ReplaceIntentPlugin', () => {
       .then((reply) => {
         expect(spy.called).to.be.true;
         expect(spy.lastCall.args[0].intent.name).to.equal('SomeIntent');
-        expect(reply.response.outputSpeech.ssml).to.include('Hello! Good ');
+        expect(reply.msg.statements[0]).to.include('Hello! Good ');
       });
   });
 
@@ -69,7 +69,7 @@ describe('ReplaceIntentPlugin', () => {
       .then((reply) => {
         expect(spy.called).to.be.true;
         expect(spy.lastCall.args[0].intent.name).to.equal('OnlySomeIntent');
-        expect(reply.response.outputSpeech.ssml).to.include('Hello! Good ');
+        expect(reply.msg.statements[0]).to.include('Hello! Good ');
       });
   });
 
@@ -98,7 +98,7 @@ describe('ReplaceIntentPlugin', () => {
       .then((reply) => {
         expect(spy.called).to.be.true;
         expect(spy.lastCall.args[0].intent.name).to.equal('SomeHolderIntent');
-        expect(reply.response.outputSpeech.ssml).to.include('Hello! Good ');
+        expect(reply.msg.statements[0]).to.include('Hello! Good ');
       });
   });
 
@@ -130,7 +130,7 @@ describe('ReplaceIntentPlugin', () => {
       .then((reply) => {
         expect(spy.called).to.be.true;
         expect(spy.lastCall.args[0].intent.name).to.equal('LongIntent');
-        expect(reply.response.outputSpeech.ssml).to.include('Hello! Good ');
+        expect(reply.msg.statements[0]).to.include('Hello! Good ');
       });
   });
 });

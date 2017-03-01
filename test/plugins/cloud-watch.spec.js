@@ -43,7 +43,7 @@ describe('CloudwatchPlugin', () => {
       .then((reply) => {
         expect(spySkill.called).to.be.true;
         expect(spySkill.lastCall.args[0].intent.name).to.equal('SomeIntent');
-        expect(reply.response.outputSpeech.ssml).to.equal('<speak>An unrecoverable error occurred.</speak>');
+        expect(reply.msg.statements[0]).to.equal('An unrecoverable error occurred.');
         expect(cloudwatchMock.called).to.be.true;
         expect(cloudwatchMock.callCount).to.be.at.most(1);
         expect(cloudwatchMock.lastCall.args[0].Namespace).to.equal('fooBarSkill');
@@ -79,7 +79,7 @@ describe('CloudwatchPlugin', () => {
     stateMachineSkill.onIntent('barIntent', () => 'fooStatement');
     return stateMachineSkill.execute(event)
       .then((reply) => {
-        expect(reply.response.outputSpeech.ssml).to.equal('<speak>An unrecoverable error occurred.</speak>');
+        expect(reply.msg.statements[0]).to.equal('An unrecoverable error occurred.');
         expect(cloudwatchMock.called).to.be.true;
         expect(cloudwatchMock.callCount).to.be.at.most(1);
         expect(cloudwatchMock.lastCall.args[0].Namespace).to.equal('fooBarSkill');

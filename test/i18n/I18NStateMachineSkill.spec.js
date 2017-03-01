@@ -43,14 +43,14 @@ describe('I18NStateMachineSkill', () => {
 
   const locales = {
     'en-us': {
-      site: '<speak>Ok. For more info visit example.com site.</speak>',
-      number: '<speak>one</speak>',
-      question: '<speak>What time is it?</speak>',
+      site: 'Ok. For more info visit example.com site.',
+      number: 'one',
+      question: 'What time is it?',
     },
     'de-de': {
-      site: '<speak>Ok für weitere Infos besuchen example.com Website</speak>',
-      number: '<speak>ein</speak>',
-      question: '<speak>wie spät ist es?</speak>',
+      site: 'Ok für weitere Infos besuchen example.com Website',
+      number: 'ein',
+      question: 'wie spät ist es?',
     },
   };
 
@@ -66,8 +66,8 @@ describe('I18NStateMachineSkill', () => {
         _.map(statesDefinition, (state, name) => skill.onState(name, state));
         event.request.locale = locale;
         return skill.execute(event)
-          .then((result) => {
-            expect(result.response.outputSpeech.ssml).to.equal(translations.site);
+          .then((reply) => {
+            expect(reply.msg.statements[0]).to.equal(translations.site);
           });
       });
 
@@ -75,8 +75,8 @@ describe('I18NStateMachineSkill', () => {
         skill.onIntent('SomeIntent', () => ({ reply: 'Number.One' }));
         event.request.locale = locale;
         return skill.execute(event)
-          .then((result) => {
-            expect(result.response.outputSpeech.ssml).to.equal(translations.number);
+          .then((reply) => {
+            expect(reply.msg.statements[0]).to.equal(translations.number);
           });
       });
 
@@ -84,12 +84,12 @@ describe('I18NStateMachineSkill', () => {
         skill.onIntent('SomeIntent', () => ({ reply: 'Question.Ask' }));
         event.request.locale = locale;
         return skill.execute(event)
-          .then((result) => {
-            expect(result.sessionAttributes.reply).to.deep.equal({
+          .then((reply) => {
+            expect(reply.session.attributes.reply).to.deep.equal({
               msgPath: 'Question.Ask',
               state: 'die',
             });
-            expect(result.response.outputSpeech.ssml).to.equal(translations.question);
+            expect(reply.msg.statements[0]).to.equal(translations.question);
           });
       });
     });

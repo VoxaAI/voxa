@@ -49,30 +49,20 @@ describe('StateMachineSkill', () => {
     event.request.type = 'LaunchRequest';
 
     return stateMachineSkill.execute(event)
-      .then((result) => {
-        expect(result).to.deep.equal({ version: '1.0',
-          response:
-          { outputSpeech: { type: 'SSML', ssml: '<speak>This is my message</speak>' },
-            shouldEndSession: true,
-            card: undefined },
-          sessionAttributes: { state: 'die', data: { } } });
+      .then((reply) => {
+        expect(reply.msg.statements[0]).to.deep.equal('This is my message');
       });
   });
 
-  it('should add usea append the reply key to the Reply if it\'s a Reply object', () => {
+  it('should add use append the reply key to the Reply if it\'s a Reply object', () => {
     const stateMachineSkill = new StateMachineSkill({ variables, views });
     const reply = new Reply({ }, { tell: 'This is my message' });
     stateMachineSkill.onIntent('LaunchIntent', () => ({ reply }));
     event.request.type = 'LaunchRequest';
 
     return stateMachineSkill.execute(event)
-      .then((result) => {
-        expect(result).to.deep.equal({ version: '1.0',
-          response:
-          { outputSpeech: { type: 'SSML', ssml: '<speak>This is my message</speak>' },
-            shouldEndSession: true,
-            card: undefined },
-          sessionAttributes: { state: 'die', data: { } } });
+      .then((skillReply) => {
+        expect(skillReply.msg.statements[0]).to.deep.equal('This is my message');
       });
   });
 
@@ -213,20 +203,9 @@ describe('StateMachineSkill', () => {
 
       _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
       return stateMachineSkill.execute(event)
-        .then((response) => {
+        .then((reply) => {
           expect(onUnhandledState.called).to.be.true;
-          expect(response).to.deep.equal({
-            version: '1.0',
-            response: {
-              outputSpeech: {
-                type: 'SSML',
-                ssml: '<speak>Ok. For more info visit example.com site.</speak>',
-              },
-              shouldEndSession: true,
-              card: undefined,
-            },
-            sessionAttributes: { data: { }, state: 'die' },
-          });
+          expect(reply.msg.statements[0]).to.equal('Ok. For more info visit example.com site.');
         });
     });
   });
@@ -240,20 +219,10 @@ describe('StateMachineSkill', () => {
 
       event.request.intent.name = 'AskIntent';
       return stateMachineSkill.execute((event))
-        .then((result) => {
+        .then((reply) => {
           expect(spy.called).to.be.true;
-          expect(result).to.deep.equal({
-            response: {
-              card: undefined,
-              outputSpeech: {
-                ssml: '<speak>My custom response</speak>',
-                type: 'SSML',
-              },
-              shouldEndSession: true,
-            },
-            sessionAttributes: {},
-            version: '1.0',
-          });
+          expect(reply.error).to.be.an('error');
+          expect(reply.msg.statements[0]).to.equal('My custom response');
         });
     });
   });
@@ -264,8 +233,8 @@ describe('StateMachineSkill', () => {
     stateMachineSkill.onState('exit', () => 'ExitIntent.Farewell');
     event.request.intent.name = 'AskIntent';
     return stateMachineSkill.execute((event))
-      .then((result) => {
-        expect(result.sessionAttributes.reply).to.deep.equal({
+      .then((reply) => {
+        expect(reply.session.attributes.reply).to.deep.equal({
           msgPath: 'Question.Ask',
           state: 'exit',
         });
@@ -290,18 +259,14 @@ describe('StateMachineSkill', () => {
     }));
 
     return stateMachineSkill.execute(event)
-      .then((result) => {
-        expect(result.response.directives).to.not.be.undefined;
-        expect(result.response.directives[0]).to.deep.equal({
+      .then((reply) => {
+        expect(reply.msg.directives).to.not.be.undefined;
+        expect(reply.msg.directives).to.deep.equal({
           type: 'AudioPlayer.Play',
           playBehavior: 'REPLACE_ALL',
-          audioItem: {
-            stream: {
-              offsetInMilliseconds: 0,
-              token: '123',
-              url: 'url',
-            },
-          },
+          offsetInMilliseconds: 0,
+          token: '123',
+          url: 'url',
         });
       });
   });
@@ -323,18 +288,14 @@ describe('StateMachineSkill', () => {
     }));
 
     return stateMachineSkill.execute(event)
-      .then((result) => {
-        expect(result.response.directives).to.not.be.undefined;
-        expect(result.response.directives[0]).to.deep.equal({
-          type: 'AudioPlayer.Play',
+      .then((reply) => {
+        expect(reply.msg.directives).to.not.be.undefined;
+        expect(reply.msg.directives).to.deep.equal({
           playBehavior: 'REPLACE_ALL',
-          audioItem: {
-            stream: {
-              offsetInMilliseconds: 0,
-              token: '123',
-              url: 'url',
-            },
-          },
+          type: 'AudioPlayer.Play',
+          offsetInMilliseconds: 0,
+          token: '123',
+          url: 'url',
         });
       });
   });
@@ -360,7 +321,7 @@ describe('StateMachineSkill', () => {
     _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
     return stateMachineSkill.execute(event)
       .then((reply) => {
-        expect(reply.response.outputSpeech.ssml).to.equal('<speak>0\n1</speak>');
+        expect(reply.msg.statements).to.deep.equal(['0', '1']);
       });
   });
 
@@ -375,7 +336,7 @@ describe('StateMachineSkill', () => {
       .then((reply) => {
         expect(stub.called).to.be.true;
         expect(reply).to.not.equal(stubResponse);
-        expect(reply.response.outputSpeech.ssml).to.equal('<speak>Ok. For more info visit example.com site.</speak>');
+        expect(reply.msg.statements[0]).to.equal('Ok. For more info visit example.com site.');
       });
   });
 
@@ -392,18 +353,7 @@ describe('StateMachineSkill', () => {
       return stateMachineSkill.execute(event)
         .then((reply) => {
           expect(spy.called).to.be.true;
-          expect(reply).to.deep.equal({
-            version: '1.0',
-            sessionAttributes: { },
-            response: {
-              card: undefined,
-              outputSpeech: {
-                ssml: '<speak>An unrecoverable error occurred.</speak>',
-                type: 'SSML',
-              },
-              shouldEndSession: true,
-            },
-          });
+          expect(reply.error).to.be.an('error');
         });
     });
   });
@@ -420,17 +370,7 @@ describe('StateMachineSkill', () => {
       return stateMachineSkill.execute(event)
         .then((reply) => {
           expect(spy.called).to.be.true;
-          expect(reply).to.deep.equal({
-            version: '1.0',
-            response: {
-              card: undefined,
-              outputSpeech: {
-                ssml: '<speak>An unrecoverable error occurred.</speak>',
-                type: 'SSML',
-              },
-              shouldEndSession: true,
-            },
-          });
+          expect(reply.error).to.be.an('error');
         });
     });
   });

@@ -71,14 +71,14 @@ describe('StateMachineSkill', () => {
     });
   });
 
-  itIs('audioResume', (res) => {
-    expect(res.response.outputSpeech.ssml).to.include('Hello! Good');
+  itIs('audioResume', (reply) => {
+    expect(reply.msg.statements[0]).to.include('Hello! Good');
 
-    const token = JSON.parse(res.response.directives[0].audioItem.stream.token);
+    const token = JSON.parse(reply.msg.directives.token);
     expect(token.index).to.equal(1, 'AUDIO INDEX 1');
     expect(token.shuffle).to.equal(1, 'SHUFFLE OFF');
     expect(token.loop).to.equal(0, 'LOOP OFF');
-    expect(res.response.directives[0].audioItem.stream.offsetInMilliseconds).to.equal(
+    expect(reply.msg.directives.offsetInMilliseconds).to.equal(
       353160, 'OFFSETINMILLISECONDS OK');
   });
 

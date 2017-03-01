@@ -18,6 +18,6 @@ The ``reply`` Object
     :param message: An object with keys ``ask``, ``tell``, ``say``, ``reprompt``, ``card`` or ``directives`` keys. Or another ``reply`` object
     :returns: the ``Reply`` object
 
-  .. js:function:: Reply.write()
+  .. js:function:: Reply.toJSON()
     
     :returns: An object with the proper format to send back to Alexa, with statements wrapped in SSML tags, cards, reprompts and directives

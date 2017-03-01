@@ -22,10 +22,10 @@ describe('Reply', () => {
     expect(reply.yield).to.be.true;
   });
 
-  describe('write', () => {
+  describe('toJSON', () => {
     it('should generate a correct alexa response that doesn\'t  end a session for an ask response', () => {
       reply.append({ ask: 'ask' });
-      expect(reply.write()).to.deep.equal({
+      expect(reply.toJSON()).to.deep.equal({
         response: {
           card: undefined,
           outputSpeech: {
@@ -39,7 +39,7 @@ describe('Reply', () => {
     });
     it('should generate a correct alexa response that ends a session for a tell response', () => {
       reply.append({ tell: 'tell' });
-      expect(reply.write()).to.deep.equal({
+      expect(reply.toJSON()).to.deep.equal({
         response: {
           card: undefined,
           outputSpeech: {

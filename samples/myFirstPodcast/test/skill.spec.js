@@ -17,8 +17,8 @@ describe('Skill', () => {
     };
 
     return skill.execute(event)
-      .then((result) => {
-        expect(result.response.outputSpeech.ssml).to.equal('<speak>Welcome to your first podcast! In this example, you will have to include in the podcast.js file the URL for your mp3, hosted in a HTTPS server. Do you want to listen to the first audio Dance of the Sugar Plum?</speak>');
+      .then((reply) => {
+        expect(reply.toJSON().response.outputSpeech.ssml).to.equal('<speak>Welcome to your first podcast! In this example, you will have to include in the podcast.js file the URL for your mp3, hosted in a HTTPS server. Do you want to listen to the first audio Dance of the Sugar Plum?</speak>');
       });
   });
 
@@ -41,8 +41,8 @@ describe('Skill', () => {
     };
 
     return skill.execute(event)
-      .then((result) => {
-        expect(result).to.deep.equal({ version: '1.0',
+      .then((reply) => {
+        expect(reply.toJSON()).to.deep.equal({ version: '1.0',
           response:
           { outputSpeech: undefined,
             shouldEndSession: true,

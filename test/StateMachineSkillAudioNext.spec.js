@@ -7,7 +7,7 @@
 
 'use strict';
 
-const assert = require('chai').assert;
+const expect = require('chai').expect;
 const Voxa = require('../');
 const views = require('./views');
 const variables = require('./variables');
@@ -73,11 +73,11 @@ describe('StateMachineSkill', () => {
     });
   });
 
-  itIs('audioNext', (res) => {
-    assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
+  itIs('audioNext', (reply) => {
+    expect(reply.msg.statements[0]).to.include('Hello! Good');
 
-    const token = JSON.parse(res.response.directives[0].audioItem.stream.token);
-    assert.equal(token.index, 2, 'AUDIO INDEX 2');
+    const token = JSON.parse(reply.msg.directives.token);
+    expect(token.index).to.equal(2, 'AUDIO INDEX 2');
   });
 
   function itIs(requestFile, cb) {

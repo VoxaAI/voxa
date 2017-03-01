@@ -36,8 +36,8 @@ describe('StateMachineSkill Help test', () => {
     });
   });
 
-  itIs('help', (res) => {
-    expect(res.response.outputSpeech.ssml).to.include('For more help visit');
+  itIs('help', (reply) => {
+    expect(reply.msg.statements[0]).to.include('For more help visit');
   });
 
   function itIs(requestFile, cb) {

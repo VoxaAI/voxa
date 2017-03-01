@@ -7,7 +7,7 @@
 
 'use strict';
 
-const assert = require('chai').assert;
+const expect = require('chai').expect;
 const Voxa = require('../');
 const views = require('./views');
 const variables = require('./variables');
@@ -70,11 +70,10 @@ describe('StateMachineSkill', () => {
     });
   });
 
-  itIs('audioShuffleOn', (res) => {
-    assert.include(res.response.outputSpeech.ssml, 'Hello! Good');
-
-    const token = JSON.parse(res.response.directives[0].audioItem.stream.token);
-    assert.equal(token.shuffle, 1, 'SHUFFLE ON');
+  itIs('audioShuffleOn', (reply) => {
+    expect(reply.msg.statements[0]).to.include('Hello! Good');
+    const token = JSON.parse(reply.msg.directives.token);
+    expect(token.shuffle).to.equal(1, 'SHUFFLE ON');
   });
 
   function itIs(requestFile, cb) {

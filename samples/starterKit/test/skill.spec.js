@@ -17,8 +17,8 @@ describe('Skill', () => {
     };
 
     return skill.execute(event)
-      .then((result) => {
-        expect(result.response.outputSpeech.ssml).to.equal('<speak>Welcome!</speak>');
+      .then((reply) => {
+        expect(reply.toJSON().response.outputSpeech.ssml).to.equal('<speak>Welcome!</speak>');
       });
   });
 });

@@ -18,21 +18,11 @@ describe('AlexaSkill', () => {
     alexaSkill.onError(stub);
 
     return alexaSkill.execute({ context: { application: { applicationId: 'OTHER APP ID' } }, request: { intent: { } } })
-      .then((result) => {
+      .then((reply) => {
         expect(stub.called).to.be.true;
         expect(stub.lastCall.args[1]).to.be.an('error');
         expect(stub.lastCall.args[1].message).to.equal('Invalid applicationId');
-        expect(result).to.deep.equal({
-          version: '1.0',
-          response: {
-            card: undefined,
-            outputSpeech: {
-              ssml: '<speak>An unrecoverable error occurred.</speak>',
-              type: 'SSML',
-            },
-            shouldEndSession: true,
-          },
-        });
+        expect(reply.msg.statements[0]).to.equal('An unrecoverable error occurred.');
       });
   });
 
@@ -41,38 +31,20 @@ describe('AlexaSkill', () => {
     const stub = simple.stub();
     alexaSkill.onError(stub);
     return alexaSkill.execute({ context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'IntentRequest', intent: { slots: [], name: 'UnsupportedIntent' } } })
-      .then((result) => {
+      .then((reply) => {
         expect(stub.lastCall.args[1]).to.be.an('error');
         expect(stub.lastCall.args[1].message).to.equal('onLaunchRequest must be implemented');
-        expect(result).to.deep.equal({
-          version: '1.0',
-          response: {
-            card: undefined,
-            outputSpeech: {
-              ssml: '<speak>An unrecoverable error occurred.</speak>',
-              type: 'SSML',
-            },
-            shouldEndSession: true,
-          },
-        });
+        expect(reply.msg.statements[0]).to.equal('An unrecoverable error occurred.');
       });
   });
 
   it('should return error message on malformed request', () => {
     const alexaSkill = new AlexaSkill({ appIds: 'appId' });
     alexaSkill.onLaunchRequest(() => {});
-    const promise = alexaSkill.execute({});
-    return expect(promise).to.eventually.deep.equal({
-      version: '1.0',
-      response: {
-        card: undefined,
-        outputSpeech: {
-          ssml: '<speak>An unrecoverable error occurred.</speak>',
-          type: 'SSML',
-        },
-        shouldEndSession: true,
-      },
-    });
+    return alexaSkill.execute({})
+      .then((reply) => {
+        expect(reply.msg.statements[0]).to.equal('An unrecoverable error occurred.');
+      });
   });
 
   it('should iterate through error handlers and return the first with a truthy response', () => {
@@ -139,20 +111,10 @@ describe('AlexaSkill', () => {
     const stub = simple.stub();
     alexaSkill.onError(stub);
     return alexaSkill.execute({ context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'UnknownEvent' } })
-      .then((result) => {
+      .then((reply) => {
         expect(stub.lastCall.args[1]).to.be.an('error');
         expect(stub.lastCall.args[1].message).to.equal('Unkown request type: UnknownEvent');
-        expect(result).to.deep.equal({
-          version: '1.0',
-          response: {
-            card: undefined,
-            outputSpeech: {
-              ssml: '<speak>An unrecoverable error occurred.</speak>',
-              type: 'SSML',
-            },
-            shouldEndSession: true,
-          },
-        });
+        expect(reply.error).to.be.an('error');
       });
   });
 

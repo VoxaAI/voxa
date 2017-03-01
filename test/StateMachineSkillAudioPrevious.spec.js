@@ -73,10 +73,10 @@ describe('StateMachineSkill', () => {
     });
   });
 
-  itIs('audioPrevious', (res) => {
-    expect(res.response.outputSpeech.ssml).to.include('Hello! Good');
+  itIs('audioPrevious', (reply) => {
+    expect(reply.msg.statements[0]).to.include('Hello! Good');
 
-    const token = JSON.parse(res.response.directives[0].audioItem.stream.token);
+    const token = JSON.parse(reply.msg.directives.token);
     expect(token.index).to.equal(0, 'AUDIO INDEX 0');
   });
 

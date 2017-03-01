@@ -40,10 +40,10 @@ describe('StateMachineSkill', () => {
     });
   });
 
-  itIs('audioStop', (res) => {
-    expect(res.response.outputSpeech.ssml).to.include('For more info visit');
+  itIs('audioStop', (reply) => {
+    expect(reply.msg.statements[0]).to.include('For more info visit');
 
-    expect(res.response.directives[0].type).to.equal('AudioPlayer.Stop', 'AUDIO STOP');
+    expect(reply.msg.directives).to.deep.equal({ type: 'AudioPlayer.Stop' });
   });
 
   function itIs(requestFile, cb) {

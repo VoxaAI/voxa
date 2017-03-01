@@ -35,8 +35,8 @@ describe('StateMachineSkill', () => {
     });
   });
 
-  itIs('audioPause', (res) => {
-    expect(res.response.outputSpeech.ssml).to.include('Hello! Good');
+  itIs('audioPause', (reply) => {
+    expect(reply.msg.statements[0]).to.include('Hello! Good');
   });
 
   function itIs(requestFile, cb) {
