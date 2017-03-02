@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "istanbul cover _mocha -- --recursive test",
-    "test-jenkins": "JUNIT_REPORT_PATH=junit.xml istanbul cover _mocha -- --recursive --colors --reporter mocha-jenkins-reporter test",
+    "test-ci": "JUNIT_REPORT_PATH=junit.xml istanbul cover _mocha -- --recursive --colors --reporter mocha-jenkins-reporter test",
     "cobertura": "istanbul report cobertura --root coverage",
     "lint": "eslint lib test"
   },

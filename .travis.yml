@@ -1,0 +1,4 @@
+language: node_js
+script: ./run-ci.sh
+notifications:
+  irc: "chat.freenode.net#voxa"
