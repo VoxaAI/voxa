@@ -1,8 +1,8 @@
 Voxa
 ====================
 
-[![Build Status](https://travis-ci.org/armonge/voxa.svg?branch=master)](https://travis-ci.org/armonge/voxa)
-[![Coverage Status](https://coveralls.io/repos/github/armonge/voxa/badge.svg?branch=master)](https://coveralls.io/github/armonge/voxa?branch=master)
+[![Build Status](https://travis-ci.org/mediarain/voxa.svg?branch=master)](https://travis-ci.org/mediarain/voxa)
+[![Coverage Status](https://coveralls.io/repos/github/mediarain/voxa/badge.svg?branch=master)](https://coveralls.io/github/mediarain/voxa?branch=master)
 
 A fsm (state machine) framework for Alexa apps using Node.js
 
