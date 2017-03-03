@@ -21,6 +21,6 @@ for SAMPLE_DIRECTORY in `find ./samples -maxdepth 1 -mindepth 1 -type d` ; do
 done
 
 if [ "${CI}" = "true" ]; then
-  yarn install coveralls
+  yarn add coveralls
   cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 fi
