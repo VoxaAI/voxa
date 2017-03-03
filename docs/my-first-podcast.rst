@@ -37,13 +37,7 @@ It has the following directory structure
   │   ├── SampleUtterances.txt
   │   └── customSlotTypes
   ├── test
-  └── www
-      ├── infrastructure
-      │   └── mount.js
-      ├── routes
-      │   ├── index.js
-      │   └── skill.js
-      └── server.js
+  ├── server.js
 
 
 config
@@ -185,10 +179,10 @@ speechAssets
 
 This should be a version controlled copy of your intent schema, sample utterrances and custom slots.
 
-www
-^^^^^^
+server.js
+^^^^^^^^^
 
-A standard express project configured to serve your skill in the ``/skill`` route. Combined with  `ngrok <https://ngrok.com/>`_ this is a great tool when developing or debugging.
+An http server for your skill configured to listen on port 3000, this should be used for development only.
 
 services
 ^^^^^^^^
