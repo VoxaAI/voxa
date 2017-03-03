@@ -68,8 +68,8 @@ describe('StateMachineSkill', () => {
 
   it('should allow multiple reply paths in reply key', () => {
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('LaunchIntent', (event) => {
-      event.model.count = 0;
+    stateMachineSkill.onIntent('LaunchIntent', (alexaEvent) => {
+      alexaEvent.model.count = 0;
       return { reply: ['Count.Say', 'Count.Tell'] };
     });
     event.request.type = 'LaunchRequest';
