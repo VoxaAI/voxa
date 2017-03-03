@@ -66,6 +66,21 @@ describe('StateMachineSkill', () => {
       });
   });
 
+  it('should allow multiple reply paths in reply key', () => {
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    stateMachineSkill.onIntent('LaunchIntent', (event) => {
+      event.model.count = 0;
+      return { reply: ['Count.Say', 'Count.Tell'] };
+    });
+    event.request.type = 'LaunchRequest';
+
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        console.log('error', reply.error);
+        expect(reply.msg.statements).to.deep.equal(['0', '0']);
+      });
+  });
+
   it('should redirect be able to just pass through some intents to states', () => {
     const stateMachineSkill = new StateMachineSkill({ variables, views });
     let called = false;
