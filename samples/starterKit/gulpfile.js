@@ -5,11 +5,11 @@ const nodemon = require('gulp-nodemon');
 
 gulp.task('watch', () =>
   nodemon({
-    script: 'www/server.js',
-    watch: ['www/*', 'config/*', 'services/*', 'skill/*'],
+    script: 'server.js',
+    watch: ['config/*', 'services/*', 'skill/*', 'server.js'],
     ext: 'json js',
     ignore: ['node_modules/**/*'],
   }));
 
 gulp.task('run', () =>
-  require('./www/server.js'));
+  require('./server.js'));
