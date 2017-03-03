@@ -14,3 +14,7 @@ The ``alexaEvent`` Object
   .. js:attribute:: AlexaEvent.intent.params
 
     The alexaEvent object makes ``intent.slots`` available through ``intent.params`` after aplying a simple transformation so ``{ slots: [{ name: 'Dish', value: 'Fried Chicken' }] }`` becomes ``{ Dish: 'Fried Chicken' }``
+
+  .. js:attribute:: AlexaEvent.user
+
+    A convenience getter to obtain the user from ``sesssion.user`` or ``context.System.user``
