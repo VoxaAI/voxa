@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha --recursive test/**/*.spec.js",
     "watch": "node node_modules/gulp/bin/gulp.js watch",
-    "lint": "eslint config/ gulpfile.js services/ skill/ speechAssets/ test/ www/"
+    "lint": "eslint config/ gulpfile.js services/ skill/ speechAssets/ test/ server.js"
   },
   "author": "Rain",
   "engines": {
@@ -24,8 +24,7 @@
   "dependencies": {
     "voxa": "^2.0.0",
     "bluebird": "^3.3.5",
-    "lodash": "^4.13.1",
-    "morgan": "^1.7.0",
+    "lodash": "^4.13.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
@@ -34,7 +33,7 @@
     "eslint-plugin-import": "^2.2.0",
     "gulp": "^3.9.1",
     "gulp-nodemon": "^2.0.7",
-    "mocha": "^2.4.5"
+    "mocha": "^3.2.0"
   },
   "directories": {
     "test": "test"

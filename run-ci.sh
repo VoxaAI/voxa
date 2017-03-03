@@ -1,10 +1,10 @@
 #!/bin/bash
 set -ev
 
-npm run test-ci
-npm run cobertura
-npm run lint
-npm link
+yarn run test-ci
+yarn run cobertura
+yarn run lint
+yarn link
 
 PROJECT_DIRECTORY=$(pwd)
 
@@ -13,11 +13,11 @@ for SAMPLE_DIRECTORY in `find ./samples -maxdepth 1 -mindepth 1 -type d` ; do
   for file in config/*.json; do
     python2 -m json.tool $file
   done
-  npm link voxa
-  npm install 
+  yarn link voxa
+  yarn 
   cp config/local.json.example config/local.json
-  npm run lint
-  npm run test
+  yarn run lint
+  yarn run test
 done
 
 if [ "${CI}" = "true" ]; then
