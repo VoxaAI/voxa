@@ -99,7 +99,7 @@ describe('Reply', () => {
     });
 
     it('should not throw an error on trying to append after a say', () => {
-      expect(() => reply.append({ say: 'something' }).append({ say: there })).to.not.throw;
+      expect(() => reply.append({ say: 'something' }).append({ say: 'there' })).to.not.throw;
     });
 
     it('should add the reprompt if message has one', () => {
