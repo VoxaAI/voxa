@@ -54,6 +54,18 @@ describe('StateMachineSkill', () => {
       });
   });
 
+  it('should throw an error if trying to render a missing view', () => {
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    stateMachineSkill.onIntent('LaunchIntent', () => ({ reply: 'Missing.View' }));
+    event.request.type = 'LaunchRequest';
+
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        expect(reply.error).to.be.an('error');
+        expect(reply.error.message).to.equal('Missing view Missing.View');
+      });
+  });
+
   it('should add use append the reply key to the Reply if it\'s a Reply object', () => {
     const stateMachineSkill = new StateMachineSkill({ variables, views });
     const reply = new Reply({ }, { tell: 'This is my message' });
