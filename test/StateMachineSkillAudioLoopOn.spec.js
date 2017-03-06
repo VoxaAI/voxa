@@ -70,7 +70,7 @@ describe('StateMachineSkill', () => {
 
   itIs('audioLoopOn', (reply) => {
     expect(reply.msg.statements[0]).to.include('Hello! Good');
-    const token = JSON.parse(reply.msg.directives.token);
+    const token = JSON.parse(reply.msg.directives[0].token);
     expect(token.loop).to.equal(1, 'LOOP ON');
   });
 

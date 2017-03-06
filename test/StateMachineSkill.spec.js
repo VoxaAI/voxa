@@ -328,13 +328,49 @@ describe('StateMachineSkill', () => {
     return stateMachineSkill.execute(event)
       .then((reply) => {
         expect(reply.msg.directives).to.not.be.undefined;
-        expect(reply.msg.directives).to.deep.equal({
+        expect(reply.msg.directives).to.deep.equal([{
           type: 'AudioPlayer.Play',
           playBehavior: 'REPLACE_ALL',
           offsetInMilliseconds: 0,
           token: '123',
           url: 'url',
-        });
+        }]);
+      });
+  });
+
+  it('should send multiple directives', () => {
+    const stateMachineSkill = new StateMachineSkill({ Model, variables, views });
+    const directives = [{
+      type: 'AudioPlayer.Play',
+      playBehavior: 'string',
+      audioItem: {
+        stream: {
+          token: 'string',
+          url: 'string',
+          offsetInMilliseconds: 0,
+        },
+      },
+    }, {
+      type: 'AudioPlayer.Play',
+      playBehavior: 'string',
+      audioItem: {
+        stream: {
+          token: 'string',
+          url: 'string',
+          offsetInMilliseconds: 0,
+        },
+      },
+    }];
+
+    stateMachineSkill.onIntent('SomeIntent', () => ({
+      reply: 'ExitIntent.Farewell',
+      directives,
+    }));
+
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        expect(reply.msg.directives).to.not.be.undefined;
+        expect(reply.msg.directives).to.deep.equal(directives);
       });
   });
 
@@ -357,13 +393,13 @@ describe('StateMachineSkill', () => {
     return stateMachineSkill.execute(event)
       .then((reply) => {
         expect(reply.msg.directives).to.not.be.undefined;
-        expect(reply.msg.directives).to.deep.equal({
+        expect(reply.msg.directives).to.deep.equal([{
           playBehavior: 'REPLACE_ALL',
           type: 'AudioPlayer.Play',
           offsetInMilliseconds: 0,
           token: '123',
           url: 'url',
-        });
+        }]);
       });
   });
 
