@@ -76,7 +76,6 @@ describe('StateMachineSkill', () => {
 
     return stateMachineSkill.execute(event)
       .then((reply) => {
-        console.log('error', reply.error);
         expect(reply.msg.statements).to.deep.equal(['0', '0']);
       });
   });
