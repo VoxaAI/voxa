@@ -18,8 +18,7 @@ describe('Reply', () => {
 
   it('should set yield to true on end', () => {
     reply.end();
-
-    expect(reply.yield).to.be.true;
+    expect(reply.msg.yield).to.be.true;
   });
 
   describe('toSSML', () => {
@@ -87,6 +86,22 @@ describe('Reply', () => {
   });
 
   describe('append', () => {
+    it('should throw an error on trying to append to a yielding reply', () => {
+      expect(() => reply.end().append({ say: 'Something' })).to.throw(Error);
+    });
+
+    it('should throw an error on trying to append after an ask', () => {
+      expect(() => reply.append({ ask: 'something' }).append({ say: 'too' })).to.throw(Error);
+    });
+
+    it('should throw an error on trying to append after a tell', () => {
+      expect(() => reply.append({ tell: 'something' }).append({ say: 'there' })).to.throw(Error);
+    });
+
+    it('should not throw an error on trying to append after a say', () => {
+      expect(() => reply.append({ say: 'something' }).append({ say: there })).to.not.throw;
+    });
+
     it('should add the reprompt if message has one', () => {
       reply.append({ reprompt: 'reprompt' });
       expect(reply.msg.reprompt).to.equal('reprompt');

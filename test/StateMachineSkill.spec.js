@@ -80,6 +80,20 @@ describe('StateMachineSkill', () => {
       });
   });
 
+  it('should throw an error if multiple replies include anything after say or tell', () => {
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    stateMachineSkill.onIntent('LaunchIntent', (alexaEvent) => {
+      alexaEvent.model.count = 0;
+      return { reply: ['Count.Tell', 'Count.Say'] };
+    });
+    event.request.type = 'LaunchRequest';
+
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        expect(reply.error.message).to.equal('Can\'t append to already yielding response');
+      });
+  });
+
   it('should redirect be able to just pass through some intents to states', () => {
     const stateMachineSkill = new StateMachineSkill({ variables, views });
     let called = false;
