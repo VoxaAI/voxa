@@ -18,8 +18,40 @@ describe('Reply', () => {
 
   it('should set yield to true on end', () => {
     reply.end();
+    expect(reply.msg.yield).to.be.true;
+  });
 
-    expect(reply.yield).to.be.true;
+  describe('toSSML', () => {
+    it('should not wrap already wrapped statements', () => {
+      expect(Reply.toSSML('<speak>Say Something</speak>')).to.equal('<speak>Say Something</speak>');
+    });
+  });
+
+  describe('createSpeechObject', () => {
+    it('should return undefined if no optionsParam', () => {
+      expect(Reply.createSpeechObject()).to.be.undefined;
+    });
+
+    it('should return an SSML response if optionsParam.type === SSML', () => {
+      expect(Reply.createSpeechObject({ type: 'SSML', speech: '<speak>Say Something</speak>' })).to.deep.equal({
+        type: 'SSML',
+        ssml: '<speak>Say Something</speak>',
+      });
+    });
+
+    it('should return a PlainText with optionsParam as text if no optionsParam.speech', () => {
+      expect(Reply.createSpeechObject('Say Something')).to.deep.equal({
+        type: 'PlainText',
+        text: 'Say Something',
+      });
+    });
+
+    it('should return a PlainText as default type if optionsParam.type is missing', () => {
+      expect(Reply.createSpeechObject({ speech: 'Say Something' })).to.deep.equal({
+        type: 'PlainText',
+        text: 'Say Something',
+      });
+    });
   });
 
   describe('toJSON', () => {
@@ -54,6 +86,22 @@ describe('Reply', () => {
   });
 
   describe('append', () => {
+    it('should throw an error on trying to append to a yielding reply', () => {
+      expect(() => reply.end().append({ say: 'Something' })).to.throw(Error);
+    });
+
+    it('should throw an error on trying to append after an ask', () => {
+      expect(() => reply.append({ ask: 'something' }).append({ say: 'too' })).to.throw(Error);
+    });
+
+    it('should throw an error on trying to append after a tell', () => {
+      expect(() => reply.append({ tell: 'something' }).append({ say: 'there' })).to.throw(Error);
+    });
+
+    it('should not throw an error on trying to append after a say', () => {
+      expect(() => reply.append({ say: 'something' }).append({ say: 'there' })).to.not.throw;
+    });
+
     it('should add the reprompt if message has one', () => {
       reply.append({ reprompt: 'reprompt' });
       expect(reply.msg.reprompt).to.equal('reprompt');
