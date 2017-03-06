@@ -22,6 +22,39 @@ describe('Reply', () => {
     expect(reply.yield).to.be.true;
   });
 
+  describe('toSSML', () => {
+    it('should not wrap already wrapped statements', () => {
+      expect(Reply.toSSML('<speak>Say Something</speak>')).to.equal('<speak>Say Something</speak>');
+    });
+  });
+
+  describe('createSpeechObject', () => {
+    it('should return undefined if no optionsParam', () => {
+      expect(Reply.createSpeechObject()).to.be.undefined;
+    });
+
+    it('should return an SSML response if optionsParam.type === SSML', () => {
+      expect(Reply.createSpeechObject({ type: 'SSML', speech: '<speak>Say Something</speak>' })).to.deep.equal({
+        type: 'SSML',
+        ssml: '<speak>Say Something</speak>',
+      });
+    });
+
+    it('should return a PlainText with optionsParam as text if no optionsParam.speech', () => {
+      expect(Reply.createSpeechObject('Say Something')).to.deep.equal({
+        type: 'PlainText',
+        text: 'Say Something',
+      });
+    });
+
+    it('should return a PlainText as default type if optionsParam.type is missing', () => {
+      expect(Reply.createSpeechObject({ speech: 'Say Something' })).to.deep.equal({
+        type: 'PlainText',
+        text: 'Say Something',
+      });
+    });
+  });
+
   describe('toJSON', () => {
     it('should generate a correct alexa response that doesn\'t  end a session for an ask response', () => {
       reply.append({ ask: 'ask' });
