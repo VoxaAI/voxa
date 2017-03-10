@@ -131,10 +131,17 @@ describe('StateMachine', () => {
     });
   });
 
-  it('should throw UnknownState when transition.to goes to an undefined state', () => {
-    states.entry = { to: { LaunchIntent: 'undefinedState' } };
+  it('should throw UnknownState when transition.to goes to an undefined state from simple transition', () => {
+    states.entry = { to: { LaunchIntent: 'undefinedState' }, name: 'entry' };
     const stateMachine = new StateMachine('entry', { states });
     alexaEvent.intent.name = 'LaunchIntent';
+    return expect(stateMachine.transition(alexaEvent, new Reply(alexaEvent))).to.eventually.be.rejectedWith(errors.UnknownState);
+  });
+
+  it('should throw UnknownState when transition.to goes to an undefined state', () => {
+    states.someState = { enter: () => ({ to: 'undefinedState' }), name: 'someState' };
+    const stateMachine = new StateMachine('someState', { states });
+
     return expect(stateMachine.transition(alexaEvent, new Reply(alexaEvent))).to.eventually.be.rejectedWith(errors.UnknownState);
   });
 

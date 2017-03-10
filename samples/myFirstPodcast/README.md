@@ -17,7 +17,7 @@
 	`skill/` -> Amazon Echo Skill login, the state machine and flow
 	`speechAssets/` -> Amazon Echo Utterances, Intent Schema and Custom Slots.
 	`tests/` -> Unit Tests
-	`www/` -> Public site, expose for authentication.
+	`server.js` -> Development server.
 	`gulpfile.js` -> Gulp tasks
 	`serverless.yml` -> Serverless configuration
 	`package.json` -> Dependencies
