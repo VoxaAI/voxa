@@ -1,0 +1,12 @@
+---
+---
+
+@import "{{ site.theme }}";
+body, header, #main-content h1, #main-content h2{
+  font-family: Arial, serif;
+}
+
+header{
+  background: black;
+}
+
