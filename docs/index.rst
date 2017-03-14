@@ -31,17 +31,13 @@ Instantiating a StateMachineSkill requires a configuration specifying your :ref:
 Responding to alexa events
 -----------------------------
 
-Once you have your skill configured responding to events is as simple as calling the :js:func:`skill.execute <Voxa.execute>` method
+Once you have your skill configured responding to events is as simple as calling the :js:func:`skill.lambda <Voxa.lambda>` method
 
 .. code-block:: javascript
 
   const skill = require('./MainStateMachine');
 
-  exports.handler = function handler(event, context) {
-    skill.execute(event, context)
-      .then(context.succeed)
-      .catch(context.fail);
-  };
+  exports.handler = skill.lambda;
 
 Using the development server
 -----------------------------

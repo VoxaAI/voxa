@@ -425,6 +425,20 @@ describe('StateMachineSkill', () => {
     });
   });
 
+  describe('lambda', () => {
+    it('should call execute with the correct context and callback', (done) => {
+      const skill = new StateMachineSkill({ Model, views, variables });
+      _.map(statesDefinition, (state, name) => skill.onState(name, state));
+      let count = 0;
+      skill.lambda(event, { context: 'context' }, (err, result) => {
+        if (err) done(err);
+        count += 1;
+        expect(result.msg.statements).to.deep.equal(['Ok. For more info visit example.com site.']);
+        done();
+      });
+    });
+  });
+
   describe('onRequestStarted', () => {
     it('should return the onError response for exceptions thrown in onRequestStarted', () => {
       const stateMachineSkill = new StateMachineSkill({ Model, views, variables });

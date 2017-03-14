@@ -35,11 +35,7 @@ skill.onIntent('LaunchIntent', (event) => {
 });
 
 // lambda handler
-exports.handler = function handler(event, context, callback) {
-  return skill.execute(event, context)
-    .then(result => callback(null, result))
-    .catch(callback);
-}
+exports.handler = skill.lambda;
 
 ```
 

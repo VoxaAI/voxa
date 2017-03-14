@@ -13,8 +13,20 @@ Voxa
 
     const skill = new Voxa({ Model, variables, views, appIds });
 
+.. js:function:: Voxa.lambda(event, context, callback)
+
+  A lambda handler, this will call :js:func:`skill.execute <Voxa.execute>`
+
+  :param event: The event sent by alexa.
+  :param context: The context of the lambda function
+  :param callback: The lambda callback
+
+  .. code-block:: javascript
+
+      exports.handler = skill.lambda;
+
 .. js:function:: Voxa.execute(event)
-  
+
   The main entry point for the Skill execution
 
   :param event: The event sent by alexa.
@@ -50,7 +62,7 @@ Voxa
 
   A shortcut for definining state controllers that map directly to an intent
 
-  :param string intentName: The name of the intent 
+  :param string intentName: The name of the intent
   :param function/object handler: The controller to handle the state
   :returns: An object or a promise that resolves to an object that specifies a transition to another state and/or a view to render
 
@@ -136,7 +148,7 @@ Voxa
 .. js:function:: Voxa.onSessionEnded(callback, [atLast])
 
   Adds a callback to the ``onSessionEnded`` event, this is called for every ``SessionEndedRequest`` or when the skill returns a transition to a state where ``isTerminal === true``, normally this is a transition to the ``die`` state. You would normally use this to track analytics
-  
+
 
 
 .. js:function:: Voxa.onSystem.ExceptionEncountered(callback, [atLast])
@@ -193,7 +205,7 @@ Playback Controller handlers
 Handle events from the `AudioPlayer interface <https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/custom-audioplayer-interface-reference#requests>`_
 
 .. js:function:: audioPlayerCallback(alexaEvent, reply)
-  
+
   All audio player middleware callbacks get a :ref:`alexa event <alexa-event>` and a :ref:`reply <reply>` object
 
   :param AlexaEvent alexaEvent: The :ref:`alexa event <alexa-event>` sent by Alexa
