@@ -29,7 +29,7 @@ const views = (function views() {
       RepeatLastAskReprompt: { say: 'I\'m sorry. I didn\'t understand.' },
     },
     Playing: {
-      SayStop: { ask: 'Say stop if you want to finish the playback' },
+      SayStop: { ask: 'Say stop if you want to finish the playback', reprompt: 'You can say stop to finish the playback' },
     },
   };
 }());
