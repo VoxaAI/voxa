@@ -21,7 +21,9 @@ describe('StateFlow plugin', () => {
     event = {
       request: {
         type: 'IntentRequest',
-
+        intent: {
+          name: 'SomeIntent',
+        },
       },
 
       session: {
@@ -31,30 +33,43 @@ describe('StateFlow plugin', () => {
       },
     };
     states = {
-      entry: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }),
+      entry: { SomeIntent: 'intent' },
       initState: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }),
       secondState: () => ({ to: 'initState' }),
       thirdState: () => Promise.resolve({ to: 'die' }),
+      fourthState: () => undefined,
+      intent: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }),
     };
   });
 
   it('should store the execution flow in the request', () => {
     const skill = new StateMachineSkill({ variables, views });
-    let request;
-    const spy = simple.spy((_request) => {
-      request = _request;
-    });
     _.map(states, (state, name) => {
       skill.onState(name, state);
     });
 
-    skill.onBeforeReplySent(spy);
     stateFlow(skill);
 
     return skill.execute(event)
       .then((result) => {
-        expect(spy.called).to.be.true;
-        expect(request.flow).to.deep.equal(['secondState', 'initState', 'die']);
+        expect(result.alexaEvent.flow).to.deep.equal(['secondState', 'initState', 'die']);
+      });
+  });
+
+  it('should not crash on null transition', () => {
+    const skill = new StateMachineSkill({ variables, views });
+    _.map(states, (state, name) => {
+      skill.onState(name, state);
+    });
+
+    stateFlow(skill);
+    event.session.attributes.state = 'fourthState';
+    event.request.intent.name = 'OtherIntent';
+
+
+    return skill.execute(event)
+      .then((result) => {
+        expect(result.alexaEvent.flow).to.deep.equal(['fourthState']);
       });
   });
 });
