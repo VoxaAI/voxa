@@ -13,8 +13,6 @@ const https = require('https');
 class AutoLoadAdapter {
   constructor() {
     const dynasty = Dynasty({
-      accessKeyId: 'FakeAccessKeyId',
-      secretAccessKey: 'FakeSecretAccessKey',
       maxRetries: 8,
       httpOptions: {
         /**
