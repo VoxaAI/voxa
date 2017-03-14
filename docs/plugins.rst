@@ -57,7 +57,7 @@ It allows you to rename an intent name based on a regular expression. By default
 
 
 .. js:function:: replaceIntent(skill, [config])
-  
+
   Replace Intent plugin uses :js:func:`~Voxa.onIntentRequest` to modify the incomming request intent name
 
   :param Voxa skill: The stateMachineSkill
@@ -77,12 +77,12 @@ Usage
 Why onlyIntents?
 *****************
 
-A good practice is to isolate an utterance into another intent if it's contain a single slot. By creating the only intent, alexa will prioritize this intent if the user says only the slot.
+A good practice is to isolate an utterance into another intent if it contains a single slot. By creating the only intent, alexa will prioritize this intent if the user says only the slot.
 
 Let's explain with the following scenario. You need the user to provide a zipcode.
 so you should have an `intent` called ``ZipCodeIntent``. But you still have to manage if the user only says its zipcode with no other words on it. So that's when we create an OnlyIntent. Let's called ``ZipCodeOnlyIntent``.
 
-Our utterance file will be like this: 
+Our utterance file will be like this:
 
 .. code-block:: text
 
@@ -105,16 +105,16 @@ Params
 ******
 
 .. js:function:: cloudwatch(skill, cloudwatch, [eventMetric])
-  
+
   Cloudwatch plugin uses ``skill.onError`` to log a metric
 
   :param Voxa skill: The stateMachineSkill
-  :param cloudwatch: A new `AWS.CloudWatch <http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#constructor-property/>`_ object. 
+  :param cloudwatch: A new `AWS.CloudWatch <http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#constructor-property/>`_ object.
   :param putMetricDataParams: Params for `putMetricData <http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#putMetricData-property>`_
 
 
-How to use it
-**************
+Usage
+******
 
 .. code-block:: javascript
 
@@ -125,3 +125,31 @@ How to use it
     const eventMetric = { Namespace: 'fooBarSkill' };
 
     Voxa.plugins.cloudwatch(skill, cloudwatch, eventMetric);
+
+
+
+Autoload plugin
+------------------
+
+It accepts an adapter to autoload info into the model object coming in every alexa request.
+
+Params
+******
+
+.. js:function:: autoLoad(skill, adapter, [config])
+
+  Autoload plugin uses ``skill.onRequestStarted`` to load data the first time user open a skill
+
+  :param Voxa skill: The stateMachineSkill.
+  :param adapter: Any object with a ``get`` method to fetch information from database.
+  :param config: An object with a ``loadByToken`` boolean property to use the accessToken property as a key. The default behavior is to do a userId searching.
+
+
+Usage
+******
+
+.. code-block:: javascript
+
+    const skill = new Voxa({ Model, variables, views });
+
+    Voxa.plugins.autoLoad(skill, adapter, { loadByToken: false });
