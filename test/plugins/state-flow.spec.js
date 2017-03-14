@@ -55,4 +55,20 @@ describe('StateFlow plugin', () => {
         expect(result.alexaEvent.flow).to.deep.equal(['secondState', 'initState', 'die']);
       });
   });
+
+  it('should not crash on null transition', () => {
+    const skill = new StateMachineSkill({ variables, views });
+    _.map(states, (state, name) => {
+      skill.onState(name, state);
+    });
+
+    stateFlow(skill);
+    event.session.attributes.state = 'fourthState';
+    event.request.intent.name = 'OtherIntent';
+
+    return skill.execute(event)
+      .then((result) => {
+        expect(result.alexaEvent.flow).to.deep.equal(['fourthState']);
+      });
+  });
 });
