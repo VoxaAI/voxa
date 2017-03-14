@@ -14,14 +14,11 @@ const views = require('../views');
 const variables = require('../variables');
 
 describe('CloudwatchPlugin', () => {
-
   it('should use plugin to log every time that onBeforeReplySent function is executed', () => {
-    const stateMachineSkill = new StateMachineSkill({  views, variables });
+    const stateMachineSkill = new StateMachineSkill({ views, variables });
     const cloudwatch = { putMetricData: (data, callback) => callback(null, 'foobar') };
     const cloudwatchMock = simple.mock(cloudwatch, 'putMetricData');
-    const eventMetric = {
-      Namespace: 'fooBarSkill'
-    };
+    const eventMetric = { Namespace: 'fooBarSkill' };
 
     const event = {
       request: {
@@ -128,5 +125,4 @@ describe('CloudwatchPlugin', () => {
         expect(cloudwatchMock.lastCall.args[0].MetricData[0].Value).to.equal(1);
       });
   });
-
 });
