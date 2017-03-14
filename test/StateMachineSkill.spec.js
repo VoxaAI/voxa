@@ -54,6 +54,18 @@ describe('StateMachineSkill', () => {
       });
   });
 
+  it('should throw an error if trying to render a missing view', () => {
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    stateMachineSkill.onIntent('LaunchIntent', () => ({ reply: 'Missing.View' }));
+    event.request.type = 'LaunchRequest';
+
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        expect(reply.error).to.be.an('error');
+        expect(reply.error.message).to.equal('Missing view Missing.View');
+      });
+  });
+
   it('should add use append the reply key to the Reply if it\'s a Reply object', () => {
     const stateMachineSkill = new StateMachineSkill({ variables, views });
     const reply = new Reply({ }, { tell: 'This is my message' });
@@ -63,6 +75,34 @@ describe('StateMachineSkill', () => {
     return stateMachineSkill.execute(event)
       .then((skillReply) => {
         expect(skillReply.msg.statements[0]).to.deep.equal('This is my message');
+      });
+  });
+
+  it('should allow multiple reply paths in reply key', () => {
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    stateMachineSkill.onIntent('LaunchIntent', (alexaEvent) => {
+      alexaEvent.model.count = 0;
+      return { reply: ['Count.Say', 'Count.Tell'] };
+    });
+    event.request.type = 'LaunchRequest';
+
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        expect(reply.msg.statements).to.deep.equal(['0', '0']);
+      });
+  });
+
+  it('should throw an error if multiple replies include anything after say or tell', () => {
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    stateMachineSkill.onIntent('LaunchIntent', (alexaEvent) => {
+      alexaEvent.model.count = 0;
+      return { reply: ['Count.Tell', 'Count.Say'] };
+    });
+    event.request.type = 'LaunchRequest';
+
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        expect(reply.error.message).to.equal('Can\'t append to already yielding response');
       });
   });
 

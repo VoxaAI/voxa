@@ -43,6 +43,17 @@ Once you have your skill configured responding to events is as simple as calling
       .catch(context.fail);
   };
 
+Using the development server
+-----------------------------
+
+The framework provides a simple builtin server that's configured to serve all POST requests to your skill, this works great when developing, specially when paired with `ngrok <https://ngrok.com>`_
+
+.. code-block:: javascript
+
+  // this will start an http server listening on port 3000
+  skill.startServer(3000);
+
+
 Responding to an intent event
 --------------------------------
 
