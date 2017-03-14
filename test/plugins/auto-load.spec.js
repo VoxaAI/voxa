@@ -112,7 +112,7 @@ describe('AutoLoad plugin', () => {
   });
 
   it('should not get data from adapter when adapter has an invalid GET function', () => {
-    simple.mock(autoLoadAdapter, 'get', undefined)
+    simple.mock(autoLoadAdapter, 'get', undefined);
 
     const skill = new StateMachineSkill({ variables, views });
     autoLoad(skill, autoLoadAdapter);

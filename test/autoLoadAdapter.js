@@ -42,6 +42,5 @@ class AutoLoadAdapter {
   }
 
 }
+
 module.exports = AutoLoadAdapter;
-
-
