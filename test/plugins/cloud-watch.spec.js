@@ -18,7 +18,14 @@ describe('CloudwatchPlugin', () => {
     const stateMachineSkill = new StateMachineSkill({ views, variables });
     const cloudwatch = { putMetricData: (data, callback) => callback(null, 'foobar') };
     const cloudwatchMock = simple.mock(cloudwatch, 'putMetricData');
-    const eventMetric = { Namespace: 'fooBarSkill' };
+    const eventMetric = {
+      MetricData: [
+        {
+          Value: 0,
+        }
+      ],
+      Namespace: 'fooBarSkill',
+    };
 
     const event = {
       request: {
@@ -47,7 +54,7 @@ describe('CloudwatchPlugin', () => {
         expect(cloudwatchMock.lastCall.args[0].Namespace).to.equal('fooBarSkill');
         expect(cloudwatchMock.lastCall.args[0].MetricData[0].MetricName).to.equal('Caught Error');
         expect(cloudwatchMock.lastCall.args[0].MetricData[0].Unit).to.equal('Count');
-        expect(cloudwatchMock.lastCall.args[0].MetricData[0].Value).to.equal(1);
+        expect(cloudwatchMock.lastCall.args[0].MetricData[0].Value).to.equal(0);
       });
   });
 
