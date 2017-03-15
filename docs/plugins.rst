@@ -57,7 +57,7 @@ It allows you to rename an intent name based on a regular expression. By default
 
 
 .. js:function:: replaceIntent(skill, [config])
-  
+
   Replace Intent plugin uses :js:func:`~Voxa.onIntentRequest` to modify the incomming request intent name
 
   :param Voxa skill: The stateMachineSkill
@@ -82,7 +82,7 @@ A good practice is to isolate an utterance into another intent if it's contain a
 Let's explain with the following scenario. You need the user to provide a zipcode.
 so you should have an `intent` called ``ZipCodeIntent``. But you still have to manage if the user only says its zipcode with no other words on it. So that's when we create an OnlyIntent. Let's called ``ZipCodeOnlyIntent``.
 
-Our utterance file will be like this: 
+Our utterance file will be like this:
 
 .. code-block:: text
 
@@ -105,11 +105,11 @@ Params
 ******
 
 .. js:function:: cloudwatch(skill, cloudwatch, [eventMetric])
-  
-  Cloudwatch plugin uses ``skill.onError`` to log a metric
+
+  Cloudwatch plugin uses ``skill.onError, skill.onStateMachineError and skill.onBeforeReplySent`` to log a metric
 
   :param Voxa skill: The stateMachineSkill
-  :param cloudwatch: A new `AWS.CloudWatch <http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#constructor-property/>`_ object. 
+  :param cloudwatch: A new `AWS.CloudWatch <http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#constructor-property/>`_ object.
   :param putMetricDataParams: Params for `putMetricData <http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#putMetricData-property>`_
 
 
@@ -122,6 +122,8 @@ How to use it
     const skill = new Voxa({ Model, variables, views });
 
     const cloudwatch = new AWS.CloudWatch({});
-    const eventMetric = { Namespace: 'fooBarSkill' };
+    const eventMetric = {
+      Namespace: 'SkillName' // Name of your skill
+    };
 
     Voxa.plugins.cloudwatch(skill, cloudwatch, eventMetric);

@@ -18,14 +18,7 @@ describe('CloudwatchPlugin', () => {
     const stateMachineSkill = new StateMachineSkill({ views, variables });
     const cloudwatch = { putMetricData: (data, callback) => callback(null, 'foobar') };
     const cloudwatchMock = simple.mock(cloudwatch, 'putMetricData');
-    const eventMetric = {
-      MetricData: [
-        {
-          Value: 0,
-        }
-      ],
-      Namespace: 'fooBarSkill',
-    };
+    const eventMetric = { Namespace: 'fooBarSkill' };
 
     const event = {
       request: {
