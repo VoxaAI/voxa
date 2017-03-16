@@ -106,7 +106,7 @@ Params
 
 .. js:function:: cloudwatch(skill, cloudwatch, [eventMetric])
 
-  Cloudwatch plugin uses ``skill.onError, skill.onStateMachineError and skill.onBeforeReplySent`` to log a metric.
+  Cloudwatch plugin uses :js:func:`Voxa.onError`, :js:func:`Voxa.onStateMachineError` and :js:func:`Voxa.onBeforeReplySent` to log metrics
 
   :param Voxa skill: The stateMachineSkill
   :param cloudwatch: A new `AWS.CloudWatch <http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#constructor-property/>`_ object.
