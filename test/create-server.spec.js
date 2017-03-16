@@ -13,7 +13,7 @@ describe('createServer', () => {
   before(() => {
     const skill = new StateMachineSkill({ views });
     server = createServer(skill);
-    portfinder.getPortPromise()
+    return portfinder.getPortPromise()
       .then((_port) => {
         port = _port;
         server.listen(port, () => console.log(`Listening on ${port}`));
