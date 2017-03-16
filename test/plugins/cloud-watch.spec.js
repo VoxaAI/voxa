@@ -41,7 +41,7 @@ describe('CloudwatchPlugin', () => {
 
     return stateMachineSkill.execute(event)
       .then((reply) => {
-        expect(reply.msg.statements[0]).not.equal('An unrecoverable error occurred.');
+        expect(reply.error).not.be.undefined;
         expect(cloudwatchMock.called).to.be.true;
         expect(cloudwatchMock.callCount).to.be.at.most(1);
         expect(cloudwatchMock.lastCall.args[0].Namespace).to.equal('fooBarSkill');
