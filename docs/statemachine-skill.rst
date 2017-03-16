@@ -13,17 +13,14 @@ Voxa
 
     const skill = new Voxa({ Model, variables, views, appIds });
 
-.. js:function:: Voxa.lambda(event, context, callback)
+.. js:function:: Voxa.lambda()
 
-  A lambda handler, this will call :js:func:`skill.execute <Voxa.execute>`
 
-  :param event: The event sent by alexa.
-  :param context: The context of the lambda function
-  :param callback: The lambda callback
+  :returns: A lambda handler that will call your :js:func:`skill.execute <Voxa.execute>` method
 
   .. code-block:: javascript
 
-      exports.handler = skill.lambda;
+      exports.handler = skill.lambda();
 
 .. js:function:: Voxa.execute(event)
 
@@ -36,8 +33,8 @@ Voxa
   .. code-block:: javascript
 
       skill.execute(event, context)
-        .then(context.succeed)
-        .catch(context.fail);
+        .then(result => callback(null, result))
+        .catch(callback);
 
 .. js:function:: Voxa.onState(stateName, handler)
 

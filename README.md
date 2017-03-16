@@ -35,7 +35,7 @@ skill.onIntent('LaunchIntent', (event) => {
 });
 
 // lambda handler
-exports.handler = skill.lambda;
+exports.handler = skill.lambda();
 
 ```
 

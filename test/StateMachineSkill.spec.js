@@ -430,7 +430,7 @@ describe('StateMachineSkill', () => {
       const skill = new StateMachineSkill({ Model, views, variables });
       _.map(statesDefinition, (state, name) => skill.onState(name, state));
       let count = 0;
-      skill.lambda(event, { context: 'context' }, (err, result) => {
+      skill.lambda()(event, { context: 'context' }, (err, result) => {
         if (err) done(err);
         count += 1;
         expect(result.msg.statements).to.deep.equal(['Ok. For more info visit example.com site.']);

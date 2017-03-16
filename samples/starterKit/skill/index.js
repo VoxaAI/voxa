@@ -5,4 +5,4 @@
 const skill = require('./MainStateMachine');
 require('./states');
 
-exports.handler = skill.lambda;
+exports.handler = skill.lambda();

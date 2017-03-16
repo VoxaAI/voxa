@@ -37,7 +37,7 @@ Once you have your skill configured responding to events is as simple as calling
 
   const skill = require('./MainStateMachine');
 
-  exports.handler = skill.lambda;
+  exports.handler = skill.lambda();
 
 Using the development server
 -----------------------------
