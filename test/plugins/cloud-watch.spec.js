@@ -14,6 +14,123 @@ const views = require('../views');
 const variables = require('../variables');
 
 describe('CloudwatchPlugin', () => {
+  it('should fired skill.onError on purpose in order to test onError handler', () => {
+    const stateMachineSkill = new StateMachineSkill({ views, variables });
+    const cloudwatch = { putMetricData: (data, callback) => callback(null, 'foobar') };
+    const config = { Namespace: 'fooBarSkill' };
+    cloudwatchPlugin(stateMachineSkill, cloudwatch, config);
+
+    stateMachineSkill.onIntent('SomeIntent', () => ({}));
+
+    return stateMachineSkill.execute({})
+      .then((reply) => {
+        console.log(reply);
+        expect(reply.error).not.to.be.undefined;
+      });
+  });
+
+  it('should test when throwing an error on onBeforeReplySent function', () => {
+    const stateMachineSkill = new StateMachineSkill({ views, variables });
+    const cloudwatch = { putMetricData: (data, callback) => { throw new Error('Random error'); } };
+    const cloudwatchMock = simple.mock(cloudwatch, 'putMetricData');
+
+    const config = {
+      MetricName: 'fooBarSkill',
+    };
+    const event = {
+      request: {
+        type: 'IntentRequest',
+        intent: {
+          name: 'SomeIntent',
+        },
+      },
+      session: {
+        new: false,
+        application: {
+          applicationId: 'appId',
+        },
+      },
+    };
+
+    cloudwatchPlugin(stateMachineSkill, cloudwatch, config);
+
+    stateMachineSkill.onIntent('SomeIntent', () => ({}));
+
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        console.log(reply);
+        expect(reply.error).not.to.be.undefined;
+        expect(reply.error.message).to.equal('Random error');
+        expect(cloudwatchMock.called).to.be.true;
+        expect(cloudwatchMock.callCount).to.be.at.most(3);
+      });
+  });
+
+  it('should work when passing config.MetricName as a parameter', () => {
+    const stateMachineSkill = new StateMachineSkill({ views, variables });
+    const cloudwatch = { putMetricData: (data, callback) => callback(null, 'foobar') };
+    const cloudwatchMock = simple.mock(cloudwatch, 'putMetricData');
+    const config = {
+      MetricName: 'fooBarSkill',
+    };
+    const event = {
+      request: {
+        type: 'IntentRequest',
+        intent: {
+          name: 'SomeIntent',
+        },
+      },
+      session: {
+        new: false,
+        application: {
+          applicationId: 'appId',
+        },
+      },
+    };
+
+    cloudwatchPlugin(stateMachineSkill, cloudwatch, config);
+
+    stateMachineSkill.onIntent('SomeIntent', () => ({}));
+
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        expect(reply.error).to.be.undefined;
+        expect(cloudwatchMock.called).to.be.true;
+        expect(cloudwatchMock.callCount).to.be.at.most(1);
+      });
+  });
+
+  it('should work when config is not passed as a parameter', () => {
+    const stateMachineSkill = new StateMachineSkill({ views, variables });
+    const cloudwatch = { putMetricData: (data, callback) => callback(null, 'foobar') };
+    const cloudwatchMock = simple.mock(cloudwatch, 'putMetricData');
+    const event = {
+      request: {
+        type: 'IntentRequest',
+        intent: {
+          name: 'SomeIntent',
+        },
+      },
+      session: {
+        new: false,
+        application: {
+          applicationId: 'appId',
+        },
+      },
+    };
+
+    cloudwatchPlugin(stateMachineSkill, cloudwatch);
+
+    stateMachineSkill.onIntent('SomeIntent', () => ({}));
+
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        expect(reply.error).to.be.undefined;
+        expect(cloudwatchMock.called).to.be.true;
+        expect(cloudwatchMock.callCount).to.be.at.most(1);
+      });
+  });
+
   it('should use plugin to log every time that onBeforeReplySent function is executed', () => {
     const stateMachineSkill = new StateMachineSkill({ views, variables });
     const cloudwatch = { putMetricData: (data, callback) => callback(null, 'foobar') };
@@ -41,7 +158,7 @@ describe('CloudwatchPlugin', () => {
 
     return stateMachineSkill.execute(event)
       .then((reply) => {
-        expect(reply.error).not.be.undefined;
+        expect(reply.error).to.be.undefined;
         expect(cloudwatchMock.called).to.be.true;
         expect(cloudwatchMock.callCount).to.be.at.most(1);
         expect(cloudwatchMock.lastCall.args[0].Namespace).to.equal('fooBarSkill');
