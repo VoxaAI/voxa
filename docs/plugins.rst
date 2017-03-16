@@ -99,14 +99,14 @@ But now we have two states which are basically the same. Replace intent plugin w
 Cloudwatch plugin
 ------------------
 
-It logs a CloudWatch metric when the skill catches an error.
+It logs a CloudWatch metric when the skill catches an error or success execution.
 
 Params
 ******
 
 .. js:function:: cloudwatch(skill, cloudwatch, [eventMetric])
 
-  Cloudwatch plugin uses ``skill.onError, skill.onStateMachineError and skill.onBeforeReplySent`` to log a metric
+  Cloudwatch plugin uses ``skill.onError, skill.onStateMachineError and skill.onBeforeReplySent`` to log a metric.
 
   :param Voxa skill: The stateMachineSkill
   :param cloudwatch: A new `AWS.CloudWatch <http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#constructor-property/>`_ object.
@@ -121,9 +121,10 @@ How to use it
     const AWS = require('aws-sdk');
     const skill = new Voxa({ Model, variables, views });
 
-    const cloudwatch = new AWS.CloudWatch({});
+    const cloudWatch = new AWS.CloudWatch({});
     const eventMetric = {
+      MetricName: 'Caught Error', // Name of your metric
       Namespace: 'SkillName' // Name of your skill
     };
 
-    Voxa.plugins.cloudwatch(skill, cloudwatch, eventMetric);
+    Voxa.plugins.cloudwatch(skill, cloudWatch, eventMetric);
