@@ -37,7 +37,7 @@ describe('BadResponseRepromptPlugin', () => {
         },
         attributes: {
           state: 'playing',
-          reprompt: 'Playing.SayStop',
+          reply: { msgPath: 'Playing.SayStop' },
         },
       },
     };
@@ -74,7 +74,7 @@ describe('BadResponseRepromptPlugin', () => {
         },
         attributes: {
           state: 'playing',
-          reprompt: 'Playing.SayStop',
+          reply: { msgPath: 'Playing.SayStop' },
         },
       },
     };
