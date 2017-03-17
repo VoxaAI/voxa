@@ -192,7 +192,7 @@ describe('StateMachineSkill', () => {
       .then((reply) => {
         expect(statesDefinition.entry.called).to.be.true;
         expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
-        expect(reply.session.attributes.data).to.deep.equal({ value: 1 });
+        expect(reply.session.attributes.modelData).to.deep.equal({ value: 1 });
       });
   });
 
