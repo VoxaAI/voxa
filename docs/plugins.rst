@@ -154,4 +154,4 @@ Usage
 
     const skill = new Voxa({ Model, variables, views });
 
-    Voxa.plugins.autoLoad(skill, { adapter, loadByToken: false });
+    Voxa.plugins.autoLoad(skill, { adapter });
