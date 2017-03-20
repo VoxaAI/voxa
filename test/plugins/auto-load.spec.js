@@ -117,6 +117,38 @@ describe('AutoLoad plugin', () => {
     return skill.execute(event);
   });
 
+  it('should throw an error when no config file is provided', () => {
+    simple.mock(adapter, 'get', undefined);
+
+    const skill = new StateMachineSkill({ variables, views });
+    const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
+
+    try {
+      autoLoad(skill);
+    } catch (error) {
+      expect(spy.called).to.be.false;
+      expect(spy.lastCall.args).to.be.empty;
+      expect(error).to.be.ok;
+      expect(error.message).to.equal('Empty config file');
+    }
+  });
+
+  it('should throw an error when no adapter is set up in the config file', () => {
+    simple.mock(adapter, 'get', undefined);
+
+    const skill = new StateMachineSkill({ variables, views });
+    const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
+
+    try {
+      autoLoad(skill, { loadByToken: true });
+    } catch (error) {
+      expect(spy.called).to.be.false;
+      expect(spy.lastCall.args).to.be.empty;
+      expect(error).to.be.ok;
+      expect(error.message).to.equal('Empty adapter');
+    }
+  });
+
   it('should not get data from adapter when adapter has an invalid GET function', () => {
     simple.mock(adapter, 'get', undefined);
 
