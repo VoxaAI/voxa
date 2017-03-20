@@ -54,7 +54,7 @@ describe('AutoLoad plugin', () => {
         expect(result.msg.statements).to.have.lengthOf(1);
         expect(result.msg.statements[0]).to.contain('Hello! Good');
         expect(result.session.attributes.state).to.equal('die');
-        expect(result.session.attributes.data.user.Id).to.equal(1);
+        expect(result.session.attributes.modelData.user.Id).to.equal(1);
       });
   });
 
@@ -74,7 +74,7 @@ describe('AutoLoad plugin', () => {
         expect(result.msg.statements).to.have.lengthOf(1);
         expect(result.msg.statements[0]).to.contain('Hello! Good');
         expect(result.session.attributes.state).to.equal('die');
-        expect(result.session.attributes.data.user.Id).to.equal(1);
+        expect(result.session.attributes.modelData.user.Id).to.equal(1);
       });
   });
 
@@ -92,7 +92,7 @@ describe('AutoLoad plugin', () => {
         expect(result.msg.statements).to.have.lengthOf(1);
         expect(result.msg.statements[0]).to.contain('Hello! Good');
         expect(result.session.attributes.state).to.equal('die');
-        expect(result.session.attributes.data).to.deep.equal({});
+        expect(result.session.attributes.modelData).to.deep.equal({});
       });
   });
 
@@ -121,19 +121,15 @@ describe('AutoLoad plugin', () => {
     simple.mock(adapter, 'get', undefined);
 
     const skill = new StateMachineSkill({ variables, views });
-    autoLoad(skill, { adapter });
-
     const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
-    skill.onIntent('LaunchIntent', spy);
 
-    skill.onError((alexaEvent, error) => {
+    try {
+      autoLoad(skill, { adapter });
+    } catch (error) {
       expect(spy.called).to.be.false;
       expect(spy.lastCall.args).to.be.empty;
       expect(error).to.be.ok;
       expect(error.message).to.equal('No get method to fetch data from');
-      expect(alexaEvent.session).to.be.undefined;
-    });
-
-    return skill.execute(event);
+    }
   });
 });
