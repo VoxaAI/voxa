@@ -6,7 +6,6 @@ const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 
 const expect = chai.expect;
-const _ = require('lodash');
 const simple = require('simple-mock');
 const StateMachineSkill = require('../../lib/StateMachineSkill');
 const autoLoad = require('../../lib/plugins/auto-load');
@@ -40,9 +39,9 @@ describe('AutoLoad plugin', () => {
     simple.restore();
   });
 
-  it('should get data from adapter filtering with userId', () => {
+  it('should get data from adapter', () => {
     const skill = new StateMachineSkill({ variables, views });
-    autoLoad(skill, { adapter, loadByToken: false });
+    autoLoad(skill, { adapter });
 
     const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
     skill.onIntent('LaunchIntent', spy);
@@ -55,44 +54,6 @@ describe('AutoLoad plugin', () => {
         expect(result.msg.statements[0]).to.contain('Hello! Good');
         expect(result.session.attributes.state).to.equal('die');
         expect(result.session.attributes.modelData.user.Id).to.equal(1);
-      });
-  });
-
-  it('should get data from adapter filtering with accessToken', () => {
-    _.set(event, 'session.user.accessToken', 'abc');
-
-    const skill = new StateMachineSkill({ variables, views });
-    autoLoad(skill, { adapter, loadByToken: true });
-
-    const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
-    skill.onIntent('LaunchIntent', spy);
-
-    return skill.execute(event)
-      .then((result) => {
-        expect(spy.called).to.be.true;
-        expect(spy.lastCall.args[0].intent.name).to.equal('LaunchIntent');
-        expect(result.msg.statements).to.have.lengthOf(1);
-        expect(result.msg.statements[0]).to.contain('Hello! Good');
-        expect(result.session.attributes.state).to.equal('die');
-        expect(result.session.attributes.modelData.user.Id).to.equal(1);
-      });
-  });
-
-  it('should not get data from adapter with loadByToken is false and no accessToken is provided', () => {
-    const skill = new StateMachineSkill({ variables, views });
-    autoLoad(skill, { adapter, loadByToken: true });
-
-    const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
-    skill.onIntent('LaunchIntent', spy);
-
-    return skill.execute(event)
-      .then((result) => {
-        expect(spy.called).to.be.true;
-        expect(spy.lastCall.args[0].intent.name).to.equal('LaunchIntent');
-        expect(result.msg.statements).to.have.lengthOf(1);
-        expect(result.msg.statements[0]).to.contain('Hello! Good');
-        expect(result.session.attributes.state).to.equal('die');
-        expect(result.session.attributes.modelData).to.deep.equal({});
       });
   });
 
@@ -118,50 +79,25 @@ describe('AutoLoad plugin', () => {
   });
 
   it('should throw an error when no config file is provided', () => {
-    simple.mock(adapter, 'get', undefined);
-
     const skill = new StateMachineSkill({ variables, views });
-    const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
+    const fn = function () { autoLoad(skill); };
 
-    try {
-      autoLoad(skill);
-    } catch (error) {
-      expect(spy.called).to.be.false;
-      expect(spy.lastCall.args).to.be.empty;
-      expect(error).to.be.ok;
-      expect(error.message).to.equal('Empty config file');
-    }
+    expect(fn).to.throw('Missing config file');
   });
 
   it('should throw an error when no adapter is set up in the config file', () => {
-    simple.mock(adapter, 'get', undefined);
-
     const skill = new StateMachineSkill({ variables, views });
-    const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
+    const fn = function () { autoLoad(skill, {}); };
 
-    try {
-      autoLoad(skill, { loadByToken: true });
-    } catch (error) {
-      expect(spy.called).to.be.false;
-      expect(spy.lastCall.args).to.be.empty;
-      expect(error).to.be.ok;
-      expect(error.message).to.equal('Empty adapter');
-    }
+    expect(fn).to.throw('Missing adapter');
   });
 
   it('should not get data from adapter when adapter has an invalid GET function', () => {
     simple.mock(adapter, 'get', undefined);
 
     const skill = new StateMachineSkill({ variables, views });
-    const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
+    const fn = function () { autoLoad(skill, { adapter }); };
 
-    try {
-      autoLoad(skill, { adapter });
-    } catch (error) {
-      expect(spy.called).to.be.false;
-      expect(spy.lastCall.args).to.be.empty;
-      expect(error).to.be.ok;
-      expect(error.message).to.equal('No get method to fetch data from');
-    }
+    expect(fn).to.throw('No get method to fetch data from');
   });
 });

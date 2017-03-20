@@ -8,7 +8,7 @@
  */
 
 class AutoLoadAdapter {
-  get(id) {
+  get(user) {
     return new Promise(this);
   }
 

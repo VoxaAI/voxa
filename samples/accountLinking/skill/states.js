@@ -1,7 +1,6 @@
 'use strict';
 
 const _ = require('lodash');
-const UserStorage = require('../services/userStorage');
 
 exports.register = function register(skill) {
   skill.onIntent('LaunchIntent', (alexaEvent) => {
