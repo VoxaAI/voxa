@@ -57,7 +57,7 @@ describe('AutoLoad plugin', () => {
       });
   });
 
-  it('should not get data from adapter when adapter throws error on getting data', () => {
+  it('should throw error on getting data from adapter', () => {
     const skill = new StateMachineSkill({ variables, views });
     autoLoad(skill, { adapter });
 
@@ -67,15 +67,12 @@ describe('AutoLoad plugin', () => {
     simple.mock(adapter, 'get')
     .rejectWith(new Error('Random error'));
 
-    skill.onError((alexaEvent, error) => {
-      expect(spy.called).to.be.false;
-      expect(spy.lastCall.args).to.be.empty;
-      expect(error).to.be.ok;
-      expect(error.message).to.equal('Random error');
-      expect(alexaEvent.session).not.to.be.undefined;
+    return skill.execute(event)
+    .then((reply) => {
+      expect(reply.alexaEvent.session.attributes).to.be.undefined;
+      expect(reply.error).to.not.be.undefined;
+      expect(reply.error.message).to.equal('Random error');
     });
-
-    return skill.execute(event);
   });
 
   it('should throw an error when no config is provided', () => {
