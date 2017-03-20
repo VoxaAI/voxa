@@ -78,14 +78,14 @@ describe('AutoLoad plugin', () => {
     return skill.execute(event);
   });
 
-  it('should throw an error when no config file is provided', () => {
+  it('should throw an error when no config is provided', () => {
     const skill = new StateMachineSkill({ variables, views });
     const fn = function () { autoLoad(skill); };
 
-    expect(fn).to.throw('Missing config file');
+    expect(fn).to.throw('Missing config object');
   });
 
-  it('should throw an error when no adapter is set up in the config file', () => {
+  it('should throw an error when no adapter is set up in the config object', () => {
     const skill = new StateMachineSkill({ variables, views });
     const fn = function () { autoLoad(skill, {}); };
 

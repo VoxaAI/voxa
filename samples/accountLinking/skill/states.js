@@ -4,7 +4,7 @@ const _ = require('lodash');
 
 exports.register = function register(skill) {
   skill.onIntent('LaunchIntent', (alexaEvent) => {
-    if (_.get(alexaEvent, 'model.email')) {
+    if (_.get(alexaEvent, 'model.user.email')) {
       return { reply: 'Intent.Launch', to: 'entry' };
     }
 

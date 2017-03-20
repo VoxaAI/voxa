@@ -7,9 +7,9 @@ const variables = require('./variables');
 const states = require('./states');
 const UserStorage = require('../services/userStorage');
 
-const userAdapter = new UserStorage();
+const adapter = new UserStorage();
 
 const skill = new Voxa({ variables, views });
 states.register(skill);
-Voxa.plugins.autoLoad(skill, userAdapter);
+Voxa.plugins.autoLoad(skill, { adapter });
 module.exports = skill;

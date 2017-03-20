@@ -144,7 +144,7 @@ Params
   Autoload plugin uses ``skill.onRequestStarted`` to load data the first time user open a skill
 
   :param Voxa skill: The stateMachineSkill.
-  :param config: An object with a ``loadByToken`` boolean property to use the accessToken property as a key. The default behavior is to do a userId searching. It also takes an ``adapter`` key with a `get` Promise method in which you can handle your database access to fetch information from any resource.
+  :param config: An object with an ``adapter`` key with a `get` Promise method in which you can handle your database access to fetch information from any resource.
 
 
 Usage
