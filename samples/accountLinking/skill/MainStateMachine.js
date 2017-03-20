@@ -12,4 +12,5 @@ const adapter = new UserStorage();
 const skill = new Voxa({ variables, views });
 states.register(skill);
 Voxa.plugins.autoLoad(skill, { adapter });
+
 module.exports = skill;
