@@ -99,14 +99,14 @@ But now we have two states which are basically the same. Replace intent plugin w
 Cloudwatch plugin
 ------------------
 
-It logs a CloudWatch metric when the skill catches an error.
+It logs a CloudWatch metric when the skill catches an error or success execution.
 
 Params
 ******
 
 .. js:function:: cloudwatch(skill, cloudwatch, [eventMetric])
 
-  Cloudwatch plugin uses ``skill.onError`` to log a metric
+  Cloudwatch plugin uses :js:func:`Voxa.onError`, :js:func:`Voxa.onStateMachineError` and :js:func:`Voxa.onBeforeReplySent` to log metrics
 
   :param Voxa skill: The stateMachineSkill
   :param cloudwatch: A new `AWS.CloudWatch <http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#constructor-property/>`_ object.
@@ -121,10 +121,13 @@ Usage
     const AWS = require('aws-sdk');
     const skill = new Voxa({ Model, variables, views });
 
-    const cloudwatch = new AWS.CloudWatch({});
-    const eventMetric = { Namespace: 'fooBarSkill' };
+    const cloudWatch = new AWS.CloudWatch({});
+    const eventMetric = {
+      MetricName: 'Caught Error', // Name of your metric
+      Namespace: 'SkillName' // Name of your skill
+    };
 
-    Voxa.plugins.cloudwatch(skill, cloudwatch, eventMetric);
+    Voxa.plugins.cloudwatch(skill, cloudWatch, eventMetric);
 
 
 
@@ -136,13 +139,12 @@ It accepts an adapter to autoload info into the model object coming in every ale
 Params
 ******
 
-.. js:function:: autoLoad(skill, adapter, [config])
+.. js:function:: autoLoad(skill, [config])
 
   Autoload plugin uses ``skill.onRequestStarted`` to load data the first time user open a skill
 
   :param Voxa skill: The stateMachineSkill.
-  :param adapter: Any object with a ``get`` method to fetch information from database.
-  :param config: An object with a ``loadByToken`` boolean property to use the accessToken property as a key. The default behavior is to do a userId searching.
+  :param config: An object with a ``loadByToken`` boolean property to use the accessToken property as a key. The default behavior is to do a userId searching. It also takes an ``adapter`` key with a `get` Promise method in which you can handle your database access to fetch information from any resource.
 
 
 Usage
@@ -152,4 +154,4 @@ Usage
 
     const skill = new Voxa({ Model, variables, views });
 
-    Voxa.plugins.autoLoad(skill, adapter, { loadByToken: false });
+    Voxa.plugins.autoLoad(skill, { adapter, loadByToken: false });
