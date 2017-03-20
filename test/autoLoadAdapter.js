@@ -7,38 +7,41 @@
  * Licensed under the MIT license.
  */
 
-const Dynasty = require('dynasty');
-const https = require('https');
+const AWS = require('aws-sdk');
+const DOC = require('dynamodb-doc');
 
 class AutoLoadAdapter {
   constructor() {
-    const dynasty = Dynasty({
-      maxRetries: 8,
-      httpOptions: {
-        /**
-        * See known issue: https://github.com/aws/aws-sdk-js/issues/862
-        */
-        timeout: 4000,
-        agent: new https.Agent({
-          keepAlive: false,
-          rejectUnauthorized: true,
-          secureProtocol: 'TLSv1_method',
-          ciphers: 'ALL',
-        }),
-      },
+    const dynamodb = new AWS.DynamoDB({
+      apiVersion: '2012-08-10',
     });
-
-    this.userTable = dynasty.table('FakeTable');
+    this.docClient = new DOC.DynamoDB(dynamodb);
+    this.userTable = 'Users';
   }
 
   get(id) {
-    return this.userTable.find(id);
+    return new Promise((resolve, reject) => {
+      this.docClient.getItem({
+        TableName: this.userTable,
+        Key: { id },
+      }, (err, item) => {
+        if (err) return reject(err);
+        return resolve(item.Item);
+      });
+    });
   }
 
   put(data) {
-    return this.userTable.insert(data);
+    return new Promise((resolve, reject) => {
+      this.docClient.putItem({
+        TableName: this.userTable,
+        Item: data,
+      }, (err, item) => {
+        if (err) return reject(err);
+        return resolve(item);
+      });
+    });
   }
-
 }
 
 module.exports = AutoLoadAdapter;

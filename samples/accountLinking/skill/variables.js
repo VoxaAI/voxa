@@ -1,8 +1,8 @@
 'use strict';
 
 exports.user = function user(model) {
-  if (model.user) {
-    return model.user.email;
+  if (model.email) {
+    return model.email;
   }
 
   return 'Unidentified user';
