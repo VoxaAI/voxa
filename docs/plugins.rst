@@ -141,7 +141,7 @@ Params
 
 .. js:function:: autoLoad(skill, [config])
 
-  Autoload plugin uses ``skill.onRequestStarted`` to load data the first time user open a skill
+  Autoload plugin uses ``skill.onSessionStarted`` to load data the first time user open a skill
 
   :param Voxa skill: The stateMachineSkill.
   :param config: An object with an ``adapter`` key with a `get` Promise method in which you can handle your database access to fetch information from any resource.

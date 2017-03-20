@@ -20,7 +20,7 @@ describe('AutoLoad plugin', () => {
 
   beforeEach(() => {
     event = {
-      sesssion: {
+      session: {
         user: {
           userId: 'user-xyz',
         },
@@ -72,7 +72,7 @@ describe('AutoLoad plugin', () => {
       expect(spy.lastCall.args).to.be.empty;
       expect(error).to.be.ok;
       expect(error.message).to.equal('Random error');
-      expect(alexaEvent.session).to.be.undefined;
+      expect(alexaEvent.session).not.to.be.undefined;
     });
 
     return skill.execute(event);
