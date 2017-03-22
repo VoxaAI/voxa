@@ -13,7 +13,9 @@ class UserStorage {
     this.userTable = config.dynamoDB.tables.users;
   }
 
-  get(id) {
+  get(user) {
+    const id = user.userId;
+
     return new Promise((resolve, reject) => {
       this.docClient.getItem({
         TableName: this.userTable,
