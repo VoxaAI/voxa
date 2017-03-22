@@ -77,7 +77,7 @@ Usage
 Why onlyIntents?
 *****************
 
-A good practice is to isolate an utterance into another intent if it's contain a single slot. By creating the only intent, alexa will prioritize this intent if the user says only the slot.
+A good practice is to isolate an utterance into another intent if it contains a single slot. By creating the only intent, alexa will prioritize this intent if the user says only the slot.
 
 Let's explain with the following scenario. You need the user to provide a zipcode.
 so you should have an `intent` called ``ZipCodeIntent``. But you still have to manage if the user only says its zipcode with no other words on it. So that's when we create an OnlyIntent. Let's called ``ZipCodeOnlyIntent``.
@@ -113,8 +113,8 @@ Params
   :param putMetricDataParams: Params for `putMetricData <http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#putMetricData-property>`_
 
 
-How to use it
-**************
+Usage
+******
 
 .. code-block:: javascript
 
@@ -128,3 +128,30 @@ How to use it
     };
 
     Voxa.plugins.cloudwatch(skill, cloudWatch, eventMetric);
+
+
+
+Autoload plugin
+------------------
+
+It accepts an adapter to autoload info into the model object coming in every alexa request.
+
+Params
+******
+
+.. js:function:: autoLoad(skill, [config])
+
+  Autoload plugin uses ``skill.onSessionStarted`` to load data the first time user open a skill
+
+  :param Voxa skill: The stateMachineSkill.
+  :param config: An object with an ``adapter`` key with a `get` Promise method in which you can handle your database access to fetch information from any resource.
+
+
+Usage
+******
+
+.. code-block:: javascript
+
+    const skill = new Voxa({ Model, variables, views });
+
+    Voxa.plugins.autoLoad(skill, { adapter });
