@@ -178,13 +178,13 @@ serverless.yml
 The serverless framework is a tool that helps you manage your lambda applications, assuming you have your AWS credentials setup properly this starter kit defines the very minimum needed so you can deploy your skill to lambda with the following command:
 
 .. code-block:: bash
-  
+
   $ sls deploy
 
 Running the project
 ---------------------
 
-1. Clone the `voxa <https://github.com/mediarain/voxa>`_ repository 
+1. Clone the `voxa <https://github.com/mediarain/voxa>`_ repository
 
 2. Create a new skill project using the ``samples/starterKit`` directory as a basis
 
