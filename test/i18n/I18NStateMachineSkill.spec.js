@@ -79,19 +79,6 @@ describe('I18NStateMachineSkill', () => {
             expect(reply.msg.statements[0]).to.equal(translations.number);
           });
       });
-
-      it('should add msgReply for ask statements', () => {
-        skill.onIntent('SomeIntent', () => ({ reply: 'Question.Ask' }));
-        event.request.locale = locale;
-        return skill.execute(event)
-          .then((reply) => {
-            expect(reply.session.attributes.reply).to.deep.equal({
-              msgPath: 'Question.Ask',
-              state: 'die',
-            });
-            expect(reply.msg.statements[0]).to.equal(translations.question);
-          });
-      });
     });
   });
 });

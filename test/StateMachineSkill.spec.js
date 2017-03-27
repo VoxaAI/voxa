@@ -311,20 +311,6 @@ describe('StateMachineSkill', () => {
     });
   });
 
-  it('should add a reply to session if reply is an ask', () => {
-    const stateMachineSkill = new StateMachineSkill({ Model, views, variables });
-    stateMachineSkill.onIntent('AskIntent', () => ({ to: 'exit', reply: 'Question.Ask' }));
-    stateMachineSkill.onState('exit', () => 'ExitIntent.Farewell');
-    event.request.intent.name = 'AskIntent';
-    return stateMachineSkill.execute((event))
-      .then((reply) => {
-        expect(reply.session.attributes.reply).to.deep.equal({
-          msgPath: 'Question.Ask',
-          state: 'exit',
-        });
-      });
-  });
-
   it('should include all directives in the reply', () => {
     const stateMachineSkill = new StateMachineSkill({ Model, variables, views });
 
