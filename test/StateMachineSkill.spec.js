@@ -171,6 +171,23 @@ describe('StateMachineSkill', () => {
       });
   });
 
+  it('should simply set an empty session if serialize is missing', () => {
+    const stateMachineSkill = new StateMachineSkill({ views, variables });
+    statesDefinition.entry = simple.spy((request) => {
+      request.model = null;
+      return { reply: 'Question.Ask', to: 'initState' };
+    });
+    _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        expect(reply.error).to.be.undefined;
+        expect(statesDefinition.entry.called).to.be.true;
+        expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
+        expect(reply.session.attributes.modelData).to.deep.equal({ });
+        expect(reply.session.attributes.state).to.equal('initState');
+      });
+  });
+
   it('should allow async serialization in Model', () => {
     class PromisyModel extends Model {
       serialize() { // eslint-disable-line class-methods-use-this
