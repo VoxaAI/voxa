@@ -41,8 +41,8 @@ Usage
 
 .. code-block:: javascript
 
-  const alexa = require('alexa-statemachine');
-  alexa.plugins.stateFlow.register(skill)
+  const Voxa = require('voxa');
+  Voxa.plugins.stateFlow.register(skill);
 
   skill.onBeforeReplySent((alexaEvent) => {
     console.log(alexaEvent.flow.join(' > ')); // entry > firstState > secondState > die
