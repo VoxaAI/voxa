@@ -10,8 +10,7 @@
   },
   "author": "Rain",
   "engines": {
-    "node": "4.3.2",
-    "node": "6.10"
+    "node": ">=4.3.2 <=6.10"
   },
   "keywords": [
     "alexa",
