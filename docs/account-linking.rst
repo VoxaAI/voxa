@@ -184,7 +184,7 @@ The serverless framework is a tool that helps you manage your lambda application
 Running the project
 ---------------------
 
-1. Clone the `voxa <https://github.com/mediarain/voxa>`_ repository
+1. Clone the `Voxa <https://github.com/mediarain/voxa>`_ repository
 
 2. Create a new skill project using the ``samples/starterKit`` directory as a basis
 
