@@ -1,5 +1,6 @@
 'use strict';
 
-const skill = require('./skill/MainStateMachine');
+const skill = require('./skill/MainStateMachine'),
+			config = require('./config');
 
-skill.startServer();
+skill.startServer(config.server.port);
