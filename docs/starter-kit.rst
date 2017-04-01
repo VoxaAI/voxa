@@ -89,6 +89,16 @@ The serverless framework is a tool that helps you manage your lambda application
 .. code-block:: bash
   
   $ sls deploy
+  
+Dependencies (install these first)
+----------------------------------
+1. If you are using node.js for the first time, install node:
+  * Install `nvm <http://nvm.sh/>`_, ``curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash``, 
+  * Install node 4.3, ``nvm install 4.3``
+
+2. Install gulp globally,  ``npm install -g gulp``
+
+3. Install `ngrok <https://ngrok.com/download>`_, and `add it to your local bin <https://gist.github.com/wosephjeber/aa174fb851dfe87e644e>`_
 
 Running the project
 ---------------------
@@ -99,8 +109,10 @@ Running the project
 
 3. Make sure you're running node 4.3, this is easiest with `nvm <https://github.com/creationix/nvm>`_
 
-4. Create a ``config/local.json`` file using ``config/local.json.example`` as an example
+4. In your skill directory, install node dependencies using ``npm install``
 
-5. Run the project with ``gulp watch``
+5. Create a ``config/local.json`` file using ``config/local.json.example`` as an example
 
-6. At this point you should start ``ngrok http 3000`` and configure your skill in the Amazon Developer panel to use the ngrok https endpoint.
+6. Run the project with ``gulp watch``
+
+7. At this point you should start ``ngrok http 3000`` and configure your skill in the Amazon Developer panel to use the ngrok https endpoint.
