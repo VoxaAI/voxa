@@ -11,7 +11,7 @@ A fsm (state machine) framework for Alexa apps using Node.js
 Installation
 -------------
 
-Just install from [npm](https://www.npmjs.com/package/voxa)
+Install from [npm](https://www.npmjs.com/package/voxa)
 
 ```bash
 npm install --save voxa
@@ -23,7 +23,7 @@ Usage
 ```javascript
 const Voxa = require('voxa');
 
-// Views are used by your controller to send responses to the user
+// Controllers use views to send responses to the user
 const views = {
   LaunchIntent: { tell: 'Hello World!' },
 }
@@ -37,11 +37,7 @@ skill.onIntent('LaunchIntent', (event) => {
 });
 
 // lambda handler
-exports.handler = function handler(event, context, callback) {
-  return skill.execute(event, context)
-    .then(result => callback(null, result))
-    .catch(callback);
-}
+exports.handler = skill.lambda();
 
 ```
 
@@ -66,5 +62,5 @@ Resources
 
 * [Documentation](http://voxa.readthedocs.io/en/latest/)
 * [Bug Tracker](https://github.com/mediarain/voxa/issues)
-* [Mail List](https://groups.google.com/d/forum/voxa-framework) (https://groups.google.com/d/forum/voxa-framework)
+* [Mail List](https://groups.google.com/d/forum/voxa-framework)
 * [IRC](irc://chat.freenode.net/voxa) (chat.freenode.net, #voxa)

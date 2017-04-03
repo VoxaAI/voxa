@@ -1,0 +1,1 @@
+AMAZON.HelpIntent Tell me more about this skill

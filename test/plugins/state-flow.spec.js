@@ -7,7 +7,6 @@ chai.use(chaiAsPromised);
 
 const expect = chai.expect;
 const _ = require('lodash');
-const simple = require('simple-mock');
 const StateMachineSkill = require('../../lib/StateMachineSkill');
 const stateFlow = require('../../lib/plugins/state-flow');
 const views = require('../views');
