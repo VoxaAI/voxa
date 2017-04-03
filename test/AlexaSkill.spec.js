@@ -11,6 +11,11 @@ const simple = require('simple-mock');
 const _ = require('lodash');
 
 describe('AlexaSkill', () => {
+  it('Skill should able to run without any port as a parameter', () => {
+      const alexaSkill = new AlexaSkill({ appIds: ['MY APP ID'] });
+      alexaSkill.startServer();
+  });
+
   it('should return error message on wrong appId if config.appIds is defined', () => {
     const alexaSkill = new AlexaSkill({ appIds: ['MY APP ID'] });
     alexaSkill.onLaunchRequest(() => {});
