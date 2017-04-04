@@ -9,11 +9,18 @@ const expect = chai.expect;
 const AlexaSkill = require('../lib/AlexaSkill');
 const simple = require('simple-mock');
 const _ = require('lodash');
+const portfinder = require('portfinder');
 
 describe('AlexaSkill', () => {
   it('Skill should able to run without any port as a parameter', () => {
     const alexaSkill = new AlexaSkill({ appIds: ['MY APP ID'] });
+
+    portfinder.basePort = 3000;
     alexaSkill.startServer();
+    return portfinder.getPortPromise()
+      .then((_port) => {
+        expect(_port).to.equal(3001); // portfinder gets the next port available
+      });
   });
 
   it('should return error message on wrong appId if config.appIds is defined', () => {
