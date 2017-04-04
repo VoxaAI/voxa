@@ -92,6 +92,8 @@ Links
   :maxdepth: 2
   :caption: Contents:
 
+  index
+  mvc-description
   models
   views-and-variables
   controllers
