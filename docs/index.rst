@@ -92,7 +92,7 @@ Links
   :maxdepth: 2
   :caption: Contents:
 
-  index
+  glossary
   mvc-description
   models
   views-and-variables
