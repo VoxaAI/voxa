@@ -3,12 +3,12 @@
 Transition
 ===========
 
-A transition is the result of controller execution, it's simple object with some keys that control the flow  of execution in your skill. 
+A transition is the result of controller execution, it's a simple object with keys that control the flow of execution in your skill. 
 
 ``to``
 ------
 
-The ``to`` key should be the name of state in your state machine, when present it indicates to the framework that it should move to a new state. If absent it's assumed that the framework should move to the ``die`` state.
+The ``to`` key should be the name of a state in your state machine, when present it indicates to the framework that it should move to a new state. If absent it's assumed that the framework should move to the ``die`` state.
 
 .. code-block:: javascript
 
