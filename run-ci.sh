@@ -13,7 +13,7 @@ for SAMPLE_DIRECTORY in `find ./samples -maxdepth 1 -mindepth 1 -type d` ; do
   for file in config/*.json; do
     python2 -m json.tool $file
   done
-  yarn
+  yarn --ignore-engine
   yarn link voxa
   cp config/local.json.example config/local.json
   yarn run lint
