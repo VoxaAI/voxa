@@ -12,7 +12,6 @@ const _ = require('lodash');
 const portfinder = require('portfinder');
 
 describe('AlexaSkill', () => {
-
   it('should return error message on wrong appId if config.appIds is defined', () => {
     const alexaSkill = new AlexaSkill({ appIds: ['MY APP ID'] });
     alexaSkill.onLaunchRequest(() => {});
