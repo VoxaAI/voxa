@@ -93,6 +93,7 @@ Links
   :caption: Contents:
 
   glossary
+  new-user
   mvc-description
   models
   views-and-variables
