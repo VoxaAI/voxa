@@ -3,15 +3,20 @@
 const expect = require('chai').expect;
 const _ = require('lodash');
 const Reply = require('../lib/Reply');
+const AlexaEvent = require('../lib/AlexaEvent');
 
 describe('Reply', () => {
   let reply;
   beforeEach(() => {
-    reply = new Reply({});
+    reply = new Reply(new AlexaEvent({}));
+  });
+
+  it('should throw an error if first argument is not an alexaEvent', () => {
+    expect(() => new Reply()).to.throw;
   });
 
   it('should add the request session to itself on constructor', () => {
-    const request = { session: { key1: 'value1', key2: 'value2' } };
+    const request = new AlexaEvent({ session: { key1: 'value1', key2: 'value2' } });
     const sessionReply = new Reply(request);
     expect(sessionReply.session).to.deep.equal(request.session);
   });
@@ -173,7 +178,7 @@ describe('Reply', () => {
     describe('a Reply', () => {
       let appendedReply;
       beforeEach(() => {
-        appendedReply = new Reply({});
+        appendedReply = new Reply(new AlexaEvent({}));
       });
 
       it('should append the statements from another Reply', () => {
