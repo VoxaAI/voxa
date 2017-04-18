@@ -92,6 +92,9 @@ Links
   :maxdepth: 2
   :caption: Contents:
 
+  glossary
+  new-user
+  mvc-description
   models
   views-and-variables
   controllers
@@ -106,4 +109,3 @@ Links
   starter-kit
   my-first-podcast
   account-linking
-
