@@ -11,8 +11,7 @@
 
 'use strict';
 
-module.exports.version = '0.3.2';
-
+const packageInfo = require('./package.json');
 const StateMachineSkill = require('./lib/StateMachineSkill');
 const helpers = require('alexa-helpers');
 const Reply = require('./lib/Reply');
@@ -28,7 +27,9 @@ const stateFlow = require('./lib/plugins/state-flow');
 const cloudWatch = require('./lib/plugins/cloud-watch');
 const autoLoad = require('./lib/plugins/auto-load');
 
+
 module.exports = StateMachineSkill;
+module.exports.version = packageInfo.version;
 module.exports.Reply = Reply;
 module.exports.helpers = helpers;
 module.exports.replyWith = (reply, to) => ({ reply, to });
