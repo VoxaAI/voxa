@@ -1,4 +1,7 @@
 language: node_js
+node_js:
+  - "4.3.2"
+  - "6.10"
 script: ./run-ci.sh
 notifications:
   irc: "chat.freenode.net#voxa"
