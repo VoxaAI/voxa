@@ -12,7 +12,7 @@ describe('Reply', () => {
   });
 
   it('should throw an error if first argument is not an alexaEvent', () => {
-    expect(() => new Reply()).to.throw;
+    expect(() => new Reply()).to.throw(Error);
   });
 
   it('should add the request session to itself on constructor', () => {
