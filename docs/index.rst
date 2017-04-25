@@ -22,13 +22,11 @@ Features
 * Easy integration with several Analytics providers
 * Easy to modify response file (the view)
 * Compatibility with all SSML features
-* Compatible with Audio directives
 * Works with companion app cards
 * Supports i18n in the responses
 * Clean code structure with a unit testing framework
 * Easy error handling
 * Account linking support
-* Persistent session support using DynamoDB
 * Several Plugins
 
 Installation
