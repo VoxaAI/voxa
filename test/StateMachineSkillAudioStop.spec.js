@@ -42,8 +42,7 @@ describe('StateMachineSkill', () => {
 
   itIs('audioStop', (reply) => {
     expect(reply.msg.statements[0]).to.include('For more info visit');
-
-    expect(reply.msg.directives).to.deep.equal({ type: 'AudioPlayer.Stop' });
+    expect(reply.toJSON().response.directives).to.deep.equal([{ type: 'AudioPlayer.Stop' }]);
   });
 
   function itIs(requestFile, cb) {

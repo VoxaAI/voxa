@@ -85,6 +85,65 @@ describe('Reply', () => {
     });
   });
 
+  describe('buildSpeechletResponse', () => {
+    it('should transform audio directives', () => {
+      const directives = [{
+        playBehavior: 'REPLACE_ALL',
+        type: 'AudioPlayer.Play',
+        token: '{}',
+        url: 'http://example.com/',
+        offsetInMilliseconds: 0,
+      }];
+
+      const response = Reply.buildSpeechletResponse({
+        directives,
+      });
+      expect(response).to.deep.equal({
+        version: '1.0',
+        response: {
+          card: undefined,
+          outputSpeech: undefined,
+          shouldEndSession: undefined,
+          directives: [{
+            audioItem: {
+              stream: {
+                offsetInMilliseconds: 0,
+                token: '{}',
+                url: 'http://example.com/',
+              },
+            },
+            playBehavior: 'REPLACE_ALL',
+            type: 'AudioPlayer.Play',
+          }],
+        },
+      });
+    });
+
+    it('should add the reprompt to the response', () => {
+      const response = Reply.buildSpeechletResponse({
+        directives: [],
+        reprompt: {
+          type: 'SSML',
+          speech: 'The reprompt',
+        },
+      });
+      expect(response).to.deep.equal({
+        version: '1.0',
+        response: {
+          card: undefined,
+          outputSpeech: undefined,
+          reprompt: {
+            outputSpeech: {
+              ssml: 'The reprompt',
+              type: 'SSML',
+            },
+          },
+          shouldEndSession: undefined,
+        },
+      });
+    });
+  });
+
   describe('append', () => {
     it('should throw an error on trying to append to a yielding reply', () => {
       expect(() => reply.end().append({ say: 'Something' })).to.throw(Error);
@@ -156,11 +215,20 @@ describe('Reply', () => {
       expect(reply.msg.statements[0]).to.equal('ask');
     });
 
+    it('should add array of directives', () => {
+      const message = { directives: [{ key: 'value' }, { key: 'value2' }] };
+      reply.append(message);
+      reply.append({ ask: 'ask' });
+      expect(reply.msg.directives).to.deep.equal(message.directives);
+      expect(reply.msg.statements).to.have.lengthOf(1);
+      expect(reply.msg.statements[0]).to.equal('ask');
+    });
+
     it('should preserve last directives that where added', () => {
       const message = { directives: { key: 'value' } };
       reply.append(message);
       reply.append({ ask: 'ask' });
-      expect(reply.msg.directives).to.deep.equal(message.directives);
+      expect(reply.msg.directives).to.deep.equal([message.directives]);
       expect(reply.msg.statements).to.have.lengthOf(1);
       expect(reply.msg.statements[0]).to.equal('ask');
     });

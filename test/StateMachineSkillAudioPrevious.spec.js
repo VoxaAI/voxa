@@ -76,7 +76,7 @@ describe('StateMachineSkill', () => {
   itIs('audioPrevious', (reply) => {
     expect(reply.msg.statements[0]).to.include('Hello! Good');
 
-    const token = JSON.parse(reply.msg.directives.token);
+    const token = JSON.parse(reply.msg.directives[0].token);
     expect(token.index).to.equal(0, 'AUDIO INDEX 0');
   });
 

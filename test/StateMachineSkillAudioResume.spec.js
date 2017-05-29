@@ -74,11 +74,11 @@ describe('StateMachineSkill', () => {
   itIs('audioResume', (reply) => {
     expect(reply.msg.statements[0]).to.include('Hello! Good');
 
-    const token = JSON.parse(reply.msg.directives.token);
+    const token = JSON.parse(reply.msg.directives[0].token);
     expect(token.index).to.equal(1, 'AUDIO INDEX 1');
     expect(token.shuffle).to.equal(1, 'SHUFFLE OFF');
     expect(token.loop).to.equal(0, 'LOOP OFF');
-    expect(reply.msg.directives.offsetInMilliseconds).to.equal(
+    expect(reply.msg.directives[0].offsetInMilliseconds).to.equal(
       353160, 'OFFSETINMILLISECONDS OK');
   });
 
