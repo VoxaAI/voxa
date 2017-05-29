@@ -9,6 +9,7 @@ const expect = chai.expect;
 const AlexaSkill = require('../lib/AlexaSkill');
 const simple = require('simple-mock');
 const _ = require('lodash');
+const portfinder = require('portfinder');
 
 describe('AlexaSkill', () => {
   it('should return error message on wrong appId if config.appIds is defined', () => {

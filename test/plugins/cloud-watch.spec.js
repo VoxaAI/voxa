@@ -24,7 +24,6 @@ describe('CloudwatchPlugin', () => {
 
     return stateMachineSkill.execute({})
       .then((reply) => {
-        console.log(reply);
         expect(reply.error).not.to.be.undefined;
       });
   });
@@ -58,7 +57,6 @@ describe('CloudwatchPlugin', () => {
 
     return stateMachineSkill.execute(event)
       .then((reply) => {
-        console.log(reply);
         expect(reply.error).not.to.be.undefined;
         expect(reply.error.message).to.equal('Random error');
         expect(cloudwatchMock.called).to.be.true;
