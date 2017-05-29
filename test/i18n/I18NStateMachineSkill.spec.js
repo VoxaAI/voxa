@@ -55,15 +55,15 @@ describe('I18NStateMachineSkill', () => {
   };
 
   it('should return an error if the views file doesn\'t have the local strings', () => {
-    const localMissing = 'en-gb';
+    const localeMissing = 'en-gb';
     const skill = new StateMachineSkill({ variables, views, RenderClass: I18NRenderer });
     skill.onIntent('SomeIntent', () => ({ reply: 'Number.One' }));
-    event.request.locale = localMissing;
+    event.request.locale = localeMissing;
 
     return skill.execute(event)
       .then((reply) => {
         expect(reply.msg.statements[0]).to.equal('An unrecoverable error occurred.');
-        expect(reply.error.message).to.equal(`Views for ${localMissing} locale are missing`);
+        expect(reply.error.message).to.equal(`Views for ${localeMissing} locale are missing`);
         expect(reply.msg.directives).to.deep.equal({});
       });
   });
