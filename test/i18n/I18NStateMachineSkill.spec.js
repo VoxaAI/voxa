@@ -63,7 +63,7 @@ describe('I18NStateMachineSkill', () => {
     return skill.execute(event)
       .then((reply) => {
         expect(reply.msg.statements[0]).to.equal('An unrecoverable error occurred.');
-        expect(reply.error.message).to.equal(`Locale views is not implemented: ${localMissing}`);
+        expect(reply.error.message).to.equal(`Views for ${localMissing} locale are missing`);
         expect(reply.msg.directives).to.deep.equal({});
       });
   });
