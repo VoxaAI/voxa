@@ -68,6 +68,7 @@ describe('I18NStateMachineSkill', () => {
         return skill.execute(event)
           .then((reply) => {
             expect(reply.msg.statements[0]).to.equal(translations.site);
+            expect(reply.msg.directives).to.deep.equal({});
           });
       });
 
@@ -77,6 +78,7 @@ describe('I18NStateMachineSkill', () => {
         return skill.execute(event)
           .then((reply) => {
             expect(reply.msg.statements[0]).to.equal(translations.number);
+            expect(reply.msg.directives).to.deep.equal({});
           });
       });
 
