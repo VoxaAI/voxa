@@ -25,4 +25,12 @@ describe('AlexaEvent', () => {
     const alexaEvent = new AlexaEvent({ session: { user: { userId: 'Fried Chicken' } }, request: { } });
     expect(alexaEvent.user.userId).to.equal('Fried Chicken');
   });
+
+  it('should set session attributes to an object on receiving a null value', () => {
+    const alexaEvent = new AlexaEvent({
+      session: { attributes: null },
+      request: { },
+    });
+    expect(alexaEvent.session.attributes).to.deep.equal({});
+  });
 });
