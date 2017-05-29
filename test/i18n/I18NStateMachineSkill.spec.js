@@ -54,6 +54,20 @@ describe('I18NStateMachineSkill', () => {
     },
   };
 
+  it('should return an error if the views file doesn\'t have the local strings', () => {
+    const localeMissing = 'en-gb';
+    const skill = new StateMachineSkill({ variables, views, RenderClass: I18NRenderer });
+    skill.onIntent('SomeIntent', () => ({ reply: 'Number.One' }));
+    event.request.locale = localeMissing;
+
+    return skill.execute(event)
+      .then((reply) => {
+        expect(reply.msg.statements[0]).to.equal('An unrecoverable error occurred.');
+        expect(reply.error.message).to.equal(`Views for ${localeMissing} locale are missing`);
+        expect(reply.msg.directives).to.deep.equal({});
+      });
+  });
+
   _.forEach(locales, (translations, locale) => {
     describe(locale, () => {
       let skill;
@@ -68,6 +82,7 @@ describe('I18NStateMachineSkill', () => {
         return skill.execute(event)
           .then((reply) => {
             expect(reply.msg.statements[0]).to.equal(translations.site);
+            expect(reply.msg.directives).to.deep.equal({});
           });
       });
 
@@ -77,19 +92,25 @@ describe('I18NStateMachineSkill', () => {
         return skill.execute(event)
           .then((reply) => {
             expect(reply.msg.statements[0]).to.equal(translations.number);
+            expect(reply.msg.directives).to.deep.equal({});
           });
       });
 
-      it('should add msgReply for ask statements', () => {
-        skill.onIntent('SomeIntent', () => ({ reply: 'Question.Ask' }));
+      it('should return response with directives', () => {
+        const directives = {
+          type: 'AudioPlayer.Play',
+          playBehavior: 'REPLACE_ALL',
+          offsetInMilliseconds: 0,
+          url: 'url',
+          token: '123',
+        };
+
+        skill.onIntent('SomeIntent', () => ({ reply: 'Question.Ask', to: 'entry', directives }));
         event.request.locale = locale;
         return skill.execute(event)
           .then((reply) => {
-            expect(reply.session.attributes.reply).to.deep.equal({
-              msgPath: 'Question.Ask',
-              state: 'die',
-            });
             expect(reply.msg.statements[0]).to.equal(translations.question);
+            expect(reply.msg.directives).to.be.ok;
           });
       });
     });
