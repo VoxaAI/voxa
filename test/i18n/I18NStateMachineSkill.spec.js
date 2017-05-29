@@ -38,17 +38,6 @@ describe('I18NStateMachineSkill', () => {
       initState: () => ({ to: 'endState' }),
       secondState: () => ({ to: 'initState' }),
       thirdState: () => Promise.resolve({ to: 'endState' }),
-      fourthState: () => {
-        const directives = {
-          type: 'AudioPlayer.Play',
-          playBehavior: 'REPLACE_ALL',
-          offsetInMilliseconds: 0,
-          url: 'url',
-          token: '123',
-        };
-
-        return { reply: 'ExitIntent.Farewell', to: 'die', directives };
-      },
     };
   });
 
@@ -88,6 +77,24 @@ describe('I18NStateMachineSkill', () => {
         return skill.execute(event)
           .then((reply) => {
             expect(reply.msg.statements[0]).to.equal(translations.number);
+          });
+      });
+
+      it('should return response with directives', () => {
+        const directives = {
+          type: 'AudioPlayer.Play',
+          playBehavior: 'REPLACE_ALL',
+          offsetInMilliseconds: 0,
+          url: 'url',
+          token: '123',
+        };
+
+        skill.onIntent('SomeIntent', () => ({ reply: 'Question.Ask', to: 'entry', directives }));
+        event.request.locale = locale;
+        return skill.execute(event)
+          .then((reply) => {
+            expect(reply.msg.statements[0]).to.equal(translations.question);
+            expect(reply.msg.directives).to.be.ok;
           });
       });
     });
