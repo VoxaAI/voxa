@@ -171,6 +171,23 @@ describe('StateMachineSkill', () => {
       });
   });
 
+  it('should simply set an empty session if serialize is missing', () => {
+    const stateMachineSkill = new StateMachineSkill({ views, variables });
+    statesDefinition.entry = simple.spy((request) => {
+      request.model = null;
+      return { reply: 'Question.Ask', to: 'initState' };
+    });
+    _.map(statesDefinition, (state, name) => stateMachineSkill.onState(name, state));
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        expect(reply.error).to.be.undefined;
+        expect(statesDefinition.entry.called).to.be.true;
+        expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
+        expect(reply.session.attributes.modelData).to.be.null;
+        expect(reply.session.attributes.state).to.equal('initState');
+      });
+  });
+
   it('should allow async serialization in Model', () => {
     class PromisyModel extends Model {
       serialize() { // eslint-disable-line class-methods-use-this
@@ -292,20 +309,6 @@ describe('StateMachineSkill', () => {
           expect(reply.msg.statements[0]).to.equal('My custom response');
         });
     });
-  });
-
-  it('should add a reply to session if reply is an ask', () => {
-    const stateMachineSkill = new StateMachineSkill({ Model, views, variables });
-    stateMachineSkill.onIntent('AskIntent', () => ({ to: 'exit', reply: 'Question.Ask' }));
-    stateMachineSkill.onState('exit', () => 'ExitIntent.Farewell');
-    event.request.intent.name = 'AskIntent';
-    return stateMachineSkill.execute((event))
-      .then((reply) => {
-        expect(reply.session.attributes.reply).to.deep.equal({
-          msgPath: 'Question.Ask',
-          state: 'exit',
-        });
-      });
   });
 
   it('should include all directives in the reply', () => {
