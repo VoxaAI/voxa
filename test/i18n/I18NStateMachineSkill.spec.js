@@ -64,7 +64,7 @@ describe('I18NStateMachineSkill', () => {
       .then((reply) => {
         expect(reply.msg.statements[0]).to.equal('An unrecoverable error occurred.');
         expect(reply.error.message).to.equal(`Views for ${localeMissing} locale are missing`);
-        expect(reply.msg.directives).to.deep.equal({});
+        expect(reply.msg.directives).to.deep.equal([]);
       });
   });
 
@@ -82,7 +82,7 @@ describe('I18NStateMachineSkill', () => {
         return skill.execute(event)
           .then((reply) => {
             expect(reply.msg.statements[0]).to.equal(translations.site);
-            expect(reply.msg.directives).to.deep.equal({});
+            expect(reply.msg.directives).to.deep.equal([]);
           });
       });
 
@@ -92,7 +92,7 @@ describe('I18NStateMachineSkill', () => {
         return skill.execute(event)
           .then((reply) => {
             expect(reply.msg.statements[0]).to.equal(translations.number);
-            expect(reply.msg.directives).to.deep.equal({});
+            expect(reply.msg.directives).to.deep.equal([]);
           });
       });
 
