@@ -10,7 +10,7 @@
   },
   "author": "Rain",
   "engines": {
-    "node": "4.3.2"
+    "node": ">=4.3.2 <=6.10"
   },
   "keywords": [
     "alexa",
@@ -22,7 +22,7 @@
   ],
   "license": "ISC",
   "dependencies": {
-    "voxa": "^2.0.0",
+    "voxa": "^2.1.0",
     "bluebird": "^3.3.5",
     "lodash": "^4.13.1"
   },

@@ -37,7 +37,7 @@ describe('BadResponseRepromptPlugin', () => {
         },
         attributes: {
           state: 'playing',
-          reprompt: 'Playing.SayStop',
+          reply: { msgPath: 'Playing.SayStop' },
         },
       },
     };
@@ -74,7 +74,7 @@ describe('BadResponseRepromptPlugin', () => {
         },
         attributes: {
           state: 'playing',
-          reprompt: 'Playing.SayStop',
+          reply: { msgPath: 'Playing.SayStop' },
         },
       },
     };
@@ -87,6 +87,41 @@ describe('BadResponseRepromptPlugin', () => {
         expect(reply.msg.statements).to.deep.equal(['I\'m sorry. I didn\'t understand.', 'Say stop if you want to finish the playback']);
       });
   });
+
+  it('should add a reply to session if reply is an ask', () => {
+    const skill = new StateMachineSkill({ views, variables });
+    skill.onIntent('AskIntent', () => ({ to: 'exit', reply: 'Question.Ask' }));
+    skill.onState('exit', () => 'ExitIntent.Farewell');
+
+    const event = {
+      request: {
+        type: 'IntentRequest',
+        intent: {
+          name: 'AskIntent',
+        },
+      },
+      session: {
+        new: false,
+        application: {
+          applicationId: 'appId',
+        },
+        attributes: {
+          reply: { msgPath: 'Playing.SayStop' },
+        },
+      },
+    };
+
+    badResponseReprompt(skill);
+    return skill.execute((event))
+      .then((reply) => {
+        expect(reply.error).to.be.undefined;
+        expect(reply.session.attributes.reply).to.deep.equal({
+          msgPath: 'Question.Ask',
+          state: 'exit',
+        });
+      });
+  });
+
 
   it('should just exit if no reprompt', () => {
     const stateMachineSkill = new StateMachineSkill({ variables, views });

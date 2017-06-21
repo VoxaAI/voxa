@@ -1,10 +1,10 @@
 'use strict';
 
-const UserStorage = require('../services/userStorage');
+const _ = require('lodash');
 
 exports.register = function register(skill) {
   skill.onIntent('LaunchIntent', (alexaEvent) => {
-    if (alexaEvent.model.user && alexaEvent.model.user.id) {
+    if (_.get(alexaEvent, 'model.user.email')) {
       return { reply: 'Intent.Launch', to: 'entry' };
     }
 
@@ -12,18 +12,4 @@ exports.register = function register(skill) {
   });
 
   skill.onIntent('AMAZON.HelpIntent', () => ({ reply: 'Intent.Help' }));
-
-  skill.onRequestStarted((alexaEvent) => {
-    if (!alexaEvent.session.user.accessToken) {
-      return alexaEvent;
-    }
-
-    const storage = new UserStorage();
-
-    return storage.get(alexaEvent.session.user.accessToken)
-    .then((user) => {
-      alexaEvent.model.user = user;
-      return alexaEvent;
-    });
-  });
 };
