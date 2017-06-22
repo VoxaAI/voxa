@@ -5,6 +5,7 @@ Voxa
 [![Coverage Status](https://coveralls.io/repos/github/mediarain/voxa/badge.svg?branch=master)](https://coveralls.io/github/mediarain/voxa?branch=master)
 [![Documentation](https://readthedocs.org/projects/voxa/badge/)](http://voxa.readthedocs.io/en/latest/)
 [![npm](https://img.shields.io/npm/dm/voxa.svg)](https://www.npmjs.com/package/voxa)
+[![Gitter](https://img.shields.io/gitter/room/voxa-rain/voxa.svg)](https://gitter.im/voxa-rain/voxa)
 
 A fsm (state machine) framework for Alexa apps using Node.js
 
@@ -86,4 +87,3 @@ Resources
 * [Documentation](http://voxa.readthedocs.io/en/latest/)
 * [Bug Tracker](https://github.com/mediarain/voxa/issues)
 * [Mail List](https://groups.google.com/d/forum/voxa-framework)
-* [IRC](irc://chat.freenode.net/voxa) (chat.freenode.net, #voxa)
