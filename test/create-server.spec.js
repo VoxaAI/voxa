@@ -27,6 +27,39 @@ describe('createServer', () => {
     });
   });
 
+  it('should return json response on empty POST', (done) => {
+    const postData = '';
+
+    const options = {
+      port,
+      hostname: 'localhost',
+      path: '/',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(postData),
+      },
+    };
+
+    const req = http.request(options, (res) => {
+      expect(res.statusCode).to.equal(200);
+
+      let data = '';
+
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        expect('{"error":"POST empty"}').to.equal(data);
+        done();
+      });
+    });
+
+    req.write(postData);
+    req.end();
+  });
+
   it('should return json response on POST', (done) => {
     const postData = JSON.stringify({
       msg: 'Hello World!',
