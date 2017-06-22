@@ -8,7 +8,7 @@ module.exports = function mount(dirname) {
 
   const files = fs.readdirSync(dirname);
   files.forEach((route) => {
-    if (route.indexOf('index.js',route.length - 8) >= 0) return;
+    if (route.indexOf('index.js', route.length - 8) >= 0) return;
     const controller = require(path.join(dirname, route));
     if (!controller.router) return;
 
