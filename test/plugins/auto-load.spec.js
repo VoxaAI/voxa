@@ -69,7 +69,7 @@ describe('AutoLoad plugin', () => {
 
     return skill.execute(event)
     .then((reply) => {
-      expect(reply.alexaEvent.session.attributes).to.be.undefined;
+      expect(reply.toJSON().sessionAttributes).to.be.undefined;
       expect(reply.error).to.not.be.undefined;
       expect(reply.error.message).to.equal('Random error');
     });

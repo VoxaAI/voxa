@@ -60,7 +60,6 @@ describe('Skill', () => {
                 type: 'AudioPlayer.Play',
               },
             ] },
-          sessionAttributes: {},
         });
       });
   });
