@@ -282,7 +282,7 @@ describe('StateMachineSkill', () => {
 
       return stateMachineSkill.execute(event)
         .then((reply) => {
-          expect(reply.error.message).to.equal('LaunchIntent went unhandled');
+          expect(reply.error.message).to.equal('LaunchIntent went unhandled on entry state');
         });
     });
 
@@ -471,4 +471,3 @@ describe('StateMachineSkill', () => {
     });
   });
 });
-
