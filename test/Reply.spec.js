@@ -71,6 +71,7 @@ describe('Reply', () => {
           },
           shouldEndSession: false,
         },
+        sessionAttributes: {},
         version: '1.0',
       });
     });
@@ -85,6 +86,7 @@ describe('Reply', () => {
           },
           shouldEndSession: true,
         },
+        sessionAttributes: {},
         version: '1.0',
       });
     });
