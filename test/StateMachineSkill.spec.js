@@ -275,6 +275,17 @@ describe('StateMachineSkill', () => {
   });
 
   describe('onUnhandledState', () => {
+    it('should give a proper error message when an intent is unhandled', () => {
+      const stateMachineSkill = new StateMachineSkill({ Model, views, variables });
+      event.request.type = 'LaunchRequest';
+      stateMachineSkill.onState('entry', { });
+
+      return stateMachineSkill.execute(event)
+        .then((reply) => {
+          expect(reply.error.message).to.equal('LaunchIntent went unhandled on entry state');
+        });
+    });
+
     it('should call onUnhandledState callbacks when the state machine transition throws a UnhandledState error', () => {
       const stateMachineSkill = new StateMachineSkill({ Model, views, variables });
       const onUnhandledState = simple.stub().resolveWith({
@@ -460,4 +471,3 @@ describe('StateMachineSkill', () => {
     });
   });
 });
-
