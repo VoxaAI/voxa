@@ -14,6 +14,7 @@ const views = require('./views');
 const variables = require('./variables');
 const Model = require('../lib/Model');
 const Reply = require('../lib/Reply');
+const AlexaEvent = require('../lib/AlexaEvent');
 
 describe('StateMachineSkill', () => {
   let statesDefinition;
@@ -68,7 +69,7 @@ describe('StateMachineSkill', () => {
 
   it('should add use append the reply key to the Reply if it\'s a Reply object', () => {
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    const reply = new Reply({ }, { tell: 'This is my message' });
+    const reply = new Reply(new AlexaEvent({}), { tell: 'This is my message' });
     stateMachineSkill.onIntent('LaunchIntent', () => ({ reply }));
     event.request.type = 'LaunchRequest';
 
@@ -274,6 +275,17 @@ describe('StateMachineSkill', () => {
   });
 
   describe('onUnhandledState', () => {
+    it('should give a proper error message when an intent is unhandled', () => {
+      const stateMachineSkill = new StateMachineSkill({ Model, views, variables });
+      event.request.type = 'LaunchRequest';
+      stateMachineSkill.onState('entry', { });
+
+      return stateMachineSkill.execute(event)
+        .then((reply) => {
+          expect(reply.error.message).to.equal('LaunchIntent went unhandled on entry state');
+        });
+    });
+
     it('should call onUnhandledState callbacks when the state machine transition throws a UnhandledState error', () => {
       const stateMachineSkill = new StateMachineSkill({ Model, views, variables });
       const onUnhandledState = simple.stub().resolveWith({
@@ -469,4 +481,3 @@ describe('StateMachineSkill', () => {
     });
   });
 });
-

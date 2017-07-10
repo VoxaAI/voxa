@@ -113,7 +113,7 @@ describe('StateMachine', () => {
       const stateMachine = new StateMachine('entry', { states });
       alexaEvent.intent.name = 'OtherIntent';
       const promise = stateMachine.transition(alexaEvent, new Reply(alexaEvent));
-      return expect(promise).to.eventually.be.rejectedWith(errors.UnhandledState, 'Transition from entry resulted in undefined');
+      return expect(promise).to.eventually.be.rejectedWith(errors.UnhandledState, 'OtherIntent went unhandled on entry state');
     });
 
     it('should execute the onUnhandledState callbacks on invalid transition from pojo controller', () => {
