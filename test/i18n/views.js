@@ -16,6 +16,9 @@ const views = (function views() {
         Number: {
           One: { tell: '{numberOne}' },
         },
+        Say: {
+          Say: { say: 'say' },
+        },
       },
     },
     'de-de': {
@@ -31,6 +34,9 @@ const views = (function views() {
         },
         Number: {
           One: { tell: '{numberOne}' },
+        },
+        Say: {
+          Say: { say: 'sagen' },
         },
       },
     },

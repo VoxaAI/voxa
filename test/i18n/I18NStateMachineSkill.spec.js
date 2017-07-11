@@ -46,11 +46,13 @@ describe('I18NStateMachineSkill', () => {
       site: 'Ok. For more info visit example.com site.',
       number: 'one',
       question: 'What time is it?',
+      say: ['say', 'What time is it?'],
     },
     'de-de': {
       site: 'Ok für weitere Infos besuchen example.com Website',
       number: 'ein',
       question: 'wie spät ist es?',
+      say: ['sagen', 'wie spät ist es?'],
     },
   };
 
@@ -63,7 +65,7 @@ describe('I18NStateMachineSkill', () => {
     return skill.execute(event)
       .then((reply) => {
         expect(reply.msg.statements[0]).to.equal('An unrecoverable error occurred.');
-        expect(reply.error.message).to.equal(`Views for ${localeMissing} locale are missing`);
+        expect(reply.error.message).to.equal(`View Number.One for ${localeMissing} locale are missing`);
         expect(reply.msg.directives).to.deep.equal({});
       });
   });
@@ -82,6 +84,16 @@ describe('I18NStateMachineSkill', () => {
         return skill.execute(event)
           .then((reply) => {
             expect(reply.msg.statements[0]).to.equal(translations.site);
+            expect(reply.msg.directives).to.deep.equal({});
+          });
+      });
+
+      it(`work with array responses ${locale}`, () => {
+        skill.onIntent('SomeIntent', () => ({ reply: ['Say.Say', 'Question.Ask'], to: 'entry' }));
+        event.request.locale = locale;
+        return skill.execute(event)
+          .then((reply) => {
+            expect(reply.msg.statements).to.deep.equal(translations.say);
             expect(reply.msg.directives).to.deep.equal({});
           });
       });
