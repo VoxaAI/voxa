@@ -94,7 +94,7 @@ describe('I18NStateMachineSkill', () => {
         return skill.execute(event)
           .then((reply) => {
             expect(reply.msg.statements).to.deep.equal(translations.say);
-            expect(reply.msg.directives).to.deep.equal({});
+            expect(reply.msg.directives).to.deep.equal([]);
           });
       });
 
