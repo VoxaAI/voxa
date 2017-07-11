@@ -242,7 +242,7 @@ describe('StateMachineSkill', () => {
     stateMachineSkill.onSessionEnded(onSessionEnded);
 
     return stateMachineSkill.execute(event)
-      .then((reply) => {
+      .then(() => {
         expect(onSessionEnded.called).to.be.true;
       });
   });
@@ -309,7 +309,7 @@ describe('StateMachineSkill', () => {
   describe('onStateMachineError', () => {
     it('should call onStateMachineError handlers for exceptions thrown inside a state', () => {
       const stateMachineSkill = new StateMachineSkill({ Model, views, variables });
-      const spy = simple.spy((request, reply, error) => new Reply(request, { tell: 'My custom response' }));
+      const spy = simple.spy(request => new Reply(request, { tell: 'My custom response' }));
       stateMachineSkill.onStateMachineError(spy);
       stateMachineSkill.onIntent('AskIntent', () => abc); // eslint-disable-line no-undef
 
@@ -343,12 +343,17 @@ describe('StateMachineSkill', () => {
     return stateMachineSkill.execute(event)
       .then((reply) => {
         expect(reply.msg.directives).to.not.be.undefined;
-        expect(reply.msg.directives).to.deep.equal({
+        expect(reply.msg.directives).to.have.length(1);
+        expect(reply.msg.directives[0]).to.deep.equal({
           type: 'AudioPlayer.Play',
           playBehavior: 'REPLACE_ALL',
-          offsetInMilliseconds: 0,
-          token: '123',
-          url: 'url',
+          audioItem: {
+            stream: {
+              offsetInMilliseconds: 0,
+              token: '123',
+              url: 'url',
+            },
+          },
         });
       });
   });
@@ -372,12 +377,17 @@ describe('StateMachineSkill', () => {
     return stateMachineSkill.execute(event)
       .then((reply) => {
         expect(reply.msg.directives).to.not.be.undefined;
-        expect(reply.msg.directives).to.deep.equal({
+        expect(reply.msg.directives).to.have.length(1);
+        expect(reply.msg.directives[0]).to.deep.equal({
           playBehavior: 'REPLACE_ALL',
           type: 'AudioPlayer.Play',
-          offsetInMilliseconds: 0,
-          token: '123',
-          url: 'url',
+          audioItem: {
+            stream: {
+              offsetInMilliseconds: 0,
+              token: '123',
+              url: 'url',
+            },
+          },
         });
       });
   });
@@ -444,10 +454,8 @@ describe('StateMachineSkill', () => {
     it('should call execute with the correct context and callback', (done) => {
       const skill = new StateMachineSkill({ Model, views, variables });
       _.map(statesDefinition, (state, name) => skill.onState(name, state));
-      let count = 0;
       skill.lambda()(event, { context: 'context' }, (err, result) => {
         if (err) done(err);
-        count += 1;
         expect(result.msg.statements).to.deep.equal(['Ok. For more info visit example.com site.']);
         done();
       });

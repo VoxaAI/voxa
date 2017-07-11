@@ -7,6 +7,8 @@ const http = require('http');
 const StateMachineSkill = require('../lib/StateMachineSkill');
 const portfinder = require('portfinder');
 
+const debug = require('debug')('test');
+
 describe('createServer', () => {
   let server;
   let port;
@@ -16,7 +18,7 @@ describe('createServer', () => {
     return portfinder.getPortPromise()
       .then((_port) => {
         port = _port;
-        server.listen(port, () => console.log(`Listening on ${port}`));
+        server.listen(port, () => debug(`Listening on ${port}`));
       });
   });
 
@@ -53,7 +55,7 @@ describe('createServer', () => {
       });
 
       res.on('end', () => {
-        expect('{"version":"1.0","response":{"outputSpeech":{"type":"SSML","ssml":"<speak>An unrecoverable error occurred.</speak>"},"shouldEndSession":true}}').to.equal(data);
+        expect('{"version":"1.0","response":{"outputSpeech":{"type":"SSML","ssml":"<speak>An unrecoverable error occurred.</speak>"},"shouldEndSession":true},"sessionAttributes":{}}').to.equal(data);
         done();
       });
     });

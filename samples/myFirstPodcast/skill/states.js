@@ -1,6 +1,7 @@
 'use strict';
 
 const podcast = require('./data/podcast');
+const debug = require('debug')('test');
 
 exports.register = function register(skill) {
   skill.onIntent('LaunchIntent', (alexaEvent) => {
@@ -19,8 +20,8 @@ exports.register = function register(skill) {
       const shuffle = 0;
       const loop = 0;
       const offsetInMilliseconds = 0;
-
-      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
+      const url = podcast[index].url;
+      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
 
       return { reply: 'Intent.PlayAudio', to: 'die', directives };
     } else if (alexaEvent.intent.name === 'AMAZON.NoIntent') {
@@ -41,8 +42,8 @@ exports.register = function register(skill) {
       } else if (index === -1) {
         index = podcast.length - 1;
       }
-
-      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
+      const url = podcast[index].url;
+      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
       alexaEvent.model.audioTitle = podcast[index].title;
 
       return { reply: 'Intent.PreviousAudio', to: 'die', directives };
@@ -65,7 +66,8 @@ exports.register = function register(skill) {
         index = 0;
       }
 
-      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
+      const url = podcast[index].url;
+      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
 
       alexaEvent.model.audioTitle = podcast[index].title;
       return { reply: 'Intent.NextAudio', to: 'die', directives };
@@ -85,8 +87,8 @@ exports.register = function register(skill) {
       if (index === podcast.length) {
         index = 0;
       }
-
-      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
+      const url = podcast[index].url;
+      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
 
       return { reply: 'Intent.LoopActivated', to: 'die', directives };
     }
@@ -106,7 +108,8 @@ exports.register = function register(skill) {
         index = 0;
       }
 
-      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
+      const url = podcast[index].url;
+      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
 
       return { reply: 'Intent.LoopDeactivated', to: 'die', directives };
     }
@@ -126,7 +129,8 @@ exports.register = function register(skill) {
         index = 0;
       }
 
-      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
+      const url = podcast[index].url;
+      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
 
       return { reply: 'Intent.ShuffleActivated', to: 'die', directives };
     }
@@ -146,7 +150,8 @@ exports.register = function register(skill) {
         index = 0;
       }
 
-      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
+      const url = podcast[index].url;
+      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
 
       return { reply: 'Intent.ShuffleDeactivated', to: 'die', directives };
     }
@@ -162,7 +167,8 @@ exports.register = function register(skill) {
       const index = token.index;
       const offsetInMilliseconds = 0;
 
-      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
+      const url = podcast[index].url;
+      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
 
       alexaEvent.model.audioTitle = podcast[index].title;
       return { reply: 'Intent.StartOver', to: 'die', directives };
@@ -179,7 +185,8 @@ exports.register = function register(skill) {
       const index = token.index;
       const offsetInMilliseconds = alexaEvent.context.AudioPlayer.offsetInMilliseconds;
 
-      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
+      const url = podcast[index].url;
+      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
 
       alexaEvent.model.audioTitle = podcast[index].title;
       return { reply: 'Intent.Resume', to: 'die', directives };
@@ -188,18 +195,18 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onState('stop', (alexaEvent) => {
+  skill.onState('stop', () => {
     const directives = buildStopDirective();
 
     return { reply: 'Intent.Pause', to: 'die', directives };
   });
 
   skill['onAudioPlayer.PlaybackStarted']((alexaEvent) => {
-    console.log('onAudioPlayer.PlaybackStarted', JSON.stringify(alexaEvent, null, 2));
+    debug('onAudioPlayer.PlaybackStarted', JSON.stringify(alexaEvent, null, 2));
   });
 
   skill['onAudioPlayer.PlaybackFinished']((alexaEvent) => {
-    console.log('onAudioPlayer.PlaybackFinished', JSON.stringify(alexaEvent, null, 2));
+    debug('onAudioPlayer.PlaybackFinished', JSON.stringify(alexaEvent, null, 2));
   });
 
   skill['onAudioPlayer.PlaybackNearlyFinished']((alexaEvent, reply) => {
@@ -224,15 +231,15 @@ exports.register = function register(skill) {
   });
 
   skill['onAudioPlayer.PlaybackStopped']((alexaEvent) => {
-    console.log('onAudioPlayer.PlaybackStopped', JSON.stringify(alexaEvent, null, 2));
+    debug('onAudioPlayer.PlaybackStopped', JSON.stringify(alexaEvent, null, 2));
   });
 
   skill['onAudioPlayer.PlaybackFailed']((alexaEvent) => {
-    console.log('onAudioPlayer.PlaybackFailed', JSON.stringify(alexaEvent, null, 2));
+    debug('onAudioPlayer.PlaybackFailed', JSON.stringify(alexaEvent, null, 2));
   });
 
   skill['onSystem.ExceptionEncountered']((alexaEvent) => {
-    console.log('onSystem.ExceptionEncountered', JSON.stringify(alexaEvent, null, 2));
+    debug('onSystem.ExceptionEncountered', JSON.stringify(alexaEvent, null, 2));
   });
 };
 
