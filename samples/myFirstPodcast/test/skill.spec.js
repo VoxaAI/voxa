@@ -42,23 +42,24 @@ describe('Skill', () => {
 
     return skill.execute(event)
       .then((reply) => {
-        expect(reply.toJSON()).to.deep.equal({ version: '1.0',
-          response:
-          { outputSpeech: undefined,
+        expect(reply.toJSON()).to.deep.equal({
+          version: '1.0',
+          sessionAttributes: {},
+          response: {
+            outputSpeech: undefined,
             shouldEndSession: true,
             card: undefined,
-            directives: [
-              {
-                audioItem: {
-                  stream: {
-                    offsetInMilliseconds: 0,
-                    token: '{"index":1,"shuffle":0,"loop":1}',
-                    url: 'https://www.dl-sounds.com/wp-content/uploads/edd/2017/01/Clair-de-Lune-preview.mp3',
-                  },
+            directives: [{
+              audioItem: {
+                stream: {
+                  offsetInMilliseconds: 0,
+                  token: '{"index":1,"shuffle":0,"loop":1}',
+                  url: 'https://www.dl-sounds.com/wp-content/uploads/edd/2017/01/Clair-de-Lune-preview.mp3',
                 },
-                playBehavior: 'REPLACE_ENQUEUED',
-                type: 'AudioPlayer.Play',
               },
+              playBehavior: 'REPLACE_ENQUEUED',
+              type: 'AudioPlayer.Play',
+            },
             ] },
         });
       });

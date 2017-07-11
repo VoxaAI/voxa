@@ -49,10 +49,10 @@ const states = {
 
     return { reply: 'LaunchIntent.OpenResponse', directives };
   },
-  exit: function enter(request) {
+  exit: function enter() {
     return { reply: 'ExitIntent.Farewell' };
   },
-  launch: function enter(request) {
+  launch: function enter() {
     return { reply: 'LaunchIntent.OpenResponse' };
   },
 };

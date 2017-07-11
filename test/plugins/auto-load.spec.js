@@ -77,14 +77,14 @@ describe('AutoLoad plugin', () => {
 
   it('should throw an error when no config is provided', () => {
     const skill = new StateMachineSkill({ variables, views });
-    const fn = function () { autoLoad(skill); };
+    const fn = () => { autoLoad(skill); };
 
     expect(fn).to.throw('Missing config object');
   });
 
   it('should throw an error when no adapter is set up in the config object', () => {
     const skill = new StateMachineSkill({ variables, views });
-    const fn = function () { autoLoad(skill, {}); };
+    const fn = () => { autoLoad(skill, {}); };
 
     expect(fn).to.throw('Missing adapter');
   });
@@ -93,7 +93,7 @@ describe('AutoLoad plugin', () => {
     simple.mock(adapter, 'get', undefined);
 
     const skill = new StateMachineSkill({ variables, views });
-    const fn = function () { autoLoad(skill, { adapter }); };
+    const fn = () => { autoLoad(skill, { adapter }); };
 
     expect(fn).to.throw('No get method to fetch data from');
   });
