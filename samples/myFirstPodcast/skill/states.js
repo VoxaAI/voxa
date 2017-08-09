@@ -4,18 +4,18 @@ const podcast = require('./data/podcast');
 const debug = require('debug')('test');
 
 exports.register = function register(skill) {
-  skill.onIntent('LaunchIntent', (alexaEvent) => {
-    alexaEvent.model.audioTitle = podcast[0].title;
+  skill.onIntent('LaunchIntent', (voxaEvent) => {
+    voxaEvent.model.audioTitle = podcast[0].title;
     return { reply: 'Intent.Launch', to: 'optionsReview' };
   });
 
-  skill.onIntent('AMAZON.HelpIntent', (alexaEvent) => {
-    alexaEvent.model.audioTitle = podcast[0].title;
+  skill.onIntent('AMAZON.HelpIntent', (voxaEvent) => {
+    voxaEvent.model.audioTitle = podcast[0].title;
     return { reply: 'Intent.Help', to: 'optionsReview' };
   });
 
-  skill.onState('optionsReview', (alexaEvent) => {
-    if (alexaEvent.intent.name === 'AMAZON.YesIntent') {
+  skill.onState('optionsReview', (voxaEvent) => {
+    if (voxaEvent.intent.name === 'AMAZON.YesIntent') {
       const index = 0;
       const shuffle = 0;
       const loop = 0;
@@ -24,14 +24,14 @@ exports.register = function register(skill) {
       const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
 
       return { reply: 'Intent.PlayAudio', to: 'die', directives };
-    } else if (alexaEvent.intent.name === 'AMAZON.NoIntent') {
+    } else if (voxaEvent.intent.name === 'AMAZON.NoIntent') {
       return { reply: 'Intent.Exit', to: 'die' };
     }
   });
 
-  skill.onIntent('AMAZON.PreviousIntent', (alexaEvent) => {
-    if (alexaEvent.context) {
-      const token = JSON.parse(alexaEvent.context.AudioPlayer.token);
+  skill.onIntent('AMAZON.PreviousIntent', (voxaEvent) => {
+    if (voxaEvent.context) {
+      const token = JSON.parse(voxaEvent.context.AudioPlayer.token);
       const shuffle = token.shuffle;
       const loop = token.loop;
       const offsetInMilliseconds = 0;
@@ -44,7 +44,7 @@ exports.register = function register(skill) {
       }
       const url = podcast[index].url;
       const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
-      alexaEvent.model.audioTitle = podcast[index].title;
+      voxaEvent.model.audioTitle = podcast[index].title;
 
       return { reply: 'Intent.PreviousAudio', to: 'die', directives };
     }
@@ -52,9 +52,9 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onIntent('AMAZON.NextIntent', (alexaEvent) => {
-    if (alexaEvent.context) {
-      const token = JSON.parse(alexaEvent.context.AudioPlayer.token);
+  skill.onIntent('AMAZON.NextIntent', (voxaEvent) => {
+    if (voxaEvent.context) {
+      const token = JSON.parse(voxaEvent.context.AudioPlayer.token);
       const shuffle = token.shuffle;
       const loop = token.loop;
       const offsetInMilliseconds = 0;
@@ -69,19 +69,19 @@ exports.register = function register(skill) {
       const url = podcast[index].url;
       const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
 
-      alexaEvent.model.audioTitle = podcast[index].title;
+      voxaEvent.model.audioTitle = podcast[index].title;
       return { reply: 'Intent.NextAudio', to: 'die', directives };
     }
 
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onIntent('AMAZON.LoopOnIntent', (alexaEvent) => {
-    if (alexaEvent.context) {
-      const token = JSON.parse(alexaEvent.context.AudioPlayer.token);
+  skill.onIntent('AMAZON.LoopOnIntent', (voxaEvent) => {
+    if (voxaEvent.context) {
+      const token = JSON.parse(voxaEvent.context.AudioPlayer.token);
       const shuffle = token.shuffle;
       const loop = 1;
-      const offsetInMilliseconds = alexaEvent.context.AudioPlayer.offsetInMilliseconds;
+      const offsetInMilliseconds = voxaEvent.context.AudioPlayer.offsetInMilliseconds;
       let index = token.index;
 
       if (index === podcast.length) {
@@ -96,12 +96,12 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onIntent('AMAZON.LoopOffIntent', (alexaEvent) => {
-    if (alexaEvent.context) {
-      const token = JSON.parse(alexaEvent.context.AudioPlayer.token);
+  skill.onIntent('AMAZON.LoopOffIntent', (voxaEvent) => {
+    if (voxaEvent.context) {
+      const token = JSON.parse(voxaEvent.context.AudioPlayer.token);
       const shuffle = token.shuffle;
       const loop = 0;
-      const offsetInMilliseconds = alexaEvent.context.AudioPlayer.offsetInMilliseconds;
+      const offsetInMilliseconds = voxaEvent.context.AudioPlayer.offsetInMilliseconds;
       let index = token.index;
 
       if (index === podcast.length) {
@@ -117,12 +117,12 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onIntent('AMAZON.ShuffleOnIntent', (alexaEvent) => {
-    if (alexaEvent.context) {
-      const token = JSON.parse(alexaEvent.context.AudioPlayer.token);
+  skill.onIntent('AMAZON.ShuffleOnIntent', (voxaEvent) => {
+    if (voxaEvent.context) {
+      const token = JSON.parse(voxaEvent.context.AudioPlayer.token);
       const shuffle = 1;
       const loop = token.loop;
-      const offsetInMilliseconds = alexaEvent.context.AudioPlayer.offsetInMilliseconds;
+      const offsetInMilliseconds = voxaEvent.context.AudioPlayer.offsetInMilliseconds;
       let index = token.index;
 
       if (index === podcast.length) {
@@ -138,12 +138,12 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onIntent('AMAZON.ShuffleOffIntent', (alexaEvent) => {
-    if (alexaEvent.context) {
-      const token = JSON.parse(alexaEvent.context.AudioPlayer.token);
+  skill.onIntent('AMAZON.ShuffleOffIntent', (voxaEvent) => {
+    if (voxaEvent.context) {
+      const token = JSON.parse(voxaEvent.context.AudioPlayer.token);
       const shuffle = 0;
       const loop = token.loop;
-      const offsetInMilliseconds = alexaEvent.context.AudioPlayer.offsetInMilliseconds;
+      const offsetInMilliseconds = voxaEvent.context.AudioPlayer.offsetInMilliseconds;
       let index = token.index;
 
       if (index === podcast.length) {
@@ -159,9 +159,9 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onIntent('AMAZON.StartOverIntent', (alexaEvent) => {
-    if (alexaEvent.context) {
-      const token = JSON.parse(alexaEvent.context.AudioPlayer.token);
+  skill.onIntent('AMAZON.StartOverIntent', (voxaEvent) => {
+    if (voxaEvent.context) {
+      const token = JSON.parse(voxaEvent.context.AudioPlayer.token);
       const shuffle = token.shuffle;
       const loop = token.loop;
       const index = token.index;
@@ -170,25 +170,25 @@ exports.register = function register(skill) {
       const url = podcast[index].url;
       const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
 
-      alexaEvent.model.audioTitle = podcast[index].title;
+      voxaEvent.model.audioTitle = podcast[index].title;
       return { reply: 'Intent.StartOver', to: 'die', directives };
     }
 
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onIntent('AMAZON.ResumeIntent', (alexaEvent) => {
-    if (alexaEvent.context) {
-      const token = JSON.parse(alexaEvent.context.AudioPlayer.token);
+  skill.onIntent('AMAZON.ResumeIntent', (voxaEvent) => {
+    if (voxaEvent.context) {
+      const token = JSON.parse(voxaEvent.context.AudioPlayer.token);
       const shuffle = token.shuffle;
       const loop = token.loop;
       const index = token.index;
-      const offsetInMilliseconds = alexaEvent.context.AudioPlayer.offsetInMilliseconds;
+      const offsetInMilliseconds = voxaEvent.context.AudioPlayer.offsetInMilliseconds;
 
       const url = podcast[index].url;
       const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
 
-      alexaEvent.model.audioTitle = podcast[index].title;
+      voxaEvent.model.audioTitle = podcast[index].title;
       return { reply: 'Intent.Resume', to: 'die', directives };
     }
 
@@ -201,16 +201,16 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Pause', to: 'die', directives };
   });
 
-  skill['onAudioPlayer.PlaybackStarted']((alexaEvent) => {
-    debug('onAudioPlayer.PlaybackStarted', JSON.stringify(alexaEvent, null, 2));
+  skill['onAudioPlayer.PlaybackStarted']((voxaEvent) => {
+    debug('onAudioPlayer.PlaybackStarted', JSON.stringify(voxaEvent, null, 2));
   });
 
-  skill['onAudioPlayer.PlaybackFinished']((alexaEvent) => {
-    debug('onAudioPlayer.PlaybackFinished', JSON.stringify(alexaEvent, null, 2));
+  skill['onAudioPlayer.PlaybackFinished']((voxaEvent) => {
+    debug('onAudioPlayer.PlaybackFinished', JSON.stringify(voxaEvent, null, 2));
   });
 
-  skill['onAudioPlayer.PlaybackNearlyFinished']((alexaEvent, reply) => {
-    const token = JSON.parse(alexaEvent.context.AudioPlayer.token);
+  skill['onAudioPlayer.PlaybackNearlyFinished']((voxaEvent, reply) => {
+    const token = JSON.parse(voxaEvent.context.AudioPlayer.token);
 
     if (token.loop === 0) {
       return reply;
@@ -230,16 +230,16 @@ exports.register = function register(skill) {
     return reply.append({ directives });
   });
 
-  skill['onAudioPlayer.PlaybackStopped']((alexaEvent) => {
-    debug('onAudioPlayer.PlaybackStopped', JSON.stringify(alexaEvent, null, 2));
+  skill['onAudioPlayer.PlaybackStopped']((voxaEvent) => {
+    debug('onAudioPlayer.PlaybackStopped', JSON.stringify(voxaEvent, null, 2));
   });
 
-  skill['onAudioPlayer.PlaybackFailed']((alexaEvent) => {
-    debug('onAudioPlayer.PlaybackFailed', JSON.stringify(alexaEvent, null, 2));
+  skill['onAudioPlayer.PlaybackFailed']((voxaEvent) => {
+    debug('onAudioPlayer.PlaybackFailed', JSON.stringify(voxaEvent, null, 2));
   });
 
-  skill['onSystem.ExceptionEncountered']((alexaEvent) => {
-    debug('onSystem.ExceptionEncountered', JSON.stringify(alexaEvent, null, 2));
+  skill['onSystem.ExceptionEncountered']((voxaEvent) => {
+    debug('onSystem.ExceptionEncountered', JSON.stringify(voxaEvent, null, 2));
   });
 };
 

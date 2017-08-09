@@ -13,8 +13,8 @@ const _ = require('lodash');
 const views = require('./views');
 const variables = require('./variables');
 const Model = require('../lib/Model');
-const Reply = require('../lib/Reply');
-const AlexaEvent = require('../lib/AlexaEvent');
+const Reply = require('../lib/VoxaReply');
+const AlexaEvent = require('../lib/alexa/AlexaEvent');
 
 describe('StateMachineSkill', () => {
   let statesDefinition;
@@ -81,8 +81,8 @@ describe('StateMachineSkill', () => {
 
   it('should allow multiple reply paths in reply key', () => {
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('LaunchIntent', (alexaEvent) => {
-      alexaEvent.model.count = 0;
+    stateMachineSkill.onIntent('LaunchIntent', (voxaEvent) => {
+      voxaEvent.model.count = 0;
       return { reply: ['Count.Say', 'Count.Tell'] };
     });
     event.request.type = 'LaunchRequest';
@@ -95,8 +95,8 @@ describe('StateMachineSkill', () => {
 
   it('should throw an error if multiple replies include anything after say or tell', () => {
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('LaunchIntent', (alexaEvent) => {
-      alexaEvent.model.count = 0;
+    stateMachineSkill.onIntent('LaunchIntent', (voxaEvent) => {
+      voxaEvent.model.count = 0;
       return { reply: ['Count.Tell', 'Count.Say'] };
     });
     event.request.type = 'LaunchRequest';

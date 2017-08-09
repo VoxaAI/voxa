@@ -2,22 +2,22 @@
 
 const expect = require('chai').expect;
 const _ = require('lodash');
-const Reply = require('../lib/Reply');
-const AlexaEvent = require('../lib/AlexaEvent');
+const VoxaReply = require('../lib/VoxaReply');
+const AlexaEvent = require('../lib/alexa/AlexaEvent');
 
-describe('Reply', () => {
+describe('VoxaReply', () => {
   let reply;
   beforeEach(() => {
-    reply = new Reply(new AlexaEvent({}));
+    reply = new VoxaReply(new AlexaEvent({}));
   });
 
   it('should throw an error if first argument is not an alexaEvent', () => {
-    expect(() => new Reply()).to.throw(Error);
+    expect(() => new VoxaReply()).to.throw(Error);
   });
 
   it('should add the request session to itself on constructor', () => {
     const request = new AlexaEvent({ session: { key1: 'value1', key2: 'value2' } });
-    const sessionReply = new Reply(request);
+    const sessionReply = new VoxaReply(request);
     expect(sessionReply.session).to.deep.equal(request.session);
   });
 
@@ -28,66 +28,33 @@ describe('Reply', () => {
 
   describe('toSSML', () => {
     it('should not wrap already wrapped statements', () => {
-      expect(Reply.toSSML('<speak>Say Something</speak>')).to.equal('<speak>Say Something</speak>');
+      expect(VoxaReply.toSSML('<speak>Say Something</speak>')).to.equal('<speak>Say Something</speak>');
     });
   });
 
   describe('createSpeechObject', () => {
     it('should return undefined if no optionsParam', () => {
-      expect(Reply.createSpeechObject()).to.be.undefined;
+      expect(VoxaReply.createSpeechObject()).to.be.undefined;
     });
 
     it('should return an SSML response if optionsParam.type === SSML', () => {
-      expect(Reply.createSpeechObject({ type: 'SSML', speech: '<speak>Say Something</speak>' })).to.deep.equal({
+      expect(VoxaReply.createSpeechObject({ type: 'SSML', speech: '<speak>Say Something</speak>' })).to.deep.equal({
         type: 'SSML',
         ssml: '<speak>Say Something</speak>',
       });
     });
 
     it('should return a PlainText with optionsParam as text if no optionsParam.speech', () => {
-      expect(Reply.createSpeechObject('Say Something')).to.deep.equal({
+      expect(VoxaReply.createSpeechObject('Say Something')).to.deep.equal({
         type: 'PlainText',
         text: 'Say Something',
       });
     });
 
     it('should return a PlainText as default type if optionsParam.type is missing', () => {
-      expect(Reply.createSpeechObject({ speech: 'Say Something' })).to.deep.equal({
+      expect(VoxaReply.createSpeechObject({ speech: 'Say Something' })).to.deep.equal({
         type: 'PlainText',
         text: 'Say Something',
-      });
-    });
-  });
-
-  describe('toJSON', () => {
-    it('should generate a correct alexa response that doesn\'t  end a session for an ask response', () => {
-      reply.append({ ask: 'ask' });
-      expect(reply.toJSON()).to.deep.equal({
-        response: {
-          card: undefined,
-          outputSpeech: {
-            ssml: '<speak>ask</speak>',
-            type: 'SSML',
-          },
-          shouldEndSession: false,
-        },
-        sessionAttributes: {},
-        version: '1.0',
-      });
-    });
-    it('should generate a correct alexa response that ends a session for a tell response', () => {
-      reply.append({ tell: 'tell' });
-      expect(reply.toJSON()).to.deep.equal({
-        response: {
-          card: undefined,
-          outputSpeech: {
-            ssml: '<speak>tell</speak>',
-            type: 'SSML',
-          },
-          shouldEndSession: true,
-        },
-        sessionAttributes: {},
-        version: '1.0',
       });
     });
   });
@@ -209,7 +176,7 @@ describe('Reply', () => {
     describe('a Reply', () => {
       let appendedReply;
       beforeEach(() => {
-        appendedReply = new Reply(new AlexaEvent({}));
+        appendedReply = new VoxaReply(new AlexaEvent({}));
       });
 
       it('should append the statements from another Reply', () => {

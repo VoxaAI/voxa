@@ -51,7 +51,7 @@ Voxa
       'AMAZON.HelpIntent': 'help',
     });
 
-    skill.onState('launch', (alexaEvent) => {
+    skill.onState('launch', (voxaEvent) => {
       return { reply: 'LaunchIntent.OpenResponse', to: 'die' };
     });
 
@@ -65,7 +65,7 @@ Voxa
 
   .. code-block:: javascript
 
-    skill.onIntent('HelpIntent', (alexaEvent) => {
+    skill.onIntent('HelpIntent', (voxaEvent) => {
       return { reply: 'HelpIntent.HelpAboutSkill' };
     });
 
@@ -93,20 +93,20 @@ Voxa
 
   .. code-block:: javascript
 
-      skill.onBeforeReplySent((alexaEvent, reply) => {
+      skill.onBeforeReplySent((voxaEvent, reply) => {
         const rendered = reply.write();
-        analytics.track(alexaEvent, rendered)
+        analytics.track(voxaEvent, rendered)
       });
 
 .. js:function:: Voxa.onAfterStateChanged(callback, [atLast])
 
   Adds callbacks to be executed on the result of a state transition, this are called after every transition and internally it's used to render the :ref:`transition <transition>` ``reply`` using the :ref:`views and variables <views-and-variables>`
 
-  The callbacks get ``alexaEvent``, ``reply`` and ``transition`` params, it should return the transition object
+  The callbacks get ``voxaEvent``, ``reply`` and ``transition`` params, it should return the transition object
 
   .. code-block:: javascript
 
-    skill.onAfterStateChanged((alexaEvent, reply, transition) => {
+    skill.onAfterStateChanged((voxaEvent, reply, transition) => {
       if (transition.reply === 'LaunchIntent.PlayTodayLesson') {
         transition.reply = _.sample(['LaunchIntent.PlayTodayLesson1', 'LaunchIntent.PlayTodayLesson2']);
       }
@@ -121,14 +121,14 @@ Voxa
 
 .. js:function:: Voxa.onSessionStarted(callback, [atLast])
 
-  Adds a callback to the ``onSessinStarted`` event, this executes for all events where ``alexaEvent.session.new === true``
+  Adds a callback to the ``onSessinStarted`` event, this executes for all events where ``voxaEvent.session.new === true``
 
   This can be useful to track analytics
 
   .. code-block:: javascript
 
-    skill.onSessionStarted((alexaEvent, reply) => {
-      analytics.trackSessionStarted(alexaEvent);
+    skill.onSessionStarted((voxaEvent, reply) => {
+      analytics.trackSessionStarted(voxaEvent);
     });
 
 .. js:function:: Voxa.onRequestStarted(callback, [atLast])
@@ -137,8 +137,8 @@ Voxa
 
   .. code-block:: javascript
 
-    skill.onRequestStarted((alexaEvent, reply) => {
-      alexaEvent.model = this.config.Model.fromEvent(alexaEvent);
+    skill.onRequestStarted((voxaEvent, reply) => {
+      voxaEvent.model = this.config.Model.fromEvent(voxaEvent);
     });
 
 
@@ -159,7 +159,7 @@ Voxa
       if (result) {
         return result;
       }
-      return Promise.resolve(errorHandler(alexaEvent, error));
+      return Promise.resolve(errorHandler(voxaEvent, error));
     }, null);
 
 
@@ -173,24 +173,24 @@ They're executed sequentially and will stop when the first handler returns a rep
 
 .. js:function:: Voxa.onStateMachineError(callback, [atLast])
 
-  This handler will catch all errors generated when trying to make transitions in the stateMachine, this could include errors in the state machine controllers, , the handlers get ``(alexaEvent, reply, error)`` parameters
+  This handler will catch all errors generated when trying to make transitions in the stateMachine, this could include errors in the state machine controllers, , the handlers get ``(voxaEvent, reply, error)`` parameters
 
   .. code-block:: javascript
 
-    skill.onStateMachineError((alexaEvent, reply, error) => {
+    skill.onStateMachineError((voxaEvent, reply, error) => {
       // it gets the current reply, which could be incomplete due to an error.
-      return new Reply(alexaEvent, { tell: 'An error in the controllers code' })
+      return new Reply(voxaEvent, { tell: 'An error in the controllers code' })
         .write();
     });
 
 .. js:function:: Voxa.onError(callback, [atLast])
 
-  This is the more general handler and will catch all unhandled errors in the framework, it gets ``(alexaEvent, error)`` parameters as arguments
+  This is the more general handler and will catch all unhandled errors in the framework, it gets ``(voxaEvent, error)`` parameters as arguments
 
   .. code-block:: javascript
 
-    skill.onError((alexaEvent, error) => {
-      return new Reply(alexaEvent, { tell: 'An unrecoverable error occurred.' })
+    skill.onError((voxaEvent, error) => {
+      return new Reply(voxaEvent, { tell: 'An unrecoverable error occurred.' })
         .write();
     });
 
@@ -201,11 +201,11 @@ Playback Controller handlers
 
 Handle events from the `AudioPlayer interface <https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/custom-audioplayer-interface-reference#requests>`_
 
-.. js:function:: audioPlayerCallback(alexaEvent, reply)
+.. js:function:: audioPlayerCallback(voxaEvent, reply)
 
   All audio player middleware callbacks get a :ref:`alexa event <alexa-event>` and a :ref:`reply <reply>` object
 
-  :param AlexaEvent alexaEvent: The :ref:`alexa event <alexa-event>` sent by Alexa
+  :param AlexaEvent voxaEvent: The :ref:`alexa event <alexa-event>` sent by Alexa
   :param object reply: A reply to be sent as a response
   :returns object write: Your alexa event handler should return an appropriate response according to the event type, this generally means appending to the :ref:`reply <reply>` object
 
@@ -213,7 +213,7 @@ Handle events from the `AudioPlayer interface <https://developer.amazon.com/publ
 
   .. code-block:: javascript
 
-    skill['onAudioPlayer.PlaybackNearlyFinished']((alexaEvent, reply) => {
+    skill['onAudioPlayer.PlaybackNearlyFinished']((voxaEvent, reply) => {
       const directives = {
         type: 'AudioPlayer.Play',
         playBehavior: 'REPLACE_ENQUEUED',

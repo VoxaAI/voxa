@@ -78,16 +78,16 @@ All events and intents dispatched by the Alexa Voice Service to your skill are h
 
 .. code-block:: javascript
 
-  skill.onRequestStarted((alexaEvent) => {
-    if (!alexaEvent.session.user.accessToken) {
-      return alexaEvent;
+  skill.onRequestStarted((voxaEvent) => {
+    if (!voxaEvent.session.user.accessToken) {
+      return voxaEvent;
     }
     const storage = new UserStorage();
 
-    return storage.get(alexaEvent.session.user.accessToken)
+    return storage.get(voxaEvent.session.user.accessToken)
       .then((user) => {
-        alexaEvent.model.user = user;
-        return alexaEvent;
+        voxaEvent.model.user = user;
+        return voxaEvent;
       });
   });
 

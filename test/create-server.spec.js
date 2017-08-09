@@ -31,7 +31,7 @@ describe('createServer', () => {
 
   it('should return json response on POST', (done) => {
     const postData = JSON.stringify({
-      msg: 'Hello World!',
+      request: 'Hello World!',
     });
 
     const options = {

@@ -84,16 +84,16 @@ The audio intents handled in this example are:
 - AMAZON.ShuffleOnIntent
 - AMAZON.StartOverIntent
 
-You can track the values for loop, shuffle and current URL playing in the token property of the Alexa event in the path `alexaEvent.context.AudioPlayer.token`:
+You can track the values for loop, shuffle and current URL playing in the token property of the Alexa event in the path `voxaEvent.context.AudioPlayer.token`:
 
 .. code-block:: javascript
 
-	skill.onState('loopOff', (alexaEvent) => {
-		if (alexaEvent.context) {
-		  const token = JSON.parse(alexaEvent.context.AudioPlayer.token);
+	skill.onState('loopOff', (voxaEvent) => {
+		if (voxaEvent.context) {
+		  const token = JSON.parse(voxaEvent.context.AudioPlayer.token);
 		  const shuffle = token.shuffle;
 		  const loop = 0;
-		  const offsetInMilliseconds = alexaEvent.context.AudioPlayer.offsetInMilliseconds;
+		  const offsetInMilliseconds = voxaEvent.context.AudioPlayer.offsetInMilliseconds;
 		  let index = token.index;
 
 		  if (index === podcast.length) {
@@ -122,16 +122,16 @@ You're not allowed to respond with a reply object since it's just an event most 
 
 .. code-block:: javascript
 
-	skill['onAudioPlayer.PlaybackStarted']((alexaEvent) => {
-		console.log('onAudioPlayer.PlaybackStarted', JSON.stringify(alexaEvent, null, 2));
+	skill['onAudioPlayer.PlaybackStarted']((voxaEvent) => {
+		console.log('onAudioPlayer.PlaybackStarted', JSON.stringify(voxaEvent, null, 2));
 	});
 
 In case the user has activated the loop mode by dispatching the `AMAZON.LoopOnIntent` intent, you can implement a queue list in the `AudioPlayer.PlaybackNearlyFinished` this way:
 
 .. code-block:: javascript
 
-	skill['onAudioPlayer.PlaybackNearlyFinished']((alexaEvent, reply) => {
-		const token = JSON.parse(alexaEvent.context.AudioPlayer.token);
+	skill['onAudioPlayer.PlaybackNearlyFinished']((voxaEvent, reply) => {
+		const token = JSON.parse(voxaEvent.context.AudioPlayer.token);
 
 		if (token.loop === 0) {
 		  return reply;
@@ -205,13 +205,13 @@ serverless.yml
 The serverless framework is a tool that helps you manage your lambda applications, assuming you have your AWS credentials setup properly this starter kit defines the very minimum needed so you can deploy your skill to lambda with the following command:
 
 .. code-block:: bash
-  
+
   $ sls deploy
 
 Running the project
 ---------------------
 
-1. Clone the `Voxa <https://github.com/mediarain/voxa>`_ repository 
+1. Clone the `Voxa <https://github.com/mediarain/voxa>`_ repository
 
 2. Create a new skill project using the ``samples/my-first-podcast`` directory as a basis
 

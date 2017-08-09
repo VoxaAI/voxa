@@ -51,7 +51,7 @@ describe('StateFlow plugin', () => {
 
     return skill.execute(event)
       .then((result) => {
-        expect(result.alexaEvent.flow).to.deep.equal(['secondState', 'initState', 'die']);
+        expect(result.voxaEvent.flow).to.deep.equal(['secondState', 'initState', 'die']);
       });
   });
 
@@ -67,7 +67,7 @@ describe('StateFlow plugin', () => {
 
     return skill.execute(event)
       .then((result) => {
-        expect(result.alexaEvent.flow).to.deep.equal(['fourthState']);
+        expect(result.voxaEvent.flow).to.deep.equal(['fourthState']);
       });
   });
 });

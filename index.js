@@ -14,7 +14,7 @@
 const packageInfo = require('./package.json');
 const StateMachineSkill = require('./lib/StateMachineSkill');
 const helpers = require('alexa-helpers');
-const Reply = require('./lib/Reply');
+const Reply = require('./lib/VoxaReply');
 const DefaultRenderer = require('./lib/renderers/DefaultRenderer');
 const I18NRenderer = require('./lib/renderers/I18NRenderer');
 
