@@ -1,13 +1,12 @@
 'use strict';
 
 const podcast = require('./data/podcast');
-const debug = require('debug')('test');
 
 exports.register = function register(skill) {
   skill.onState('entry', {
-      'AMAZON.PauseIntent': 'stop',
-      'AMAZON.StopIntent': 'stop',
-      'AMAZON.CancelIntent': 'stop',
+    'AMAZON.PauseIntent': 'stop',
+    'AMAZON.StopIntent': 'stop',
+    'AMAZON.CancelIntent': 'stop',
   });
 
   skill.onIntent('LaunchIntent', (alexaEvent) => {
@@ -26,8 +25,8 @@ exports.register = function register(skill) {
       const shuffle = 0;
       const loop = 0;
       const offsetInMilliseconds = 0;
-      const url = podcast[index].url;
-      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
+
+      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
 
       return { reply: 'Intent.PlayAudio', to: 'die', directives };
     } else if (alexaEvent.intent.name === 'AMAZON.NoIntent') {
@@ -48,8 +47,8 @@ exports.register = function register(skill) {
       } else if (index === -1) {
         index = podcast.length - 1;
       }
-      const url = podcast[index].url;
-      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
+
+      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
       alexaEvent.model.audioTitle = podcast[index].title;
 
       return { reply: 'Intent.PreviousAudio', to: 'die', directives };
@@ -72,8 +71,7 @@ exports.register = function register(skill) {
         index = 0;
       }
 
-      const url = podcast[index].url;
-      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
+      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
 
       alexaEvent.model.audioTitle = podcast[index].title;
       return { reply: 'Intent.NextAudio', to: 'die', directives };
@@ -93,8 +91,8 @@ exports.register = function register(skill) {
       if (index === podcast.length) {
         index = 0;
       }
-      const url = podcast[index].url;
-      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
+
+      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
 
       return { reply: 'Intent.LoopActivated', to: 'die', directives };
     }
@@ -114,8 +112,7 @@ exports.register = function register(skill) {
         index = 0;
       }
 
-      const url = podcast[index].url;
-      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
+      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
 
       return { reply: 'Intent.LoopDeactivated', to: 'die', directives };
     }
@@ -135,8 +132,7 @@ exports.register = function register(skill) {
         index = 0;
       }
 
-      const url = podcast[index].url;
-      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
+      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
 
       return { reply: 'Intent.ShuffleActivated', to: 'die', directives };
     }
@@ -156,8 +152,7 @@ exports.register = function register(skill) {
         index = 0;
       }
 
-      const url = podcast[index].url;
-      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
+      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
 
       return { reply: 'Intent.ShuffleDeactivated', to: 'die', directives };
     }
@@ -173,8 +168,7 @@ exports.register = function register(skill) {
       const index = token.index;
       const offsetInMilliseconds = 0;
 
-      const url = podcast[index].url;
-      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
+      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
 
       alexaEvent.model.audioTitle = podcast[index].title;
       return { reply: 'Intent.StartOver', to: 'die', directives };
@@ -191,8 +185,7 @@ exports.register = function register(skill) {
       const index = token.index;
       const offsetInMilliseconds = alexaEvent.context.AudioPlayer.offsetInMilliseconds;
 
-      const url = podcast[index].url;
-      const directives = buildPlayDirective(url, index, shuffle, loop, offsetInMilliseconds);
+      const directives = buildPlayDirective(podcast[index].url, index, shuffle, loop, offsetInMilliseconds);
 
       alexaEvent.model.audioTitle = podcast[index].title;
       return { reply: 'Intent.Resume', to: 'die', directives };
@@ -201,18 +194,18 @@ exports.register = function register(skill) {
     return { reply: 'Intent.Exit', to: 'die' };
   });
 
-  skill.onState('stop', () => {
+  skill.onState('stop', (alexaEvent) => {
     const directives = buildStopDirective();
 
     return { reply: 'Intent.Pause', to: 'die', directives };
   });
 
   skill['onAudioPlayer.PlaybackStarted']((alexaEvent) => {
-    debug('onAudioPlayer.PlaybackStarted', JSON.stringify(alexaEvent, null, 2));
+    console.log('onAudioPlayer.PlaybackStarted', JSON.stringify(alexaEvent, null, 2));
   });
 
   skill['onAudioPlayer.PlaybackFinished']((alexaEvent) => {
-    debug('onAudioPlayer.PlaybackFinished', JSON.stringify(alexaEvent, null, 2));
+    console.log('onAudioPlayer.PlaybackFinished', JSON.stringify(alexaEvent, null, 2));
   });
 
   skill['onAudioPlayer.PlaybackNearlyFinished']((alexaEvent, reply) => {
@@ -237,15 +230,15 @@ exports.register = function register(skill) {
   });
 
   skill['onAudioPlayer.PlaybackStopped']((alexaEvent) => {
-    debug('onAudioPlayer.PlaybackStopped', JSON.stringify(alexaEvent, null, 2));
+    console.log('onAudioPlayer.PlaybackStopped', JSON.stringify(alexaEvent, null, 2));
   });
 
   skill['onAudioPlayer.PlaybackFailed']((alexaEvent) => {
-    debug('onAudioPlayer.PlaybackFailed', JSON.stringify(alexaEvent, null, 2));
+    console.log('onAudioPlayer.PlaybackFailed', JSON.stringify(alexaEvent, null, 2));
   });
 
   skill['onSystem.ExceptionEncountered']((alexaEvent) => {
-    debug('onSystem.ExceptionEncountered', JSON.stringify(alexaEvent, null, 2));
+    console.log('onSystem.ExceptionEncountered', JSON.stringify(alexaEvent, null, 2));
   });
 };
 
