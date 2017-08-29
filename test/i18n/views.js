@@ -19,6 +19,7 @@ const views = (function views() {
         Say: {
           Say: { say: 'say' },
         },
+        Random: { tell: ['Random 1', 'Random 2', 'Random 3'] },
       },
     },
     'de-de': {
@@ -38,6 +39,7 @@ const views = (function views() {
         Say: {
           Say: { say: 'sagen' },
         },
+        Random: { tell: ['zufällig 1', 'zufällig 2', 'zufällig 3'] },
       },
     },
   };

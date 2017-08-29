@@ -31,6 +31,7 @@ const views = (function views() {
     Playing: {
       SayStop: { ask: 'Say stop if you want to finish the playback', reprompt: 'You can say stop to finish the playback' },
     },
+    Random: { tell: ['Random 1', 'Random 2', 'Random 3'] },
   };
 }());
 
