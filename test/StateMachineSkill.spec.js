@@ -44,6 +44,19 @@ describe('StateMachineSkill', () => {
     };
   });
 
+  it('should include the state in the session response', () => {
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    stateMachineSkill.onIntent('LaunchIntent', () => ({ message: { ask: 'This is my message' }, to: 'secondState' }));
+    stateMachineSkill.onState('secondState', () => {});
+    event.request.type = 'LaunchRequest';
+
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        expect(reply.toJSON().sessionAttributes.state).to.equal('secondState');
+        expect(reply.toJSON().response.shouldEndSession).to.equal(false);
+      });
+  });
+
   it('should add the message key from the transition to the reply', () => {
     const stateMachineSkill = new StateMachineSkill({ variables, views });
     stateMachineSkill.onIntent('LaunchIntent', () => ({ message: { tell: 'This is my message' } }));
