@@ -3,15 +3,20 @@
 const expect = require('chai').expect;
 const _ = require('lodash');
 const Reply = require('../lib/Reply');
+const AlexaEvent = require('../lib/AlexaEvent');
 
 describe('Reply', () => {
   let reply;
   beforeEach(() => {
-    reply = new Reply({});
+    reply = new Reply(new AlexaEvent({}));
+  });
+
+  it('should throw an error if first argument is not an alexaEvent', () => {
+    expect(() => new Reply()).to.throw(Error);
   });
 
   it('should add the request session to itself on constructor', () => {
-    const request = { session: { key1: 'value1', key2: 'value2' } };
+    const request = new AlexaEvent({ session: { key1: 'value1', key2: 'value2' } });
     const sessionReply = new Reply(request);
     expect(sessionReply.session).to.deep.equal(request.session);
   });
@@ -66,6 +71,7 @@ describe('Reply', () => {
           },
           shouldEndSession: false,
         },
+        sessionAttributes: {},
         version: '1.0',
       });
     });
@@ -80,6 +86,7 @@ describe('Reply', () => {
           },
           shouldEndSession: true,
         },
+        sessionAttributes: {},
         version: '1.0',
       });
     });
@@ -156,13 +163,42 @@ describe('Reply', () => {
       expect(reply.msg.statements[0]).to.equal('ask');
     });
 
-    it('should preserve last directives that where added', () => {
+    it('should allow directives to be objects', () => {
       const message = { directives: { key: 'value' } };
       reply.append(message);
       reply.append({ ask: 'ask' });
-      expect(reply.msg.directives).to.deep.equal(message.directives);
+      expect(reply.msg.directives[0]).to.deep.equal(message.directives);
       expect(reply.msg.statements).to.have.lengthOf(1);
       expect(reply.msg.statements[0]).to.equal('ask');
+    });
+
+    it('should allow sending multiple directives', () => {
+      const message = { directives: [{ type: 'a' }, { type: 'b' }] };
+      reply.append(message);
+      reply.append({ ask: 'ask' });
+      expect(reply.msg.directives).to.deep.equal(message.directives);
+      expect(reply.msg.directives).to.have.length(2);
+    });
+
+    it('should concatenate directives', () => {
+      const message = { directives: [{ type: 'a' }] };
+      reply.append(message);
+      reply.append(message);
+      expect(reply.msg.directives).to.have.length(2);
+    });
+
+    it('should convert legacy play format into the cannonical one', () => {
+      const message = { directives: {
+        type: 'AudioPlayer.Play',
+        playBehavior: 'REPLACE_ALL',
+        token: 'token',
+        url: 'url',
+        offsetInMilliseconds: 0,
+      } };
+      reply.append(message);
+      expect(reply.msg.directives).to.have.length(1);
+      expect(reply.msg.directives[0].audioItem.stream.token).to.equal('token');
+      expect(reply.msg.directives[0].audioItem.stream.url).to.equal('url');
     });
 
     it('should set hasAnAsk to true if message is ask', () => {
@@ -173,7 +209,7 @@ describe('Reply', () => {
     describe('a Reply', () => {
       let appendedReply;
       beforeEach(() => {
-        appendedReply = new Reply({});
+        appendedReply = new Reply(new AlexaEvent({}));
       });
 
       it('should append the statements from another Reply', () => {

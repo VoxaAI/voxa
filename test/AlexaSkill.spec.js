@@ -9,7 +9,6 @@ const expect = chai.expect;
 const AlexaSkill = require('../lib/AlexaSkill');
 const simple = require('simple-mock');
 const _ = require('lodash');
-const portfinder = require('portfinder');
 
 describe('AlexaSkill', () => {
   it('should return error message on wrong appId if config.appIds is defined', () => {
@@ -132,7 +131,7 @@ describe('AlexaSkill', () => {
     const stub = simple.stub().returnWith(1);
     alexaSkill.onSessionEnded(stub);
     alexaSkill.execute({ context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } })
-      .then((reply) => {
+      .then(() => {
         expect(stub.called).to.be.true;
         done();
       })
