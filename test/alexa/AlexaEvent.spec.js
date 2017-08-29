@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const AlexaEvent = require('../../lib/alexa/AlexaEvent');
+const AlexaEvent = require('../../lib/adapters/alexa/AlexaEvent');
 
 describe('AlexaEvent', () => {
   it('should assign all event.request properties', () => {

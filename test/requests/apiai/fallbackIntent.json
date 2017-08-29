@@ -1,0 +1,31 @@
+{
+  "id": "b283edca-0bba-4f5f-ba0e-1774f211b844",
+  "timestamp": "2017-08-09T19:46:29.942Z",
+  "lang": "en",
+  "result": {
+    "source": "agent",
+    "resolvedQuery": "test",
+    "speech": "",
+    "action": "input.unknown",
+    "actionIncomplete": false,
+    "parameters": {},
+    "contexts": [],
+    "metadata": {
+      "intentId": "248120ab-f31c-4e23-a4e0-63095a7e8e7e",
+      "webhookUsed": "true",
+      "webhookForSlotFillingUsed": "false",
+      "intentName": "Default Fallback Intent"
+    },
+    "fulfillment": {
+      "speech": "",
+      "messages": []
+    },
+    "score": 1
+  },
+  "status": {
+    "code": 200,
+    "errorType": "success"
+  },
+  "sessionId": "59eb88cc-e5f8-43c2-a1f9-79c9ef2c937d"
+}
+

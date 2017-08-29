@@ -12,11 +12,10 @@
 'use strict';
 
 const packageInfo = require('./package.json');
-const StateMachineSkill = require('./lib/StateMachineSkill');
+const StateMachineApp = require('./lib/StateMachineApp');
 const helpers = require('alexa-helpers');
 const Reply = require('./lib/VoxaReply');
 const DefaultRenderer = require('./lib/renderers/DefaultRenderer');
-const I18NRenderer = require('./lib/renderers/I18NRenderer');
 
 /**
  * Plugins
@@ -28,15 +27,11 @@ const cloudWatch = require('./lib/plugins/cloud-watch');
 const autoLoad = require('./lib/plugins/auto-load');
 
 
-module.exports = StateMachineSkill;
+module.exports = StateMachineApp;
 module.exports.version = packageInfo.version;
 module.exports.Reply = Reply;
 module.exports.helpers = helpers;
-module.exports.replyWith = (reply, to) => ({ reply, to });
-module.exports.replyWithAudioDirectives = (reply, to, request, data, directives) => ({ reply, to, directives });
 
-module.exports.I18NRenderer = I18NRenderer;
-module.exports.DefaultRenderer = DefaultRenderer;
 
 module.exports.plugins = {
   badResponseReprompt,

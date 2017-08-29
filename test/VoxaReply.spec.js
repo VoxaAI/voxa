@@ -3,7 +3,7 @@
 const expect = require('chai').expect;
 const _ = require('lodash');
 const VoxaReply = require('../lib/VoxaReply');
-const AlexaEvent = require('../lib/alexa/AlexaEvent');
+const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
 
 describe('VoxaReply', () => {
   let reply;
@@ -26,13 +26,7 @@ describe('VoxaReply', () => {
     expect(reply.msg.yield).to.be.true;
   });
 
-  describe('toSSML', () => {
-    it('should not wrap already wrapped statements', () => {
-      expect(VoxaReply.toSSML('<speak>Say Something</speak>')).to.equal('<speak>Say Something</speak>');
-    });
-  });
-
-  describe('createSpeechObject', () => {
+  xdescribe('createSpeechObject', () => {
     it('should return undefined if no optionsParam', () => {
       expect(VoxaReply.createSpeechObject()).to.be.undefined;
     });
@@ -78,7 +72,7 @@ describe('VoxaReply', () => {
 
     it('should add the reprompt if message has one', () => {
       reply.append({ reprompt: 'reprompt' });
-      expect(reply.msg.reprompt).to.equal('reprompt');
+      expect(reply.msg.reprompts).to.deep.equal(['reprompt']);
     });
 
     it('should ignore invalid messages', () => {
@@ -228,7 +222,7 @@ describe('VoxaReply', () => {
       it('should add the reprompt if message has one', () => {
         appendedReply.append({ reprompt: 'reprompt' });
         reply.append(appendedReply);
-        expect(reply.msg.reprompt).to.equal('reprompt');
+        expect(reply.msg.reprompts).to.deep.equal(['reprompt']);
       });
     });
   });

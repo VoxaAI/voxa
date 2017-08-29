@@ -1,10 +1,11 @@
 'use strict';
 
 const expect = require('chai').expect;
-const createServer = require('../lib/create-server');
+const createServer = require('../lib/adapters/create-server');
 const views = require('./views');
 const http = require('http');
-const StateMachineSkill = require('../lib/StateMachineSkill');
+const StateMachineApp = require('../lib/StateMachineApp');
+const AlexaAdapter = require('../lib/adapters/alexa/AlexaAdapter');
 const portfinder = require('portfinder');
 
 const debug = require('debug')('test');
@@ -13,8 +14,9 @@ describe('createServer', () => {
   let server;
   let port;
   before(() => {
-    const skill = new StateMachineSkill({ views });
-    server = createServer(skill);
+    const skill = new StateMachineApp({ views });
+    const adapter = new AlexaAdapter(skill);
+    server = createServer(adapter);
     return portfinder.getPortPromise()
       .then((_port) => {
         port = _port;

@@ -21,5 +21,6 @@ module.exports = {
       name: 'AMAZON.HelpIntent',
       slots: {},
     },
+    locale: 'en-us',
   },
 };

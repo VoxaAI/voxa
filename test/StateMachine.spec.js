@@ -11,18 +11,19 @@ const errors = require('../lib/Errors');
 const Reply = require('../lib/VoxaReply');
 const Promise = require('bluebird');
 const simple = require('simple-mock');
-const AlexaEvent = require('../lib/alexa/AlexaEvent');
+const VoxaEvent = require('../lib/adapters/alexa/AlexaEvent');
 
 describe('StateMachine', () => {
   let states;
   let voxaEvent;
 
   beforeEach(() => {
-    voxaEvent = new AlexaEvent({
+    voxaEvent = new VoxaEvent({
       request: {
         intent: {
 
         },
+        locale: 'en-us',
       },
       session: {
         attributes: {

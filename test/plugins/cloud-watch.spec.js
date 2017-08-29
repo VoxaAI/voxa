@@ -8,35 +8,36 @@ chai.use(chaiAsPromised);
 const simple = require('simple-mock');
 
 const expect = chai.expect;
-const StateMachineSkill = require('../../lib/StateMachineSkill');
+const StateMachineApp = require('../../lib/StateMachineApp');
 const cloudwatchPlugin = require('../../lib/plugins/cloud-watch');
 const views = require('../views');
 const variables = require('../variables');
+const AlexaEvent = require('../../lib/adapters/alexa/AlexaEvent');
 
 describe('CloudwatchPlugin', () => {
   it('should fired skill.onError on purpose in order to test onError handler', () => {
-    const stateMachineSkill = new StateMachineSkill({ views, variables });
+    const stateMachineSkill = new StateMachineApp({ views, variables });
     const cloudwatch = { putMetricData: (data, callback) => callback(null, 'foobar') };
     const config = { Namespace: 'fooBarSkill' };
     cloudwatchPlugin(stateMachineSkill, cloudwatch, config);
 
     stateMachineSkill.onIntent('SomeIntent', () => ({}));
 
-    return stateMachineSkill.execute({})
+    return stateMachineSkill.execute(new AlexaEvent({}))
       .then((reply) => {
         expect(reply.error).not.to.be.undefined;
       });
   });
 
   it('should test when throwing an error on onBeforeReplySent function', () => {
-    const stateMachineSkill = new StateMachineSkill({ views, variables });
+    const stateMachineSkill = new StateMachineApp({ views, variables });
     const cloudwatch = { putMetricData: () => { throw new Error('Random error'); } };
     const cloudwatchMock = simple.mock(cloudwatch, 'putMetricData');
 
     const config = {
       MetricName: 'fooBarSkill',
     };
-    const event = {
+    const event = new AlexaEvent({
       request: {
         type: 'IntentRequest',
         intent: {
@@ -49,7 +50,7 @@ describe('CloudwatchPlugin', () => {
           applicationId: 'appId',
         },
       },
-    };
+    });
 
     cloudwatchPlugin(stateMachineSkill, cloudwatch, config);
 
@@ -65,13 +66,13 @@ describe('CloudwatchPlugin', () => {
   });
 
   it('should work when passing config.MetricName as a parameter', () => {
-    const stateMachineSkill = new StateMachineSkill({ views, variables });
+    const stateMachineSkill = new StateMachineApp({ views, variables });
     const cloudwatch = { putMetricData: (data, callback) => callback(null, 'foobar') };
     const cloudwatchMock = simple.mock(cloudwatch, 'putMetricData');
     const config = {
       MetricName: 'fooBarSkill',
     };
-    const event = {
+    const event = new AlexaEvent({
       request: {
         type: 'IntentRequest',
         intent: {
@@ -84,7 +85,7 @@ describe('CloudwatchPlugin', () => {
           applicationId: 'appId',
         },
       },
-    };
+    });
 
     cloudwatchPlugin(stateMachineSkill, cloudwatch, config);
 
@@ -99,10 +100,10 @@ describe('CloudwatchPlugin', () => {
   });
 
   it('should work when config is not passed as a parameter', () => {
-    const stateMachineSkill = new StateMachineSkill({ views, variables });
+    const stateMachineSkill = new StateMachineApp({ views, variables });
     const cloudwatch = { putMetricData: (data, callback) => callback(null, 'foobar') };
     const cloudwatchMock = simple.mock(cloudwatch, 'putMetricData');
-    const event = {
+    const event = new AlexaEvent({
       request: {
         type: 'IntentRequest',
         intent: {
@@ -115,7 +116,7 @@ describe('CloudwatchPlugin', () => {
           applicationId: 'appId',
         },
       },
-    };
+    });
 
     cloudwatchPlugin(stateMachineSkill, cloudwatch);
 
@@ -130,12 +131,12 @@ describe('CloudwatchPlugin', () => {
   });
 
   it('should use plugin to log every time that onBeforeReplySent function is executed', () => {
-    const stateMachineSkill = new StateMachineSkill({ views, variables });
+    const stateMachineSkill = new StateMachineApp({ views, variables });
     const cloudwatch = { putMetricData: (data, callback) => callback(null, 'foobar') };
     const cloudwatchMock = simple.mock(cloudwatch, 'putMetricData');
     const eventMetric = { Namespace: 'fooBarSkill' };
 
-    const event = {
+    const event = new AlexaEvent({
       request: {
         type: 'IntentRequest',
         intent: {
@@ -148,7 +149,7 @@ describe('CloudwatchPlugin', () => {
           applicationId: 'appId',
         },
       },
-    };
+    });
 
     cloudwatchPlugin(stateMachineSkill, cloudwatch, eventMetric);
 
@@ -167,13 +168,13 @@ describe('CloudwatchPlugin', () => {
   });
 
   it('should use plugin to log error onError Flow', () => {
-    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    const stateMachineSkill = new StateMachineApp({ variables, views });
     const spySkill = simple.stub().throwWith(new Error('foo random error'));
     const cloudwatch = { putMetricData: (data, callback) => callback(null, 'foobar') };
     const cloudwatchMock = simple.mock(cloudwatch, 'putMetricData');
     const eventMetric = { Namespace: 'fooBarSkill' };
 
-    const event = {
+    const event = new AlexaEvent({
       request: {
         type: 'IntentRequest',
         intent: {
@@ -186,7 +187,7 @@ describe('CloudwatchPlugin', () => {
           applicationId: 'appId',
         },
       },
-    };
+    });
 
     cloudwatchPlugin(stateMachineSkill, cloudwatch, eventMetric);
 
@@ -206,12 +207,12 @@ describe('CloudwatchPlugin', () => {
   });
 
   it('should use plugin to log error onStateMachineError Flow', () => {
-    const stateMachineSkill = new StateMachineSkill({ env: 'production', variables, views });
+    const stateMachineSkill = new StateMachineApp({ env: 'production', variables, views });
     const cloudwatch = { putMetricData: (data, callback) => callback(null, 'foobar') };
     const cloudwatchMock = simple.mock(cloudwatch, 'putMetricData');
     const eventMetric = { Namespace: 'fooBarSkill' };
 
-    const event = {
+    const event = new AlexaEvent({
       request: {
         type: 'IntentRequest',
         intent: {
@@ -224,7 +225,7 @@ describe('CloudwatchPlugin', () => {
           applicationId: 'Other APP ID',
         },
       },
-    };
+    });
 
     cloudwatchPlugin(stateMachineSkill, cloudwatch, eventMetric);
 
