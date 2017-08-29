@@ -3,6 +3,12 @@
 const podcast = require('./data/podcast');
 
 exports.register = function register(skill) {
+  skill.onState('entry', {
+    'AMAZON.PauseIntent': 'stop',
+    'AMAZON.StopIntent': 'stop',
+    'AMAZON.CancelIntent': 'stop',
+  });
+
   skill.onIntent('LaunchIntent', (alexaEvent) => {
     alexaEvent.model.audioTitle = podcast[0].title;
     return { reply: 'Intent.Launch', to: 'optionsReview' };

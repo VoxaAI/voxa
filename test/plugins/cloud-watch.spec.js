@@ -30,7 +30,7 @@ describe('CloudwatchPlugin', () => {
 
   it('should test when throwing an error on onBeforeReplySent function', () => {
     const stateMachineSkill = new StateMachineSkill({ views, variables });
-    const cloudwatch = { putMetricData: (data, callback) => { throw new Error('Random error'); } };
+    const cloudwatch = { putMetricData: () => { throw new Error('Random error'); } };
     const cloudwatchMock = simple.mock(cloudwatch, 'putMetricData');
 
     const config = {

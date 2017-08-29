@@ -23,12 +23,17 @@ Directives are used passed directly to the alexa response, the format is describ
 .. code-block:: javascript
 
   return {
-    directives: {
+    directives: [{
       type: 'AudioPlayer.Play',
       playBehavior: 'REPLACE_ALL',
-      url: lesson.Url,
-      offsetInMilliseconds: 0,
-      },
+      audioItem: {
+        stream: {
+          token: lesson.id,
+          url: lesson.Url,
+          offsetInMilliseconds: 0,
+        }
+      }
+    }],
   };
 
 ``reply``

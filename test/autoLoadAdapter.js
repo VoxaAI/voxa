@@ -8,11 +8,11 @@
  */
 
 class AutoLoadAdapter {
-  get(user) {
+  get() {
     return new Promise(this);
   }
 
-  put(data) {
+  put() {
     return new Promise(this);
   }
 }
