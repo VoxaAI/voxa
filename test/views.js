@@ -34,6 +34,16 @@ const views = (function views() {
           Say: { say: '{count}' },
           Tell: { tell: '{count}' },
         },
+        Playing: {
+          SayStop: {
+            ask: 'Say stop if you want to finish the playback',
+          },
+        },
+        BadInput: {
+          RepeatLastAskReprompt: {
+            say: 'I\'m sorry. I didn\'t understand.',
+          },
+        },
       },
     },
     'de-de': {
@@ -64,6 +74,7 @@ const views = (function views() {
         },
       },
     },
+    Random: { tell: ['Random 1', 'Random 2', 'Random 3'] },
   };
 }());
 

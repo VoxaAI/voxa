@@ -7,7 +7,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 const StateMachineApp = require('../lib/StateMachineApp');
-const I18NRenderer = require('../lib/renderers/DefaultRenderer');
+const DefaultRenderer = require('../lib/renderers/DefaultRenderer');
 const views = require('./views');
 const variables = require('./variables');
 const _ = require('lodash');
@@ -16,8 +16,10 @@ const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
 describe('I18NStateMachineApp', () => {
   let statesDefinition;
   let event;
+  let renderer;
 
   beforeEach(() => {
+    renderer = new DefaultRenderer({ views, variables });
     event = new AlexaEvent({
       request: {
         type: 'IntentRequest',
@@ -61,7 +63,7 @@ describe('I18NStateMachineApp', () => {
 
   it('should return an error if the views file doesn\'t have the local strings', () => {
     const localeMissing = 'en-gb';
-    const skill = new StateMachineApp({ variables, views, RenderClass: I18NRenderer });
+    const skill = new StateMachineApp({ variables, views });
     skill.onIntent('SomeIntent', () => ({ reply: 'Number.One' }));
     event.request.locale = localeMissing;
 
@@ -78,7 +80,7 @@ describe('I18NStateMachineApp', () => {
       let skill;
 
       beforeEach(() => {
-        skill = new StateMachineApp({ variables, views, RenderClass: I18NRenderer });
+        skill = new StateMachineApp({ variables, views });
       });
 
       it(`shold return a random response from the views array for ${locale}`, () => {
@@ -139,5 +141,13 @@ describe('I18NStateMachineApp', () => {
       });
     });
   });
+  it('should render the correct view based on path', () => expect(renderer.renderPath('Question.Ask', event)).to.eventually.deep.equal({ ask: 'What time is it?' }));
+  it('should use the passed variables and model', () => expect(renderer.renderMessage({ say: '{count}' }, { model: { count: 1 } })).to.eventually.deep.equal({ say: '1' }));
+  it('should fail for missing variables', () => expect(renderer.renderMessage({ say: '{missing}' })).to.eventually.be.rejectedWith(Error, 'No such variable missing'));
+  it('should throw an exception if path doesn\'t exists', () => expect(renderer.renderPath('Missing.Path', event)).to.eventually.be.rejectedWith(Error, 'View Missing.Path for en-us locale are missing'));
+  it('should select a random option from the samples', () => renderer.renderPath('RandomResponse', event)
+      .then((rendered) => {
+        expect(rendered.tell).to.be.oneOf(['Random1', 'Random2', 'Random3', 'Random4']);
+      }));
 });
 

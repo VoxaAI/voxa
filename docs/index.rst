@@ -8,6 +8,7 @@ Welcome to Voxa's documentation!
 
 Summary
 -------
+
 Voxa is an Alexa skill framework that provides a way to organize a skill into a state machine. Even the most complex voice user interface (VUI) can be represented through the state machine and it provides the flexibility needed to both be rigid when needed in specific states and flexible to jump around when allowing that also makes sense.
 
 Why Voxa vs other frameworks
