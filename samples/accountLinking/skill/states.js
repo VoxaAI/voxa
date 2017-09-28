@@ -14,14 +14,14 @@ exports.register = function register(skill) {
   skill.onIntent('AMAZON.HelpIntent', () => ({ reply: 'Intent.Help' }));
   
   skill['onAlexaSkillEvent.SkillEnabled']((alexaEvent, reply) => {
-    const userId = alexaEvent.context.System.user.userId;
+    const userId = alexaEvent.user.userId;
     const timestamp = alexaEvent.request.timestamp;
     console.log(`skill was enabled for user: ${userId} at ${timestamp}`);
     return reply;
   });
 
   skill['onAlexaSkillEvent.SkillAccountLinked']((alexaEvent, reply) => {
-    const userId = alexaEvent.context.System.user.userId;
+    const userId = alexaEvent.user.userId;
     const accessToken = alexaEvent.request.body.accessToken;
     console.log(`User: ${userId} link his account. Access Token is ${accessToken}`);
     return reply;

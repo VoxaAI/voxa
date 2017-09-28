@@ -263,7 +263,7 @@ Handle request for the `Alexa Skill Events <https://developer.amazon.com/public/
   .. code-block:: javascript
 
     skill['onAlexaSkillEvent.SkillEnabled']((alexaEvent, reply) => {
-      const userId = alexaEvent.context.System.user.userId;
+      const userId = alexaEvent.user.userId;
       console.log(`skill was enabled for user: ${userId}`);
       return reply;
     });
@@ -298,7 +298,7 @@ Handle request for the `Alexa List Events <https://developer.amazon.com/public/s
 
     skill['onAlexaHouseholdListEvent.ItemsCreated']((alexaEvent, reply) => {
       const listId = alexaEvent.request.body.listId;
-      const userId = alexaEvent.context.System.user.userId;
+      const userId = alexaEvent.user.userId;
       console.log(`Items created for list: ${listId}` for user ${userId});
       return reply;
     });
