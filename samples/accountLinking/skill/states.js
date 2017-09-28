@@ -12,7 +12,7 @@ exports.register = function register(skill) {
   });
 
   skill.onIntent('AMAZON.HelpIntent', () => ({ reply: 'Intent.Help' }));
-  
+
   skill['onAlexaSkillEvent.SkillEnabled']((alexaEvent, reply) => {
     const userId = alexaEvent.user.userId;
     const timestamp = alexaEvent.request.timestamp;
