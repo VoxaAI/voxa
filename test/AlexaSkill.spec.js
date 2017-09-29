@@ -94,6 +94,9 @@ describe('AlexaSkill', () => {
     'AlexaSkillEvent.SkillDisabled',
     'AlexaSkillEvent.SkillPermissionAccepted',
     'AlexaSkillEvent.SkillPermissionChanged',
+    'AlexaHouseholdListEvent.ItemsCreated',
+    'AlexaHouseholdListEvent.ItemsUpdated',
+    'AlexaHouseholdListEvent.ItemsDeleted',
   ], (requestType) => {
     it(`should call the correct handler for ${requestType}`, () => {
       const alexaSkill = new AlexaSkill({ appIds: 'MY APP ID' });
