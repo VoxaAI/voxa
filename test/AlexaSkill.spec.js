@@ -89,6 +89,11 @@ describe('AlexaSkill', () => {
     'PlaybackController.PauseCommandIssued',
     'PlaybackController.PlayCommandIssued',
     'PlaybackController.PreviousCommandIssued',
+    'AlexaSkillEvent.SkillAccountLinked',
+    'AlexaSkillEvent.SkillEnabled',
+    'AlexaSkillEvent.SkillDisabled',
+    'AlexaSkillEvent.SkillPermissionAccepted',
+    'AlexaSkillEvent.SkillPermissionChanged',
   ], (requestType) => {
     it(`should call the correct handler for ${requestType}`, () => {
       const alexaSkill = new AlexaSkill({ appIds: 'MY APP ID' });
