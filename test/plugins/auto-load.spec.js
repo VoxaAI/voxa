@@ -11,7 +11,7 @@ const StateMachineApp = require('../../lib/StateMachineApp');
 const autoLoad = require('../../lib/plugins/auto-load');
 const views = require('../views');
 const variables = require('../variables');
-const AutoLoadAdapter = require('../autoLoadAdapter');
+const AutoLoadAdapter = require('./autoLoadAdapter');
 const AlexaEvent = require('../../lib/adapters/alexa/AlexaEvent');
 
 const adapter = new AutoLoadAdapter();
@@ -58,7 +58,7 @@ describe('AutoLoad plugin', () => {
         expect(result.msg.statements).to.have.lengthOf(1);
         expect(result.msg.statements[0]).to.contain('Hello! Good');
         expect(result.session.attributes.state).to.equal('die');
-        expect(result.session.attributes.modelData.user.Id).to.equal(1);
+        expect(result.session.attributes.model.user.Id).to.equal(1);
       });
   });
 

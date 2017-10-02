@@ -24,7 +24,6 @@ describe('AlexaAdapter', () => {
           },
           shouldEndSession: false,
         },
-        sessionAttributes: {},
         version: '1.0',
       });
     });
@@ -40,7 +39,6 @@ describe('AlexaAdapter', () => {
           },
           shouldEndSession: true,
         },
-        sessionAttributes: {},
         version: '1.0',
       });
     });

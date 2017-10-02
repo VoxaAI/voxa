@@ -6,15 +6,18 @@ const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 
 const expect = chai.expect;
-const VoxaApp = require('../lib/VoxaApp');
+const Voxa = require('../');
 const simple = require('simple-mock');
 const _ = require('lodash');
 const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
+const views = require('./views');
+
+const alexaTest = require('alexa-skill-test-framework');
 
 describe('VoxaApp', () => {
   it('should return error message on wrong appId if config.appIds is defined', () => {
-    const voxaApp = new VoxaApp({ appIds: ['MY APP ID'] });
-    voxaApp.onLaunchRequest(() => {});
+    const voxaApp = new Voxa({ appIds: ['MY APP ID'], views });
+    const alexaSkill = new Voxa.Alexa(voxaApp);
     const stub = simple.stub();
     voxaApp.onError(stub);
 
@@ -28,8 +31,8 @@ describe('VoxaApp', () => {
   });
 
   it('should iterate through error handlers and return the first with a truthy response', () => {
-    const voxaApp = new VoxaApp();
-    voxaApp.onLaunchRequest(() => {});
+    const voxaApp = new Voxa({ views });
+    const alexaSkill = new Voxa.Alexa(voxaApp);
 
     const handler1 = simple.stub().returnWith(null);
     const handler2 = simple.stub().returnWith(null);
@@ -60,18 +63,17 @@ describe('VoxaApp', () => {
 
 
   it('should succeed with version on onSessionEnded request', () => {
-    const voxaApp = new VoxaApp({ appIds: 'MY APP ID' });
-    voxaApp.onLaunchRequest(() => {});
-    const promise = voxaApp.execute(new AlexaEvent({ context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } }));
+    const voxaApp = new Voxa({ views });
+    const alexaSkill = new Voxa.Alexa(voxaApp);
+    const promise = alexaSkill.execute(new AlexaEvent(alexaTest.getSessionEndedRequest()));
     return expect(promise).to.eventually.deep.equal({ version: '1.0' });
   });
 
   it('should call onSesionEnded callback', (done) => {
-    const voxaApp = new VoxaApp({ appIds: 'MY APP ID' });
-    voxaApp.onLaunchRequest(() => {});
+    const voxaApp = new Voxa({ views });
     const stub = simple.stub().returnWith(1);
     voxaApp.onSessionEnded(stub);
-    voxaApp.execute(new AlexaEvent({ context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } }))
+    voxaApp.execute(new AlexaEvent(alexaTest.getSessionEndedRequest()))
       .then(() => {
         expect(stub.called).to.be.true;
         done();
@@ -80,14 +82,13 @@ describe('VoxaApp', () => {
   });
 
   it('should accept onRequestStart methods', () => {
-    const voxaApp = new VoxaApp({ appIds: 'MY APP ID' });
+    const voxaApp = new Voxa({ views });
     const onRequestStart = simple.stub();
     voxaApp.onRequestStarted(onRequestStart);
   });
 
   it('should not call onSessionStarted if not session.new', () => {
-    const voxaApp = new VoxaApp({ appIds: 'MY APP ID' });
-    voxaApp.onLaunchRequest(() => {});
+    const voxaApp = new Voxa({ views });
     const stub = simple.stub().resolveWith(1);
     voxaApp.onSessionStarted(stub);
 
@@ -98,8 +99,7 @@ describe('VoxaApp', () => {
   });
 
   it('should call onSessionStarted if session.new', () => {
-    const voxaApp = new VoxaApp({ appIds: 'MY APP ID' });
-    voxaApp.onLaunchRequest(() => {});
+    const voxaApp = new Voxa({ views });
     const stub = simple.stub().resolveWith(1);
     voxaApp.onSessionStarted(stub);
 
@@ -110,8 +110,7 @@ describe('VoxaApp', () => {
   });
 
   it('should call all onRequestStartCallbacks', () => {
-    const voxaApp = new VoxaApp({ appIds: 'appId' });
-    voxaApp.onLaunchRequest(() => {});
+    const voxaApp = new Voxa({ views });
     const onRequestStart1 = simple.stub().returnWith(1);
     const onRequestStart2 = simple.stub().returnWith(1);
     const onRequestStart3 = simple.stub().returnWith(1);
@@ -129,8 +128,7 @@ describe('VoxaApp', () => {
   });
 
   it('should accept an array of appIds', () => {
-    const voxaApp = new VoxaApp({ appIds: ['appId1', 'appId2'] });
-    voxaApp.onLaunchRequest(() => {});
-    return voxaApp.execute(new AlexaEvent({ session: { new: true }, context: { application: { applicationId: 'appId2' } }, request: { type: 'SessionEndedRequest' } }));
+    const voxaApp = new Voxa({ appIds: ['appId1', 'appId2'], views });
+    return voxaApp.execute(new AlexaEvent(alexaTest.getSessionEndedRequest()));
   });
 });

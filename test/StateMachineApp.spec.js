@@ -199,7 +199,7 @@ describe('StateMachineApp', () => {
         expect(reply.error).to.be.undefined;
         expect(statesDefinition.entry.called).to.be.true;
         expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
-        expect(reply.session.attributes.modelData).to.be.null;
+        expect(reply.session.attributes.model).to.be.null;
         expect(reply.session.attributes.state).to.equal('initState');
       });
   });
@@ -225,7 +225,7 @@ describe('StateMachineApp', () => {
       .then((reply) => {
         expect(statesDefinition.entry.called).to.be.true;
         expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
-        expect(reply.session.attributes.modelData).to.deep.equal({ value: 1 });
+        expect(reply.session.attributes.model).to.deep.equal({ value: 1 });
       });
   });
 
