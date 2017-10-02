@@ -255,7 +255,7 @@ Handle request for the `Alexa Skill Events <https://developer.amazon.com/public/
 
   :param AlexaEvent alexaEvent: The :ref:`alexa event <alexa-event>` sent by Alexa
   :param object reply: A reply to be sent as the response
-  :returns object reply: Alexa only needs an acknowledgement to you received and processed the event so it doesn't need to resend the event. Just returning the :ref:`reply <reply>` object is enough
+  :returns object reply: Alexa only needs an acknowledgement that you received and processed the event so it doesn't need to resend the event. Just returning the :ref:`reply <reply>` object is enough
 
   This is an example on how your skill can process a :js:func:`~Voxa.onAlexaSkillEvent.SkillEnabled` event.
 
@@ -289,7 +289,7 @@ Handle request for the `Alexa List Events <https://developer.amazon.com/public/s
 
   :param AlexaEvent alexaEvent: The :ref:`alexa event <alexa-event>` sent by Alexa
   :param object reply: A reply to be sent as the response
-  :returns object reply: Alexa only needs an acknowledgement to you received and processed the event so it doesn't need to resend the event. Just returning the :ref:`reply <reply>` object is enough
+  :returns object reply: Alexa only needs an acknowledgement that you received and processed the event so it doesn't need to resend the event. Just returning the :ref:`reply <reply>` object is enough
 
   This is an example on how your skill can process a :js:func:`~Voxa.onAlexaHouseholdListEvent.ItemsCreated` event.
 

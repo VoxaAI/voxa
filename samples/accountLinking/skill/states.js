@@ -23,7 +23,7 @@ exports.register = function register(skill) {
   skill['onAlexaSkillEvent.SkillAccountLinked']((alexaEvent, reply) => {
     const userId = alexaEvent.user.userId;
     const accessToken = alexaEvent.request.body.accessToken;
-    console.log(`User: ${userId} link his account. Access Token is ${accessToken}`);
+    console.log(`User: ${userId} linked his account. Access Token is ${accessToken}`);
     return reply;
   });
 };
