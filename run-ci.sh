@@ -23,6 +23,6 @@ done
 cd $PROJECT_DIRECTORY
 
 if [ "${CI}" = "true" ]; then
-  yarn add coveralls
+  yarn add coveralls --ignore-engines
   cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 fi

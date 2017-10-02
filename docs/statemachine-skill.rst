@@ -243,3 +243,67 @@ Handle events from the `AudioPlayer interface <https://developer.amazon.com/publ
 .. js:function:: Voxa.onPlaybackController.PlayCommandIssued(callback, [atLast])
 
 .. js:function:: Voxa.onPlaybackController.PreviousCommandIssued(callback, [atLast])
+
+Alexa Skill Event handlers
+-----------------------------
+
+Handle request for the `Alexa Skill Events <https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/skill-events-in-alexa-skills#skill-events-in-json-format>`_
+
+.. js:function:: alexaSkillEventCallback(alexaEvent)
+
+  All the alexa skill event callbacks get a :ref:`alexa event <alexa-event>` and a :ref:`reply <reply>` object
+
+  :param AlexaEvent alexaEvent: The :ref:`alexa event <alexa-event>` sent by Alexa
+  :param object reply: A reply to be sent as the response
+  :returns object reply: Alexa only needs an acknowledgement that you received and processed the event so it doesn't need to resend the event. Just returning the :ref:`reply <reply>` object is enough
+
+  This is an example on how your skill can process a :js:func:`~Voxa.onAlexaSkillEvent.SkillEnabled` event.
+
+  .. code-block:: javascript
+
+    skill['onAlexaSkillEvent.SkillEnabled']((alexaEvent, reply) => {
+      const userId = alexaEvent.user.userId;
+      console.log(`skill was enabled for user: ${userId}`);
+      return reply;
+    });
+
+
+.. js:function:: Voxa.onAlexaSkillEvent.SkillAccountLinked(callback, [atLast])
+
+.. js:function:: Voxa.onAlexaSkillEvent.SkillEnabled(callback, [atLast])
+
+.. js:function:: Voxa.onAlexaSkillEvent.SkillDisabled(callback, [atLast])
+
+.. js:function:: Voxa.onAlexaSkillEvent.SkillPermissionAccepted(callback, [atLast])
+
+.. js:function:: Voxa.onAlexaSkillEvent.SkillPermissionChanged(callback, [atLast])
+
+Alexa List Event handlers
+-----------------------------
+
+Handle request for the `Alexa List Events <https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/list-events-in-alexa-skills#list-events-json>`_
+
+.. js:function:: alexaListEventCallback(alexaEvent)
+
+  All the alexa list event callbacks get a :ref:`alexa event <alexa-event>` and a :ref:`reply <reply>` object
+
+  :param AlexaEvent alexaEvent: The :ref:`alexa event <alexa-event>` sent by Alexa
+  :param object reply: A reply to be sent as the response
+  :returns object reply: Alexa only needs an acknowledgement that you received and processed the event so it doesn't need to resend the event. Just returning the :ref:`reply <reply>` object is enough
+
+  This is an example on how your skill can process a :js:func:`~Voxa.onAlexaHouseholdListEvent.ItemsCreated` event.
+
+  .. code-block:: javascript
+
+    skill['onAlexaHouseholdListEvent.ItemsCreated']((alexaEvent, reply) => {
+      const listId = alexaEvent.request.body.listId;
+      const userId = alexaEvent.user.userId;
+      console.log(`Items created for list: ${listId}` for user ${userId});
+      return reply;
+    });
+
+.. js:function:: Voxa.onAlexaHouseholdListEvent.ItemsCreated(callback, [atLast])
+
+.. js:function:: Voxa.onAlexaHouseholdListEvent.ItemsUpdated(callback, [atLast])
+
+.. js:function:: Voxa.onAlexaHouseholdListEvent.ItemsDeleted(callback, [atLast])
