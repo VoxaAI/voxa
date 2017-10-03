@@ -28,8 +28,11 @@ describe('StateFlow plugin', () => {
       },
 
       session: {
+        new: false,
         attributes: {
-          state: 'secondState',
+          model: {
+            _state: 'secondState',
+          },
         },
       },
     });
@@ -45,11 +48,11 @@ describe('StateFlow plugin', () => {
 
   it('should store the execution flow in the request', () => {
     const skill = new StateMachineApp({ variables, views });
+    stateFlow(skill);
     _.map(states, (state, name) => {
       skill.onState(name, state);
     });
 
-    stateFlow(skill);
 
     return skill.execute(event)
       .then((result) => {
@@ -64,7 +67,7 @@ describe('StateFlow plugin', () => {
     });
 
     stateFlow(skill);
-    event.session.attributes.state = 'fourthState';
+    event.session.attributes.model._state = 'fourthState';
     event.intent.name = 'OtherIntent';
 
     return skill.execute(event)

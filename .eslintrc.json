@@ -19,7 +19,8 @@
       "import/no-extraneous-dependencies": "off",
       "global-require": "off",
       "import/no-dynamic-require": "off",
-      "no-unused-vars": "warn"
+      "no-unused-vars": "warn",
+      "no-underscore-dangle": "off"
     },
     "env": {
       "browser": false,

@@ -16,6 +16,11 @@ describe('ApiAiEvent', () => {
     expect(event.intent.params).to.deep.equal({ number: '2', size: 'large', waterContent: '' });
   });
 
+  it('should find users on the session', () => {
+    const event = new ApiAiEvent(fallbackIntent);
+    expect(event.user.userId).to.equal('AI_yXq_n6kfU8IUzovfYOmX-j5Z3');
+  });
+
   it('should format session parameters', () => {
     const event = new ApiAiEvent(fallbackIntent);
     expect(event.session.attributes).to.deep.equal({
