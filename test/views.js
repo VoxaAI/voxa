@@ -5,7 +5,12 @@ const views = (function views() {
     'en-us': {
       translation: {
         LaunchIntent: {
-          OpenResponse: { tell: 'Hello! Good {time}' },
+          OpenResponse: {
+            tell: 'Hello! Good {time}',
+            apiai: {
+              tell: 'Hello from ApiAi',
+            },
+          },
         },
         RandomResponse: {
           tell: [

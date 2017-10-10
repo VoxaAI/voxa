@@ -3,7 +3,6 @@
   "parserOptions": {
     "sourceType": "script"
   },
-  "installedESLint": true,
   "ecmaFeatures": {
     "impliedStrict": false
   },
@@ -20,6 +19,7 @@
       "global-require": "off",
       "import/no-dynamic-require": "off",
       "no-unused-vars": "warn",
+      "prefer-destructuring": "off",
       "no-underscore-dangle": "off"
     },
     "env": {

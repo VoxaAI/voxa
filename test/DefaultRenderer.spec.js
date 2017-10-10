@@ -12,6 +12,7 @@ const views = require('./views');
 const variables = require('./variables');
 const _ = require('lodash');
 const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
+const ApiAiEvent = require('../lib/adapters/api-ai/ApiAiEvent');
 
 describe('I18NStateMachineApp', () => {
   let statesDefinition;
@@ -146,8 +147,16 @@ describe('I18NStateMachineApp', () => {
   it('should fail for missing variables', () => expect(renderer.renderMessage({ say: '{missing}' })).to.eventually.be.rejectedWith(Error, 'No such variable missing'));
   it('should throw an exception if path doesn\'t exists', () => expect(renderer.renderPath('Missing.Path', event)).to.eventually.be.rejectedWith(Error, 'View Missing.Path for en-us locale are missing'));
   it('should select a random option from the samples', () => renderer.renderPath('RandomResponse', event)
+    .then((rendered) => {
+      expect(rendered.tell).to.be.oneOf(['Random1', 'Random2', 'Random3', 'Random4']);
+    }));
+
+  it('should use the apiai view if available', () => {
+    const apiAiEvent = new ApiAiEvent(require('./requests/apiai/launchIntent.json'));
+    return renderer.renderPath('LaunchIntent.OpenResponse', apiAiEvent)
       .then((rendered) => {
-        expect(rendered.tell).to.be.oneOf(['Random1', 'Random2', 'Random3', 'Random4']);
-      }));
+        expect(rendered.tell).to.equal('Hello from ApiAi');
+      });
+  });
 });
 

@@ -149,13 +149,15 @@ describe('VoxaReply', () => {
     });
 
     it('should convert legacy play format into the cannonical one', () => {
-      const message = { directives: {
-        type: 'AudioPlayer.Play',
-        playBehavior: 'REPLACE_ALL',
-        token: 'token',
-        url: 'url',
-        offsetInMilliseconds: 0,
-      } };
+      const message = {
+        directives: {
+          type: 'AudioPlayer.Play',
+          playBehavior: 'REPLACE_ALL',
+          token: 'token',
+          url: 'url',
+          offsetInMilliseconds: 0,
+        },
+      };
       reply.append(message);
       expect(reply.msg.directives).to.have.length(1);
       expect(reply.msg.directives[0].audioItem.stream.token).to.equal('token');

@@ -45,6 +45,57 @@ describe('StateMachineApp', () => {
     };
   });
 
+  describe('onState', () => {
+    it('should accept new states', () => {
+      const stateMachineApp = new StateMachineApp({ variables, views });
+      const fourthState = () => ({ to: 'endState' });
+      stateMachineApp.onState('fourthState', fourthState);
+      expect(stateMachineApp.states.fourthState.enter.entry).to.equal(fourthState);
+    });
+
+    it('should register simple states', () => {
+      const stateMachineApp = new StateMachineApp({ variables, views });
+      const stateFn = simple.stub();
+      stateMachineApp.onState('init', stateFn);
+
+      expect(stateMachineApp.states.init).to.deep.equal({
+        name: 'init',
+        enter: {
+          entry: stateFn,
+        },
+      });
+    });
+
+    it('should register states for specific intents', () => {
+      const stateMachineApp = new StateMachineApp({ variables, views });
+      const stateFn = simple.stub();
+      stateMachineApp.onState('init', 'AMAZON.NoIntent', stateFn);
+
+      expect(stateMachineApp.states.init).to.deep.equal({
+        name: 'init',
+        enter: { 'AMAZON.NoIntent': stateFn },
+      });
+    });
+
+    it('should register states for intent lists', () => {
+      const stateMachineApp = new StateMachineApp({ variables, views });
+      const stateFn = simple.stub();
+      const stateFn2 = simple.stub();
+
+      stateMachineApp.onState('init', ['AMAZON.NoIntent', 'AMAZON.StopIntent'], stateFn);
+      stateMachineApp.onState('init', 'AMAZON.YesIntent', stateFn2);
+
+      expect(stateMachineApp.states.init).to.deep.equal({
+        name: 'init',
+        enter: {
+          'AMAZON.NoIntent': stateFn,
+          'AMAZON.StopIntent': stateFn,
+          'AMAZON.YesIntent': stateFn2,
+        },
+      });
+    });
+  });
+
   it('should include the state in the session response', () => {
     const stateMachineApp = new StateMachineApp({ variables, views });
     stateMachineApp.onIntent('LaunchIntent', () => ({ message: { ask: 'This is my message' }, to: 'secondState' }));
@@ -135,13 +186,6 @@ describe('StateMachineApp', () => {
       .then(() => {
         expect(called).to.be.true;
       });
-  });
-
-  it('should accept new states', () => {
-    const stateMachineApp = new StateMachineApp({ variables, views });
-    const fourthState = () => ({ to: 'endState' });
-    stateMachineApp.onState('fourthState', fourthState);
-    expect(stateMachineApp.states.fourthState.enter).to.equal(fourthState);
   });
 
   it('should accept onBeforeStateChanged callbacks', () => {

@@ -10,21 +10,25 @@
 const Promise = require('bluebird');
 
 const variables = {
+  items(model) {
+    return model.items;
+  },
+
   time: function time() {
     const today = new Date();
     const curHr = today.getHours();
 
     if (curHr < 12) {
-      return Promise.resolve('Morning');
+      return 'Morning';
     }
     if (curHr < 18) {
-      return Promise.resolve('Afternoon');
+      return 'Afternoon';
     }
-    return Promise.resolve('Evening');
+    return 'Evening';
   },
 
   site: function site() {
-    return Promise.resolve('example.com');
+    return 'example.com';
   },
 
   count: function count(model) {

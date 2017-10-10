@@ -32,10 +32,10 @@ describe('StateMachine', () => {
       },
     });
     states = {
-      entry: { enter: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }), name: 'entry' },
-      initState: { enter: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }), name: 'initState' },
-      secondState: { enter: () => ({ to: 'initState' }), name: 'secondState' },
-      thirdState: { enter: () => Promise.resolve({ to: 'die' }), name: 'thirdState' },
+      entry: { enter: { entry: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }) }, name: 'entry' },
+      initState: { enter: { entry: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }) }, name: 'initState' },
+      secondState: { enter: { entry: () => ({ to: 'initState' }) }, name: 'secondState' },
+      thirdState: { enter: { entry: () => Promise.resolve({ to: 'die' }) }, name: 'thirdState' },
     };
   });
 
@@ -84,7 +84,7 @@ describe('StateMachine', () => {
   });
 
   it('should transition to die if result is not an object', () => {
-    states.thirdState.enter = () => 'LaunchIntent.OpenResponse';
+    states.thirdState.enter = { entry: () => 'LaunchIntent.OpenResponse' };
 
     const stateMachine = new StateMachine('thirdState', { states });
     return stateMachine.transition(voxaEvent, new Reply(voxaEvent))
@@ -103,7 +103,7 @@ describe('StateMachine', () => {
 
   describe('UnhandledState', () => {
     it('should throw UnhandledState on a falsey response from the state transition', () => {
-      states.entry.enter = () => null;
+      states.entry.enter = { entry: () => null };
       const stateMachine = new StateMachine('entry', { states });
       const promise = stateMachine.transition({ intent: { name: 'LaunchIntent' } }, new Reply(voxaEvent));
       return expect(promise).to.eventually.be.rejectedWith(errors.UnhandledState);
@@ -137,20 +137,20 @@ describe('StateMachine', () => {
     const stateMachine = new StateMachine('entry', { states });
     voxaEvent.intent.name = 'LaunchIntent';
     return expect(stateMachine.transition(voxaEvent, new Reply(voxaEvent)))
-           .to.eventually.be.rejectedWith(errors.UnknownState);
+      .to.eventually.be.rejectedWith(errors.UnknownState);
   });
 
   it('should throw UnknownState when transition.to goes to an undefined state', () => {
-    states.someState = { enter: () => ({ to: 'undefinedState' }), name: 'someState' };
+    states.someState = { enter: { entry: () => ({ to: 'undefinedState' }) }, name: 'someState' };
     const stateMachine = new StateMachine('someState', { states });
 
     return expect(stateMachine.transition(voxaEvent, new Reply(voxaEvent)))
-           .to.eventually.be.rejectedWith(errors.UnknownState);
+      .to.eventually.be.rejectedWith(errors.UnknownState);
   });
 
   it('should fallback to entry on no response', () => {
     states.someState = {
-      enter: simple.stub().returnWith(null),
+      enter: { entry: simple.stub().returnWith(null) },
       name: 'someState',
     };
 
@@ -158,7 +158,7 @@ describe('StateMachine', () => {
     voxaEvent.intent.name = 'LaunchIntent';
     return stateMachine.transition(voxaEvent, new Reply(voxaEvent))
       .then((transition) => {
-        expect(states.someState.enter.called).to.be.true;
+        expect(states.someState.enter.entry.called).to.be.true;
         expect(transition).to.deep.equal({
           reply: 'ExitIntent.Farewell',
           to: {
