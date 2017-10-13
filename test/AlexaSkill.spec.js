@@ -11,8 +11,23 @@ const simple = require('simple-mock');
 const _ = require('lodash');
 
 describe('AlexaSkill', () => {
-  it('should return error message on wrong appId if config.appIds is defined', () => {
+  it('should return error message on wrong appId Array if config.appIds is defined', () => {
     const alexaSkill = new AlexaSkill({ appIds: ['MY APP ID'] });
+    alexaSkill.onLaunchRequest(() => {});
+    const stub = simple.stub();
+    alexaSkill.onError(stub);
+
+    return alexaSkill.execute({ context: { application: { applicationId: 'OTHER APP ID' } }, request: { intent: { } } })
+      .then((reply) => {
+        expect(stub.called).to.be.true;
+        expect(stub.lastCall.args[1]).to.be.an('error');
+        expect(stub.lastCall.args[1].message).to.equal('Invalid applicationId');
+        expect(reply.msg.statements[0]).to.equal('An unrecoverable error occurred.');
+      });
+  });
+
+  it('should return error message on wrong appId String if config.appIds is defined', () => {
+    const alexaSkill = new AlexaSkill({ appIds: 'MY APP ID' });
     alexaSkill.onLaunchRequest(() => {});
     const stub = simple.stub();
     alexaSkill.onError(stub);
@@ -114,6 +129,19 @@ describe('AlexaSkill', () => {
   });
 
   it('should return error message on unknown event type', () => {
+    const alexaSkill = new AlexaSkill({ appIds: 'MY APP ID' });
+    alexaSkill.onLaunchRequest(() => {});
+    const stub = simple.stub();
+    alexaSkill.onError(stub);
+    return alexaSkill.execute({ context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'UnknownEvent' } })
+      .then((reply) => {
+        expect(stub.lastCall.args[1]).to.be.an('error');
+        expect(stub.lastCall.args[1].message).to.equal('Unkown request type: UnknownEvent');
+        expect(reply.error).to.be.an('error');
+      });
+  });
+
+  it('should create a simple server for testing', () => {
     const alexaSkill = new AlexaSkill({ appIds: 'MY APP ID' });
     alexaSkill.onLaunchRequest(() => {});
     const stub = simple.stub();

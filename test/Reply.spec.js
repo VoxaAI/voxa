@@ -60,6 +60,27 @@ describe('Reply', () => {
   });
 
   describe('toJSON', () => {
+    it('should generate a correct alexa response and reprompt that doesn\'t  end a session for an ask response', () => {
+      reply.append({ ask: 'ask', reprompt: 'reprompt' });
+      expect(reply.toJSON()).to.deep.equal({
+        response: {
+          card: undefined,
+          outputSpeech: {
+            ssml: '<speak>ask</speak>',
+            type: 'SSML',
+          },
+          reprompt: {
+            outputSpeech: {
+              ssml: '<speak>reprompt</speak>',
+              type: 'SSML',
+            },
+          },
+          shouldEndSession: false,
+        },
+        sessionAttributes: {},
+        version: '1.0',
+      });
+    });
     it('should generate a correct alexa response that doesn\'t  end a session for an ask response', () => {
       reply.append({ ask: 'ask' });
       expect(reply.toJSON()).to.deep.equal({
