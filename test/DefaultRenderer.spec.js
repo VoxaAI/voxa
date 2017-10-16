@@ -29,4 +29,30 @@ describe('DefaultRenderer', () => {
       .then((rendered) => {
         expect(rendered.tell).to.be.oneOf(['Random 1', 'Random 2', 'Random 3']);
       }));
+  it('should use deeply search to render object variable', () => expect(renderer.renderMessage({ card: '{exitCard}' }, { model: { count: 1 } }))
+    .to.eventually.deep.equal(
+    {
+      card: {
+        type: 'Standard',
+        title: 'title',
+        text: 'text',
+        image: {
+          smallImageUrl: 'smallImage.jpg',
+          largeImageUrl: 'largeImage.jpg',
+        },
+      },
+    }));
+
+  it('should use deeply search variable and model in complex object structure', () => expect(renderer.renderMessage({ card: { title: '{count}', text: '{count}', array: [{ a: '{count}' }] } }, { model: { count: 1 } }))
+    .to.eventually.deep.equal(
+    {
+      card: {
+        title: '1',
+        text: '1',
+        array: [{ a: '1' }],
+      },
+    }));
+
+  it('should use deeply search to render array variable', () => expect(renderer.renderMessage({ card: '{exitArray}' }, { model: {} }))
+    .to.eventually.deep.equal({ card: [{ a: 1 }, { b: 2 }, { c: 3 }] }));
 });
