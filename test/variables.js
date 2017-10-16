@@ -10,6 +10,12 @@
 const Promise = require('bluebird');
 
 const variables = {
+  exitDirectiveMessage: function exitDirectiveMessage() {
+    return ({
+      text: 'Thanks for playing!',
+      type: 'PlainText',
+    });
+  },
   time: function time() {
     const today = new Date();
     const curHr = today.getHours();
@@ -43,4 +49,3 @@ const variables = {
 };
 
 module.exports = variables;
-

@@ -112,6 +112,7 @@ describe('AlexaSkill', () => {
     'AlexaHouseholdListEvent.ItemsCreated',
     'AlexaHouseholdListEvent.ItemsUpdated',
     'AlexaHouseholdListEvent.ItemsDeleted',
+    'Display.ElementSelected',
   ], (requestType) => {
     it(`should call the correct handler for ${requestType}`, () => {
       const alexaSkill = new AlexaSkill({ appIds: 'MY APP ID' });
