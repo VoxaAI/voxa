@@ -208,6 +208,16 @@ describe('Reply', () => {
       expect(reply.msg.directives).to.have.length(2);
     });
 
+    it('should throw error on duplicate Display Render directives', () => {
+      const message = { directives: [{ type: 'Display.RenderTemplate' }, { type: 'Display.RenderTemplate' }] };
+      expect(reply.append.bind(reply, message)).to.throw('At most one Display.RenderTemplate directive can be specified in a response');
+    });
+
+    it('should throw error on both AudioPlayer.Play and VideoApp.Launch directives', () => {
+      const message = { directives: [{ type: 'AudioPlayer.Play' }, { type: 'VideoApp.Launch' }] };
+      expect(reply.append.bind(reply, message)).to.throw('Do not include both an AudioPlayer.Play directive and a VideoApp.Launch directive in the same response');
+    });
+
     it('should convert legacy play format into the cannonical one', () => {
       const message = { directives: {
         type: 'AudioPlayer.Play',
