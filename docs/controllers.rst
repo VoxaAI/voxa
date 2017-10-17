@@ -56,5 +56,14 @@ For the simple pattern of having a controller respond to an specific intent the 
     return { reply: 'LaunchIntent.OpenResponse', to: 'die' };
   });
 
+If you receive a Display.ElementSelected type request, you could use the same approach for intents and state. Voxa receives this type of request and turns it into ``DisplayElementSelected`` Intent
+
+.. code-block:: javascript
+
+  skill.onIntent('DisplayElementSelected', (alexaEvent) => {
+    return { reply: 'DisplayElementSelected.OpenResponse', to: 'die' };
+  });
+
+
 
 Under the hood this creates a new key in the ``entry`` controller and a new state

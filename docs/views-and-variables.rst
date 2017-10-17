@@ -61,7 +61,53 @@ say
 While the ``tell`` and ``ask`` view types are an exact representation of the base alexa programming model, the say views are different. They're an abstraction created by voxa to make it simpler to compose your responses over many state transitions. They don't send a respond to alexa but instead make a state transition internally and continue executing your skill code until there's a ``tell`` or ``ask`` response.
 
 
+Directives
+-----------
 
+You can include directives in your views file. This will allow you to set directive for Display.RenderTemplate
+
+.. code-block:: javascript
+
+  const views = {
+    LaunchIntent: {
+      OpenResponse: {
+        tell: [
+          'Hello! <break time="3s"/> Good  {time}. Is there anything i can do to help you today?',
+          'Hi there! <break time="3s"/> Good  {time}. How may i be of service?',
+          'Good  {time}, Welcome!. How can i help you?',
+        ]
+        directives: [
+          {
+            "type": "Hint",
+            "hint": {
+              "type": "PlainText",
+              "text": "Hint"
+            }
+          },
+          {
+            type: 'Display.RenderTemplate',
+            template: {
+              type: "BodyTemplate1",
+              textContent: {
+                primaryText: {
+                    text: "See my favorite car",
+                    type: "PlainText"
+                },
+                secondaryText: {
+                    text: "Custom-painted",
+                    type: "PlainText"
+                },
+                tertiaryText: {
+                    text: "By me!",
+                    type: "PlainText"
+                  }
+              },
+              backButton: "VISIBLE"
+            }
+          }
+      ],
+    },
+  };
 
 Variables
 -----------
@@ -91,6 +137,3 @@ A variable signature is:
         return alexaEvent.locale;
       }
     };
-
-
-
