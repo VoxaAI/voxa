@@ -64,7 +64,7 @@ While the ``tell`` and ``ask`` view types are an exact representation of the bas
 Directives
 -----------
 
-You can include directives in your views file. This will allow you to set directive for Display.RenderTemplate
+Now you can include directives in your views file. Hint directive can be easily specify with the field hint in the views file.
 
 .. code-block:: javascript
 
@@ -75,15 +75,9 @@ You can include directives in your views file. This will allow you to set direct
           'Hello! <break time="3s"/> Good  {time}. Is there anything i can do to help you today?',
           'Hi there! <break time="3s"/> Good  {time}. How may i be of service?',
           'Good  {time}, Welcome!. How can i help you?',
-        ]
+        ],
+        hint: 'hint',
         directives: [
-          {
-            "type": "Hint",
-            "hint": {
-              "type": "PlainText",
-              "text": "Hint"
-            }
-          },
           {
             type: 'Display.RenderTemplate',
             template: {

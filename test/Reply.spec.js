@@ -201,6 +201,34 @@ describe('Reply', () => {
       expect(reply.msg.directives).to.have.length(2);
     });
 
+    it('should allow hint directives or hint message', () => {
+      const message = {
+        supportDisplayInterface: true,
+        hint: 'special Hint',
+        directives: [
+          {
+            type: 'Hint',
+            hint: {
+              type: 'PlainText',
+              text: 'simple Hint',
+            },
+          },
+          { type: 'b' },
+        ] };
+
+      reply.append(message);
+      expect(reply.msg.directives).to.deep.equal([
+        { type: 'b' },
+        {
+          type: 'Hint',
+          hint: {
+            type: 'PlainText',
+            text: 'special Hint',
+          },
+        },
+      ]);
+    });
+
     it('should concatenate directives', () => {
       const message = { directives: [{ type: 'a' }] };
       reply.append(message);
