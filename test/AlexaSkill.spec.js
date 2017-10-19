@@ -155,6 +155,19 @@ describe('AlexaSkill', () => {
       });
   });
 
+  it('should return error message on error in SessionEndedRequest', () => {
+    const alexaSkill = new AlexaSkill({ appIds: 'MY APP ID' });
+    alexaSkill.onLaunchRequest(() => {});
+    const stub = simple.stub();
+    alexaSkill.onError(stub);
+    return alexaSkill.execute({ context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest', reason: 'ERROR', error: 'The total duration of audio content exceeds the maximum allowed duration' } })
+      .then((reply) => {
+        expect(stub.lastCall.args[1]).to.be.an('error');
+        expect(stub.lastCall.args[1].message).to.equal('The total duration of audio content exceeds the maximum allowed duration');
+        expect(reply.error).to.be.an('error');
+      });
+  });
+
   it('should succeed with version on onSessionEnded request', () => {
     const alexaSkill = new AlexaSkill({ appIds: 'MY APP ID' });
     alexaSkill.onLaunchRequest(() => {});
