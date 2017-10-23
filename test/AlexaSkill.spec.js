@@ -163,7 +163,7 @@ describe('AlexaSkill', () => {
     return alexaSkill.execute({ context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest', reason: 'ERROR', error: 'The total duration of audio content exceeds the maximum allowed duration' } })
       .then((reply) => {
         expect(stub.lastCall.args[1]).to.be.an('error');
-        expect(stub.lastCall.args[1].message).to.equal('The total duration of audio content exceeds the maximum allowed duration');
+        expect(stub.lastCall.args[1].message).to.equal('Session ended with an error: The total duration of audio content exceeds the maximum allowed duration');
         expect(reply.error).to.be.an('error');
       });
   });
