@@ -15,6 +15,11 @@ describe('AlexaEvent', () => {
     expect(alexaEvent.intent.params).to.deep.equal({ Dish: 'Fried Chicken' });
   });
 
+  it('should get token', () => {
+    const alexaEvent = new AlexaEvent({ request: { token: 'some-token', intent: { slots: [{ name: 'Dish', value: 'Fried Chicken' }] } } });
+    expect(alexaEvent.token).to.equal('some-token');
+  });
+
   it('should find users on the context', () => {
     const alexaEvent = new AlexaEvent({ context: { System: { user: { userId: 'Fried Chicken' } } }, request: { } });
     expect(alexaEvent.user.userId).to.equal('Fried Chicken');

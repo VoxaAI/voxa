@@ -16,7 +16,28 @@ const views = (function views() {
       Ask: { ask: 'What time is it?' },
     },
     ExitIntent: {
-      Farewell: { tell: 'Ok. For more info visit {site} site.' },
+      Farewell: {
+        tell: 'Ok. For more info visit {site} site.',
+        directives: {
+          type: 'Display.RenderTemplate',
+          template: {
+            type: 'BodyTemplate1',
+            backButton: 'HIDDEN',
+            backgroundImage: {
+              sources: [
+                {
+                  url: 'https://somesite/show-general.png',
+                },
+              ],
+            },
+            // title: 'Skill Exit',
+            textContent: {
+              primaryText: '{exitDirectiveMessage}',
+            },
+          },
+        },
+        card: null,
+      },
     },
     HelpIntent: {
       HelpAboutSkill: { tell: 'For more help visit www.rain.agency' },
@@ -36,4 +57,3 @@ const views = (function views() {
 }());
 
 module.exports = views;
-

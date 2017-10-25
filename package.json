@@ -27,7 +27,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "alexa-helpers": "^1.1.1",
     "bluebird": "^3.4.1",
     "capitalize": "^1.0.0",
     "debug": "^2.6.0",

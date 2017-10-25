@@ -10,6 +10,26 @@
 const Promise = require('bluebird');
 
 const variables = {
+  exitDirectiveMessage: function exitDirectiveMessage() {
+    return ({
+      text: 'Thanks for playing!',
+      type: 'PlainText',
+    });
+  },
+  exitCard: function exitCard() {
+    return {
+      type: 'Standard',
+      title: 'title',
+      text: 'text',
+      image: {
+        smallImageUrl: 'smallImage.jpg',
+        largeImageUrl: 'largeImage.jpg',
+      },
+    };
+  },
+  exitArray: function exitArray() {
+    return [{ a: 1 }, { b: 2 }, { c: 3 }];
+  },
   time: function time() {
     const today = new Date();
     const curHr = today.getHours();
@@ -43,4 +63,3 @@ const variables = {
 };
 
 module.exports = variables;
-
