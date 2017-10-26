@@ -1,56 +1,83 @@
 'use strict';
 
-/**
- * Views for tests
- *
- * Copyright (c) 2016 Rain Agency.
- * Licensed under the MIT license.
- */
-
 const views = (function views() {
   return {
-    LaunchIntent: {
-      OpenResponse: { tell: 'Hello! Good {time}' },
-    },
-    Question: {
-      Ask: { ask: 'What time is it?' },
-    },
-    ExitIntent: {
-      Farewell: {
-        tell: 'Ok. For more info visit {site} site.',
-        directives: {
-          type: 'Display.RenderTemplate',
-          template: {
-            type: 'BodyTemplate1',
-            backButton: 'HIDDEN',
-            backgroundImage: {
-              sources: [
-                {
-                  url: 'https://somesite/show-general.png',
-                },
-              ],
-            },
-            // title: 'Skill Exit',
-            textContent: {
-              primaryText: '{exitDirectiveMessage}',
+    'en-us': {
+      translation: {
+        LaunchIntent: {
+          OpenResponse: {
+            tell: 'Hello! Good {time}',
+            apiai: {
+              tell: 'Hello from ApiAi',
             },
           },
         },
-        card: null,
+        RandomResponse: {
+          tell: [
+            'Random 1',
+            'Random 2',
+            'Random 3',
+            'Random 4',
+          ],
+        },
+        Question: {
+          Ask: { ask: 'What time is it?' },
+        },
+        ExitIntent: {
+          Farewell: { tell: 'Ok. For more info visit {site} site.' },
+        },
+        Number: {
+          One: { tell: '{numberOne}' },
+        },
+        Say: {
+          Say: { say: 'say' },
+        },
+        HelpIntent: {
+          HelpAboutSkill: { tell: 'For more help visit www.rain.agency' },
+        },
+        Count: {
+          Say: { say: '{count}' },
+          Tell: { tell: '{count}' },
+        },
+        Playing: {
+          SayStop: {
+            ask: 'Say stop if you want to finish the playback',
+          },
+        },
+        BadInput: {
+          RepeatLastAskReprompt: {
+            say: 'I\'m sorry. I didn\'t understand.',
+          },
+        },
       },
     },
-    HelpIntent: {
-      HelpAboutSkill: { tell: 'For more help visit www.rain.agency' },
-    },
-    Count: {
-      Say: { say: '{count}' },
-      Tell: { tell: '{count}' },
-    },
-    BadInput: {
-      RepeatLastAskReprompt: { say: 'I\'m sorry. I didn\'t understand.' },
-    },
-    Playing: {
-      SayStop: { ask: 'Say stop if you want to finish the playback', reprompt: 'You can say stop to finish the playback' },
+    'de-de': {
+      translation: {
+        LaunchIntent: {
+          OpenResponse: { tell: 'Hallo! guten {time}' },
+        },
+        RandomResponse: {
+          tell: [
+            'zufällig1',
+            'zufällig2',
+            'zufällig3',
+            'zufällig4',
+            'zufällig5',
+          ],
+        },
+        Question: {
+          Ask: { ask: 'wie spät ist es?' },
+        },
+        ExitIntent: {
+          Farewell: { tell: 'Ok für weitere Infos besuchen {site} Website' },
+        },
+        Number: {
+          One: { tell: '{numberOne}' },
+        },
+        Say: {
+          Say: { say: 'sagen' },
+        },
+      },
     },
     Random: { tell: ['Random 1', 'Random 2', 'Random 3'] },
   };

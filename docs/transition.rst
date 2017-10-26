@@ -3,7 +3,7 @@
 Transition
 ===========
 
-A transition is the result of controller execution, it's a simple object with keys that control the flow of execution in your skill. 
+A transition is the result of controller execution, it's a simple object with keys that control the flow of execution in your skill.
 
 ``to``
 ------
@@ -39,12 +39,12 @@ Directives are used passed directly to the alexa response, the format is describ
 ``reply``
 ---------
 
-The ``reply`` key can take 2 forms, a simple string pointing to one of your views or a :ref:`Reply <reply>` object. 
+The ``reply`` key can take 2 forms, a simple string pointing to one of your views or a :ref:`Reply <reply>` object.
 
 .. code-block:: javascript
 
   return { reply: 'LaunchIntent.OpenResponse' };
 
-  const reply = new Reply(alexaEvent, { tell: 'Hi there!' });
+  const reply = new Reply(voxaEvent, { tell: 'Hi there!' });
   return { reply };
 

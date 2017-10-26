@@ -30,7 +30,7 @@ Stores the state transitions for every alexa event in an array.
 
 .. js:function:: stateFlow(skill)
 
-  State Flow attaches callbacks to :js:func:`~Voxa.onRequestStarted`, :js:func:`~Voxa.onBeforeStateChanged` and :js:func:`~Voxa.onBeforeReplySent` to track state transitions in a ``alexaEvent.flow`` array
+  State Flow attaches callbacks to :js:func:`~Voxa.onRequestStarted`, :js:func:`~Voxa.onBeforeStateChanged` and :js:func:`~Voxa.onBeforeReplySent` to track state transitions in a ``voxaEvent.flow`` array
 
   :param Voxa skill: The skill object
 
@@ -44,8 +44,8 @@ Usage
   const alexa = require('alexa-statemachine');
   alexa.plugins.stateFlow.register(skill)
 
-  skill.onBeforeReplySent((alexaEvent) => {
-    console.log(alexaEvent.flow.join(' > ')); // entry > firstState > secondState > die
+  skill.onBeforeReplySent((voxaEvent) => {
+    console.log(voxaEvent.flow.join(' > ')); // entry > firstState > secondState > die
   });
 
 

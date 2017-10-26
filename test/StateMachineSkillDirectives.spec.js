@@ -12,6 +12,7 @@ const Voxa = require('../');
 const views = require('./views');
 const variables = require('./variables');
 const _ = require('lodash');
+const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
 
 const TEST_URLS = [
   'https://s3.amazonaws.com/alexa-voice-service/welcome_message.mp3',
@@ -61,7 +62,7 @@ function createToken(index, shuffle, loop) {
   return JSON.stringify({ index, shuffle, loop });
 }
 
-describe('StateMachineSkill', () => {
+describe('StateMachineApp', () => {
   let skill;
 
   beforeEach(() => {
@@ -72,16 +73,15 @@ describe('StateMachineSkill', () => {
   });
 
   itIs('audioResume', (reply) => {
-    const json = reply.toJSON();
-    expect(json.response.outputSpeech.ssml).to.include('Hello! Good');
-    expect(json.response.directives[0].type).to.equal('AudioPlayer.Play');
-    expect(json.response.directives[0].playBehavior).to.equal('REPLACE_ALL');
-    expect(json.response.directives[0].audioItem.stream.offsetInMilliseconds).to.equal(353160);
+    expect(reply.msg.statements.join()).to.include('Hello! Good');
+    expect(reply.msg.directives[0].type).to.equal('AudioPlayer.Play');
+    expect(reply.msg.directives[0].playBehavior).to.equal('REPLACE_ALL');
+    expect(reply.msg.directives[0].audioItem.stream.offsetInMilliseconds).to.equal(353160);
   });
 
   function itIs(requestFile, cb) {
     it(requestFile, () => {
-      const event = require(`./requests/${requestFile}.js`);
+      const event = new AlexaEvent(require(`./requests/${requestFile}.js`));
       return skill.execute(event).then(cb);
     });
   }

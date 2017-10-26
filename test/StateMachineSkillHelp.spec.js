@@ -12,6 +12,7 @@ const Voxa = require('../');
 const views = require('./views');
 const variables = require('./variables');
 const _ = require('lodash');
+const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
 
 const states = {
   entry: {
@@ -42,7 +43,7 @@ describe('StateMachineSkill Help test', () => {
 
   function itIs(requestFile, cb) {
     it(requestFile, () => {
-      const event = require(`./requests/${requestFile}.js`);
+      const event = new AlexaEvent(require(`./requests/${requestFile}.js`));
       return skill.execute(event).then(cb);
     });
   }
