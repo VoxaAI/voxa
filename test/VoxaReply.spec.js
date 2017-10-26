@@ -149,7 +149,8 @@ describe('VoxaReply', () => {
             hint: 'special Hint',
           },
           { type: 'b' },
-        ] };
+        ],
+      };
 
       reply.append(message);
       expect(reply.msg.directives).to.deep.equal([

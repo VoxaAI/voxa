@@ -161,7 +161,7 @@ describe('StateMachineApp', () => {
   });
 
   it('should display element selected request', () => {
-    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    const stateMachineSkill = new StateMachineApp({ variables, views });
     stateMachineSkill.onIntent('DisplayElementSelected', () => ({ reply: ['ExitIntent.Farewell'] }));
     event.request.type = 'Display.ElementSelected';
 

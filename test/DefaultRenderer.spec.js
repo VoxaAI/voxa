@@ -148,12 +148,11 @@ describe('I18NStateMachineApp', () => {
   it('should fail for missing variables', () => expect(renderer.renderMessage({ say: '{missing}' })).to.eventually.be.rejectedWith(Error, 'No such variable in views, ReferenceError: missing is not defined'));
   it('should throw an exception if path doesn\'t exists', () => expect(renderer.renderPath('Missing.Path')).to.eventually.be.rejectedWith(Error, 'View Missing.Path for en-us locale are missing'));
   it('should select a random option from the samples', () => renderer.renderPath('Random')
-      .then((rendered) => {
-        expect(rendered.tell).to.be.oneOf(['Random 1', 'Random 2', 'Random 3']);
-      }));
+    .then((rendered) => {
+      expect(rendered.tell).to.be.oneOf(['Random 1', 'Random 2', 'Random 3']);
+    }));
   it('should use deeply search to render object variable', () => expect(renderer.renderMessage({ card: '{exitCard}' }, { model: { count: 1 } }))
-    .to.eventually.deep.equal(
-    {
+    .to.eventually.deep.equal({
       card: {
         type: 'Standard',
         title: 'title',
@@ -166,8 +165,7 @@ describe('I18NStateMachineApp', () => {
     }));
 
   it('should use deeply search variable and model in complex object structure', () => expect(renderer.renderMessage({ card: { title: '{count}', text: '{count}', array: [{ a: '{count}' }] } }, { model: { count: 1 } }))
-    .to.eventually.deep.equal(
-    {
+    .to.eventually.deep.equal({
       card: {
         title: '1',
         text: '1',
