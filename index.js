@@ -12,34 +12,25 @@
 'use strict';
 
 const packageInfo = require('./package.json');
-const StateMachineSkill = require('./lib/StateMachineSkill');
-const Reply = require('./lib/Reply');
+const StateMachineApp = require('./lib/StateMachineApp');
 const DefaultRenderer = require('./lib/renderers/DefaultRenderer');
-const I18NRenderer = require('./lib/renderers/I18NRenderer');
 
 /**
  * Plugins
  */
-const badResponseReprompt = require('./lib/plugins/reprompt-on-bad-response');
 const replaceIntent = require('./lib/plugins/replace-intent');
 const stateFlow = require('./lib/plugins/state-flow');
-const cloudWatch = require('./lib/plugins/cloud-watch');
 const autoLoad = require('./lib/plugins/auto-load');
 
 
-module.exports = StateMachineSkill;
-module.exports.version = packageInfo.version;
-module.exports.Reply = Reply;
-module.exports.replyWith = (reply, to) => ({ reply, to });
-module.exports.replyWithAudioDirectives = (reply, to, request, data, directives) => ({ reply, to, directives });
+module.exports = StateMachineApp;
+module.exports.Alexa = require('./lib/adapters/alexa/AlexaAdapter')
+module.exports.ApiAi = require('./lib/adapters/api-ai/ApiAiAdapter')
 
-module.exports.I18NRenderer = I18NRenderer;
-module.exports.DefaultRenderer = DefaultRenderer;
+module.exports.version = packageInfo.version;
 
 module.exports.plugins = {
-  badResponseReprompt,
   replaceIntent,
   stateFlow,
-  cloudWatch,
   autoLoad,
 };

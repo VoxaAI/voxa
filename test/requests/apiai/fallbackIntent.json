@@ -1,0 +1,134 @@
+{
+  "originalRequest": {
+    "source": "google",
+    "version": "2",
+    "data": {
+      "isInSandbox": true,
+      "surface": {
+        "capabilities": [
+          {
+            "name": "actions.capability.AUDIO_OUTPUT"
+          },
+          {
+            "name": "actions.capability.SCREEN_OUTPUT"
+          }
+        ]
+      },
+      "inputs": [
+        {
+          "rawInputs": [
+            {
+              "query": "Talk to my test app",
+              "inputType": "KEYBOARD"
+            }
+          ],
+          "arguments": [
+            {
+              "rawText": "Talk to my test app",
+              "textValue": "Talk to my test app",
+              "name": "text"
+            }
+          ],
+          "intent": "actions.intent.TEXT"
+        }
+      ],
+      "user": {
+        "locale": "en-US",
+        "userId": "AI_yXq_n6kfU8IUzovfYOmX-j5Z3"
+      },
+      "device": {},
+      "conversation": {
+        "conversationId": "1506971215379",
+        "type": "ACTIVE",
+        "conversationToken": "[\"model\",\"state\"]"
+      },
+      "availableSurfaces": [
+        {
+          "capabilities": [
+            {
+              "name": "actions.capability.AUDIO_OUTPUT"
+            },
+            {
+              "name": "actions.capability.SCREEN_OUTPUT"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "id": "cfe2c790-da4c-4d8d-9a31-778399bac391",
+  "timestamp": "2017-10-02T19:10:12.031Z",
+  "lang": "en-us",
+  "result": {
+    "source": "agent",
+    "resolvedQuery": "Talk to my test app",
+    "speech": "",
+    "action": "input.unknown",
+    "actionIncomplete": false,
+    "parameters": {},
+    "contexts": [
+      {
+        "name": "actions_capability_screen_output",
+        "parameters": {},
+        "lifespan": 0
+      },
+      {
+        "name": "actions_capability_audio_output",
+        "parameters": {},
+        "lifespan": 0
+      },
+      {
+        "name": "state",
+        "parameters": {
+          "acresCnt.original": "100",
+          "state": "die",
+          "acresCnt": "100"
+        },
+        "lifespan": 9998
+      },
+      {
+        "name": "model",
+        "parameters": {
+          "acresCnt.original": "100",
+          "model": {
+            "command": {
+              "buy": 0,
+              "feed": 0,
+              "plant": 0
+            }
+          },
+          "acresCnt": "100"
+        },
+        "lifespan": 9998
+      },
+      {
+        "name": "google_assistant_input_type_keyboard",
+        "parameters": {},
+        "lifespan": 0
+      }
+    ],
+    "metadata": {
+      "intentId": "9f304452-8ca0-4368-8d77-e3f2fd48334c",
+      "webhookUsed": "true",
+      "webhookForSlotFillingUsed": "false",
+      "nluResponseTime": 196,
+      "intentName": "Default Fallback Intent"
+    },
+    "fulfillment": {
+      "speech": "Sorry, I didn't get that.",
+      "messages": [
+        {
+          "type": 0,
+          "id": "3beaaa60-003a-417e-8cac-9a80bf07a89d",
+          "speech": "Sorry, what was that?"
+        }
+      ]
+    },
+    "score": 1
+  },
+  "status": {
+    "code": 200,
+    "errorType": "success"
+  },
+  "sessionId": "1506971215379"
+}

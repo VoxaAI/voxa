@@ -1,0 +1,101 @@
+{
+  "originalRequest": {
+    "source": "google",
+    "version": "2",
+    "data": {
+      "isInSandbox": true,
+      "surface": {
+        "capabilities": [
+          {
+            "name": "actions.capability.AUDIO_OUTPUT"
+          },
+          {
+            "name": "actions.capability.SCREEN_OUTPUT"
+          }
+        ]
+      },
+      "inputs": [
+        {
+          "rawInputs": [
+            {
+              "query": "Talk to P&G Tide",
+              "inputType": "KEYBOARD"
+            }
+          ],
+          "intent": "actions.intent.MAIN"
+        }
+      ],
+      "user": {
+        "locale": "en-US",
+        "userId": "AI_yXq93qGjc2Ns_qVAFFUF0ynOU"
+      },
+      "device": {},
+      "conversation": {
+        "conversationId": "1507319352240",
+        "type": "NEW"
+      },
+      "availableSurfaces": [
+        {
+          "capabilities": [
+            {
+              "name": "actions.capability.AUDIO_OUTPUT"
+            },
+            {
+              "name": "actions.capability.SCREEN_OUTPUT"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "id": "57f3091b-cdd8-458f-8cd4-03022dc2c8f9",
+  "timestamp": "2017-10-06T19:49:12.316Z",
+  "lang": "en-us",
+  "result": {
+    "source": "agent",
+    "resolvedQuery": "GOOGLE_ASSISTANT_WELCOME",
+    "speech": "",
+    "action": "LaunchIntent",
+    "actionIncomplete": false,
+    "parameters": {},
+    "contexts": [
+      {
+        "name": "google_assistant_welcome",
+        "parameters": {},
+        "lifespan": 0
+      },
+      {
+        "name": "actions_capability_screen_output",
+        "parameters": {},
+        "lifespan": 0
+      },
+      {
+        "name": "actions_capability_audio_output",
+        "parameters": {},
+        "lifespan": 0
+      },
+      {
+        "name": "google_assistant_input_type_keyboard",
+        "parameters": {},
+        "lifespan": 0
+      }
+    ],
+    "metadata": {
+      "intentId": "93bf1e04-9b91-4c22-bbba-54e74aaea14a",
+      "webhookUsed": "true",
+      "webhookForSlotFillingUsed": "false",
+      "nluResponseTime": 4,
+      "intentName": "LaunchIntent"
+    },
+    "fulfillment": {
+      "speech": "",
+      "messages": []
+    },
+    "score": 1
+  },
+  "status": {
+    "code": 200,
+    "errorType": "success"
+  },
+  "sessionId": "1507319352240"
+}
