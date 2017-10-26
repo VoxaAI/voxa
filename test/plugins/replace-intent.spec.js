@@ -8,23 +8,25 @@ chai.use(chaiAsPromised);
 const simple = require('simple-mock');
 
 const expect = chai.expect;
-const StateMachineSkill = require('../../lib/StateMachineSkill');
+const StateMachineApp = require('../../lib/StateMachineApp');
+const AlexaEvent = require('../../lib/adapters/alexa/AlexaEvent');
 const replaceIntent = require('../../lib/plugins/replace-intent');
 const views = require('../views');
 const variables = require('../variables');
 
 describe('ReplaceIntentPlugin', () => {
   it('should send to intent with Only', () => {
-    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    const stateMachineSkill = new StateMachineApp({ variables, views });
     const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
     stateMachineSkill.onIntent('SomeIntent', spy);
 
-    const event = {
+    const event = new AlexaEvent({
       request: {
         type: 'IntentRequest',
         intent: {
           name: 'SomeOnlyIntent',
         },
+        locale: 'en-us',
       },
       session: {
         new: false,
@@ -32,7 +34,7 @@ describe('ReplaceIntentPlugin', () => {
           applicationId: 'appId',
         },
       },
-    };
+    });
 
     replaceIntent(stateMachineSkill);
     return stateMachineSkill.execute(event)
@@ -45,16 +47,17 @@ describe('ReplaceIntentPlugin', () => {
 
 
   it('shouldn\'t affect non matching intents', () => {
-    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    const stateMachineSkill = new StateMachineApp({ variables, views });
     const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
     stateMachineSkill.onIntent('OnlySomeIntent', spy);
 
-    const event = {
+    const event = new AlexaEvent({
       request: {
         type: 'IntentRequest',
         intent: {
           name: 'OnlySomeIntent',
         },
+        locale: 'en-us',
       },
       session: {
         new: false,
@@ -62,7 +65,7 @@ describe('ReplaceIntentPlugin', () => {
           applicationId: 'appId',
         },
       },
-    };
+    });
 
     replaceIntent(stateMachineSkill);
     return stateMachineSkill.execute(event)
@@ -74,16 +77,17 @@ describe('ReplaceIntentPlugin', () => {
   });
 
   it('should use provided regex', () => {
-    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    const stateMachineSkill = new StateMachineApp({ variables, views });
     const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
     stateMachineSkill.onIntent('SomeHolderIntent', spy);
 
-    const event = {
+    const event = new AlexaEvent({
       request: {
         type: 'IntentRequest',
         intent: {
           name: 'SomePlaceholderIntent',
         },
+        locale: 'en-us',
       },
       session: {
         new: false,
@@ -91,7 +95,7 @@ describe('ReplaceIntentPlugin', () => {
           applicationId: 'appId',
         },
       },
-    };
+    });
 
     replaceIntent(stateMachineSkill, { regex: /(.*)PlaceholderIntent$/, replace: '$1HolderIntent' });
     return stateMachineSkill.execute(event)
@@ -103,16 +107,17 @@ describe('ReplaceIntentPlugin', () => {
   });
 
   it('should use multiple regex', () => {
-    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    const stateMachineSkill = new StateMachineApp({ variables, views });
     const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
     stateMachineSkill.onIntent('LongIntent', spy);
 
-    const event = {
+    const event = new AlexaEvent({
       request: {
         type: 'IntentRequest',
         intent: {
           name: 'VeryLongOnlyIntent',
         },
+        locale: 'en-us',
       },
       session: {
         new: false,
@@ -120,7 +125,7 @@ describe('ReplaceIntentPlugin', () => {
           applicationId: 'appId',
         },
       },
-    };
+    });
 
 
     replaceIntent(stateMachineSkill, { regex: /(.*)OnlyIntent$/, replace: '$1Intent' });

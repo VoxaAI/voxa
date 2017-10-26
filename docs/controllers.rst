@@ -3,7 +3,7 @@
 Controllers
 =============
 
-Controllers in your application control the logic of your skill, they respond to alexa alexaEvents, external resources, manipulate the input and give proper responses using your :ref:`Model <models>`, :ref:`views-and-variables`.
+Controllers in your application control the logic of your skill, they respond to alexa voxaEvents, external resources, manipulate the input and give proper responses using your :ref:`Model <models>`, :ref:`views-and-variables`.
 
 States come in one of two ways, they can be an object of mappings from intent name to state.
 
@@ -15,11 +15,11 @@ States come in one of two ways, they can be an object of mappings from intent na
   });
 
 
-Or they can be a function that gets a :ref:`alexaEvent <alexa-event>` object.
+Or they can be a function that gets a :ref:`voxaEvent <alexa-event>` object.
 
 .. code-block:: javascript
 
-  skill.onState('launch', (alexaEvent) => {
+  skill.onState('launch', (voxaEvent) => {
     return { reply: 'LaunchIntent.OpenResponse', to: 'die' };
   });
 
@@ -34,12 +34,12 @@ For example in the next snipped there's a ``waiting`` state that expects an ``AM
 
 .. code-block:: javascript
 
-  skill.onState('waiting', (alexaEvent) => {
-    if (alexaEvent.intent.name === 'AMAZON.NextIntent') {
-      alexaEvent.model.index += 1;
+  skill.onState('waiting', (voxaEvent) => {
+    if (voxaEvent.intent.name === 'AMAZON.NextIntent') {
+      voxaEvent.model.index += 1;
       return { reply: 'Ingredients.Describe', to: 'waiting' }
-    } else if (alexaEvent.intent.name === 'AMAZON.PreviousIntent') {
-      alexaEvent.model.index -= 1;
+    } else if (voxaEvent.intent.name === 'AMAZON.PreviousIntent') {
+      voxaEvent.model.index -= 1;
       return { reply: 'Ingredients.Describe', to: 'waiting' }
     }
   });
@@ -52,7 +52,7 @@ For the simple pattern of having a controller respond to an specific intent the 
 
 .. code-block:: javascript
 
-  skill.onIntent('LaunchIntent', (alexaEvent) => {
+  skill.onIntent('LaunchIntent', (voxaEvent) => {
     return { reply: 'LaunchIntent.OpenResponse', to: 'die' };
   });
 
