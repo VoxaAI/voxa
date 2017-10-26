@@ -51,7 +51,7 @@ describe('I18NStateMachineApp', () => {
       number: 'one',
       question: 'What time is it?',
       say: ['say', 'What time is it?'],
-      random: ['Random1', 'Random2', 'Random3', 'Random4'],
+      random: ['Random 1', 'Random 2', 'Random 3', 'Random 4'],
     },
     'de-de': {
       site: 'Ok für weitere Infos besuchen example.com Website',
@@ -146,10 +146,10 @@ describe('I18NStateMachineApp', () => {
   it('should use the passed variables and model', () => expect(renderer.renderMessage({ say: '{count}' }, { model: { count: 1 } })).to.eventually.deep.equal({ say: '1' }));
 
   it('should fail for missing variables', () => expect(renderer.renderMessage({ say: '{missing}' })).to.eventually.be.rejectedWith(Error, 'No such variable in views, ReferenceError: missing is not defined'));
-  it('should throw an exception if path doesn\'t exists', () => expect(renderer.renderPath('Missing.Path')).to.eventually.be.rejectedWith(Error, 'View Missing.Path for en-us locale are missing'));
-  it('should select a random option from the samples', () => renderer.renderPath('Random')
+  it('should throw an exception if path doesn\'t exists', () => expect(renderer.renderPath('Missing.Path', event)).to.eventually.be.rejectedWith(Error, 'View Missing.Path for en-us locale are missing'));
+  it('should select a random option from the samples', () => (renderer.renderPath('RandomResponse', event))
     .then((rendered) => {
-      expect(rendered.tell).to.be.oneOf(['Random 1', 'Random 2', 'Random 3']);
+      expect(rendered.tell).to.be.oneOf(['Random 1', 'Random 2', 'Random 3', 'Random 4']);
     }));
   it('should use deeply search to render object variable', () => expect(renderer.renderMessage({ card: '{exitCard}' }, { model: { count: 1 } }))
     .to.eventually.deep.equal({

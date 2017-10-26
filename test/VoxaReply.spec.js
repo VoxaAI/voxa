@@ -26,7 +26,7 @@ describe('VoxaReply', () => {
     expect(reply.msg.yield).to.be.true;
   });
 
-  xdescribe('createSpeechObject', () => {
+  describe('createSpeechObject', () => {
     it('should return undefined if no optionsParam', () => {
       expect(VoxaReply.createSpeechObject()).to.be.undefined;
     });

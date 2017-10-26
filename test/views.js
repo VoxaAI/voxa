@@ -14,10 +14,10 @@ const views = (function views() {
         },
         RandomResponse: {
           tell: [
-            'Random1',
-            'Random2',
-            'Random3',
-            'Random4',
+            'Random 1',
+            'Random 2',
+            'Random 3',
+            'Random 4',
           ],
         },
         Question: {
