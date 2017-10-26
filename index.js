@@ -26,12 +26,11 @@ const autoLoad = require('./lib/plugins/auto-load');
 module.exports = StateMachineApp;
 module.exports.Alexa = require('./lib/adapters/alexa/AlexaAdapter')
 module.exports.ApiAi = require('./lib/adapters/api-ai/ApiAiAdapter')
-module.exports.version = packageInfo.version;
 
+module.exports.version = packageInfo.version;
 
 module.exports.plugins = {
   replaceIntent,
   stateFlow,
   autoLoad,
 };
-

@@ -26,7 +26,7 @@ describe('VoxaReply', () => {
     expect(reply.msg.yield).to.be.true;
   });
 
-  xdescribe('createSpeechObject', () => {
+  describe('createSpeechObject', () => {
     it('should return undefined if no optionsParam', () => {
       expect(VoxaReply.createSpeechObject()).to.be.undefined;
     });
@@ -141,11 +141,50 @@ describe('VoxaReply', () => {
       expect(reply.msg.directives).to.have.length(2);
     });
 
+    it('should allow hint directives or hint message', () => {
+      const message = {
+        supportDisplayInterface: true,
+        directives: [
+          {
+            hint: 'special Hint',
+          },
+          { type: 'b' },
+        ],
+      };
+
+      reply.append(message);
+      expect(reply.msg.directives).to.deep.equal([
+        {
+          type: 'Hint',
+          hint: {
+            type: 'PlainText',
+            text: 'special Hint',
+          },
+        },
+        { type: 'b' },
+      ]);
+    });
+
     it('should concatenate directives', () => {
       const message = { directives: [{ type: 'a' }] };
       reply.append(message);
       reply.append(message);
       expect(reply.msg.directives).to.have.length(2);
+    });
+
+    it('should throw error on duplicate hint directives', () => {
+      const message = { supportDisplayInterface: true, directives: [{ type: 'Hint' }, { type: 'Hint' }] };
+      expect(reply.append.bind(reply, message)).to.throw('At most one Hint directive can be specified in a response');
+    });
+
+    it('should throw error on duplicate Display Render directives', () => {
+      const message = { supportDisplayInterface: true, directives: [{ type: 'Display.RenderTemplate' }, { type: 'Display.RenderTemplate' }] };
+      expect(reply.append.bind(reply, message)).to.throw('At most one Display.RenderTemplate directive can be specified in a response');
+    });
+
+    it('should throw error on both AudioPlayer.Play and VideoApp.Launch directives', () => {
+      const message = { directives: [{ type: 'AudioPlayer.Play' }, { type: 'VideoApp.Launch' }] };
+      expect(reply.append.bind(reply, message)).to.throw('Do not include both an AudioPlayer.Play directive and a VideoApp.Launch directive in the same response');
     });
 
     it('should convert legacy play format into the cannonical one', () => {
