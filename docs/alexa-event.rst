@@ -18,3 +18,7 @@ The ``alexaEvent`` Object
   .. js:attribute:: AlexaEvent.user
 
     A convenience getter to obtain the user from ``sesssion.user`` or ``context.System.user``
+
+  .. js:attribute:: AlexaEvent.token
+
+    A convenience getter to obtain the token from ``request.token``. This token is specified in ``Display.ElementSelected`` request.

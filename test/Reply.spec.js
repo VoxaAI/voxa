@@ -60,6 +60,27 @@ describe('Reply', () => {
   });
 
   describe('toJSON', () => {
+    it('should generate a correct alexa response and reprompt that doesn\'t  end a session for an ask response', () => {
+      reply.append({ ask: 'ask', reprompt: 'reprompt' });
+      expect(reply.toJSON()).to.deep.equal({
+        response: {
+          card: undefined,
+          outputSpeech: {
+            ssml: '<speak>ask</speak>',
+            type: 'SSML',
+          },
+          reprompt: {
+            outputSpeech: {
+              ssml: '<speak>reprompt</speak>',
+              type: 'SSML',
+            },
+          },
+          shouldEndSession: false,
+        },
+        sessionAttributes: {},
+        version: '1.0',
+      });
+    });
     it('should generate a correct alexa response that doesn\'t  end a session for an ask response', () => {
       reply.append({ ask: 'ask' });
       expect(reply.toJSON()).to.deep.equal({
@@ -180,11 +201,49 @@ describe('Reply', () => {
       expect(reply.msg.directives).to.have.length(2);
     });
 
+    it('should allow hint directives or hint message', () => {
+      const message = {
+        supportDisplayInterface: true,
+        directives: [
+          {
+            hint: 'special Hint',
+          },
+          { type: 'b' },
+        ] };
+
+      reply.append(message);
+      expect(reply.msg.directives).to.deep.equal([
+        {
+          type: 'Hint',
+          hint: {
+            type: 'PlainText',
+            text: 'special Hint',
+          },
+        },
+        { type: 'b' },
+      ]);
+    });
+
     it('should concatenate directives', () => {
       const message = { directives: [{ type: 'a' }] };
       reply.append(message);
       reply.append(message);
       expect(reply.msg.directives).to.have.length(2);
+    });
+
+    it('should throw error on duplicate hint directives', () => {
+      const message = { supportDisplayInterface: true, directives: [{ type: 'Hint' }, { type: 'Hint' }] };
+      expect(reply.append.bind(reply, message)).to.throw('At most one Hint directive can be specified in a response');
+    });
+
+    it('should throw error on duplicate Display Render directives', () => {
+      const message = { supportDisplayInterface: true, directives: [{ type: 'Display.RenderTemplate' }, { type: 'Display.RenderTemplate' }] };
+      expect(reply.append.bind(reply, message)).to.throw('At most one Display.RenderTemplate directive can be specified in a response');
+    });
+
+    it('should throw error on both AudioPlayer.Play and VideoApp.Launch directives', () => {
+      const message = { directives: [{ type: 'AudioPlayer.Play' }, { type: 'VideoApp.Launch' }] };
+      expect(reply.append.bind(reply, message)).to.throw('Do not include both an AudioPlayer.Play directive and a VideoApp.Launch directive in the same response');
     });
 
     it('should convert legacy play format into the cannonical one', () => {

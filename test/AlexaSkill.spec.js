@@ -11,8 +11,23 @@ const simple = require('simple-mock');
 const _ = require('lodash');
 
 describe('AlexaSkill', () => {
-  it('should return error message on wrong appId if config.appIds is defined', () => {
+  it('should return error message on wrong appId Array if config.appIds is defined', () => {
     const alexaSkill = new AlexaSkill({ appIds: ['MY APP ID'] });
+    alexaSkill.onLaunchRequest(() => {});
+    const stub = simple.stub();
+    alexaSkill.onError(stub);
+
+    return alexaSkill.execute({ context: { application: { applicationId: 'OTHER APP ID' } }, request: { intent: { } } })
+      .then((reply) => {
+        expect(stub.called).to.be.true;
+        expect(stub.lastCall.args[1]).to.be.an('error');
+        expect(stub.lastCall.args[1].message).to.equal('Invalid applicationId');
+        expect(reply.msg.statements[0]).to.equal('An unrecoverable error occurred.');
+      });
+  });
+
+  it('should return error message on wrong appId String if config.appIds is defined', () => {
+    const alexaSkill = new AlexaSkill({ appIds: 'MY APP ID' });
     alexaSkill.onLaunchRequest(() => {});
     const stub = simple.stub();
     alexaSkill.onError(stub);
@@ -89,6 +104,15 @@ describe('AlexaSkill', () => {
     'PlaybackController.PauseCommandIssued',
     'PlaybackController.PlayCommandIssued',
     'PlaybackController.PreviousCommandIssued',
+    'AlexaSkillEvent.SkillAccountLinked',
+    'AlexaSkillEvent.SkillEnabled',
+    'AlexaSkillEvent.SkillDisabled',
+    'AlexaSkillEvent.SkillPermissionAccepted',
+    'AlexaSkillEvent.SkillPermissionChanged',
+    'AlexaHouseholdListEvent.ItemsCreated',
+    'AlexaHouseholdListEvent.ItemsUpdated',
+    'AlexaHouseholdListEvent.ItemsDeleted',
+    'Display.ElementSelected',
   ], (requestType) => {
     it(`should call the correct handler for ${requestType}`, () => {
       const alexaSkill = new AlexaSkill({ appIds: 'MY APP ID' });
@@ -114,6 +138,32 @@ describe('AlexaSkill', () => {
       .then((reply) => {
         expect(stub.lastCall.args[1]).to.be.an('error');
         expect(stub.lastCall.args[1].message).to.equal('Unkown request type: UnknownEvent');
+        expect(reply.error).to.be.an('error');
+      });
+  });
+
+  it('should create a simple server for testing', () => {
+    const alexaSkill = new AlexaSkill({ appIds: 'MY APP ID' });
+    alexaSkill.onLaunchRequest(() => {});
+    const stub = simple.stub();
+    alexaSkill.onError(stub);
+    return alexaSkill.execute({ context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'UnknownEvent' } })
+      .then((reply) => {
+        expect(stub.lastCall.args[1]).to.be.an('error');
+        expect(stub.lastCall.args[1].message).to.equal('Unkown request type: UnknownEvent');
+        expect(reply.error).to.be.an('error');
+      });
+  });
+
+  it('should return error message on error in SessionEndedRequest', () => {
+    const alexaSkill = new AlexaSkill({ appIds: 'MY APP ID' });
+    alexaSkill.onLaunchRequest(() => {});
+    const stub = simple.stub();
+    alexaSkill.onError(stub);
+    return alexaSkill.execute({ context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest', reason: 'ERROR', error: 'The total duration of audio content exceeds the maximum allowed duration' } })
+      .then((reply) => {
+        expect(stub.lastCall.args[1]).to.be.an('error');
+        expect(stub.lastCall.args[1].message).to.equal('Session ended with an error: The total duration of audio content exceeds the maximum allowed duration');
         expect(reply.error).to.be.an('error');
       });
   });

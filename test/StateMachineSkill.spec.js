@@ -41,6 +41,7 @@ describe('StateMachineSkill', () => {
       initState: () => ({ to: 'endState' }),
       secondState: () => ({ to: 'initState' }),
       thirdState: () => Promise.resolve({ to: 'endState' }),
+      DisplayElementSelected: { enter: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }) },
     };
   });
 
@@ -103,6 +104,17 @@ describe('StateMachineSkill', () => {
     return stateMachineSkill.execute(event)
       .then((reply) => {
         expect(reply.msg.statements).to.deep.equal(['0', '0']);
+      });
+  });
+
+  it('should display element selected request', () => {
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    stateMachineSkill.onIntent('DisplayElementSelected', () => ({ reply: ['ExitIntent.Farewell'] }));
+    event.request.type = 'Display.ElementSelected';
+
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        expect(reply.msg.statements).to.deep.equal(['Ok. For more info visit example.com site.']);
       });
   });
 
