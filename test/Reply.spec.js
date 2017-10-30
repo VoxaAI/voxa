@@ -318,7 +318,7 @@ describe('Reply', () => {
       });
 
       it('should yield on delegate directive', () => {
-        appendedReply.append({ directives: {type: 'Dialog.Delegate' } });
+        appendedReply.append({ directives: { type: 'Dialog.Delegate' } });
         reply.append(appendedReply);
         expect(reply.isYielding()).to.be.true;
       });
