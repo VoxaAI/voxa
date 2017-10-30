@@ -168,6 +168,19 @@ describe('AlexaSkill', () => {
       });
   });
 
+  it('should return an error message with a stringify object in SessionEndedRequest', () => {
+    const alexaSkill = new AlexaSkill({ appIds: 'MY APP ID' });
+    alexaSkill.onLaunchRequest(() => {});
+    const stub = simple.stub();
+    alexaSkill.onError(stub);
+    return alexaSkill.execute({ context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest', reason: 'ERROR', error: { error: true, message: 'an object error' } } })
+      .then((reply) => {
+        expect(stub.lastCall.args[1]).to.be.an('error');
+        expect(stub.lastCall.args[1].message).to.equal('Session ended with an error: {"error":true,"message":"an object error"}');
+        expect(reply.error).to.be.an('error');
+      });
+  });
+
   it('should succeed with version on onSessionEnded request', () => {
     const alexaSkill = new AlexaSkill({ appIds: 'MY APP ID' });
     alexaSkill.onLaunchRequest(() => {});
