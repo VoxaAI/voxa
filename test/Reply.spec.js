@@ -23,7 +23,7 @@ describe('Reply', () => {
 
   it('should set yield to true on end', () => {
     reply.end();
-    expect(reply.msg.yield).to.be.true;
+    expect(reply.isYielding()).to.be.true;
   });
 
   describe('toSSML', () => {
@@ -151,22 +151,28 @@ describe('Reply', () => {
       });
     });
 
-    it('should not yield if message is ask', () => {
+    it('should yield if message is ask', () => {
       const message = { ask: 'ask' };
       reply.append(message);
       expect(reply.isYielding()).to.be.true;
     });
 
-    it('should not yield if message is tell', () => {
+    it('should yield if message is tell', () => {
       const message = { tell: 'tell' };
       reply.append(message);
       expect(reply.isYielding()).to.be.true;
     });
 
-    it('should yield if message is say', () => {
+    it('should not yield if message is say', () => {
       const message = { say: 'say' };
       reply.append(message);
       expect(reply.isYielding()).to.be.false;
+    });
+
+    it('should yield if has a dialog directive', () => {
+      const message = { directives: { type: 'Dialog.Delegate' } };
+      reply.append(message);
+      expect(reply.isYielding()).to.be.true;
     });
 
     it('should add cards to reply.msg', () => {
@@ -286,27 +292,33 @@ describe('Reply', () => {
         expect(reply.msg.hasAnAsk).to.be.true;
       });
 
-      it('should not yield if reply has an ask', () => {
+      it('should yield if reply has an ask', () => {
         appendedReply.append({ ask: 'ask' });
         reply.append(appendedReply);
         expect(reply.isYielding()).to.be.true;
       });
 
-      it('should not yield if reply has a tell', () => {
+      it('should yield if reply has a tell', () => {
         appendedReply.append({ tell: 'tell' });
         reply.append(appendedReply);
         expect(reply.isYielding()).to.be.true;
       });
 
-      it('should yield if reply is say', () => {
+      it('should not yield if reply is say', () => {
         appendedReply.append({ say: 'say' });
         reply.append(appendedReply);
         expect(reply.isYielding()).to.be.false;
       });
 
-      it('should not yield on tell after say', () => {
+      it('should yield on tell after say', () => {
         appendedReply.append({ say: 'say' });
         appendedReply.append({ tell: 'tell' });
+        reply.append(appendedReply);
+        expect(reply.isYielding()).to.be.true;
+      });
+
+      it('should yield on delegate directive', () => {
+        appendedReply.append({ directives: {type: 'Dialog.Delegate' } });
         reply.append(appendedReply);
         expect(reply.isYielding()).to.be.true;
       });
