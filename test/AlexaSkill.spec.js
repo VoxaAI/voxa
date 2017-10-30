@@ -176,7 +176,7 @@ describe('AlexaSkill', () => {
     return alexaSkill.execute({ context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest', reason: 'ERROR', error: { error: true, message: 'an object error' } } })
       .then((reply) => {
         expect(stub.lastCall.args[1]).to.be.an('error');
-        expect(stub.lastCall.args[1].message).to.equal('Session ended with an error: {"error":true,"message":"an object error"}');
+        expect(stub.lastCall.args[1].message).to.equal('Session ended with an error: {\n  "error": true,\n  "message": "an object error"\n}');
         expect(reply.error).to.be.an('error');
       });
   });
