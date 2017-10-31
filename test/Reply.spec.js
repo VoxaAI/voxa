@@ -21,11 +21,6 @@ describe('Reply', () => {
     expect(sessionReply.session).to.deep.equal(request.session);
   });
 
-  it('should set yield to true on end', () => {
-    reply.end();
-    expect(reply.isYielding()).to.be.true;
-  });
-
   describe('toSSML', () => {
     it('should not wrap already wrapped statements', () => {
       expect(Reply.toSSML('<speak>Say Something</speak>')).to.equal('<speak>Say Something</speak>');
@@ -175,6 +170,12 @@ describe('Reply', () => {
       expect(reply.isYielding()).to.be.true;
     });
 
+    it('should not end session if it has a dialog directive', () => {
+      const message = { directives: { type: 'Dialog.Delegate' } };
+      reply.append(message);
+      expect(reply.toJSON().response.shouldEndSession).to.be.false;
+    });
+
     it('should add cards to reply.msg', () => {
       const message = { card: { key: 'value' } };
       reply.append(message);
@@ -266,11 +267,6 @@ describe('Reply', () => {
       expect(reply.msg.directives[0].audioItem.stream.url).to.equal('url');
     });
 
-    it('should set hasAnAsk to true if message is ask', () => {
-      reply.append({ ask: 'ask' });
-      expect(reply.msg.hasAnAsk).to.be.true;
-    });
-
     describe('a Reply', () => {
       let appendedReply;
       beforeEach(() => {
@@ -283,13 +279,6 @@ describe('Reply', () => {
 
         expect(reply.msg.statements).to.have.lengthOf(1);
         expect(reply.msg.statements[0]).to.equal('appended say');
-      });
-
-      it('should set hasAnAsk to true if reply has an ask', () => {
-        appendedReply.append({ ask: 'ask' });
-        reply.append(appendedReply);
-
-        expect(reply.msg.hasAnAsk).to.be.true;
       });
 
       it('should yield if reply has an ask', () => {
