@@ -184,14 +184,12 @@ The serverless framework is a tool that helps you manage your lambda application
 Running the project
 ---------------------
 
-1. Clone the `Voxa <https://github.com/mediarain/voxa>`_ repository
+1. Clone the `Account Linking Sample <https://github.com/mediarain/voxa-accountlinking-sample>`_ repository
 
-2. Create a new skill project using the ``samples/starterKit`` directory as a basis
+2. Make sure you're running node 6.10, this is easiest with `nvm <https://github.com/creationix/nvm>`_
 
-3. Make sure you're running node 4.3, this is easiest with `nvm <https://github.com/creationix/nvm>`_
+3. Create a ``config/local.json`` file using ``config/local.json.example`` as an example
 
-4. Create a ``config/local.json`` file using ``config/local.json.example`` as an example
+4. Run the project with ``gulp watch``
 
-5. Run the project with ``gulp watch``
-
-6. At this point you should start ``ngrok http 3000`` and configure your skill in the Amazon Developer panel to use the ngrok https endpoint.
+5. At this point you should start ``ngrok http 3000`` and configure your skill in the Amazon Developer panel to use the ngrok https endpoint.

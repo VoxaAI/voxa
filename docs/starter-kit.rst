@@ -87,14 +87,14 @@ serverless.yml
 The serverless framework is a tool that helps you manage your lambda applications, assuming you have your AWS credentials setup properly this starter kit defines the very minimum needed so you can deploy your skill to lambda with the following command:
 
 .. code-block:: bash
-  
+
   $ sls deploy
-  
+
 Dependencies (install these first)
 ----------------------------------
 1. If you are using node.js for the first time, install node:
-  * Install `nvm <http://nvm.sh/>`_, ``curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash``, 
-  * Install node 4.3, ``nvm install 4.3``
+  * Install `nvm <http://nvm.sh/>`_, ``curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash``,
+  * Install node 6.10, ``nvm install 6.10``
 
 2. Install gulp globally,  ``npm install -g gulp``
 
@@ -103,16 +103,14 @@ Dependencies (install these first)
 Running the project
 ---------------------
 
-1. Clone the `voxa <https://github.com/mediarain/voxa>`_ repository 
+1. Clone the `Starter Kit <https://github.com/mediarain/voxa-starterkit>`_ repository
 
-2. Create a new skill project using the ``samples/starterKit`` directory as a basis
+2. Make sure you're running node 6.10, this is easiest with `nvm <https://github.com/creationix/nvm>`_
 
-3. Make sure you're running node 4.3, this is easiest with `nvm <https://github.com/creationix/nvm>`_
+3. In your skill directory, install node dependencies using ``npm install``
 
-4. In your skill directory, install node dependencies using ``npm install``
+4. Create a ``config/local.json`` file using ``config/local.json.example`` as an example
 
-5. Create a ``config/local.json`` file using ``config/local.json.example`` as an example
+5. Run the project with ``gulp watch``
 
-6. Run the project with ``gulp watch``
-
-7. At this point you should start ``ngrok http 3000`` and configure your skill in the Amazon Developer panel to use the ngrok https endpoint.
+6. At this point you should start ``ngrok http 3000`` and configure your skill in the Amazon Developer panel to use the ngrok https endpoint.
