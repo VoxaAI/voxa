@@ -131,6 +131,22 @@ describe('Reply', () => {
         version: '1.0',
       });
     });
+
+    it('should not include the attribute shouldEndSession if it has VideoApp.Launch directive', () => {
+      reply.append({ tell: 'tell', directives: [{ type: 'VideoApp.Launch' }] });
+      expect(reply.toJSON()).to.deep.equal({
+        response: {
+          card: undefined,
+          outputSpeech: {
+            ssml: '<speak>tell</speak>',
+            type: 'SSML',
+          },
+          directives: [{ type: 'VideoApp.Launch' }],
+        },
+        sessionAttributes: {},
+        version: '1.0',
+      });
+    });
   });
 
   describe('append', () => {
