@@ -116,7 +116,8 @@ describe('BadResponseRepromptPlugin', () => {
       .then((reply) => {
         expect(reply.error).to.be.undefined;
         expect(reply.session.attributes.reply).to.deep.equal({
-          msgPath: 'Playing.SayStop',
+          msgPath: 'Question.Ask',
+          state: 'exit',
         });
       });
   });

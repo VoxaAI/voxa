@@ -21,6 +21,31 @@ describe('Reply', () => {
     expect(sessionReply.session).to.deep.equal(request.session);
   });
 
+  it('should determine if it has directive', () => {
+    const message = { directives: [{ type: 'a' }] };
+    reply.append(message);
+
+    expect(reply.hasDirective('a')).to.be.true;
+    expect(reply.hasDirective(/^a/)).to.be.true;
+    expect(reply.hasDirective(directive => directive.type === 'a')).to.be.true;
+
+    expect(reply.hasDirective('b')).to.be.false;
+    expect(reply.hasDirective(/^b/)).to.be.false;
+    expect(reply.hasDirective(directive => directive.type === 'b')).to.be.false;
+  });
+
+  it('should throw error on unknown comparison for has directive', () => {
+    const message = { directives: [{ type: 'a' }] };
+    reply.append(message);
+
+    expect(() => reply.hasDirective({})).to.throw(Error);
+  });
+
+  it('should set yield to true on yield', () => {
+    reply.yield();
+    expect(reply.msg.yield).to.be.true;
+  });
+
   describe('toSSML', () => {
     it('should not wrap already wrapped statements', () => {
       expect(Reply.toSSML('<speak>Say Something</speak>')).to.equal('<speak>Say Something</speak>');
