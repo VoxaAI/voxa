@@ -94,7 +94,7 @@ Dependencies (install these first)
 ----------------------------------
 1. If you are using node.js for the first time, install node:
   * Install `nvm <http://nvm.sh/>`_, ``curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash``,
-  * Install node 4.3, ``nvm install 4.3``
+  * Install node 6.10, ``nvm install 6.10``
 
 2. Install gulp globally,  ``npm install -g gulp``
 
@@ -105,7 +105,7 @@ Running the project
 
 1. Clone the `Starter Kit <https://github.com/mediarain/voxa-starterkit>`_ repository
 
-2. Make sure you're running node 4.3, this is easiest with `nvm <https://github.com/creationix/nvm>`_
+2. Make sure you're running node 6.10, this is easiest with `nvm <https://github.com/creationix/nvm>`_
 
 3. In your skill directory, install node dependencies using ``npm install``
 

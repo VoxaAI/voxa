@@ -213,7 +213,7 @@ Running the project
 
 1. Clone the `Audio Podcast Sample <https://github.com/mediarain/voxa-audiopodcast-sample>`_ repository
 
-2. Make sure you're running node 4.3, this is easiest with `nvm <https://github.com/creationix/nvm>`_
+2. Make sure you're running node 6.10, this is easiest with `nvm <https://github.com/creationix/nvm>`_
 
 3. Create a ``config/local.json`` file using ``config/local.json.example`` as an example
 
