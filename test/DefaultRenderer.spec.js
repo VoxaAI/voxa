@@ -71,7 +71,7 @@ describe('I18NStateMachineApp', () => {
     return skill.execute(event)
       .then((reply) => {
         expect(reply.msg.statements[0]).to.equal('An unrecoverable error occurred.');
-        expect(reply.error.message).to.equal(`View Number.One for ${localeMissing} locale are missing`);
+        expect(reply.error.message).to.equal(`View Number.One for ${localeMissing} locale is missing`);
         expect(reply.msg.directives).to.deep.equal([]);
       });
   });
@@ -146,8 +146,8 @@ describe('I18NStateMachineApp', () => {
   it('should use the passed variables and model', () => expect(renderer.renderMessage({ say: '{count}' }, { model: { count: 1 } })).to.eventually.deep.equal({ say: '1' }));
 
   it('should fail for missing variables', () => expect(renderer.renderMessage({ say: '{missing}' })).to.eventually.be.rejectedWith(Error, 'No such variable in views, ReferenceError: missing is not defined'));
-  it('should throw an exception if path doesn\'t exists', () => expect(renderer.renderPath('Missing.Path', event)).to.eventually.be.rejectedWith(Error, 'View Missing.Path for en-us locale are missing'));
-  it('should select a random option from the samples', () => (renderer.renderPath('RandomResponse', event))
+  it('should throw an exception if path doesn\'t exist', () => expect(renderer.renderPath('Missing.Path', event)).to.eventually.be.rejectedWith(Error, 'View Missing.Path for en-us locale is missing'));
+  it('should select a random option from the samples', () => renderer.renderPath('RandomResponse', event)
     .then((rendered) => {
       expect(rendered.tell).to.be.oneOf(['Random 1', 'Random 2', 'Random 3', 'Random 4']);
     }));
