@@ -13,14 +13,20 @@ describe('AlexaAdapter', () => {
   });
 
   describe('toAlexaReply', () => {
-    it('should generate a correct alexa response that doesn\'t  end a session for an ask response', () => {
-      reply.append({ ask: 'ask' });
+    it('should generate a correct alexa response that doesn\'t end a session for an ask response', () => {
+      reply.append({ ask: 'ask', reprompt: 'reprompt' });
       expect(AlexaAdapter.toAlexaReply(reply)).to.deep.equal({
         response: {
           card: undefined,
           outputSpeech: {
             ssml: '<speak>ask</speak>',
             type: 'SSML',
+          },
+          reprompt: {
+            outputSpeech: {
+              ssml: '<speak>reprompt</speak>',
+              type: 'SSML',
+            },
           },
           shouldEndSession: false,
         },
@@ -33,6 +39,51 @@ describe('AlexaAdapter', () => {
       expect(AlexaAdapter.toAlexaReply(reply)).to.deep.equal({
         response: {
           card: undefined,
+          outputSpeech: {
+            ssml: '<speak>tell</speak>',
+            type: 'SSML',
+          },
+          shouldEndSession: true,
+        },
+        version: '1.0',
+      });
+    });
+
+    it('should generate a correct alexa response persisting session attributes', () => {
+      reply = new VoxaReply(new AlexaEvent({ session: { attributes: { model: { name: 'name' } } } }));
+      reply.append({ tell: 'tell' });
+      expect(AlexaAdapter.toAlexaReply(reply)).to.deep.equal({
+        response: {
+          card: undefined,
+          outputSpeech: {
+            ssml: '<speak>tell</speak>',
+            type: 'SSML',
+          },
+          shouldEndSession: true,
+        },
+        sessionAttributes: {
+          model: {
+            name: 'name',
+          },
+        },
+        version: '1.0',
+      });
+    });
+
+    it('should generate a correct alexa response with directives', () => {
+      reply.append({ tell: 'tell', directives: [{ hint: 'hint' }] });
+      expect(AlexaAdapter.toAlexaReply(reply)).to.deep.equal({
+        response: {
+          card: undefined,
+          directives: [
+            {
+              hint: {
+                text: 'hint',
+                type: 'PlainText',
+              },
+              type: 'Hint',
+            },
+          ],
           outputSpeech: {
             ssml: '<speak>tell</speak>',
             type: 'SSML',

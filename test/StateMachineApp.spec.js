@@ -101,13 +101,24 @@ describe('StateMachineApp', () => {
     const stateMachineApp = new StateMachineApp({ variables, views });
     stateMachineApp.onIntent('LaunchIntent', () => ({ message: { ask: 'This is my message' }, to: 'secondState' }));
     stateMachineApp.onState('secondState', () => {});
-    event.request.type = 'IntentRequest';
-    event.intent.name = 'LaunchIntent';
+    event = new AlexaEvent({
+      request: {
+        type: 'LaunchRequest',
+        locale: 'en-US',
+      },
+      session: {
+        new: true,
+        application: {
+          applicationId: 'appId',
+        },
+      },
+    });
+    // event.intent.name = 'LaunchRequest';
 
     return stateMachineApp.execute(event)
       .then((reply) => {
         expect(reply.session.attributes.model._state).to.equal('secondState');
-        expect(reply.msg.hasAnAsk).to.be.true;
+        expect(reply.msg.terminate).to.be.false;
       });
   });
 
@@ -130,7 +141,7 @@ describe('StateMachineApp', () => {
     return stateMachineApp.execute(event)
       .then((reply) => {
         expect(reply.error).to.be.an('error');
-        expect(reply.error.message).to.equal('View Missing.View for en-US locale are missing');
+        expect(reply.error.message).to.equal('View Missing.View for en-US locale is missing');
       });
   });
 

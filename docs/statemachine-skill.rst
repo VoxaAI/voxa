@@ -179,8 +179,13 @@ They're executed sequentially and will stop when the first handler returns a rep
 
     skill.onStateMachineError((voxaEvent, reply, error) => {
       // it gets the current reply, which could be incomplete due to an error.
+<<<<<<< HEAD
       return new Reply(voxaEvent, { tell: 'An error in the controllers code' })
         .write();
+=======
+      return new Reply(alexaEvent, { tell: 'An error in the controllers code' })
+        .toJSON();
+>>>>>>> upstream/dev
     });
 
 .. js:function:: Voxa.onError(callback, [atLast])
@@ -189,9 +194,15 @@ They're executed sequentially and will stop when the first handler returns a rep
 
   .. code-block:: javascript
 
+<<<<<<< HEAD
     skill.onError((voxaEvent, error) => {
       return new Reply(voxaEvent, { tell: 'An unrecoverable error occurred.' })
         .write();
+=======
+    skill.onError((alexaEvent, error) => {
+      return new Reply(alexaEvent, { tell: 'An unrecoverable error occurred.' })
+        .toJSON();
+>>>>>>> upstream/dev
     });
 
 

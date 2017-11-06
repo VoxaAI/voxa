@@ -30,6 +30,21 @@ describe('VoxaApp', () => {
       });
   });
 
+  it('should return error message on wrong appId if config.appIds is defined', () => {
+    const voxaApp = new Voxa({ appIds: 'MY APP ID', views });
+    const alexaSkill = new Voxa.Alexa(voxaApp);
+    const stub = simple.stub();
+    voxaApp.onError(stub);
+
+    return voxaApp.execute(new AlexaEvent({ context: { application: { applicationId: 'OTHER APP ID' } }, request: { intent: { } } }))
+      .then((reply) => {
+        expect(stub.called).to.be.true;
+        expect(stub.lastCall.args[1]).to.be.an('error');
+        expect(stub.lastCall.args[1].message).to.equal('Invalid applicationId');
+        expect(reply.msg.statements[0]).to.equal('An unrecoverable error occurred.');
+      });
+  });
+
   it('should iterate through error handlers and return the first with a truthy response', () => {
     const voxaApp = new Voxa({ views });
     const alexaSkill = new Voxa.Alexa(voxaApp);
@@ -67,6 +82,19 @@ describe('VoxaApp', () => {
     const alexaSkill = new Voxa.Alexa(voxaApp);
     const promise = alexaSkill.execute(new AlexaEvent(alexaTest.getSessionEndedRequest()));
     return expect(promise).to.eventually.deep.equal({ version: '1.0' });
+  });
+
+  it('should return error message on error in SessionEndedRequest', () => {
+    const voxaApp = new Voxa({ views });
+    const alexaSkill = new Voxa.Alexa(voxaApp);
+
+    const stub = simple.stub();
+    voxaApp.onError(stub);
+    return alexaSkill.execute({ context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest', reason: 'ERROR', error: 'The total duration of audio content exceeds the maximum allowed duration' } })
+      .then((reply) => {
+        expect(stub.lastCall.args[1]).to.be.an('error');
+        expect(stub.lastCall.args[1].message).to.equal('Session ended with an error: The total duration of audio content exceeds the maximum allowed duration');
+      });
   });
 
   it('should call onSesionEnded callback', (done) => {

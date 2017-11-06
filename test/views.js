@@ -21,7 +21,11 @@ const views = (function views() {
           ],
         },
         Question: {
-          Ask: { ask: 'What time is it?' },
+          Ask: {
+            ask: 'What time is it?',
+            reprompt: 'What time is it?',
+          },
+
         },
         ExitIntent: {
           Farewell: { tell: 'Ok. For more info visit {site} site.' },
