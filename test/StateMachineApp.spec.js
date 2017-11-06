@@ -101,8 +101,19 @@ describe('StateMachineApp', () => {
     const stateMachineApp = new StateMachineApp({ variables, views });
     stateMachineApp.onIntent('LaunchIntent', () => ({ message: { ask: 'This is my message' }, to: 'secondState' }));
     stateMachineApp.onState('secondState', () => {});
-    event.request.type = 'IntentRequest';
-    event.intent.name = 'LaunchIntent';
+    event = new AlexaEvent({
+      request: {
+        type: 'LaunchRequest',
+        locale: 'en-US',
+      },
+      session: {
+        new: true,
+        application: {
+          applicationId: 'appId',
+        },
+      },
+    });
+    // event.intent.name = 'LaunchRequest';
 
     return stateMachineApp.execute(event)
       .then((reply) => {
