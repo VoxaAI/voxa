@@ -3,7 +3,6 @@
   "parserOptions": {
     "sourceType": "script"
   },
-  "installedESLint": true,
   "ecmaFeatures": {
     "impliedStrict": false
   },
