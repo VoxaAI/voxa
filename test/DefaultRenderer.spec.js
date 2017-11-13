@@ -12,7 +12,7 @@ const views = require('./views');
 const variables = require('./variables');
 const _ = require('lodash');
 const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
-const ApiAiEvent = require('../lib/adapters/api-ai/ApiAiEvent');
+const DialogFlowEvent = require('../lib/adapters/dialog-flow/DialogFlowEvent');
 
 describe('I18NStateMachineApp', () => {
   let statesDefinition;
@@ -178,11 +178,11 @@ describe('I18NStateMachineApp', () => {
   it('should use deeply search to render array variable', () => expect(renderer.renderMessage({ card: '{exitArray}' }, { model: {} }))
     .to.eventually.deep.equal({ card: [{ a: 1 }, { b: 2 }, { c: 3 }] }));
 
-  it('should use the apiai view if available', () => {
-    const apiAiEvent = new ApiAiEvent(require('./requests/apiai/launchIntent.json'));
-    return renderer.renderPath('LaunchIntent.OpenResponse', apiAiEvent)
+  it('should use the dialogFlow view if available', () => {
+    const dialogFlowEvent = new DialogFlowEvent(require('./requests/dialog-flow/launchIntent.json'));
+    return renderer.renderPath('LaunchIntent.OpenResponse', dialogFlowEvent)
       .then((rendered) => {
-        expect(rendered.tell).to.equal('Hello from ApiAi');
+        expect(rendered.tell).to.equal('Hello from DialogFlow');
       });
   });
 });

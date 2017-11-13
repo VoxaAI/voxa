@@ -7,8 +7,8 @@ const views = (function views() {
         LaunchIntent: {
           OpenResponse: {
             tell: 'Hello! Good {time}',
-            apiai: {
-              tell: 'Hello from ApiAi',
+            dialogFlow: {
+              tell: 'Hello from DialogFlow',
             },
           },
         },

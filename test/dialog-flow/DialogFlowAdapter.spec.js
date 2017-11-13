@@ -1,15 +1,15 @@
 'use strict';
 
 const expect = require('chai').expect;
-const ApiAiEvent = require('../../lib/adapters/api-ai/ApiAiEvent');
-const ApiAiAdapter = require('../../lib/adapters/api-ai/ApiAiAdapter');
-const rawIntent = require('../requests/apiai/pizzaIntent.json');
-const fallbackIntent = require('../requests/apiai/fallbackIntent.json');
+const DialogFlowEvent = require('../../lib/adapters/dialog-flow/DialogFlowEvent');
+const DialogFlowAdapter = require('../../lib/adapters/dialog-flow/DialogFlowAdapter');
+const rawIntent = require('../requests/dialog-flow/pizzaIntent.json');
+const fallbackIntent = require('../requests/dialog-flow/fallbackIntent.json');
 
-describe('ApiAiAdapter', () => {
+describe('DialogFlowAdapter', () => {
   describe('sessionToContext', () => {
-    it('should transform a session map object to the apiai contextx format', () => {
-      const contexts = ApiAiAdapter.sessionToContext({
+    it('should transform a session map object to the DialogFlow context format', () => {
+      const contexts = DialogFlowAdapter.sessionToContext({
         attributes: {
           model: {
             _state: 'someState',
@@ -44,7 +44,7 @@ describe('ApiAiAdapter', () => {
     });
 
     it('should return an empty context for an empty session', () => {
-      const contexts = ApiAiAdapter.sessionToContext({});
+      const contexts = DialogFlowAdapter.sessionToContext({});
       expect(contexts).to.deep.equal([]);
     });
   });

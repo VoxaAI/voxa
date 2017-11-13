@@ -13,7 +13,6 @@
 
 const packageInfo = require('./package.json');
 const StateMachineApp = require('./lib/StateMachineApp');
-const DefaultRenderer = require('./lib/renderers/DefaultRenderer');
 
 /**
  * Plugins
@@ -24,8 +23,8 @@ const autoLoad = require('./lib/plugins/auto-load');
 
 
 module.exports = StateMachineApp;
-module.exports.Alexa = require('./lib/adapters/alexa/AlexaAdapter')
-module.exports.ApiAi = require('./lib/adapters/api-ai/ApiAiAdapter')
+module.exports.Alexa = require('./lib/adapters/alexa/AlexaAdapter');
+module.exports.DialogFlow = require('./lib/adapters/dialog-flow/DialogFlowAdapter');
 
 module.exports.version = packageInfo.version;
 
