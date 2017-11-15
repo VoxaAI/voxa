@@ -23,9 +23,9 @@ const TEST_URLS = [
 const states = {
   entry: {
     LaunchIntent: 'launch',
-    'AMAZON.ResumeIntent': 'resume',
-    'AMAZON.StopIntent': 'exit',
-    'AMAZON.CancelIntent': 'exit',
+    ResumeIntent: 'resume',
+    StopIntent: 'exit',
+    CancelIntent: 'exit',
   },
   resume: function enter(request) {
     let index = 0;

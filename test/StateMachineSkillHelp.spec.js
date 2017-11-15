@@ -17,9 +17,9 @@ const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
 const states = {
   entry: {
     LaunchIntent: 'launch',
-    'AMAZON.HelpIntent': 'help',
-    'AMAZON.StopIntent': 'exit',
-    'AMAZON.CancelIntent': 'exit',
+    HelpIntent: 'help',
+    StopIntent: 'exit',
+    CancelIntent: 'exit',
   },
   help: () => ({ reply: 'HelpIntent.HelpAboutSkill', to: 'die' }),
   exit: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }),
