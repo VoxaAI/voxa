@@ -15,6 +15,7 @@ const variables = require('./variables');
 const Model = require('../lib/Model');
 const Reply = require('../lib/VoxaReply');
 const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
+const AlexaAdapter = require('../lib/adapters/alexa/AlexaAdapter');
 
 describe('StateMachineApp', () => {
   let statesDefinition;
@@ -176,9 +177,9 @@ describe('StateMachineApp', () => {
     stateMachineSkill.onIntent('DisplayElementSelected', () => ({ reply: ['ExitIntent.Farewell'] }));
     event.request.type = 'Display.ElementSelected';
 
-    return stateMachineSkill.execute(event)
+    return new AlexaAdapter(stateMachineSkill).execute(event)
       .then((reply) => {
-        expect(reply.msg.statements).to.deep.equal(['Ok. For more info visit example.com site.']);
+        expect(reply.response.outputSpeech.ssml).to.equal('<speak>Ok. For more info visit example.com site.</speak>');
       });
   });
 

@@ -17,7 +17,6 @@ const alexaTest = require('alexa-skill-test-framework');
 describe('VoxaApp', () => {
   it('should return error message on wrong appId if config.appIds is defined', () => {
     const voxaApp = new Voxa({ appIds: ['MY APP ID'], views });
-    const alexaSkill = new Voxa.Alexa(voxaApp);
     const stub = simple.stub();
     voxaApp.onError(stub);
 
@@ -32,7 +31,6 @@ describe('VoxaApp', () => {
 
   it('should return error message on wrong appId if config.appIds is defined', () => {
     const voxaApp = new Voxa({ appIds: 'MY APP ID', views });
-    const alexaSkill = new Voxa.Alexa(voxaApp);
     const stub = simple.stub();
     voxaApp.onError(stub);
 
@@ -47,7 +45,6 @@ describe('VoxaApp', () => {
 
   it('should iterate through error handlers and return the first with a truthy response', () => {
     const voxaApp = new Voxa({ views });
-    const alexaSkill = new Voxa.Alexa(voxaApp);
 
     const handler1 = simple.stub().returnWith(null);
     const handler2 = simple.stub().returnWith(null);

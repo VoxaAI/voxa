@@ -25,6 +25,7 @@ const autoLoad = require('./lib/plugins/auto-load');
 module.exports = StateMachineApp;
 module.exports.Alexa = require('./lib/adapters/alexa/AlexaAdapter');
 module.exports.DialogFlow = require('./lib/adapters/dialog-flow/DialogFlowAdapter');
+module.exports.Cortana = require('./lib/adapters/cortana/CortanaAdapter');
 
 module.exports.version = packageInfo.version;
 
