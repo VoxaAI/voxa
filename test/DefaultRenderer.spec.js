@@ -70,6 +70,7 @@ describe('I18NStateMachineApp', () => {
 
     return skill.execute(event)
       .then((reply) => {
+        console.log(reply);
         expect(reply.msg.statements[0]).to.equal('An unrecoverable error occurred.');
         expect(reply.error.message).to.equal(`View Number.One for ${localeMissing} locale is missing`);
         expect(reply.msg.directives).to.deep.equal([]);

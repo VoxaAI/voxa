@@ -29,6 +29,7 @@
   "dependencies": {
     "alexa-skill-test-framework": "^1.1.2",
     "bluebird": "^3.5.1",
+    "botbuilder-azure": "^3.0.4",
     "capitalize": "^1.0.0",
     "debug": "^3.1.0",
     "i18next": "^9.0.1",
