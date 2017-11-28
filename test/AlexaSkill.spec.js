@@ -11,6 +11,15 @@ const simple = require('simple-mock');
 const _ = require('lodash');
 
 describe('AlexaSkill', () => {
+  it('should add the context to the alexaEvent object', () => {
+    const ctx = { value: 'context' };
+    const alexaSkill = new AlexaSkill();
+    return alexaSkill.execute({ context: { application: { applicationId: 'MY APP ID' } }, request: { intent: { } } }, ctx)
+    .then((reply) => {
+      expect(reply.alexaEvent.lambdaContext).to.deep.equal(ctx);
+    });
+  });
+
   it('should return error message on wrong appId Array if config.appIds is defined', () => {
     const alexaSkill = new AlexaSkill({ appIds: ['MY APP ID'] });
     alexaSkill.onLaunchRequest(() => {});
