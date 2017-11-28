@@ -39,7 +39,9 @@ describe('DialogFlowAdapter', () => {
       const voxaEvent = new DialogFlowEvent(rawEvent);
       const voxaReply = new VoxaReply(voxaEvent, {
         ask: 'Hi!',
-        card: { title: 'Title', subtitle: 'Subtitle', formattedText: 'The text', button: { title: 'ButtonTitle', url: 'https://example.com' } }
+        card: {
+          title: 'Title', subtitle: 'Subtitle', formattedText: 'The text', button: { title: 'ButtonTitle', url: 'https://example.com' },
+        },
       });
       expect(DialogFlowAdapter.google(voxaReply)).to.deep.equal({
         expectUserResponse: true,
@@ -61,11 +63,11 @@ describe('DialogFlowAdapter', () => {
                 buttons: [
                   {
                     openUrlAction: {
-                      url: 'https://example.com'
+                      url: 'https://example.com',
                     },
-                    title: 'ButtonTitle'
-                  }
-                ]
+                    title: 'ButtonTitle',
+                  },
+                ],
               },
             },
           ],
