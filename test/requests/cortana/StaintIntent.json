@@ -1,0 +1,25 @@
+{
+  "type": "message",
+  "id": "4b23e009e1c14231bd71b57ab68496bc|0000003",
+  "timestamp": "2017-11-28T22:15:25.4409189Z",
+  "serviceUrl": "https://webchat.botframework.com/",
+  "channelId": "webchat",
+  "from": {
+    "id": "LTSO852UtAD",
+    "name": "You"
+  },
+  "conversation": {
+    "id": "4b23e009e1c14231bd71b57ab68496bc"
+  },
+  "recipient": {
+    "id": "tide@K1p34jXt69s",
+    "name": "Tide"
+  },
+  "textFormat": "plain",
+  "locale": "en",
+  "text": "wine",
+  "channelData": {
+    "clientActivityId": "1511907203562.32093471278394525.4"
+  }
+}
+

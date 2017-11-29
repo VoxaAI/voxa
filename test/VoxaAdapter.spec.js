@@ -3,7 +3,6 @@
 const expect = require('chai').expect;
 const VoxaApp = require('../lib/VoxaApp');
 const VoxaAdapter = require('../lib/adapters/VoxaAdapter');
-const simple = require('simple-mock');
 
 describe('VoxaAdapter', () => {
   describe('lambda', () => {
@@ -15,7 +14,6 @@ describe('VoxaAdapter', () => {
       const app = new VoxaApp();
       const adapter = new VoxaAdapter(app);
       const handler = adapter.lambda();
-      const spy = simple.spy();
       const event = { event: 'event' };
       const context = { context: 'context' };
 

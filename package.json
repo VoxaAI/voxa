@@ -27,7 +27,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "alexa-skill-test-framework": "^1.1.2",
     "bluebird": "^3.5.1",
     "botbuilder-azure": "^3.0.4",
     "capitalize": "^1.0.0",

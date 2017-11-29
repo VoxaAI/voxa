@@ -11,8 +11,10 @@ const simple = require('simple-mock');
 const _ = require('lodash');
 const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
 const views = require('./views');
+const tools = require('./tools');
 
-const alexaTest = require('alexa-skill-test-framework');
+const rb = new tools.AlexaRequestBuilder();
+
 
 describe('VoxaApp', () => {
   it('should return error message on wrong appId if config.appIds is defined', () => {
@@ -77,7 +79,7 @@ describe('VoxaApp', () => {
   it('should succeed with version on onSessionEnded request', () => {
     const voxaApp = new Voxa({ views });
     const alexaSkill = new Voxa.Alexa(voxaApp);
-    const promise = alexaSkill.execute(new AlexaEvent(alexaTest.getSessionEndedRequest()));
+    const promise = alexaSkill.execute(new AlexaEvent(rb.getSessionEndedRequest()));
     return expect(promise).to.eventually.deep.equal({ version: '1.0' });
   });
 
@@ -98,7 +100,7 @@ describe('VoxaApp', () => {
     const voxaApp = new Voxa({ views });
     const stub = simple.stub().returnWith(1);
     voxaApp.onSessionEnded(stub);
-    voxaApp.execute(new AlexaEvent(alexaTest.getSessionEndedRequest()))
+    voxaApp.execute(new AlexaEvent(rb.getSessionEndedRequest()))
       .then(() => {
         expect(stub.called).to.be.true;
         done();
@@ -154,6 +156,6 @@ describe('VoxaApp', () => {
 
   it('should accept an array of appIds', () => {
     const voxaApp = new Voxa({ appIds: ['appId1', 'appId2'], views });
-    return voxaApp.execute(new AlexaEvent(alexaTest.getSessionEndedRequest()));
+    return voxaApp.execute(new AlexaEvent(rb.getSessionEndedRequest()));
   });
 });

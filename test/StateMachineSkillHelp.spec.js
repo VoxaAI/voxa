@@ -13,6 +13,9 @@ const views = require('./views');
 const variables = require('./variables');
 const _ = require('lodash');
 const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
+const tools = require('./tools');
+
+const rb = new tools.AlexaRequestBuilder();
 
 const states = {
   entry: {
@@ -37,13 +40,13 @@ describe('StateMachineSkill Help test', () => {
     });
   });
 
-  itIs('help', (reply) => {
+  itIs('AMAZON.HelpIntent', (reply) => {
     expect(reply.msg.statements[0]).to.include('For more help visit');
   });
 
-  function itIs(requestFile, cb) {
-    it(requestFile, () => {
-      const event = new AlexaEvent(require(`./requests/${requestFile}.js`));
+  function itIs(intentName, cb) {
+    it(intentName, () => {
+      const event = new AlexaEvent(rb.getIntentRequest(intentName));
       return skill.execute(event).then(cb);
     });
   }

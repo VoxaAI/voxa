@@ -13,6 +13,9 @@ const views = require('./views');
 const variables = require('./variables');
 const _ = require('lodash');
 const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
+const tools = require('./tools');
+
+const rb = new tools.AlexaRequestBuilder();
 
 const TEST_URLS = [
   'https://s3.amazonaws.com/alexa-voice-service/welcome_message.mp3',
@@ -72,16 +75,22 @@ describe('StateMachineApp', () => {
     });
   });
 
-  itIs('audioResume', (reply) => {
+  itIs('ResumeIntent', (reply) => {
     expect(reply.msg.statements.join()).to.include('Hello! Good');
     expect(reply.msg.directives[0].type).to.equal('AudioPlayer.Play');
     expect(reply.msg.directives[0].playBehavior).to.equal('REPLACE_ALL');
     expect(reply.msg.directives[0].audioItem.stream.offsetInMilliseconds).to.equal(353160);
   });
 
-  function itIs(requestFile, cb) {
-    it(requestFile, () => {
-      const event = new AlexaEvent(require(`./requests/${requestFile}.js`));
+  function itIs(intentName, cb) {
+    it(intentName, () => {
+      const event = new AlexaEvent(rb.getIntentRequest(intentName));
+      event.context.AudioPlayer = {
+        offsetInMilliseconds: 353160,
+        token: '{"index":1,"shuffle":1,"loop":0}',
+        playerActivity: 'STOPPED',
+      };
+
       return skill.execute(event).then(cb);
     });
   }
