@@ -46,103 +46,6 @@ describe('VoxaReply', () => {
     expect(reply.msg.yield).to.be.true;
   });
 
-  describe('createSpeechObject', () => {
-    it('should return undefined if no optionsParam', () => {
-      expect(VoxaReply.createSpeechObject()).to.be.undefined;
-    });
-
-    it('should return an SSML response if optionsParam.type === SSML', () => {
-      expect(VoxaReply.createSpeechObject({ type: 'SSML', speech: '<speak>Say Something</speak>' })).to.deep.equal({
-        type: 'SSML',
-        ssml: '<speak>Say Something</speak>',
-      });
-    });
-
-    it('should return a PlainText with optionsParam as text if no optionsParam.speech', () => {
-      expect(VoxaReply.createSpeechObject('Say Something')).to.deep.equal({
-        type: 'PlainText',
-        text: 'Say Something',
-      });
-    });
-
-    it('should return a PlainText as default type if optionsParam.type is missing', () => {
-      expect(VoxaReply.createSpeechObject({ speech: 'Say Something' })).to.deep.equal({
-        type: 'PlainText',
-        text: 'Say Something',
-      });
-    });
-  });
-
-  describe('toJSON', () => {
-    it('should generate a correct alexa response and reprompt that doesn\'t  end a session for an ask response', () => {
-      reply.append({ ask: 'ask', reprompt: 'reprompt' });
-      expect(reply.toJSON()).to.deep.equal({
-        response: {
-          card: undefined,
-          outputSpeech: {
-            ssml: '<speak>ask</speak>',
-            type: 'SSML',
-          },
-          reprompt: {
-            outputSpeech: {
-              ssml: '<speak>reprompt</speak>',
-              type: 'SSML',
-            },
-          },
-          shouldEndSession: false,
-        },
-        sessionAttributes: {},
-        version: '1.0',
-      });
-    });
-    it('should generate a correct alexa response that doesn\'t  end a session for an ask response', () => {
-      reply.append({ ask: 'ask' });
-      expect(reply.toJSON()).to.deep.equal({
-        response: {
-          card: undefined,
-          outputSpeech: {
-            ssml: '<speak>ask</speak>',
-            type: 'SSML',
-          },
-          shouldEndSession: false,
-        },
-        sessionAttributes: {},
-        version: '1.0',
-      });
-    });
-    it('should generate a correct alexa response that ends a session for a tell response', () => {
-      reply.append({ tell: 'tell' });
-      expect(reply.toJSON()).to.deep.equal({
-        response: {
-          card: undefined,
-          outputSpeech: {
-            ssml: '<speak>tell</speak>',
-            type: 'SSML',
-          },
-          shouldEndSession: true,
-        },
-        sessionAttributes: {},
-        version: '1.0',
-      });
-    });
-
-    it('should not include the attribute shouldEndSession if it has VideoApp.Launch directive', () => {
-      reply.append({ tell: 'tell', directives: [{ type: 'VideoApp.Launch' }] });
-      expect(reply.toJSON()).to.deep.equal({
-        response: {
-          card: undefined,
-          outputSpeech: {
-            ssml: '<speak>tell</speak>',
-            type: 'SSML',
-          },
-          directives: [{ type: 'VideoApp.Launch' }],
-        },
-        sessionAttributes: {},
-        version: '1.0',
-      });
-    });
-  });
-
   describe('append', () => {
     it('should throw an error on trying to append to a yielding reply', () => {
       expect(() => reply.end().append({ say: 'Something' })).to.throw(Error);
@@ -208,7 +111,7 @@ describe('VoxaReply', () => {
     it('should not end session if it has a dialog directive', () => {
       const message = { directives: { type: 'Dialog.Delegate' } };
       reply.append(message);
-      expect(reply.toJSON().response.shouldEndSession).to.be.false;
+      expect(reply.msg.terminate).to.be.false;
     });
 
     it('should add cards to reply.msg', () => {

@@ -21,7 +21,7 @@ describe('StateMachine', () => {
     voxaEvent = new VoxaEvent({
       request: {
         intent: {
-
+          name: 'AMAZON.YesIntent',
         },
         locale: 'en-us',
       },

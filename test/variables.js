@@ -51,7 +51,7 @@ const variables = {
   },
 
   count: function count(model) {
-    return model.count;
+    return Promise.resolve(model.count);
   },
 
   numberOne: function numberOne(model, request) {

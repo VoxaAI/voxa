@@ -15,27 +15,19 @@ const variables = require('./variables');
 const Model = require('../lib/Model');
 const Reply = require('../lib/VoxaReply');
 const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
+const AlexaAdapter = require('../lib/adapters/alexa/AlexaAdapter');
+const tools = require('./tools');
+
+const rb = new tools.AlexaRequestBuilder();
 
 describe('StateMachineApp', () => {
   let statesDefinition;
   let event;
 
   beforeEach(() => {
-    event = new AlexaEvent({
-      request: {
-        type: 'IntentRequest',
-        intent: {
-          name: 'SomeIntent',
-        },
-        locale: 'en-US',
-      },
-      session: {
-        new: true,
-        application: {
-          applicationId: 'appId',
-        },
-      },
-    });
+    event = new AlexaEvent(rb.getIntentRequest('SomeIntent'));
+    simple.mock(AlexaAdapter, 'apiRequest')
+      .resolveWith(true);
 
     statesDefinition = {
       entry: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }),
@@ -176,9 +168,9 @@ describe('StateMachineApp', () => {
     stateMachineSkill.onIntent('DisplayElementSelected', () => ({ reply: ['ExitIntent.Farewell'] }));
     event.request.type = 'Display.ElementSelected';
 
-    return stateMachineSkill.execute(event)
+    return new AlexaAdapter(stateMachineSkill).execute(event)
       .then((reply) => {
-        expect(reply.msg.statements).to.deep.equal(['Ok. For more info visit example.com site.']);
+        expect(reply.response.outputSpeech.ssml).to.equal('<speak>Ok. For more info visit example.com site.</speak>');
       });
   });
 

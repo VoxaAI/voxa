@@ -1,0 +1,33 @@
+{
+  "type": "message",
+  "id": "4Cq2PVQFeti",
+  "timestamp": "2017-11-28T16:19:17.7181628Z",
+  "serviceUrl": "https://CortanaBFChannelEastUs.azurewebsites.net/",
+  "channelId": "cortana",
+  "from": {
+    "id": "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722"
+  },
+  "conversation": {
+    "id": "38c26473-842e-4dd0-8f40-dc656ab4f2f4"
+  },
+  "recipient": {
+    "id": "tide"
+  },
+  "locale": "en-US",
+  "entities": [
+    {
+      "type": "Intent",
+      "name": "Microsoft.Launch"
+    },
+    {
+      "type": "DeviceInfo",
+      "supportsDisplay": "true"
+    }
+  ],
+  "channelData": {
+    "skillId": "738d1795-348a-424d-8a76-643136763d87",
+    "skillProductId": "16f75923-b0be-47b0-9e9b-ebaf8410d04e",
+    "isDebug": true
+  }
+}
+

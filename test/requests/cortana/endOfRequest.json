@@ -1,0 +1,23 @@
+{
+  "type": "endOfConversation",
+  "id": "GMEt4uVlCmt",
+  "timestamp": "2017-11-28T16:35:03.4906991Z",
+  "serviceUrl": "https://CortanaBFChannelEastUs.azurewebsites.net/",
+  "channelId": "cortana",
+  "from": {
+    "id": "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722"
+  },
+  "conversation": {
+    "id": "d670047c-5be6-4186-8fd4-feb80f0cf8f6"
+  },
+  "recipient": {
+    "id": "tide"
+  },
+  "channelData": {
+    "skillId": "738d1795-348a-424d-8a76-643136763d87",
+    "skillProductId": "16f75923-b0be-47b0-9e9b-ebaf8410d04e",
+    "isDebug": false
+  },
+  "code": "userCancelled"
+}
+
