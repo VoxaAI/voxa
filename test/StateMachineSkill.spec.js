@@ -118,6 +118,30 @@ describe('StateMachineSkill', () => {
       });
   });
 
+  it('should play command issued request', () => {
+    const directives = [{
+      type: 'AudioPlayer.Play',
+      playBehavior: 'REPLACE_ALL',
+      audioItem: {
+        stream: {
+          token: 'some-token',
+          url: 'some-url',
+          offsetInMilliseconds: 10,
+        },
+      },
+    }];
+
+
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    stateMachineSkill.onIntent('PlaybackControllerPlayCommandIssued', () => ({ directives }));
+    event.request.type = 'PlaybackController.PlayCommandIssued';
+
+    return stateMachineSkill.execute(event)
+      .then((reply) => {
+        expect(reply.msg.directives).to.deep.equal(directives);
+      });
+  });
+
   it('should throw an error if multiple replies include anything after say or tell', () => {
     const stateMachineSkill = new StateMachineSkill({ variables, views });
     stateMachineSkill.onIntent('LaunchIntent', (alexaEvent) => {
