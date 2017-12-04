@@ -1,7 +1,9 @@
 'use strict';
 
+const Promise = require('bluebird');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
+const i18next = Promise.promisifyAll(require('i18next'));
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -20,14 +22,21 @@ describe('I18NStateMachineApp', () => {
   let renderer;
 
   beforeEach(() => {
-    renderer = new DefaultRenderer({ views, variables });
+    const i18nextPromise = i18next
+      .initAsync({
+        resources: views,
+        load: 'all',
+        nonExplicitWhitelist: true,
+      });
+
+    renderer = new DefaultRenderer({ views, variables }, i18nextPromise);
     event = new AlexaEvent({
       request: {
         type: 'IntentRequest',
         intent: {
           name: 'SomeIntent',
         },
-        locale: 'en-us',
+        locale: 'en-US',
       },
       session: {
         new: true,
@@ -46,14 +55,14 @@ describe('I18NStateMachineApp', () => {
   });
 
   const locales = {
-    'en-us': {
+    'en-US': {
       site: 'Ok. For more info visit example.com site.',
       number: 'one',
       question: 'What time is it?',
       say: ['say', 'What time is it?'],
       random: ['Random 1', 'Random 2', 'Random 3', 'Random 4'],
     },
-    'de-de': {
+    'de-DE': {
       site: 'Ok für weitere Infos besuchen example.com Website',
       number: 'ein',
       question: 'wie spät ist es?',
@@ -63,7 +72,7 @@ describe('I18NStateMachineApp', () => {
   };
 
   it('should return an error if the views file doesn\'t have the local strings', () => {
-    const localeMissing = 'en-gb';
+    const localeMissing = 'en-GB';
     const skill = new StateMachineApp({ variables, views });
     skill.onIntent('SomeIntent', () => ({ reply: 'Number.One' }));
     event.request.locale = localeMissing;
@@ -148,7 +157,7 @@ describe('I18NStateMachineApp', () => {
 
   it('should fail for missing variables', () => expect(renderer.renderMessage({ say: '{missing}' })).to.eventually.be.rejectedWith(Error, 'No such variable in views, ReferenceError: missing is not defined'));
   it('should throw an exception if locale is missing from the event', () => expect(renderer.renderPath('Question.Ask', { locale: undefined })).to.eventually.be.rejectedWith(Error, 'Locale not specified'));
-  it('should throw an exception if path doesn\'t exists', () => expect(renderer.renderPath('Missing.Path', event)).to.eventually.be.rejectedWith(Error, 'View Missing.Path for en-us locale is missing'));
+  it('should throw an exception if path doesn\'t exists', () => expect(renderer.renderPath('Missing.Path', event)).to.eventually.be.rejectedWith(Error, 'View Missing.Path for en-US locale is missing'));
   it('should select a random option from the samples', () => (renderer.renderPath('RandomResponse', event))
     .then((rendered) => {
       expect(rendered.tell).to.be.oneOf(['Random 1', 'Random 2', 'Random 3', 'Random 4']);

@@ -71,7 +71,9 @@ describe('DialogFlowAdapter', () => {
               },
             },
           ],
+          suggestions: undefined,
         },
+        systemIntent: undefined,
       });
     });
   });

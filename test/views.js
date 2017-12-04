@@ -2,7 +2,7 @@
 
 const views = (function views() {
   return {
-    'en-us': {
+    'en-US': {
       translation: {
         LaunchIntent: {
           OpenResponse: {
@@ -55,7 +55,7 @@ const views = (function views() {
         },
       },
     },
-    'de-de': {
+    'de-DE': {
       translation: {
         LaunchIntent: {
           OpenResponse: { tell: 'Hallo! guten {time}' },

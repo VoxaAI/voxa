@@ -4,11 +4,14 @@ const expect = require('chai').expect;
 const _ = require('lodash');
 const VoxaReply = require('../lib/VoxaReply');
 const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
+const tools = require('./tools');
+
+const rb = new tools.AlexaRequestBuilder();
 
 describe('VoxaReply', () => {
   let reply;
   beforeEach(() => {
-    reply = new VoxaReply(new AlexaEvent({}));
+    reply = new VoxaReply(new AlexaEvent(rb.getIntentRequest()));
   });
 
   it('should throw an error if first argument is not an alexaEvent', () => {
@@ -16,7 +19,9 @@ describe('VoxaReply', () => {
   });
 
   it('should add the request session to itself on constructor', () => {
-    const request = new AlexaEvent({ session: { key1: 'value1', key2: 'value2' } });
+    const event = rb.getIntentRequest();
+    rb.session = { key1: 'value1', key2: 'value2' };
+    const request = new AlexaEvent(event);
     const sessionReply = new VoxaReply(request);
     expect(sessionReply.session).to.deep.equal(request.session);
   });
@@ -211,7 +216,7 @@ describe('VoxaReply', () => {
     describe('a Reply', () => {
       let appendedReply;
       beforeEach(() => {
-        appendedReply = new VoxaReply(new AlexaEvent({}));
+        appendedReply = new VoxaReply(new AlexaEvent(rb.getIntentRequest()));
       });
 
       it('should append the statements from another Reply', () => {

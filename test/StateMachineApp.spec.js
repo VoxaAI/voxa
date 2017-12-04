@@ -139,7 +139,7 @@ describe('StateMachineApp', () => {
 
   it('should add use append the reply key to the Reply if it\'s a Reply object', () => {
     const stateMachineApp = new StateMachineApp({ variables, views });
-    const reply = new Reply(new AlexaEvent({}), { tell: 'This is my message' });
+    const reply = new Reply(new AlexaEvent(rb.getIntentRequest('LaunchIntent')), { tell: 'This is my message' });
     stateMachineApp.onIntent('LaunchIntent', () => ({ reply }));
     event.intent.name = 'LaunchIntent';
 
@@ -188,16 +188,19 @@ describe('StateMachineApp', () => {
       });
   });
 
-  it('should redirect be able to just pass through some intents to states', () => {
+  it('should be able to just pass through some intents to states', () => {
     const stateMachineApp = new StateMachineApp({ variables, views });
     let called = false;
-    stateMachineApp.onIntent('AMAZON.LoopOffIntent', () => {
+    stateMachineApp.onIntent('LoopOffIntent', () => {
       called = true;
       return { reply: 'ExitIntent.Farewell', to: 'die' };
     });
 
-    event.intent.name = 'AMAZON.LoopOffIntent';
-    return stateMachineApp.execute(event)
+    const alexa = new AlexaAdapter(stateMachineApp);
+
+    const loopOffEvent = new AlexaEvent(rb.getIntentRequest('AMAZON.LoopOffIntent'));
+
+    return alexa.execute(loopOffEvent)
       .then(() => {
         expect(called).to.be.true;
       });

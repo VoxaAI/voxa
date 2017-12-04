@@ -5,11 +5,14 @@ const _ = require('lodash');
 const VoxaReply = require('../../lib/VoxaReply');
 const AlexaAdapter = require('../../lib/adapters/alexa/AlexaAdapter');
 const AlexaEvent = require('../../lib/adapters/alexa/AlexaEvent');
+const tools = require('../tools');
+
+const rb = new tools.AlexaRequestBuilder();
 
 describe('AlexaAdapter', () => {
   let reply;
   beforeEach(() => {
-    reply = new VoxaReply(new AlexaEvent({}));
+    reply = new VoxaReply(new AlexaEvent(rb.getIntentRequest()));
   });
 
   describe('createSpeechObject', () => {
@@ -146,7 +149,9 @@ describe('AlexaAdapter', () => {
     });
 
     it('should generate a correct alexa response persisting session attributes', () => {
-      reply = new VoxaReply(new AlexaEvent({ session: { attributes: { model: { name: 'name' } } } }));
+      const event = rb.getIntentRequest();
+      event.session.attributes = { model: { name: 'name' } };
+      reply = new VoxaReply(new AlexaEvent(event));
       reply.append({ tell: 'tell' });
       expect(AlexaAdapter.toAlexaReply(reply)).to.deep.equal({
         response: {
