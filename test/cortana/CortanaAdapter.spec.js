@@ -71,7 +71,7 @@ describe('CortanaAdapter', () => {
       return adapter.execute(rawEvent)
         .then(() => {
           expect(adapter.botApiRequest.calls.length).to.equal(3);
-          expect(adapter.botApiRequest.lastCall.args[2].voxaReply.msg.statements).to.deep.equal(['3']);
+          expect(adapter.botApiRequest.lastCall.args[2].voxaReply.msg.statements).to.deep.equal([]);
         });
     });
   });

@@ -21,15 +21,15 @@ describe('I18NStateMachineApp', () => {
   let event;
   let renderer;
 
-  beforeEach(() => {
-    const i18nextPromise = i18next
-      .initAsync({
-        resources: views,
-        load: 'all',
-        nonExplicitWhitelist: true,
-      });
+  before(() => i18next
+    .initAsync({
+      resources: views,
+      load: 'all',
+      nonExplicitWhitelist: true,
+    }));
 
-    renderer = new DefaultRenderer({ views, variables }, i18nextPromise);
+  beforeEach(() => {
+    renderer = new DefaultRenderer({ views, variables });
     event = new AlexaEvent({
       request: {
         type: 'IntentRequest',
@@ -45,6 +45,8 @@ describe('I18NStateMachineApp', () => {
         },
       },
     });
+
+    event.t = i18next.getFixedT('en-US');
 
     statesDefinition = {
       entry: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }),
@@ -156,7 +158,6 @@ describe('I18NStateMachineApp', () => {
   it('should use the passed variables and model', () => expect(renderer.renderMessage({ say: '{count}' }, { model: { count: 1 } })).to.eventually.deep.equal({ say: '1' }));
 
   it('should fail for missing variables', () => expect(renderer.renderMessage({ say: '{missing}' })).to.eventually.be.rejectedWith(Error, 'No such variable in views, ReferenceError: missing is not defined'));
-  it('should throw an exception if locale is missing from the event', () => expect(renderer.renderPath('Question.Ask', { locale: undefined })).to.eventually.be.rejectedWith(Error, 'Locale not specified'));
   it('should throw an exception if path doesn\'t exists', () => expect(renderer.renderPath('Missing.Path', event)).to.eventually.be.rejectedWith(Error, 'View Missing.Path for en-US locale is missing'));
   it('should select a random option from the samples', () => (renderer.renderPath('RandomResponse', event))
     .then((rendered) => {
@@ -190,6 +191,7 @@ describe('I18NStateMachineApp', () => {
 
   it('should use the dialogFlow view if available', () => {
     const dialogFlowEvent = new DialogFlowEvent(require('./requests/dialog-flow/launchIntent.json'));
+    dialogFlowEvent.t = event.t;
     return renderer.renderPath('LaunchIntent.OpenResponse', dialogFlowEvent)
       .then((rendered) => {
         expect(rendered.tell).to.equal('Hello from DialogFlow');
