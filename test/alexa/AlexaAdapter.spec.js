@@ -64,6 +64,25 @@ describe('AlexaAdapter', () => {
         version: '1.0',
       });
     });
+
+    it('should throw error on duplicate hint directives', () => {
+      const message = { directives: [{ type: 'Hint' }, { type: 'Hint' }] };
+      reply.append(message);
+      expect(() => AlexaAdapter.toAlexaReply(reply)).to.throw('At most one Hint directive can be specified in a response');
+    });
+
+    it('should throw error on duplicate Display Render directives', () => {
+      const message = { directives: [{ type: 'Display.RenderTemplate' }, { type: 'Display.RenderTemplate' }] };
+      reply.append(message);
+      expect(() => AlexaAdapter.toAlexaReply(reply)).to.throw('At most one Display.RenderTemplate directive can be specified in a response');
+    });
+
+    it('should throw error on both AudioPlayer.Play and VideoApp.Launch directives', () => {
+      const message = { directives: [{ type: 'AudioPlayer.Play' }, { type: 'VideoApp.Launch' }] };
+      reply.append(message);
+      expect(() => AlexaAdapter.toAlexaReply(reply)).to.throw('Do not include both an AudioPlayer.Play directive and a VideoApp.Launch directive in the same response');
+    });
+
     it('should generate a correct alexa response that doesn\'t  end a session for an ask response', () => {
       reply.append({ ask: 'ask' });
       expect(AlexaAdapter.toAlexaReply(reply)).to.deep.equal({

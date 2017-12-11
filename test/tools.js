@@ -59,6 +59,7 @@ class AlexaRequestBuilder {
           deviceId: this.deviceId,
           supportedInterfaces: {
             AudioPlayer: {},
+            Display: {},
           },
         },
         apiEndpoint: 'https://api.amazonalexa.com/',

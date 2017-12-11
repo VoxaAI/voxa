@@ -31,11 +31,31 @@ describe('StateMachineApp', () => {
 
     statesDefinition = {
       entry: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }),
-      initState: () => ({ to: 'endState' }),
-      secondState: () => ({ to: 'initState' }),
+      initState: { to: 'endState' },
+      secondState: { to: 'initState' },
       thirdState: () => Promise.resolve({ to: 'endState' }),
-      DisplayElementSelected: { enter: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }) },
+      DisplayElementSelected: { reply: 'ExitIntent.Farewell', to: 'die' },
     };
+  });
+
+  describe('entry', () => {
+    it('should do multiple transitions inside a single entry state', () => {
+      const stateMachineApp = new StateMachineApp({ variables, views });
+      event = new AlexaEvent(rb.getIntentRequest('LaunchIntent'));
+      stateMachineApp.onIntent('entry', {
+        LaunchIntent: 'One',
+        One: 'Two',
+        Two: 'Three',
+        Three: 'Exit',
+        Exit: { reply: 'ExitIntent.Farewell' },
+      });
+
+      return stateMachineApp.execute(event)
+        .then((reply) => {
+          expect(reply.error).to.be.undefined;
+          expect(reply.msg.statements).to.deep.equal(['Ok. For more info visit example.com site.']);
+        });
+    });
   });
 
   describe('onState', () => {
