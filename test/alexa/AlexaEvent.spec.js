@@ -2,8 +2,17 @@
 
 const expect = require('chai').expect;
 const AlexaEvent = require('../../lib/adapters/alexa/AlexaEvent');
+const tools = require('../tools');
+
+const rb = new tools.AlexaRequestBuilder();
 
 describe('AlexaEvent', () => {
+  it('should show an empty intent if not an intent request', () => {
+    const alexaEvent = new AlexaEvent(rb.getSessionEndedRequest());
+    expect(alexaEvent.intent.params).to.be.empty;
+    expect(alexaEvent.intent.name).equal('');
+  });
+
   it('should assign all event.request properties', () => {
     const alexaEvent = new AlexaEvent({ request: { someProperty: 'someValue', someOtherProperty: 'someOtherValue' } });
     expect(alexaEvent.request.someProperty).to.equal('someValue');

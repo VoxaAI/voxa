@@ -6,6 +6,7 @@ const VoxaReply = require('../../lib/VoxaReply');
 const AlexaAdapter = require('../../lib/adapters/alexa/AlexaAdapter');
 const AlexaEvent = require('../../lib/adapters/alexa/AlexaEvent');
 const tools = require('../tools');
+const botBuilder = require('botbuilder');
 
 const rb = new tools.AlexaRequestBuilder();
 
@@ -43,6 +44,19 @@ describe('AlexaAdapter', () => {
   });
 
   describe('toAlexaReply', () => {
+    it('should ignore non alexa directives', () => {
+      const directives = [
+        new botBuilder.HeroCard()
+          .title('The title')
+          .images([botBuilder.CardImage.create({}, 'http://example.com/image.jpg')]),
+        { type: 'Hint' },
+      ];
+
+      reply.append({ directives });
+
+      expect(AlexaAdapter.toAlexaReply(reply).response.directives).to.deep.equal([{ type: 'Hint' }]);
+    });
+
     it('should generate a correct alexa response and reprompt that doesn\'t  end a session for an ask response', () => {
       reply.append({ ask: 'ask', reprompt: 'reprompt' });
       expect(AlexaAdapter.toAlexaReply(reply)).to.deep.equal({
