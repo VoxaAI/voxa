@@ -80,6 +80,21 @@ class AlexaRequestBuilder {
       new: true,
     };
   }
+
+  getLaunchRequest() {
+		return {
+			"version": this.version,
+			"session": this.getSessionData(),
+			"context": this.getContextData(),
+			"request": {
+				"type": "LaunchRequest",
+				"requestId": "EdwRequestId." + uuidv1(),
+				"timestamp": new Date().toISOString(),
+				"locale": 'en-US',
+			}
+		};
+
+  }
 }
 
 module.exports = {

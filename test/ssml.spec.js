@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const ssml = require('../lib/ssml');
+const ssml = require('../src/ssml');
 
 describe('ssml', () => {
   describe('toSSML', () => {

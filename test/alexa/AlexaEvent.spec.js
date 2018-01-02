@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const AlexaEvent = require('../../lib/adapters/alexa/AlexaEvent');
+const AlexaEvent = require('../../src/adapters/alexa/AlexaEvent').AlexaEvent;
 const tools = require('../tools');
 
 const rb = new tools.AlexaRequestBuilder();
@@ -20,12 +20,12 @@ describe('AlexaEvent', () => {
   });
 
   it('should format intent slots', () => {
-    const alexaEvent = new AlexaEvent({ request: { intent: { slots: [{ name: 'Dish', value: 'Fried Chicken' }] } } });
+    const alexaEvent = new AlexaEvent({ request: { intent: { name: 'SomeIntent', slots: [{ name: 'Dish', value: 'Fried Chicken' }] } } });
     expect(alexaEvent.intent.params).to.deep.equal({ Dish: 'Fried Chicken' });
   });
 
   it('should get token', () => {
-    const alexaEvent = new AlexaEvent({ request: { token: 'some-token', intent: { slots: [{ name: 'Dish', value: 'Fried Chicken' }] } } });
+    const alexaEvent = new AlexaEvent({ request: {token: 'some-token', intent: { name: 'SomeIntent', slots: [{ name: 'Dish', value: 'Fried Chicken' }] } } });
     expect(alexaEvent.token).to.equal('some-token');
   });
 

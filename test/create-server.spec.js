@@ -1,11 +1,11 @@
 'use strict';
 
 const expect = require('chai').expect;
-const createServer = require('../lib/adapters/create-server');
+const createServer = require('../src/adapters/create-server').createServer;
 const views = require('./views');
 const http = require('http');
-const StateMachineApp = require('../lib/StateMachineApp');
-const AlexaAdapter = require('../lib/adapters/alexa/AlexaAdapter');
+const StateMachineApp = require('../src/VoxaApp').VoxaApp;
+const AlexaAdapter = require('../src/adapters/alexa/AlexaAdapter').AlexaAdapter;
 const portfinder = require('portfinder');
 
 const debug = require('debug')('test');
@@ -57,7 +57,7 @@ describe('createServer', () => {
       });
 
       res.on('end', () => {
-        expect('{"version":"1.0","response":{"outputSpeech":{"type":"SSML","ssml":"<speak>An unrecoverable error occurred.</speak>"},"shouldEndSession":true},"sessionAttributes":{}}').to.equal(data);
+        expect('{"version":"1.0","response":{"outputSpeech":{"type":"SSML","ssml":"<speak>An unrecoverable error occurred.</speak>"},"shouldEndSession":true}}').to.equal(data);
         done();
       });
     });

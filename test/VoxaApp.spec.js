@@ -1,15 +1,17 @@
 'use strict';
 
 const chai = require('chai');
+const _ = require('lodash');
+const simple = require('simple-mock');
 const chaiAsPromised = require('chai-as-promised');
 
 chai.use(chaiAsPromised);
 
 const expect = chai.expect;
-const Voxa = require('../');
-const simple = require('simple-mock');
-const _ = require('lodash');
-const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
+const Voxa = require('../src/VoxaApp').VoxaApp;
+const AlexaEvent = require('../src/adapters/alexa/AlexaEvent').AlexaEvent;
+const AlexaReply = require('../src/adapters/alexa/AlexaReply').AlexaReply;
+const AlexaAdapter = require('../src/adapters/alexa/AlexaAdapter').AlexaAdapter;
 const views = require('./views');
 const tools = require('./tools');
 
@@ -22,12 +24,13 @@ describe('VoxaApp', () => {
     const stub = simple.stub();
     voxaApp.onError(stub);
 
-    return voxaApp.execute(new AlexaEvent({ context: { application: { applicationId: 'OTHER APP ID' } }, request: { intent: { } } }))
+    return voxaApp.execute(new AlexaEvent({ context: { application: { applicationId: 'OTHER APP ID' } }, request: { intent: { name: 'SomeIntent' } } }), AlexaReply)
       .then((reply) => {
+        expect(reply.error).to.be.an('error');
         expect(stub.called).to.be.true;
         expect(stub.lastCall.args[1]).to.be.an('error');
         expect(stub.lastCall.args[1].message).to.equal('Invalid applicationId');
-        expect(reply.msg.statements[0]).to.equal('An unrecoverable error occurred.');
+        expect(reply.response.statements[0]).to.equal('An unrecoverable error occurred.');
       });
   });
 
@@ -36,12 +39,12 @@ describe('VoxaApp', () => {
     const stub = simple.stub();
     voxaApp.onError(stub);
 
-    return voxaApp.execute(new AlexaEvent({ context: { application: { applicationId: 'OTHER APP ID' } }, request: { intent: { } } }))
+    return voxaApp.execute(new AlexaEvent({ context: { application: { applicationId: 'OTHER APP ID' } }, request: { intent: { name: 'SomeIntent' } } }), AlexaReply)
       .then((reply) => {
         expect(stub.called).to.be.true;
         expect(stub.lastCall.args[1]).to.be.an('error');
         expect(stub.lastCall.args[1].message).to.equal('Invalid applicationId');
-        expect(reply.msg.statements[0]).to.equal('An unrecoverable error occurred.');
+        expect(reply.response.statements[0]).to.equal('An unrecoverable error occurred.');
       });
   });
 
@@ -66,7 +69,7 @@ describe('VoxaApp', () => {
     voxaApp.onError(handler2);
     voxaApp.onError(handler3);
 
-    return voxaApp.execute({})
+    return voxaApp.execute({}, AlexaReply)
       .then((response) => {
         expect(handler1.called).to.be.true;
         expect(handler2.called).to.be.true;
@@ -78,14 +81,14 @@ describe('VoxaApp', () => {
 
   it('should succeed with version on onSessionEnded request', () => {
     const voxaApp = new Voxa({ views });
-    const alexaSkill = new Voxa.Alexa(voxaApp);
+    const alexaSkill = new AlexaAdapter(voxaApp);
     const promise = alexaSkill.execute(new AlexaEvent(rb.getSessionEndedRequest()));
-    return expect(promise).to.eventually.deep.equal({ version: '1.0' });
+    return expect(promise).to.eventually.deep.equal({ version: '1.0', response: {} });
   });
 
   it('should return error message on error in SessionEndedRequest', () => {
     const voxaApp = new Voxa({ views });
-    const alexaSkill = new Voxa.Alexa(voxaApp);
+    const alexaSkill = new AlexaAdapter(voxaApp);
 
     const stub = simple.stub();
     voxaApp.onError(stub);
@@ -100,7 +103,7 @@ describe('VoxaApp', () => {
     const voxaApp = new Voxa({ views });
     const stub = simple.stub().returnWith(1);
     voxaApp.onSessionEnded(stub);
-    voxaApp.execute(new AlexaEvent(rb.getSessionEndedRequest()))
+    voxaApp.execute(new AlexaEvent(rb.getSessionEndedRequest()), AlexaReply)
       .then(() => {
         expect(stub.called).to.be.true;
         done();
@@ -119,9 +122,9 @@ describe('VoxaApp', () => {
     const stub = simple.stub().resolveWith(1);
     voxaApp.onSessionStarted(stub);
 
-    return voxaApp.execute(new AlexaEvent({ session: { new: false }, context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } }))
+    return voxaApp.execute(new AlexaEvent({ session: { new: false }, context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } }), AlexaReply)
       .then(() => {
-        expect(stub.callCount).to.equal(0);
+        expect(stub.callCount).to.equal(1);
       });
   });
 
@@ -130,7 +133,7 @@ describe('VoxaApp', () => {
     const stub = simple.stub().resolveWith(1);
     voxaApp.onSessionStarted(stub);
 
-    return voxaApp.execute(new AlexaEvent({ session: { new: true }, context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } }))
+    return voxaApp.execute(new AlexaEvent({ session: { new: true }, context: { application: { applicationId: 'MY APP ID' } }, request: { type: 'SessionEndedRequest' } }), AlexaReply)
       .then(() => {
         expect(stub.callCount).to.equal(1);
       });
@@ -146,7 +149,7 @@ describe('VoxaApp', () => {
     voxaApp.onRequestStarted(onRequestStart2);
     voxaApp.onRequestStarted(onRequestStart3);
 
-    return voxaApp.execute(new AlexaEvent({ session: { new: true }, context: { application: { applicationId: 'appId' } }, request: { type: 'SessionEndedRequest' } }))
+    return voxaApp.execute(new AlexaEvent({ session: { new: true }, context: { application: { applicationId: 'appId' } }, request: { type: 'SessionEndedRequest' } }), AlexaReply)
       .then(() => {
         expect(onRequestStart1.called).to.be.true;
         expect(onRequestStart2.called).to.be.true;
@@ -156,6 +159,6 @@ describe('VoxaApp', () => {
 
   it('should accept an array of appIds', () => {
     const voxaApp = new Voxa({ appIds: ['appId1', 'appId2'], views });
-    return voxaApp.execute(new AlexaEvent(rb.getSessionEndedRequest()));
+    return voxaApp.execute(new AlexaEvent(rb.getSessionEndedRequest()), AlexaReply);
   });
 });

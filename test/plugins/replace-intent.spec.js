@@ -8,9 +8,10 @@ chai.use(chaiAsPromised);
 const simple = require('simple-mock');
 
 const expect = chai.expect;
-const StateMachineApp = require('../../lib/StateMachineApp');
-const AlexaEvent = require('../../lib/adapters/alexa/AlexaEvent');
-const replaceIntent = require('../../lib/plugins/replace-intent');
+const StateMachineApp = require('../../src/VoxaApp').VoxaApp;
+const AlexaEvent = require('../../src/adapters/alexa/AlexaEvent').AlexaEvent;
+const AlexaReply = require('../../src/adapters/alexa/AlexaReply').AlexaReply;
+const replaceIntent = require('../../src/plugins/replace-intent');
 const views = require('../views');
 const variables = require('../variables');
 
@@ -37,11 +38,11 @@ describe('ReplaceIntentPlugin', () => {
     });
 
     replaceIntent(stateMachineSkill);
-    return stateMachineSkill.execute(event)
+    return stateMachineSkill.execute(event, AlexaReply)
       .then((reply) => {
         expect(spy.called).to.be.true;
         expect(spy.lastCall.args[0].intent.name).to.equal('SomeIntent');
-        expect(reply.msg.statements[0]).to.include('Hello! Good ');
+        expect(reply.response.statements[0]).to.include('Hello! Good ');
       });
   });
 
@@ -68,11 +69,11 @@ describe('ReplaceIntentPlugin', () => {
     });
 
     replaceIntent(stateMachineSkill);
-    return stateMachineSkill.execute(event)
+    return stateMachineSkill.execute(event, AlexaReply)
       .then((reply) => {
         expect(spy.called).to.be.true;
         expect(spy.lastCall.args[0].intent.name).to.equal('OnlySomeIntent');
-        expect(reply.msg.statements[0]).to.include('Hello! Good ');
+        expect(reply.response.statements[0]).to.include('Hello! Good ');
       });
   });
 
@@ -98,11 +99,11 @@ describe('ReplaceIntentPlugin', () => {
     });
 
     replaceIntent(stateMachineSkill, { regex: /(.*)PlaceholderIntent$/, replace: '$1HolderIntent' });
-    return stateMachineSkill.execute(event)
+    return stateMachineSkill.execute(event, AlexaReply)
       .then((reply) => {
         expect(spy.called).to.be.true;
         expect(spy.lastCall.args[0].intent.name).to.equal('SomeHolderIntent');
-        expect(reply.msg.statements[0]).to.include('Hello! Good ');
+        expect(reply.response.statements[0]).to.include('Hello! Good ');
       });
   });
 
@@ -131,11 +132,11 @@ describe('ReplaceIntentPlugin', () => {
     replaceIntent(stateMachineSkill, { regex: /(.*)OnlyIntent$/, replace: '$1Intent' });
     replaceIntent(stateMachineSkill, { regex: /^VeryLong(.*)/, replace: 'Long$1' });
 
-    return stateMachineSkill.execute(event)
+    return stateMachineSkill.execute(event, AlexaReply)
       .then((reply) => {
         expect(spy.called).to.be.true;
         expect(spy.lastCall.args[0].intent.name).to.equal('LongIntent');
-        expect(reply.msg.statements[0]).to.include('Hello! Good ');
+        expect(reply.response.statements[0]).to.include('Hello! Good ');
       });
   });
 });

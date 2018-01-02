@@ -1,0 +1,23 @@
+{
+  "type": "conversationUpdate",
+  "id": "1Q7OeMYotn1",
+  "timestamp": "2017-12-20T22:02:10.2115317Z",
+  "serviceUrl": "https://webchat.botframework.com/",
+  "channelId": "webchat",
+  "from": {
+    "id": "6b19caf39bee43fb88ca463872861646"
+  },
+  "conversation": {
+    "id": "6b19caf39bee43fb88ca463872861646"
+  },
+  "recipient": {
+    "id": "lizard_spock@FCG2xuskP1M",
+    "name": "Lizard Spock"
+  },
+  "membersAdded": [
+    {
+      "id": "lizard_spock@FCG2xuskP1M",
+      "name": "Lizard Spock"
+    }
+  ]
+}

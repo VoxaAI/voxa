@@ -1,22 +1,26 @@
 'use strict';
 
+const _ = require('lodash');
+const simple = require('simple-mock');
+const Promise = require('bluebird');
+
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
 chai.use(chaiAsPromised);
-
 const expect = chai.expect;
-const simple = require('simple-mock');
-const StateMachineApp = require('../lib/StateMachineApp.js');
-const Promise = require('bluebird');
-const _ = require('lodash');
+
+const StateMachineApp = require('../src/VoxaApp').VoxaApp;
 const views = require('./views');
 const variables = require('./variables');
-const Model = require('../lib/Model');
-const Reply = require('../lib/VoxaReply');
-const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
-const AlexaAdapter = require('../lib/adapters/alexa/AlexaAdapter');
+const Model = require('../src/Model').Model;
+const Reply = require('../src/VoxaReply').VoxaReply;
+const AlexaEvent = require('../src/adapters/alexa/AlexaEvent').AlexaEvent;
+const AlexaReply = require('../src/adapters/alexa/AlexaReply').AlexaReply;
+const AlexaAdapter = require('../src/adapters/alexa/AlexaAdapter').AlexaAdapter;
 const tools = require('./tools');
+
+const PlayAudio = require('../src/adapters/alexa/directives').PlayAudio;
 
 const rb = new tools.AlexaRequestBuilder();
 
@@ -42,7 +46,7 @@ describe('StateMachineApp', () => {
     it('should do multiple transitions inside a single entry state', () => {
       const stateMachineApp = new StateMachineApp({ variables, views });
       event = new AlexaEvent(rb.getIntentRequest('LaunchIntent'));
-      stateMachineApp.onIntent('entry', {
+      stateMachineApp.onState('entry', {
         LaunchIntent: 'One',
         One: 'Two',
         Two: 'Three',
@@ -50,10 +54,10 @@ describe('StateMachineApp', () => {
         Exit: { reply: 'ExitIntent.Farewell' },
       });
 
-      return stateMachineApp.execute(event)
+      return stateMachineApp.execute(event, AlexaReply)
         .then((reply) => {
           expect(reply.error).to.be.undefined;
-          expect(reply.msg.statements).to.deep.equal(['Ok. For more info visit example.com site.']);
+          expect(reply.response.statements).to.deep.equal(['Ok. For more info visit example.com site.']);
         });
     });
   });
@@ -82,7 +86,7 @@ describe('StateMachineApp', () => {
     it('should register states for specific intents', () => {
       const stateMachineApp = new StateMachineApp({ variables, views });
       const stateFn = simple.stub();
-      stateMachineApp.onState('init', 'AMAZON.NoIntent', stateFn);
+      stateMachineApp.onState('init', stateFn, 'AMAZON.NoIntent');
 
       expect(stateMachineApp.states.init).to.deep.equal({
         name: 'init',
@@ -95,8 +99,8 @@ describe('StateMachineApp', () => {
       const stateFn = simple.stub();
       const stateFn2 = simple.stub();
 
-      stateMachineApp.onState('init', ['AMAZON.NoIntent', 'AMAZON.StopIntent'], stateFn);
-      stateMachineApp.onState('init', 'AMAZON.YesIntent', stateFn2);
+      stateMachineApp.onState('init', stateFn, ['AMAZON.NoIntent', 'AMAZON.StopIntent']);
+      stateMachineApp.onState('init', stateFn2, 'AMAZON.YesIntent');
 
       expect(stateMachineApp.states.init).to.deep.equal({
         name: 'init',
@@ -111,37 +115,30 @@ describe('StateMachineApp', () => {
 
   it('should include the state in the session response', () => {
     const stateMachineApp = new StateMachineApp({ variables, views });
-    stateMachineApp.onIntent('LaunchIntent', () => ({ message: { ask: 'This is my message' }, to: 'secondState' }));
-    stateMachineApp.onState('secondState', () => {});
-    event = new AlexaEvent({
-      request: {
-        type: 'LaunchRequest',
-        locale: 'en-US',
-      },
-      session: {
-        new: true,
-        application: {
-          applicationId: 'appId',
-        },
-      },
+    stateMachineApp.onIntent('LaunchIntent', () => {
+      return { to: 'secondState', askP: 'This is my message' };
     });
-    // event.intent.name = 'LaunchRequest';
 
-    return stateMachineApp.execute(event)
+    stateMachineApp.onState('secondState', () => {});
+
+    event = new AlexaEvent(rb.getLaunchRequest());
+    return stateMachineApp.execute(event, AlexaReply)
       .then((reply) => {
+        expect(reply.error).to.be.undefined;
         expect(reply.session.attributes.model._state).to.equal('secondState');
-        expect(reply.msg.terminate).to.be.false;
+        expect(reply.response.terminate).to.be.false;
       });
   });
 
   it('should add the message key from the transition to the reply', () => {
     const stateMachineApp = new StateMachineApp({ variables, views });
-    stateMachineApp.onIntent('LaunchIntent', () => ({ message: { tell: 'This is my message' } }));
+    stateMachineApp.onIntent('LaunchIntent', () => ({ tellP: 'This is my message'}));
     event.intent.name = 'LaunchIntent';
 
-    return stateMachineApp.execute(event)
+    return stateMachineApp.execute(event, AlexaReply)
       .then((reply) => {
-        expect(reply.msg.statements[0]).to.deep.equal('This is my message');
+        console.log({ reply: reply.response })
+        expect(reply.response.statements[0]).to.deep.equal('This is my message');
       });
   });
 
@@ -150,22 +147,10 @@ describe('StateMachineApp', () => {
     stateMachineApp.onIntent('LaunchIntent', () => ({ reply: 'Missing.View' }));
     event.intent.name = 'LaunchIntent';
 
-    return stateMachineApp.execute(event)
+    return stateMachineApp.execute(event, AlexaReply)
       .then((reply) => {
         expect(reply.error).to.be.an('error');
         expect(reply.error.message).to.equal('View Missing.View for en-US locale is missing');
-      });
-  });
-
-  it('should add use append the reply key to the Reply if it\'s a Reply object', () => {
-    const stateMachineApp = new StateMachineApp({ variables, views });
-    const reply = new Reply(new AlexaEvent(rb.getIntentRequest('LaunchIntent')), { tell: 'This is my message' });
-    stateMachineApp.onIntent('LaunchIntent', () => ({ reply }));
-    event.intent.name = 'LaunchIntent';
-
-    return stateMachineApp.execute(event)
-      .then((skillReply) => {
-        expect(skillReply.msg.statements[0]).to.deep.equal('This is my message');
       });
   });
 
@@ -177,9 +162,9 @@ describe('StateMachineApp', () => {
     });
     event.intent.name = 'LaunchIntent';
 
-    return stateMachineApp.execute(event)
+    return stateMachineApp.execute(event, AlexaReply)
       .then((reply) => {
-        expect(reply.msg.statements).to.deep.equal(['0', '0']);
+        expect(reply.response.statements).to.deep.equal(['0', '0']);
       });
   });
 
@@ -188,7 +173,7 @@ describe('StateMachineApp', () => {
     stateMachineSkill.onIntent('DisplayElementSelected', () => ({ reply: ['ExitIntent.Farewell'] }));
     event.request.type = 'Display.ElementSelected';
 
-    return new AlexaAdapter(stateMachineSkill).execute(event)
+    return new AlexaAdapter(stateMachineSkill).execute(event, AlexaReply)
       .then((reply) => {
         expect(reply.response.outputSpeech.ssml).to.equal('<speak>Ok. For more info visit example.com site.</speak>');
       });
@@ -202,8 +187,9 @@ describe('StateMachineApp', () => {
     });
     event.intent.name = 'LaunchIntent';
 
-    return stateMachineApp.execute(event)
+    return stateMachineApp.execute(event, AlexaReply)
       .then((reply) => {
+        console.log({ reply })
         expect(reply.error.message).to.equal('Can\'t append to already yielding response');
       });
   });
@@ -220,7 +206,7 @@ describe('StateMachineApp', () => {
 
     const loopOffEvent = new AlexaEvent(rb.getIntentRequest('AMAZON.LoopOffIntent'));
 
-    return alexa.execute(loopOffEvent)
+    return alexa.execute(loopOffEvent, AlexaReply)
       .then(() => {
         expect(called).to.be.true;
       });
@@ -239,7 +225,7 @@ describe('StateMachineApp', () => {
     const stateMachineApp = new StateMachineApp({ variables, views });
     _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
 
-    return stateMachineApp.execute(event)
+    return stateMachineApp.execute(event, AlexaReply)
       .then(() => {
         expect(statesDefinition.entry.called).to.be.true;
       });
@@ -262,7 +248,7 @@ describe('StateMachineApp', () => {
     });
 
     _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
-    return stateMachineApp.execute(event)
+    return stateMachineApp.execute(event, AlexaReply)
       .then(() => {
         expect(statesDefinition.entry.called).to.be.true;
         expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
@@ -276,7 +262,7 @@ describe('StateMachineApp', () => {
       return { reply: 'Question.Ask', to: 'initState' };
     });
     _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
-    return stateMachineApp.execute(event)
+    return stateMachineApp.execute(event, AlexaReply)
       .then((reply) => {
         expect(reply.error).to.be.undefined;
         expect(statesDefinition.entry.called).to.be.true;
@@ -302,7 +288,7 @@ describe('StateMachineApp', () => {
     });
 
     _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
-    return stateMachineApp.execute(event)
+    return stateMachineApp.execute(event, AlexaReply)
       .then((reply) => {
         expect(statesDefinition.entry.called).to.be.true;
         expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
@@ -324,7 +310,7 @@ describe('StateMachineApp', () => {
     });
 
     _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
-    return stateMachineApp.execute(event)
+    return stateMachineApp.execute(event, AlexaReply)
       .then(() => {
         expect(statesDefinition.entry.called).to.be.true;
         expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
@@ -337,7 +323,7 @@ describe('StateMachineApp', () => {
     const onSessionEnded = simple.stub();
     stateMachineApp.onSessionEnded(onSessionEnded);
 
-    return stateMachineApp.execute(event)
+    return stateMachineApp.execute(event, AlexaReply)
       .then(() => {
         expect(onSessionEnded.called).to.be.true;
       });
@@ -349,7 +335,7 @@ describe('StateMachineApp', () => {
     const onBeforeReplySent = simple.stub();
     stateMachineApp.onBeforeReplySent(onBeforeReplySent);
 
-    return stateMachineApp.execute(event)
+    return stateMachineApp.execute(event, AlexaReply)
       .then(() => {
         expect(onBeforeReplySent.called).to.be.true;
       });
@@ -364,7 +350,7 @@ describe('StateMachineApp', () => {
     });
 
     _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
-    return stateMachineApp.execute(event)
+    return stateMachineApp.execute(event, AlexaReply)
       .then(() => {
         expect(statesDefinition.entry.called).to.be.true;
       });
@@ -376,7 +362,7 @@ describe('StateMachineApp', () => {
       event.intent.name = 'LaunchIntent';
       stateMachineApp.onState('entry', { });
 
-      return stateMachineApp.execute(event)
+      return stateMachineApp.execute(event, AlexaReply)
         .then((reply) => {
           expect(reply.error.message).to.equal('LaunchIntent went unhandled on entry state');
         });
@@ -394,27 +380,10 @@ describe('StateMachineApp', () => {
       statesDefinition.entry = simple.stub().resolveWith(null);
 
       _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
-      return stateMachineApp.execute(event)
+      return stateMachineApp.execute(event, AlexaReply)
         .then((reply) => {
           expect(onUnhandledState.called).to.be.true;
-          expect(reply.msg.statements[0]).to.equal('Ok. For more info visit example.com site.');
-        });
-    });
-  });
-
-  describe('onStateMachineError', () => {
-    it('should call onStateMachineError handlers for exceptions thrown inside a state', () => {
-      const stateMachineApp = new StateMachineApp({ Model, views, variables });
-      const spy = simple.spy(request => new Reply(request, { tell: 'My custom response' }));
-      stateMachineApp.onStateMachineError(spy);
-      stateMachineApp.onIntent('AskIntent', () => abc); // eslint-disable-line no-undef
-
-      event.request.intent.name = 'AskIntent';
-      return stateMachineApp.execute((event))
-        .then((reply) => {
-          expect(spy.called).to.be.true;
-          expect(reply.error).to.be.an('error');
-          expect(reply.msg.statements[0]).to.equal('My custom response');
+          expect(reply.response.statements[0]).to.equal('Ok. For more info visit example.com site.');
         });
     });
   });
@@ -422,13 +391,7 @@ describe('StateMachineApp', () => {
   it('should include all directives in the reply', () => {
     const stateMachineApp = new StateMachineApp({ Model, variables, views });
 
-    const directives = {
-      type: 'AudioPlayer.Play',
-      playBehavior: 'REPLACE_ALL',
-      offsetInMilliseconds: 0,
-      url: 'url',
-      token: '123',
-    };
+    const directives = [PlayAudio('url', '123', 0, 'REPLACE_ALL')]
 
     stateMachineApp.onIntent('SomeIntent', () => ({
       reply: 'ExitIntent.Farewell',
@@ -436,11 +399,11 @@ describe('StateMachineApp', () => {
       directives,
     }));
 
-    return stateMachineApp.execute(event)
+    return stateMachineApp.execute(event, AlexaReply)
       .then((reply) => {
-        expect(reply.msg.directives).to.not.be.undefined;
-        expect(reply.msg.directives).to.have.length(1);
-        expect(reply.msg.directives[0]).to.deep.equal({
+        expect(reply.response.directives).to.not.be.undefined;
+        expect(reply.response.directives).to.have.length(1);
+        expect(reply.response.directives[0]).to.deep.equal({
           type: 'AudioPlayer.Play',
           playBehavior: 'REPLACE_ALL',
           audioItem: {
@@ -457,24 +420,18 @@ describe('StateMachineApp', () => {
   it('should include all directives in the reply even if die', () => {
     const stateMachineApp = new StateMachineApp({ Model, variables, views });
 
-    const directives = {
-      type: 'AudioPlayer.Play',
-      playBehavior: 'REPLACE_ALL',
-      offsetInMilliseconds: 0,
-      url: 'url',
-      token: '123',
-    };
+    const directives = [PlayAudio('url', '123', 0, 'REPLACE_ALL')]
 
     stateMachineApp.onIntent('SomeIntent', () => ({
       reply: 'ExitIntent.Farewell',
       directives,
     }));
 
-    return stateMachineApp.execute(event)
+    return stateMachineApp.execute(event, AlexaReply)
       .then((reply) => {
-        expect(reply.msg.directives).to.not.be.undefined;
-        expect(reply.msg.directives).to.have.length(1);
-        expect(reply.msg.directives[0]).to.deep.equal({
+        expect(reply.response.directives).to.not.be.undefined;
+        expect(reply.response.directives).to.have.length(1);
+        expect(reply.response.directives[0]).to.deep.equal({
           playBehavior: 'REPLACE_ALL',
           type: 'AudioPlayer.Play',
           audioItem: {
@@ -507,9 +464,9 @@ describe('StateMachineApp', () => {
     };
 
     _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
-    return stateMachineApp.execute(event)
+    return stateMachineApp.execute(event, AlexaReply)
       .then((reply) => {
-        expect(reply.msg.statements).to.deep.equal(['0', '1']);
+        expect(reply.response.statements).to.deep.equal(['0', '1']);
       });
   });
 
@@ -520,11 +477,11 @@ describe('StateMachineApp', () => {
     const stub = simple.stub().resolveWith(stubResponse);
     stateMachineApp.onIntentRequest(stub);
 
-    return stateMachineApp.execute(event)
+    return stateMachineApp.execute(event, AlexaReply)
       .then((reply) => {
         expect(stub.called).to.be.true;
         expect(reply).to.not.equal(stubResponse);
-        expect(reply.msg.statements[0]).to.equal('Ok. For more info visit example.com site.');
+        expect(reply.response.statements[0]).to.equal('Ok. For more info visit example.com site.');
       });
   });
 
@@ -538,7 +495,7 @@ describe('StateMachineApp', () => {
 
       stateMachineApp.onAfterStateChanged(spy);
 
-      return stateMachineApp.execute(event)
+      return stateMachineApp.execute(event, AlexaReply)
         .then((reply) => {
           expect(spy.called).to.be.true;
           expect(reply.error).to.be.an('error');
@@ -555,7 +512,7 @@ describe('StateMachineApp', () => {
 
       stateMachineApp.onRequestStarted(spy);
 
-      return stateMachineApp.execute(event)
+      return stateMachineApp.execute(event, AlexaReply)
         .then((reply) => {
           expect(spy.called).to.be.true;
           expect(reply.error).to.be.an('error');

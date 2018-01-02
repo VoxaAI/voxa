@@ -8,11 +8,12 @@
 'use strict';
 
 const expect = require('chai').expect;
-const Voxa = require('../');
+const Voxa = require('../src/VoxaApp').VoxaApp;
 const views = require('./views');
 const variables = require('./variables');
 const _ = require('lodash');
-const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
+const AlexaEvent = require('../src/adapters/alexa/AlexaEvent').AlexaEvent;
+const AlexaReply = require('../src/adapters/alexa/AlexaReply').AlexaReply;
 const tools = require('./tools');
 
 const rb = new tools.AlexaRequestBuilder();
@@ -41,13 +42,13 @@ describe('StateMachineSkill Help test', () => {
   });
 
   itIs('AMAZON.HelpIntent', (reply) => {
-    expect(reply.msg.statements[0]).to.include('For more help visit');
+    expect(reply.response.statements[0]).to.include('For more help visit');
   });
 
   function itIs(intentName, cb) {
     it(intentName, () => {
       const event = new AlexaEvent(rb.getIntentRequest(intentName));
-      return skill.execute(event).then(cb);
+      return skill.execute(event, AlexaReply).then(cb);
     });
   }
 });
