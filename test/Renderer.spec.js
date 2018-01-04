@@ -172,7 +172,6 @@ describe('StateMachineApp', () => {
   it('should use deeply search to render array variable', () => {
     return renderer.renderMessage({ card: '{exitArray}' }, { model: {} })
       .then((reply) => {
-        console.log({ reply: reply.card })
         expect(reply).to.deep.equal({ card: [{ a: 1 }, { b: 2 }, { c: 3 }] });
       });
   });

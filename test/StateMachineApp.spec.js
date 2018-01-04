@@ -125,7 +125,7 @@ describe('StateMachineApp', () => {
     return stateMachineApp.execute(event, AlexaReply)
       .then((reply) => {
         expect(reply.error).to.be.undefined;
-        expect(reply.session.attributes.model._state).to.equal('secondState');
+        expect(reply.session.attributes.model.state).to.equal('secondState');
         expect(reply.response.terminate).to.be.false;
       });
   });
@@ -137,7 +137,6 @@ describe('StateMachineApp', () => {
 
     return stateMachineApp.execute(event, AlexaReply)
       .then((reply) => {
-        console.log({ reply: reply.response })
         expect(reply.response.statements[0]).to.deep.equal('This is my message');
       });
   });
@@ -189,7 +188,6 @@ describe('StateMachineApp', () => {
 
     return stateMachineApp.execute(event, AlexaReply)
       .then((reply) => {
-        console.log({ reply })
         expect(reply.error.message).to.equal('Can\'t append to already yielding response');
       });
   });
@@ -267,7 +265,7 @@ describe('StateMachineApp', () => {
         expect(reply.error).to.be.undefined;
         expect(statesDefinition.entry.called).to.be.true;
         expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
-        expect(reply.session.attributes.model).to.deep.equal({ _state: 'initState' });
+        expect(reply.session.attributes.model).to.deep.equal({ state: 'initState' });
       });
   });
 

@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "compile": "tsc",
-    "test": "mocha --require ts-node/register --recursive",
-    "test-ci": "nyc --require ts-node/register mocha --recursive --colors --reporter mocha-jenkins-reporter test",
+    "test": "mocha",
+    "test-ci": "nyc mocha --colors --reporter mocha-jenkins-reporter test",
     "report": "nyc report",
     "lint": "tslint -c tslint.json src/**/*.ts"
   },

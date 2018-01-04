@@ -1,7 +1,7 @@
-import * as builder from 'botbuilder';
-import { IVoxaIntent } from '../../VoxaEvent';
+import * as builder from "botbuilder";
+import { IVoxaIntent } from "../../VoxaEvent";
 
-export interface ICortanaEntity{
+export interface ICortanaEntity {
     type: string;
     name?: string;
     supportsDisplay?: boolean;
@@ -11,4 +11,3 @@ export interface ICortanaEntity{
 export interface IAuthorizationResponse {
     access_token: string;
 }
-

@@ -1,23 +1,17 @@
-import * as _ from 'lodash';
+import * as _ from "lodash";
 
-import { IVoxaSession } from "../../VoxaEvent";
+import { Responses } from "actions-on-google";
+import { StandardIntents } from "actions-on-google/assistant-app";
 import { Context, DialogflowApp } from "actions-on-google/dialogflow-app";
-import { VoxaAdapter } from '../VoxaAdapter';
-import { DialogFlowEvent } from './DialogFlowEvent';
-import { DialogFlowReply } from './DialogFlowReply';
-import { toSSML } from '../../ssml';
-import { VoxaReply } from '../../VoxaReply';
-import { Responses } from 'actions-on-google';
-import { StandardIntents } from 'actions-on-google/assistant-app';
+import { toSSML } from "../../ssml";
+import { IVoxaSession } from "../../VoxaEvent";
+import { VoxaReply } from "../../VoxaReply";
+import { VoxaAdapter } from "../VoxaAdapter";
+import { DialogFlowEvent } from "./DialogFlowEvent";
+import { DialogFlowReply } from "./DialogFlowReply";
 
 export class DialogFlowAdapter extends VoxaAdapter<DialogFlowReply> {
-  async execute(rawEvent: any, context: any): Promise<any> {
-    const event = new DialogFlowEvent(rawEvent, context);
-    const voxaReply = await this.app.execute(event, DialogFlowReply);
-    return DialogFlowAdapter.toDialogFlowResponse(voxaReply);
-  }
-
-  static sessionToContext(session: IVoxaSession): any[] {
+  public static sessionToContext(session: IVoxaSession): any[] {
     if (!(session && !_.isEmpty(session.attributes))) {
       return [];
     }
@@ -41,10 +35,9 @@ export class DialogFlowAdapter extends VoxaAdapter<DialogFlowReply> {
       .value();
   }
 
-  static google(reply: DialogFlowReply) {
-    const speech = toSSML(reply.response.statements.join('\n'));
+  public static google(reply: DialogFlowReply) {
+    const speech = toSSML(reply.response.statements.join("\n"));
     const noInputPrompts = [];
-    let systemIntent;
     let possibleIntents;
 
     const richResponse = new Responses.RichResponse();
@@ -54,14 +47,12 @@ export class DialogFlowAdapter extends VoxaAdapter<DialogFlowReply> {
       });
     }
 
-
     if (speech) {
       richResponse.addSimpleResponse(speech);
     }
 
     _.map(reply.response.directives, (directive: any) => {
       if (directive.suggestions) {
-        console.log('adding suggestions')
         richResponse.addSuggestions(directive.suggestions);
       } else if (directive.basicCard) {
         richResponse.addBasicCard(directive.basicCard);
@@ -71,39 +62,30 @@ export class DialogFlowAdapter extends VoxaAdapter<DialogFlowReply> {
 
     });
 
-    console.log({
-      richResponse,
-      possibleIntents,
-      systemIntent,
-      noInputPrompts,
-      speech,
-    })
-
     return {
       expectUserResponse: !reply.response.terminate,
       isSsml: true,
       noInputPrompts,
-      systemIntent,
-      richResponse,
       possibleIntents,
+      richResponse,
     };
   }
 
-  static toDialogFlowResponse(voxaReply: VoxaReply) {
-    const speech = toSSML(voxaReply.response.statements.join('\n'));
+  public static toDialogFlowResponse(voxaReply: VoxaReply) {
+    const speech = toSSML(voxaReply.response.statements.join("\n"));
     const contextOut = DialogFlowAdapter.sessionToContext(voxaReply.session);
 
-    const source = _.get(voxaReply, 'voxaEvent.originalRequest.source');
+    const source = _.get(voxaReply, "voxaEvent.originalRequest.source");
 
-    const integrations: any= {
+    const integrations: any = {
       google: DialogFlowAdapter.google,
     };
 
     const response: any = {
-      speech,
       contextOut,
       data: {},
-      source: 'Voxa',
+      source: "Voxa",
+      speech,
     };
 
     if (integrations[source]) {
@@ -112,4 +94,11 @@ export class DialogFlowAdapter extends VoxaAdapter<DialogFlowReply> {
 
     return response;
   }
+
+  public async execute(rawEvent: any, context: any): Promise<any> {
+    const event = new DialogFlowEvent(rawEvent, context);
+    const voxaReply = await this.app.execute(event, DialogFlowReply);
+    return DialogFlowAdapter.toDialogFlowResponse(voxaReply);
+  }
+
 }

@@ -1,36 +1,12 @@
-import * as _ from 'lodash';
+import * as _ from "lodash";
 
-import { IMessage, IEvent, IIntentRecognizerResult, IConversationUpdate, IBotStorageData, IEntity } from 'botbuilder';
-import { ICortanaEntity } from './CortanaInterfaces'
-import { IVoxaEvent, IVoxaIntent } from '../../VoxaEvent';
-import { Model } from '../../Model';
-import { TranslationFunction } from 'i18next';
-import { UniversalBot } from 'botbuilder';
-
-export class CortanaIntent implements IVoxaIntent {
-  public name: string;
-  public params: any;
-  public _raw: any;
-
-  constructor(message: IMessage|IConversationUpdate) {
-    this._raw = message;
-
-    const intentEntity: ICortanaEntity | undefined = _.find(this._raw.entities, { type: 'Intent' });
-    if (!intentEntity) {
-      this.name = '';
-      this.params = {};
-    } else {
-      if (intentEntity.name === 'Microsoft.Launch') {
-        this.name = 'LaunchIntent';
-        this.params = {};
-      } else {
-        this.name = intentEntity.name || '';
-        this.params = {};
-      }
-    }
-
-  }
-}
+import { IBotStorageData, IConversationUpdate, IEntity, IEvent, IIntentRecognizerResult, IMessage } from "botbuilder";
+import { UniversalBot } from "botbuilder";
+import { TranslationFunction } from "i18next";
+import { Model } from "../../Model";
+import { IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
+import { CortanaIntent } from "./CortanaIntent";
+import { ICortanaEntity } from "./CortanaInterfaces";
 
 export class CortanaEvent extends IVoxaEvent {
   public type: string;
@@ -40,16 +16,16 @@ export class CortanaEvent extends IVoxaEvent {
   public t: TranslationFunction;
   public intent?: IVoxaIntent;
 
-  public _context: any;
-  public _raw: IMessage;
+  public executionContext: any;
+  public rawEvent: IMessage;
 
   constructor(message: IMessage, context: any, stateData: IBotStorageData, intent: IVoxaIntent|undefined) {
-    super(message, context)
-    this.type = 'cortana';
+    super(message, context);
+    this.type = "cortana";
     this.session = {
-      new: _.isEmpty(stateData.privateConversationData),
       attributes: stateData.privateConversationData || {},
-      sessionId: _.get(message, 'address.conversation.id'),
+      new: _.isEmpty(stateData.privateConversationData),
+      sessionId: _.get(message, "address.conversation.id"),
     };
 
     this.context = {};
@@ -62,27 +38,27 @@ export class CortanaEvent extends IVoxaEvent {
   }
 
   get user() {
-    return _.merge(this._raw.address.user, { userId: this._raw.address.user.id });
+    return _.merge(this.rawEvent.address.user, { userId: this.rawEvent.address.user.id });
   }
 
   get request() {
-    let type = this._raw.type;
-    if (type === 'endOfConversation') {
-      type = 'SessionEndedRequest';
+    let type = this.rawEvent.type;
+    if (type === "endOfConversation") {
+      type = "SessionEndedRequest";
     }
 
     if (this.intent && this.intent.name) {
-      type = 'IntentRequest';
+      type = "IntentRequest";
     }
 
-    var locale;
-    if (this._raw.textLocale) {
-      locale = this._raw.textLocale;
-    } if (this._raw.entities) {
-      const entity: any = _(this._raw.entities)
-        .filter({ type: 'clientInfo'})
+    let locale;
+    if (this.rawEvent.textLocale) {
+      locale = this.rawEvent.textLocale;
+    } if (this.rawEvent.entities) {
+      const entity: any = _(this.rawEvent.entities)
+        .filter({ type: "clientInfo"})
         .filter((e: any) => !!e.locale)
-        .first()
+        .first();
 
       if (entity) {
         locale = entity.locale;
@@ -95,5 +71,5 @@ export class CortanaEvent extends IVoxaEvent {
 }
 
 function isIConversationUpdate(message: IMessage | IConversationUpdate): message is IConversationUpdate {
-  return (<IConversationUpdate>message).type === 'conversationUpdate';
+  return (message as IConversationUpdate).type === "conversationUpdate";
 }

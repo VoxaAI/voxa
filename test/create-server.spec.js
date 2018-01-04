@@ -57,7 +57,7 @@ describe('createServer', () => {
       });
 
       res.on('end', () => {
-        expect('{"version":"1.0","response":{"outputSpeech":{"type":"SSML","ssml":"<speak>An unrecoverable error occurred.</speak>"},"shouldEndSession":true}}').to.equal(data);
+        expect(JSON.parse(data)).to.deep.equal({"response":{"outputSpeech":{"ssml":"<speak>An unrecoverable error occurred.</speak>","type":"SSML"},"shouldEndSession":true},"version":"1.0"})
         done();
       });
     });

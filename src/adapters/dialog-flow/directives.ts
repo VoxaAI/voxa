@@ -1,34 +1,34 @@
-import * as _ from 'lodash';
+import * as _ from "lodash";
 
-import { DialogFlowReply } from './DialogFlowReply';
-import { DialogFlowEvent } from './DialogFlowEvent';
-import { Responses, AssistantApp } from 'actions-on-google';
-import { InputValueDataTypes, StandardIntents } from './interfaces'
+import { AssistantApp, Responses } from "actions-on-google";
+import { directiveHandler } from "../../VoxaReply";
+import { DialogFlowEvent } from "./DialogFlowEvent";
+import { DialogFlowReply } from "./DialogFlowReply";
+import { InputValueDataTypes, StandardIntents } from "./interfaces";
 
-export function List(templatePath: string|Responses.List): Function {
-  return  async (reply: DialogFlowReply, event: DialogFlowEvent): Promise<void> => {
+export function List(templatePath: string|Responses.List): directiveHandler {
+  return  async (reply, event): Promise<void> => {
     let listSelect;
-    console.log({ templatePath })
     if (_.isString(templatePath) ) {
-      listSelect= await reply.render(templatePath);
+      listSelect = await reply.render(templatePath);
     } else {
       listSelect = templatePath;
     }
 
     reply.response.directives.push({
       possibleIntents: {
-        intent: StandardIntents.OPTION,
         inputValueData: {
-          '@type': InputValueDataTypes.OPTION,
+          "@type": InputValueDataTypes.OPTION,
           listSelect,
-        }
-      }
+        },
+        intent: StandardIntents.OPTION,
+      },
     });
-  }
+  };
 }
 
-export function Carousel(templatePath: string|Responses.Carousel): Function{
-  return  async (reply: DialogFlowReply, event: DialogFlowEvent): Promise<void> => {
+export function Carousel(templatePath: string|Responses.Carousel): directiveHandler {
+  return  async (reply, event): Promise<void> => {
     let carouselSelect;
     if (_.isString(templatePath) ) {
       carouselSelect = await reply.render(templatePath);
@@ -41,22 +41,22 @@ export function Carousel(templatePath: string|Responses.Carousel): Function{
         intent: StandardIntents.OPTION,
         spec: {
           optionValueSpec: {
-            carouselSelect
+            carouselSelect,
           },
         },
       },
     });
-  }
+  };
 }
 
-export function Suggestions(suggestions: string[]): Function {
-  return  async (reply: DialogFlowReply, event: DialogFlowEvent): Promise<void> => {
+export function Suggestions(suggestions: string[]): directiveHandler {
+  return  async (reply, event): Promise<void> => {
     reply.response.directives.push({ suggestions  });
-  }
+  };
 }
 
-export function BasicCard(templatePath: string|Responses.BasicCard): Function {
-  return  async (reply: DialogFlowReply, event: DialogFlowEvent): Promise<void> => {
+export function BasicCard(templatePath: string|Responses.BasicCard): directiveHandler {
+  return  async (reply, event): Promise<void> => {
     let basicCard;
     if (_.isString(templatePath) ) {
       basicCard = await reply.render(templatePath);
@@ -65,5 +65,5 @@ export function BasicCard(templatePath: string|Responses.BasicCard): Function {
     }
 
     reply.response.directives.push({ basicCard  });
-  }
+  };
 }

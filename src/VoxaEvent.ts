@@ -1,24 +1,24 @@
-'use strict';
+"use strict";
 
-import * as _ from 'lodash';
-import * as i18n from 'i18next';
+import * as i18n from "i18next";
+import * as _ from "lodash";
 
-import { Model} from './Model';
+import { Model} from "./Model";
 
 export abstract class IVoxaEvent {
-  _context: any;
-  _raw: any;
-  session: IVoxaSession;
-  intent?: IVoxaIntent;
-  context: any;
-  request: any;
-  model: Model;
-  t: i18n.TranslationFunction;
-  user: IVoxaUser;
+  public executionContext: any;
+  public rawEvent: any;
+  public session: IVoxaSession;
+  public intent?: IVoxaIntent;
+  public context: any;
+  public request: any;
+  public model: Model;
+  public t: i18n.TranslationFunction;
+  public user: IVoxaUser;
 
   constructor(event: any, context: any) {
-    this._raw = event;
-    this._context = context;
+    this.rawEvent = event;
+    this.executionContext = context;
   }
 }
 
@@ -28,7 +28,7 @@ export interface IVoxaUser {
 }
 
 export interface IVoxaIntent {
-  _raw: any;
+  rawIntent: any;
   name: string;
   params: any;
 }

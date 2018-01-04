@@ -9,7 +9,7 @@ chai.use(chaiAsPromised);
 
 const expect = chai.expect;
 const StateMachine = require('../src/StateMachine').StateMachine;
-const errors = require('../src/Errors');
+const errors = require('../src/errors');
 const Reply = require('../src/VoxaReply').VoxaReply;
 const AlexaEvent = require('../src/adapters/alexa/AlexaEvent').AlexaEvent;
 const tools = require('./tools');

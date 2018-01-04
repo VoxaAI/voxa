@@ -1,20 +1,27 @@
-import * as _ from 'lodash';
-import { VoxaReply } from '../../VoxaReply';
-import { toSSML } from '../../ssml';
-import { ResponseBody, Response, OutputSpeech, Template, Reprompt } from 'alexa-sdk';
+import { OutputSpeech, Reprompt, Response, ResponseBody, Template } from "alexa-sdk";
+import * as _ from "lodash";
+import { toSSML } from "../../ssml";
+import { VoxaReply } from "../../VoxaReply";
 
-const SSML = 'SSML';
+const SSML = "SSML";
 
 export class AlexaReply extends VoxaReply {
-  get supportsDisplayInterface() {
-    return !!_.get(this, 'voxaEvent.context.System.device.supportedInterfaces.Display');
+  public static createSpeechObject(speech: string|undefined): OutputSpeech {
+    return {
+      ssml: speech || "",
+      type: SSML,
+    };
   }
 
-  toJSON(): ResponseBody {
-    const say = toSSML(this.response.statements.join('\n'));
+  get supportsDisplayInterface() {
+    return !!_.get(this, "voxaEvent.context.System.device.supportedInterfaces.Display");
+  }
+
+  public toJSON(): ResponseBody {
+    const say = toSSML(this.response.statements.join("\n"));
     const reprompt = toSSML(this.response.reprompt);
-    const directives: any[] = _.reject(this.response.directives, { type: 'card' });
-    const card: any = _.find(this.response.directives, { type: 'card' });
+    const directives: any[] = _.reject(this.response.directives, { type: "card" });
+    const card: any = _.find(this.response.directives, { type: "card" });
 
     const alexaResponse: Response = { };
 
@@ -26,7 +33,7 @@ export class AlexaReply extends VoxaReply {
       alexaResponse.card = card.card;
     }
 
-    if (this.voxaEvent.request.type !== 'SessionEndedRequest') {
+    if (this.voxaEvent.request.type !== "SessionEndedRequest") {
         alexaResponse.shouldEndSession = !!this.response.terminate;
     }
 
@@ -40,10 +47,9 @@ export class AlexaReply extends VoxaReply {
       alexaResponse.directives = directives;
     }
 
-
     const returnResult: ResponseBody = {
-      version: '1.0',
       response: alexaResponse,
+      version: "1.0",
     };
 
     if (this.session && !_.isEmpty(this.session.attributes)) {
@@ -53,10 +59,4 @@ export class AlexaReply extends VoxaReply {
     return returnResult;
   }
 
-  static createSpeechObject(speech: string|undefined): OutputSpeech {
-    return {
-      type: SSML,
-      ssml: speech||'',
-    };
-  }
 }

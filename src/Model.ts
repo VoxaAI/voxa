@@ -1,18 +1,18 @@
-import * as _ from 'lodash';
-import { IVoxaEvent } from './VoxaEvent';
+import * as _ from "lodash";
+import { IVoxaEvent } from "./VoxaEvent";
 
 class Model {
-  public _state: string;
+  public static fromEvent(voxaEvent: IVoxaEvent) {
+    return new this(voxaEvent.session.attributes.model);
+  }
+
+  public state: string;
 
   constructor(data: any = {}) {
     _.assign(this, data);
   }
 
-  static fromEvent(voxaEvent: IVoxaEvent) {
-    return new this(voxaEvent.session.attributes.model);
-  }
-
-  serialize() {
+  public serialize() {
     return this;
   }
 }
@@ -20,7 +20,7 @@ class Model {
 interface IModel {
   new (data?: any): Model;
   fromEvent(data?: any): Model;
-  serialize (): any;
+  serialize(): any;
 }
 
 export { Model, IModel };

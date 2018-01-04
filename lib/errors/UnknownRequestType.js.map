@@ -1,0 +1,1 @@
+{"version":3,"file":"UnknownRequestType.js","sourceRoot":"","sources":["../../src/errors/UnknownRequestType.ts"],"names":[],"mappings":";;AACA,wBAAgC,SAAQ,KAAK;IAG3C,YAAY,WAAmB;QAC7B,MAAM,OAAO,GAAG,wBAAwB,WAAW,EAAE,CAAC;QACtD,KAAK,CAAC,OAAO,CAAC,CAAC;QACf,IAAI,CAAC,WAAW,GAAG,WAAW,CAAC;IACjC,CAAC;CACF;AARD,gDAQC"}

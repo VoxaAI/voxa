@@ -1,85 +1,84 @@
-import { Template, Image, TemplateBackButtonVisibility, TemplateType, ListItem, TextContent, TextField } from 'alexa-sdk';
+import { Image, ListItem, Template, TemplateBackButtonVisibility, TemplateType, TextContent, TextField } from "alexa-sdk";
 
 export class DisplayTemplate implements Template {
   public type: TemplateType;
   public listItems: ListItem[];
   public backButton: TemplateBackButtonVisibility;
   public title: string;
-  public token: string
+  public token: string;
   public textContent: TextContent;
   public backgroundImage?: Image;
 
   constructor(type: TemplateType) {
     this.type = type;
     this.listItems = [];
-    this.backButton = 'VISIBLE';
+    this.backButton = "VISIBLE";
   }
 
-  setTitle(title: string) {
+  public setTitle(title: string) {
     this.title = title;
     return this;
   }
 
-  addItem(token: string, image: string, text1: string, text2?: string, text3?: string): DisplayTemplate {
+  public addItem(token: string, image: string, text1: string, text2?: string, text3?: string): DisplayTemplate {
     const item = {
-      token,
       image: image ? toImage(image) : undefined,
       textContent: toTextContext(text1, text2, text3),
+      token,
     };
     this.listItems.push(item);
     return this;
   }
 
-  setToken(token: string): DisplayTemplate {
+  public setToken(token: string): DisplayTemplate {
     this.token = token;
     return this;
   }
 
-  setBackButton(state: TemplateBackButtonVisibility): DisplayTemplate {
+  public setBackButton(state: TemplateBackButtonVisibility): DisplayTemplate {
     this.backButton = state;
     return this;
   }
 
-  setTextContent(text1: string, text2?: string, text3?: string): DisplayTemplate {
+  public setTextContent(text1: string, text2?: string, text3?: string): DisplayTemplate {
     this.textContent = toTextContext(text1, text2, text3);
     return this;
   }
 
-  setBackgroundImage(backgroundImage: string): DisplayTemplate {
+  public setBackgroundImage(backgroundImage: string): DisplayTemplate {
     this.backgroundImage = toImage(backgroundImage);
     return this;
   }
 
-
-  toJSON() {
+  public toJSON() {
     return {
-      type: 'Display.RenderTemplate',
       template: {
-        type: this.type,
-        token: this.token,
         backButton: this.backButton,
         backgroundImage: this.backgroundImage,
-        title: this.title,
         listItems: this.listItems.length > 0 ? this.listItems : undefined,
         textContent: this.textContent,
+        title: this.title,
+        token: this.token,
+        type: this.type,
       },
+      type: "Display.RenderTemplate",
     };
   }
 }
 
-function toImage(image: string, contentDescription: string = ''): Image {
+function toImage(image: string, contentDescription: string = ""): Image {
   return {
+    contentDescription,
     sources: [
       {
         url: image,
       },
     ],
-    contentDescription,
   };
 }
 
 function toTextContext(text1: string, text2?: string, text3?: string): TextContent {
-  const textContent: TextContent= {
+  const textContent: TextContent = {
     primaryText: toRichText(text1),
   };
 
@@ -97,6 +96,6 @@ function toTextContext(text1: string, text2?: string, text3?: string): TextConte
 function toRichText(text: string): TextField {
   return {
     text,
-    type: 'RichText',
+    type: "RichText",
   };
 }

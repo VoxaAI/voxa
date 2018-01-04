@@ -1,7 +1,7 @@
 import * as bluebird from "bluebird";
 import * as debug from "debug";
 import * as _ from "lodash";
-import { Transition } from "../StateMachine";
+import { ITransition } from "../StateMachine";
 import { IVoxaEvent } from "../VoxaEvent";
 
 export interface IRendererConfig {

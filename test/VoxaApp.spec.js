@@ -26,6 +26,7 @@ describe('VoxaApp', () => {
 
     return voxaApp.execute(new AlexaEvent({ context: { application: { applicationId: 'OTHER APP ID' } }, request: { intent: { name: 'SomeIntent' } } }), AlexaReply)
       .then((reply) => {
+        console.log({ reply })
         expect(reply.error).to.be.an('error');
         expect(stub.called).to.be.true;
         expect(stub.lastCall.args[1]).to.be.an('error');

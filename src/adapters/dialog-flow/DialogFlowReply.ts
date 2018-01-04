@@ -1,4 +1,4 @@
-import { VoxaReply } from '../../VoxaReply';
+import { VoxaReply } from "../../VoxaReply";
 
 export class DialogFlowReply extends VoxaReply {
 

@@ -1,14 +1,14 @@
-import * as _ from 'lodash';
-import { IVoxaEvent, IVoxaIntent, IVoxaSession } from '../../VoxaEvent';
-import { Model } from '../../Model';
-import { TranslationFunction } from 'i18next';
-import { Context } from 'actions-on-google/dialogflow-app';
-import { IntentArgument } from 'actions-on-google/assistant-app';
-import { StandardIntents } from './interfaces';
+import { IntentArgument } from "actions-on-google/assistant-app";
+import { Context } from "actions-on-google/dialogflow-app";
+import { TranslationFunction } from "i18next";
+import * as _ from "lodash";
+import { Model } from "../../Model";
+import { IVoxaEvent, IVoxaIntent, IVoxaSession } from "../../VoxaEvent";
+import { StandardIntents } from "./interfaces";
 
 export class DialogFlowEvent extends IVoxaEvent {
-  public _context: any;
-  public _raw: any;
+  public executionContext: any;
+  public rawEvent: any;
 
   public session: DialogFlowSession;
   public request: any;
@@ -21,21 +21,21 @@ export class DialogFlowEvent extends IVoxaEvent {
   constructor(event: any, context: any) {
     super(event, context);
     _.merge(this, {
-      session: {
-      },
       request: {
         locale: event.lang,
-        type: 'IntentRequest',
+        type: "IntentRequest",
+      },
+      session: {
       },
     }, event);
 
     this.session = new DialogFlowSession(event);
     this.intent = new DialogFlowIntent(event);
-    this.type = 'dialogFlow';
+    this.type = "dialogFlow";
   }
 
   get user() {
-    return _.get(this, 'originalRequest.data.user');
+    return _.get(this, "originalRequest.data.user");
   }
 }
 
@@ -50,7 +50,7 @@ class DialogFlowSession implements IVoxaSession {
     this.attributes = this.getAttributes();
   }
 
-  getAttributes() {
+  public getAttributes() {
     if (!this.contexts) {
       return {};
     }
@@ -72,17 +72,16 @@ class DialogFlowSession implements IVoxaSession {
   }
 }
 
-
 class DialogFlowIntent implements IVoxaIntent {
   public name: string;
-  public _raw: any;
+  public rawIntent: any;
   public params: any;
 
   constructor(rawEvent: any) {
-    this._raw = rawEvent;
+    this.rawIntent = rawEvent;
 
-    if (rawEvent.result.resolvedQuery === 'actions_intent_OPTION') {
-      this.name = 'actions.intent.OPTION';
+    if (rawEvent.result.resolvedQuery === "actions_intent_OPTION") {
+      this.name = "actions.intent.OPTION";
     } else {
       this.name = rawEvent.result.metadata.intentName;
     }
@@ -90,9 +89,9 @@ class DialogFlowIntent implements IVoxaIntent {
     this.params = this.getParams();
   }
 
-  getParams(): any {
-    if (this._raw.resolvedQuery === 'actions_intent_OPTION') {
-      const input: any = _.find(this._raw.originalRequest.data.inputs, input => input.intent == StandardIntents.OPTION);
+  public getParams(): any {
+    if (this.rawIntent.resolvedQuery === "actions_intent_OPTION") {
+      const input: any = _.find(this.rawIntent.originalRequest.data.inputs, (input) => input.intent == StandardIntents.OPTION);
 
       if (!input) {
         return {};
@@ -106,6 +105,6 @@ class DialogFlowIntent implements IVoxaIntent {
       return args;
     }
 
-    return this._raw.result.parameters;
+    return this.rawIntent.result.parameters;
   }
 }

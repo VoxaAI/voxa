@@ -19,7 +19,6 @@ describe('DialogFlowAdapter', () => {
 
       return adapter.execute(rawEvent)
         .then((reply) => {
-          console.log(reply.data.google.richResponse.items[0])
           expect(reply.data.google.richResponse.items[0].simpleResponse.ssml).to.equal('<speak>Hello from DialogFlow</speak>');
         });
     });
@@ -66,7 +65,6 @@ describe('DialogFlowAdapter', () => {
           linkOutSuggestion: undefined,
           suggestions: [],
         },
-        systemIntent: undefined,
       });
     });
   });

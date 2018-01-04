@@ -58,7 +58,7 @@ describe('AutoLoad plugin', () => {
         expect(spy.lastCall.args[0].intent.name).to.equal('LaunchIntent');
         expect(result.response.statements).to.have.lengthOf(1);
         expect(result.response.statements[0]).to.contain('Hello! Good');
-        expect(result.session.attributes.model._state).to.equal('die');
+        expect(result.session.attributes.model.state).to.equal('die');
         expect(result.session.attributes.model.user.Id).to.equal(1);
       });
   });

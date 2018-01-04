@@ -1,87 +1,91 @@
-import * as _ from 'lodash';
-import { Template, Card } from 'alexa-sdk';
-import { AlexaReply } from './AlexaReply';
-import { AlexaEvent } from './AlexaEvent';
+import { Card, Template } from "alexa-sdk";
+import * as _ from "lodash";
+import { directiveHandler } from "../../VoxaReply";
+import { AlexaEvent } from "./AlexaEvent";
+import { AlexaReply } from "./AlexaReply";
 
-export function HomeCard(templatePath: string): Function {
-  return async (reply: AlexaReply, event: AlexaEvent): Promise<void> => {
+export function HomeCard(templatePath: string): directiveHandler {
+  return async (reply, event): Promise<void> => {
     const card = await reply.render(templatePath);
-    if (_.filter(reply.response.directives, { type: 'card' }).length > 0) {
-      throw new Error('At most one card can be specified in a response');
+    if (_.filter(reply.response.directives, { type: "card" }).length > 0) {
+      throw new Error("At most one card can be specified in a response");
     }
-    reply.response.directives.push({ card, type: 'card' })
-  }
+    reply.response.directives.push({ card, type: "card" });
+  };
 }
 
-export function DialogDelegate(slots: any): Function {
-  return (reply: AlexaReply, event: AlexaEvent): void => {
+export function DialogDelegate(slots: any): directiveHandler  {
+  return async (reply, event): Promise<void> => {
+    if (!event.intent) {
+      throw new Error("An intent is required");
+    }
+
     reply.yield();
     reply.response.directives.push({
       type: "Dialog.Delegate",
       updatedIntent: {
+        confirmationStatus: "",
         name: event.intent.name,
-        confirmationStatus: '',
         slots: _.mapValues((v: any, k: string) => ({ name: k, value: v})),
       },
-    })
-  }
+    });
+  };
 }
 
-export function RenderTemplate(templatePath: string|Template, token: string): Function {
-  return  async (reply: AlexaReply, event: AlexaEvent): Promise<void> => {
-    if (!reply.supportsDisplayInterface) {
+export function RenderTemplate(templatePath: string|Template, token: string): directiveHandler {
+  return  async (reply, event): Promise<void> => {
+    if (!(reply as AlexaReply).supportsDisplayInterface) {
       return;
     }
 
-    if (_.filter(reply.response.directives, { type: 'Display.RenderTemplate' }).length > 0) {
-      throw new Error('At most one Display.RenderTemplate directive can be specified in a response');
+    if (_.filter(reply.response.directives, { type: "Display.RenderTemplate" }).length > 0) {
+      throw new Error("At most one Display.RenderTemplate directive can be specified in a response");
     }
 
-    if(_.isString(templatePath)) {
+    if (_.isString(templatePath)) {
       const directive = await reply.render(templatePath, { token });
-      reply.response.directives.push(directive)
+      reply.response.directives.push(directive);
     } else {
-      reply.response.directives.push(templatePath)
+      reply.response.directives.push(templatePath);
     }
-  }
+  };
 }
 
-export function AccountLinkingCard(): Function {
-  return (reply: AlexaReply, event: AlexaEvent): void => {
-    if (_.filter(reply.response.directives, { type: 'card' }).length > 0) {
-      throw new Error('At most one card can be specified in a response');
+export function AccountLinkingCard(): directiveHandler {
+  return async (reply, event): Promise<void> => {
+    if (_.filter(reply.response.directives, { type: "card" }).length > 0) {
+      throw new Error("At most one card can be specified in a response");
     }
 
-    reply.response.directives.push({ card: { type: 'LinkAccount' }, type: 'card' });
-  }
+    reply.response.directives.push({ card: { type: "LinkAccount" }, type: "card" });
+  };
 }
 
-export function Hint(templatePath: string): Function {
-  return async (reply: AlexaReply, event: AlexaEvent): Promise<void> => {
-    if (_.filter(reply.response.directives, { type: 'Hint' }).length > 0) {
-      throw new Error('At most one Hint directive can be specified in a response');
+export function Hint(templatePath: string): directiveHandler {
+  return async (reply, event): Promise<void> => {
+    if (_.filter(reply.response.directives, { type: "Hint" }).length > 0) {
+      throw new Error("At most one Hint directive can be specified in a response");
     }
 
-    if(_.isString(templatePath)) {
+    if (_.isString(templatePath)) {
       const directive = await reply.render(templatePath);
-      reply.response.directives.push(directive)
+      reply.response.directives.push(directive);
     } else {
-      reply.response.directives.push(templatePath)
+      reply.response.directives.push(templatePath);
     }
-  }
+  };
 }
 
-
-export function PlayAudio(url: string, token: string, offsetInMilliseconds: number, playBehavior: string='REPLACE'): Function {
-  return (reply: AlexaReply, event: AlexaEvent) => {
-    if (_.find(reply.response.directives, { type: 'AudioPlayer.Play' }) && _.find(reply.response.directives, { type: 'VideoApp.Launch' })) {
-      throw new Error('Do not include both an AudioPlayer.Play directive and a VideoApp.Launch directive in the same response');
+export function PlayAudio(url: string, token: string, offsetInMilliseconds: number, playBehavior: string= "REPLACE"): directiveHandler {
+  return async (reply, event): Promise<void> => {
+    if (_.find(reply.response.directives, { type: "AudioPlayer.Play" }) && _.find(reply.response.directives, { type: "VideoApp.Launch" })) {
+      throw new Error("Do not include both an AudioPlayer.Play directive and a VideoApp.Launch directive in the same response");
     }
 
     reply.response.directives.push({
-      type: "AudioPlayer.Play",
+      audioItem: { stream: { token, url, offsetInMilliseconds }},
       playBehavior,
-      audioItem: { stream: { token, url, offsetInMilliseconds }}
+      type: "AudioPlayer.Play",
     });
-  }
+  };
 }
