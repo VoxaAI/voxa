@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "compile": "tsc",
-    "test": "mocha",
-    "test-ci": "nyc mocha --colors --reporter mocha-jenkins-reporter test",
+    "test": "mocha test/*.spec.* test/**/*.spec.*",
+    "test-ci": "nyc mocha --colors --reporter mocha-jenkins-reporter test test/*.spec.* test/**/*.spec.*",
     "report": "nyc report",
     "lint": "tslint -c tslint.json src/**/*.ts"
   },
@@ -43,9 +43,12 @@
     "@types/actions-on-google": "^1.6.0",
     "@types/alexa-sdk": "^1.0.11",
     "@types/bluebird": "^3.5.18",
+    "@types/chai": "^4.0.10",
+    "@types/chai-as-promised": "^7.1.0",
     "@types/debug": "^0.0.30",
     "@types/i18next": "^8.4.2",
     "@types/lodash": "^4.14.88",
+    "@types/mocha": "^2.2.45",
     "@types/node": "^8.0.58",
     "@types/request-promise": "^4.1.39",
     "@types/uuid": "^3.4.3",
@@ -63,6 +66,7 @@
     "source-map-loader": "^0.2.3",
     "ts-node": "^4.0.2",
     "tslint": "^5.8.0",
+    "tslint-no-unused-expression-chai": "^0.0.3",
     "typescript": "^2.6.2"
   },
   "bugs": {

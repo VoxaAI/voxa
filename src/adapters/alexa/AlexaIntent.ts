@@ -3,6 +3,10 @@ import * as alexa from "alexa-sdk";
 import * as _ from "lodash";
 import { IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
 
+export interface IIntentRequest extends alexa.RequestBody<alexa.IntentRequest> {
+  context: any;
+}
+
 export class AlexaIntent implements IVoxaIntent {
   public rawIntent: any;
   public name: string;

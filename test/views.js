@@ -4,6 +4,14 @@ const views = (function views() {
   return {
     'en-US': {
       translation: {
+        Card: {
+          type: 'Standard',
+          title: 'Title',
+          image: {
+            smallImageUrl: 'https://example.com/small.jpg',
+            largeImageUrl: 'https://example.com/large.jpg'
+          }
+        },
         LaunchIntent: {
           OpenResponse: {
             tell: 'Hello! Good {time}',
@@ -83,7 +91,6 @@ const views = (function views() {
         },
       },
     },
-    Random: { tell: ['Random 1', 'Random 2', 'Random 3'] },
   };
 }());
 

@@ -5,6 +5,7 @@ import * as url from "url";
 
 import { OutputSpeech, Response, ResponseBody, Template } from "alexa-sdk";
 
+import { directiveHandler } from "../../directives";
 import { toSSML } from "../../ssml";
 import { ITransition } from "../../StateMachine";
 import { VoxaApp } from "../../VoxaApp";
@@ -13,6 +14,7 @@ import { VoxaReply } from "../../VoxaReply";
 import { VoxaAdapter } from "../VoxaAdapter";
 import { AlexaEvent } from "./AlexaEvent";
 import { AlexaReply } from "./AlexaReply";
+import { AccountLinkingCard, DialogDelegate, Hint, HomeCard, PlayAudio, RenderTemplate } from "./directives";
 
 const log: debug.IDebugger = debug("voxa");
 
@@ -95,7 +97,16 @@ export class AlexaAdapter extends VoxaAdapter<AlexaReply> {
 
   constructor(voxaApp: VoxaApp) {
     super(voxaApp);
-    this.app.onAfterStateChanged((voxaEvent: AlexaEvent, reply: AlexaReply, transition: ITransition) => AlexaAdapter.partialReply(voxaEvent, reply));
+
+    _.map([HomeCard, DialogDelegate, RenderTemplate, AccountLinkingCard, Hint, PlayAudio],
+      (handler: (value: any) => directiveHandler) => voxaApp.registerDirectiveHandler(handler, handler.name));
+
+    this.app.onAfterStateChanged((
+      voxaEvent: AlexaEvent,
+      reply: AlexaReply,
+      transition: ITransition,
+    ) => AlexaAdapter.partialReply(voxaEvent, reply));
+
     _.forEach(AlexaRequests, (requestType) => voxaApp.registerRequestHandler(requestType));
   }
 

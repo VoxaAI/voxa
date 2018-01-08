@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 
 import { AssistantApp, Responses } from "actions-on-google";
-import { directiveHandler } from "../../VoxaReply";
+import { directiveHandler } from "../../directives";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 import { DialogFlowReply } from "./DialogFlowReply";
 import { InputValueDataTypes, StandardIntents } from "./interfaces";
@@ -23,6 +23,7 @@ export function List(templatePath: string|Responses.List): directiveHandler {
         },
         intent: StandardIntents.OPTION,
       },
+      type: "possibleIntents",
     });
   };
 }
@@ -45,13 +46,14 @@ export function Carousel(templatePath: string|Responses.Carousel): directiveHand
           },
         },
       },
+      type: "systemIntent",
     });
   };
 }
 
 export function Suggestions(suggestions: string[]): directiveHandler {
   return  async (reply, event): Promise<void> => {
-    reply.response.directives.push({ suggestions  });
+    reply.response.directives.push({ suggestions, type: "suggestions"  });
   };
 }
 
@@ -64,6 +66,6 @@ export function BasicCard(templatePath: string|Responses.BasicCard): directiveHa
       basicCard = templatePath;
     }
 
-    reply.response.directives.push({ basicCard  });
+    reply.response.directives.push({ basicCard, type: "basicCard"  });
   };
 }

@@ -36,9 +36,10 @@ export interface IStateMachineConfig {
 }
 
 export interface ITransition {
-  to: string|IState;
-  reply: string|VoxaReply;
-  directives: any[];
+  [propname: string]: any;
+  to?: string|IState;
+  reply?: string|VoxaReply;
+  directives?: any[];
   message?: any;
 }
 

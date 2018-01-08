@@ -10,6 +10,14 @@ export interface IAlexaRequest extends alexa.RequestBody<alexa.Request> {
   context: any;
 }
 
+export interface ILaunchRequest extends alexa.RequestBody<alexa.LaunchRequest> {
+  context: any;
+}
+
+export interface ISessionEndedRequest extends alexa.RequestBody<alexa.SessionEndedRequest> {
+  context: any;
+}
+
 export class AlexaEvent extends IVoxaEvent {
 
   public session: any;
@@ -20,7 +28,7 @@ export class AlexaEvent extends IVoxaEvent {
   public model: Model;
   public t: TranslationFunction;
 
-  constructor(event: IAlexaRequest , context: any) {
+  constructor(event: IAlexaRequest , context?: any) {
     super(event, context);
     this.session = event.session;
     this.request = event.request;

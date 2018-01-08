@@ -1,12 +1,13 @@
 import * as bluebird from "bluebird";
 import * as debug from "debug";
+import { Resource } from "i18next";
 import * as _ from "lodash";
 import { ITransition } from "../StateMachine";
 import { IVoxaEvent } from "../VoxaEvent";
 
 export interface IRendererConfig {
-  variables: any;
-  views: any;
+  variables?: any;
+  views: Resource;
 }
 
 export interface IMessage {

@@ -1,6 +1,6 @@
 import { HeroCard as HeroCardType, SuggestedActions as SuggestedActionsType } from "botbuilder";
 import * as _ from "lodash";
-import { directiveHandler } from "../../VoxaReply";
+import { directiveHandler } from "../../directives";
 import { CortanaEvent } from "./CortanaEvent";
 import { CortanaReply } from "./CortanaReply";
 
@@ -12,7 +12,7 @@ export function HeroCard(templatePath: string|HeroCardType): directiveHandler {
     } else {
       attachment = templatePath;
     }
-    reply.response.directives.push({ attachment });
+    reply.response.directives.push({ type: "attachment", attachment });
   };
 }
 
@@ -25,6 +25,6 @@ export function SuggestedActions(templatePath: string|SuggestedActionsType): dir
       suggestedActions = templatePath;
     }
 
-    reply.response.directives.push({ suggestedActions });
+    reply.response.directives.push({ type: "suggestedActions", suggestedActions });
   };
 }

@@ -1,15 +1,16 @@
 import { Card, Template } from "alexa-sdk";
 import * as _ from "lodash";
-import { directiveHandler } from "../../VoxaReply";
+import { directiveHandler } from "../../directives";
 import { AlexaEvent } from "./AlexaEvent";
 import { AlexaReply } from "./AlexaReply";
 
 export function HomeCard(templatePath: string): directiveHandler {
   return async (reply, event): Promise<void> => {
     const card = await reply.render(templatePath);
-    if (_.filter(reply.response.directives, { type: "card" }).length > 0) {
+    if (reply.hasDirective("card")) {
       throw new Error("At most one card can be specified in a response");
     }
+
     reply.response.directives.push({ card, type: "card" });
   };
 }
@@ -38,7 +39,7 @@ export function RenderTemplate(templatePath: string|Template, token: string): di
       return;
     }
 
-    if (_.filter(reply.response.directives, { type: "Display.RenderTemplate" }).length > 0) {
+    if (reply.hasDirective("Display.RenderTemplate")) {
       throw new Error("At most one Display.RenderTemplate directive can be specified in a response");
     }
 
@@ -53,7 +54,7 @@ export function RenderTemplate(templatePath: string|Template, token: string): di
 
 export function AccountLinkingCard(): directiveHandler {
   return async (reply, event): Promise<void> => {
-    if (_.filter(reply.response.directives, { type: "card" }).length > 0) {
+    if (reply.hasDirective("card")) {
       throw new Error("At most one card can be specified in a response");
     }
 
@@ -63,7 +64,7 @@ export function AccountLinkingCard(): directiveHandler {
 
 export function Hint(templatePath: string): directiveHandler {
   return async (reply, event): Promise<void> => {
-    if (_.filter(reply.response.directives, { type: "Hint" }).length > 0) {
+    if (reply.hasDirective("Hint")) {
       throw new Error("At most one Hint directive can be specified in a response");
     }
 
@@ -78,7 +79,7 @@ export function Hint(templatePath: string): directiveHandler {
 
 export function PlayAudio(url: string, token: string, offsetInMilliseconds: number, playBehavior: string= "REPLACE"): directiveHandler {
   return async (reply, event): Promise<void> => {
-    if (_.find(reply.response.directives, { type: "AudioPlayer.Play" }) && _.find(reply.response.directives, { type: "VideoApp.Launch" })) {
+    if (reply.hasDirective("VideoApp.Launch")) {
       throw new Error("Do not include both an AudioPlayer.Play directive and a VideoApp.Launch directive in the same response");
     }
 
