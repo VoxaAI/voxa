@@ -170,15 +170,21 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
 
   public replyToActivity(event: CortanaEvent, reply: CortanaReply): Promise<any> {
     console.log(JSON.stringify({ event: event.rawEvent }, null, 2));
-    const baseUri = (event.rawEvent.address as IChatConnectorAddress).serviceUrl;
+
+    const address: IChatConnectorAddress = event.rawEvent.address;
+    const baseUri = address.serviceUrl;
     const conversationId = encodeURIComponent(event.session.sessionId);
-    const activityId = encodeURIComponent(event.rawEvent.address.id);
 
     if (!baseUri) {
       throw new Error("serviceUrl is missing");
     }
 
-    const uri = url.resolve(baseUri, `/v3/conversations/${conversationId}/activities/${activityId}`);
+    let path = `/v3/conversations/${conversationId}/activities`;
+    if (address.id) {
+      path += "/" + encodeURIComponent(address.id);
+    }
+
+    const uri = url.resolve(baseUri, path);
     return this.botApiRequest("POST", uri, reply.toJSON());
   }
 
