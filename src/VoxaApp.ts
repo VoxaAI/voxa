@@ -7,7 +7,7 @@ import { ask, askP, directiveHandler, directives, reply, reprompt, say, sayP, te
 import { OnSessionEndedError, UnknownRequestType } from "./errors";
 import { IModel, Model } from "./Model";
 import { IMessage, IRenderer, IRendererConfig, Renderer } from "./renderers/Renderer";
-import { IState, IStateMachineConfig, ITransition, StateMachine } from "./StateMachine";
+import { isState, IState, IStateMachineConfig, isTransition, ITransition, StateMachine } from "./StateMachine";
 import { IVoxaEvent } from "./VoxaEvent";
 import { IReply, VoxaReply } from "./VoxaReply";
 
@@ -35,7 +35,7 @@ export class VoxaApp {
   public eventHandlers: any;
   public requestHandlers: any;
 
-  public config: IVoxaAppConfig;
+  public config: any;
   public renderer: Renderer;
   public i18nextPromise: PromiseLike<i18n.TranslationFunction>;
   public states: any;
@@ -69,6 +69,7 @@ export class VoxaApp {
 
     this.i18nextPromise = new Promise((resolve, reject) => {
       i18n.init({
+        fallbackLng: "en",
         load: "all",
         nonExplicitWhitelist: true,
         resources: this.config.views,
@@ -306,7 +307,7 @@ export class VoxaApp {
     }
   }
 
-  public onIntent(intentName: string, handler: IStateHandler): void {
+  public onIntent(intentName: string, handler: IStateHandler|ITransition): void {
     if (!this.states.entry) {
       this.states.entry = { to: {}, name: "entry" };
     }
@@ -329,7 +330,7 @@ export class VoxaApp {
     log("Starting the state machine from %s state", fromState);
 
     const transition: ITransition = await stateMachine.runTransition(voxaEvent, response);
-    if (!_.isString(transition.to) && transition.to.isTerminal) {
+    if (!_.isString(transition.to) && _.get(transition, "to.isTerminal")) {
       await this.handleOnSessionEnded(voxaEvent, response);
     }
 
@@ -366,9 +367,13 @@ export class VoxaApp {
       voxaEvent.model = new this.config.Model();
     }
 
+    if (!transition.to) {
+      throw new Error("Missing transition");
+    }
+
     if (typeof transition.to === "string") {
       voxaEvent.model.state = transition.to;
-    } else {
+    } else if (isState(transition.to)) {
       voxaEvent.model.state = transition.to.name;
     }
 
@@ -378,8 +383,10 @@ export class VoxaApp {
 
   public async transformRequest(voxaEvent: IVoxaEvent): Promise<void> {
     await this.i18nextPromise;
-    const model: Model = await this.config.Model.fromEvent(voxaEvent);
-    voxaEvent.model = model;
+    if (this.config.Model) {
+      const model: Model = await this.config.Model.fromEvent(voxaEvent);
+      voxaEvent.model = model;
+    }
     voxaEvent.t = i18n.getFixedT(voxaEvent.request.locale);
     log("Initialized model like %s", JSON.stringify(voxaEvent.model));
   }

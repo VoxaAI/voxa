@@ -51,8 +51,12 @@ export function Carousel(templatePath: string|Responses.Carousel): directiveHand
   };
 }
 
-export function Suggestions(suggestions: string[]): directiveHandler {
+export function Suggestions(suggestions: string[]|string): directiveHandler {
   return  async (reply, event): Promise<void> => {
+    if (_.isString(suggestions)) {
+      suggestions = await reply.render(suggestions);
+    }
+
     reply.response.directives.push({ suggestions, type: "suggestions"  });
   };
 }

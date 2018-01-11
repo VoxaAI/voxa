@@ -43,14 +43,14 @@ export class Renderer {
 
   public async renderPath(view: string, voxaEvent: IVoxaEvent, variables?: any) {
     const locale = _.get(voxaEvent, "request.locale");
-    const type = _.get(voxaEvent, "type");
+    const platform = _.get(voxaEvent, "platform");
 
     let message = voxaEvent.t(view, {
       returnObjects: true,
     });
 
-    if (type && message[type]) {
-      message = message[type];
+    if (platform && message[platform]) {
+      message = message[platform];
     }
 
     if (_.isString(message) && message === view) {

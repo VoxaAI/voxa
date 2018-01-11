@@ -9,7 +9,7 @@
 
 const expect = require('chai').expect;
 const Voxa = require('../src/VoxaApp').VoxaApp;
-const views = require('./views');
+const views = require('./views').views;
 const variables = require('./variables');
 const _ = require('lodash');
 const AlexaEvent = require('../src/adapters/alexa/AlexaEvent').AlexaEvent;

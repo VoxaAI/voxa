@@ -8,7 +8,7 @@ import { ask, reply,  reprompt,  say, tell } from "../src/directives";
 import { Renderer } from "../src/renderers/Renderer";
 import { IVoxaEvent } from "../src/VoxaEvent";
 import { AlexaRequestBuilder } from "./tools";
-import * as views from "./views";
+import { views } from "./views";
 
 use(chaiAsPromised);
 

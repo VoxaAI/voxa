@@ -22,7 +22,7 @@ export class AlexaEvent extends IVoxaEvent {
 
   public session: any;
   public request: any;
-  public type: string;
+  public platform: string;
   public context: any;
   public intent: IVoxaIntent;
   public model: Model;
@@ -50,7 +50,7 @@ export class AlexaEvent extends IVoxaEvent {
       this.intent = new AlexaIntent(this.request.intent);
     }
 
-    this.type = "alexa";
+    this.platform = "alexa";
   }
 
   get user() {

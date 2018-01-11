@@ -7,7 +7,7 @@ const azure = require('botbuilder-azure');
 const _ = require('lodash');
 const CortanaAdapter = require('../../src/adapters/cortana/CortanaAdapter').CortanaAdapter;
 const VoxaApp = require('../../src/VoxaApp').VoxaApp;
-const views = require('../views');
+const views = require('../views').views;
 const variables = require('../variables');
 const rawEvent = _.cloneDeep(require('../requests/cortana/microsoft.launch.json'));
 

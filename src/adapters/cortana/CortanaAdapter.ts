@@ -1,6 +1,6 @@
 
 import * as bluebird from "bluebird";
-import { IBotStorage, IBotStorageContext, IBotStorageData, IChatConnectorAddress, IEntity, IEvent, IIntent, IIntentRecognizerResult, IMessage, IntentRecognizer, IRecognizeContext, LuisRecognizer, Session, SessionLogger } from "botbuilder";
+import { IBotStorage, IBotStorageContext, IBotStorageData, IChatConnectorAddress, IEntity, IIntent, IMessage, LuisRecognizer } from "botbuilder";
 import * as debug from "debug";
 import * as _ from "lodash";
 import * as rp from "request-promise";
@@ -23,6 +23,7 @@ const log: debug.IDebugger = debug("voxa");
 const CortanaRequests = [
   "conversationUpdate",
   "contactRelationUpdate",
+  "message",
 ];
 
 const toAddress = {
@@ -52,7 +53,11 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
     this.applicationId = config.applicationId;
     this.applicationPassword = config.applicationPassword;
     this.qAuthorization = this.getAuthorization();
-    this.app.onAfterStateChanged((voxaEvent: CortanaEvent, reply: CortanaReply, transition: ITransition) => this.partialReply(voxaEvent, reply, transition));
+    this.app.onAfterStateChanged((
+      voxaEvent: CortanaEvent,
+      reply: CortanaReply,
+      transition: ITransition,
+    ) => this.partialReply(voxaEvent, reply, transition));
 
     _.forEach(CortanaRequests, (requestType: string) => voxaApp.registerRequestHandler(requestType));
   }
@@ -75,15 +80,15 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
 
   public async getAuthorization(): Promise<IAuthorizationResponse> {
     const requestOptions: rp.Options = {
-      url: "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token",
-      method: "POST",
-      json: true,
       form: {
-        grant_type: "client_credentials",
         client_id: this.applicationId,
         client_secret: this.applicationPassword,
+        grant_type: "client_credentials",
         scope: "https://api.botframework.com/.default",
       },
+      json: true,
+      method: "POST",
+      url: "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token",
     };
     log("getAuthorization");
     log(requestOptions);
@@ -112,10 +117,11 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
 
     const { intents, entities } = await new Promise<IRecognizeResult>((resolve, reject) => {
       if (msg.text) {
-        return LuisRecognizer.recognize(msg.text, this.config.recognizerURI, (err: Error, intents?: IIntent[], entities?: IEntity[]) => {
-          if (err) { return reject(err); }
-          resolve({ intents, entities });
-        });
+        return LuisRecognizer.recognize(msg.text, this.config.recognizerURI,
+          (err: Error, intents?: IIntent[], entities?: IEntity[]) => {
+            if (err) { return reject(err); }
+            resolve({ intents, entities });
+          });
       }
 
       resolve({});
@@ -163,9 +169,10 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
   }
 
   public replyToActivity(event: CortanaEvent, reply: CortanaReply): Promise<any> {
+    console.log(JSON.stringify({ event: event.rawEvent }, null, 2));
     const baseUri = (event.rawEvent.address as IChatConnectorAddress).serviceUrl;
     const conversationId = encodeURIComponent(event.session.sessionId);
-    const activityId = encodeURIComponent(event.rawEvent.sourceEvent.clientActivityId);
+    const activityId = encodeURIComponent(event.rawEvent.address.id);
 
     if (!baseUri) {
       throw new Error("serviceUrl is missing");

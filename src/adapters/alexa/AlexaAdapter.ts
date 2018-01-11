@@ -44,13 +44,13 @@ export class AlexaAdapter extends VoxaAdapter<AlexaReply> {
   /*
    * Sends a partial reply after every state change
    */
-  public static partialReply(event: AlexaEvent, reply: AlexaReply) {
+  public static async partialReply(event: AlexaEvent, reply: AlexaReply) {
     if (!_.get(event, "context.System.apiEndpoint")) {
-      return Promise.resolve(null);
+      return null;
     }
 
     if (reply.isYielding()) {
-      return Promise.resolve(null);
+      return null;
     }
 
     const endpoint = url.resolve(event.context.System.apiEndpoint, "/v1/directives");
@@ -59,7 +59,7 @@ export class AlexaAdapter extends VoxaAdapter<AlexaReply> {
     const speech = toSSML(reply.response.statements.join("\n"));
 
     if (!speech) {
-      return Promise.resolve(null);
+      return null;
     }
 
     const body = {
@@ -75,10 +75,8 @@ export class AlexaAdapter extends VoxaAdapter<AlexaReply> {
     log("apiRequest");
     log(body);
 
-    return AlexaAdapter.apiRequest(endpoint, body, authorizationToken)
-      .then(() => {
-        reply.clear();
-      });
+    await AlexaAdapter.apiRequest(endpoint, body, authorizationToken);
+    reply.clear();
   }
 
   public static apiRequest(endpoint: string, body: any, authorizationToken: string): any {
@@ -113,6 +111,6 @@ export class AlexaAdapter extends VoxaAdapter<AlexaReply> {
   public async execute(rawEvent: any, context: any): Promise<ResponseBody> {
     const alexaEvent = new AlexaEvent(rawEvent, context);
     const reply = await this.app.execute(alexaEvent, AlexaReply) as AlexaReply;
-    return reply.toJSON();
+    return JSON.parse(JSON.stringify(reply));
   }
 }

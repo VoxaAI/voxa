@@ -149,6 +149,7 @@ describe('StateMachine', () => {
       return expect(stateMachine.runTransition(voxaEvent, new Reply(voxaEvent)))
         .to.eventually.be.rejectedWith(errors.UnknownState);
     });
+
     it('should fallback to entry on no response', () => {
       states.someState = {
         enter: { entry: simple.stub().returnWith(null) },

@@ -10,7 +10,7 @@ const expect = chai.expect;
 
 const Voxa = require('../src/VoxaApp').VoxaApp;
 const Renderer = require('../src/renderers/Renderer').Renderer;
-const views = require('./views');
+const views = require('./views').views;
 const variables = require('./variables');
 const _ = require('lodash');
 

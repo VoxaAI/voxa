@@ -3,12 +3,15 @@ import * as _ from "lodash";
 import { Responses } from "actions-on-google";
 import { StandardIntents } from "actions-on-google/assistant-app";
 import { Context, DialogflowApp } from "actions-on-google/dialogflow-app";
+import { directiveHandler } from "../../directives";
 import { toSSML } from "../../ssml";
+import { VoxaApp } from "../../VoxaApp";
 import { IVoxaSession } from "../../VoxaEvent";
 import { VoxaReply } from "../../VoxaReply";
 import { VoxaAdapter } from "../VoxaAdapter";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 import { DialogFlowReply } from "./DialogFlowReply";
+import { BasicCard, Carousel, List, Suggestions } from "./directives";
 
 export class DialogFlowAdapter extends VoxaAdapter<DialogFlowReply> {
   public static sessionToContext(session: IVoxaSession): any[] {
@@ -93,6 +96,12 @@ export class DialogFlowAdapter extends VoxaAdapter<DialogFlowReply> {
     }
 
     return response;
+  }
+
+  constructor(voxaApp: VoxaApp) {
+    super(voxaApp);
+    _.map([List, Carousel, Suggestions, BasicCard],
+      (handler: (value: any) => directiveHandler) => voxaApp.registerDirectiveHandler(handler, handler.name));
   }
 
   public async execute(rawEvent: any, context: any): Promise<any> {

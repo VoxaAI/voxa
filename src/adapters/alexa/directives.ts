@@ -15,21 +15,43 @@ export function HomeCard(templatePath: string): directiveHandler {
   };
 }
 
-export function DialogDelegate(slots: any): directiveHandler  {
+export function DialogDelegate(slots?: any): directiveHandler  {
   return async (reply, event): Promise<void> => {
     if (!event.intent) {
       throw new Error("An intent is required");
     }
 
-    reply.yield();
-    reply.response.directives.push({
+    const directive: any = {
       type: "Dialog.Delegate",
-      updatedIntent: {
-        confirmationStatus: "",
+    };
+
+    if (slots) {
+      const directiveSlots = _(slots)
+        .map((value, key) => {
+          const data: any = {
+            confirmationStatus: "NONE",
+            name: key,
+          };
+
+          if (value) {
+            data.value = value;
+          }
+
+          return [key, data];
+        })
+        .fromPairs()
+        .value();
+
+      directive.updatedIntent = {
+        confirmationStatus: "NONE",
         name: event.intent.name,
-        slots: _.mapValues((v: any, k: string) => ({ name: k, value: v})),
-      },
-    });
+        slots: directiveSlots,
+      };
+    }
+
+    reply.yield();
+    reply.response.terminate = false;
+    reply.response.directives.push(directive);
   };
 }
 
@@ -68,12 +90,14 @@ export function Hint(templatePath: string): directiveHandler {
       throw new Error("At most one Hint directive can be specified in a response");
     }
 
-    if (_.isString(templatePath)) {
-      const directive = await reply.render(templatePath);
-      reply.response.directives.push(directive);
-    } else {
-      reply.response.directives.push(templatePath);
-    }
+    const text = await reply.render(templatePath);
+    reply.response.directives.push({
+      hint: {
+        text,
+        type: "PlainText",
+      },
+      type: "Hint",
+    });
   };
 }
 

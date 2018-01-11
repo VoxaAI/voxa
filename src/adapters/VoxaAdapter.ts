@@ -27,9 +27,14 @@ abstract class VoxaAdapter<Reply extends VoxaReply> {
   public abstract execute(event: any, context?: any): Promise<any>;
 
   public lambda() {
-    return (event: any, context: any, callback: (err: Error|null, result: any) => void) => this.execute(event, context)
-      .then((result) => callback(null, result))
-      .catch((error) => callback);
+    return async (event: any, context: any, callback: (err: Error|null, result?: any) => void) => {
+      try {
+        const result = await this.execute(event, context);
+        callback(null, result);
+      } catch (error) {
+        callback(error);
+      }
+    };
   }
 }
 

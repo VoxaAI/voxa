@@ -11,7 +11,7 @@ const StateMachineApp = require('../../src/VoxaApp').VoxaApp;
 const AlexaEvent = require('../../src/adapters/alexa/AlexaEvent').AlexaEvent;
 const AlexaReply = require('../../src/adapters/alexa/AlexaReply').AlexaReply;
 const stateFlow = require('../../src/plugins/state-flow');
-const views = require('../views');
+const views = require('../views').views;
 const variables = require('../variables');
 
 describe('StateFlow plugin', () => {

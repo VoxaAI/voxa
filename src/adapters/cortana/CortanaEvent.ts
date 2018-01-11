@@ -5,11 +5,11 @@ import { UniversalBot } from "botbuilder";
 import { TranslationFunction } from "i18next";
 import { Model } from "../../Model";
 import { IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
-import { CortanaIntent } from "./CortanaIntent";
+import { CortanaIntent, isIConversationUpdate, isIMessage } from "./CortanaIntent";
 import { ICortanaEntity } from "./CortanaInterfaces";
 
 export class CortanaEvent extends IVoxaEvent {
-  public type: string;
+  public platform: string;
   public session: any;
   public context: any;
   public model: Model;
@@ -17,11 +17,11 @@ export class CortanaEvent extends IVoxaEvent {
   public intent?: IVoxaIntent;
 
   public executionContext: any;
-  public rawEvent: IMessage;
+  public rawEvent: IEvent;
 
-  constructor(message: IMessage, context: any, stateData: IBotStorageData, intent: IVoxaIntent|undefined) {
+  constructor(message: IEvent, context: any, stateData: IBotStorageData, intent: IVoxaIntent|undefined) {
     super(message, context);
-    this.type = "cortana";
+    this.platform = "cortana";
     this.session = {
       attributes: stateData.privateConversationData || {},
       new: _.isEmpty(stateData.privateConversationData),
@@ -43,33 +43,37 @@ export class CortanaEvent extends IVoxaEvent {
 
   get request() {
     let type = this.rawEvent.type;
+    let locale;
     if (type === "endOfConversation") {
       type = "SessionEndedRequest";
+    }
+
+    if (isIConversationUpdate(this.rawEvent) && this.rawEvent.membersAdded) {
+      type = "IntentRequest";
     }
 
     if (this.intent && this.intent.name) {
       type = "IntentRequest";
     }
 
-    let locale;
-    if (this.rawEvent.textLocale) {
-      locale = this.rawEvent.textLocale;
-    } if (this.rawEvent.entities) {
-      const entity: any = _(this.rawEvent.entities)
-        .filter({ type: "clientInfo"})
-        .filter((e: any) => !!e.locale)
-        .first();
+    if (isIMessage(this.rawEvent)) {
+      if (this.rawEvent.textLocale) {
+        locale = this.rawEvent.textLocale;
+      }
 
-      if (entity) {
-        locale = entity.locale;
+      if (this.rawEvent.entities) {
+        const entity: any = _(this.rawEvent.entities)
+          .filter({ type: "clientInfo"})
+          .filter((e: any) => !!e.locale)
+          .first();
+
+        if (entity) {
+          locale = entity.locale;
+        }
       }
     }
 
     return { type, locale };
   }
 
-}
-
-function isIConversationUpdate(message: IMessage | IConversationUpdate): message is IConversationUpdate {
-  return (message as IConversationUpdate).type === "conversationUpdate";
 }

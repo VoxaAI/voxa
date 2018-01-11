@@ -12,7 +12,7 @@ const StateMachineApp = require('../../src/VoxaApp').VoxaApp;
 const AlexaEvent = require('../../src/adapters/alexa/AlexaEvent').AlexaEvent;
 const AlexaReply = require('../../src/adapters/alexa/AlexaReply').AlexaReply;
 const replaceIntent = require('../../src/plugins/replace-intent');
-const views = require('../views');
+const views = require('../views').views;
 const variables = require('../variables');
 
 describe('ReplaceIntentPlugin', () => {

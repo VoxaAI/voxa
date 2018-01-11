@@ -12,7 +12,7 @@ export class DialogFlowEvent extends IVoxaEvent {
 
   public session: DialogFlowSession;
   public request: any;
-  public type: string;
+  public platform: string;
   public context: any;
   public intent: DialogFlowIntent;
   public model: Model;
@@ -31,7 +31,7 @@ export class DialogFlowEvent extends IVoxaEvent {
 
     this.session = new DialogFlowSession(event);
     this.intent = new DialogFlowIntent(event);
-    this.type = "dialogFlow";
+    this.platform = "dialogFlow";
   }
 
   get user() {

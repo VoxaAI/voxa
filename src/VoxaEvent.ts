@@ -15,6 +15,7 @@ export abstract class IVoxaEvent {
   public model: Model;
   public t: i18n.TranslationFunction;
   public user: IVoxaUser;
+  public platform: string;
 
   constructor(event: any, context: any) {
     this.rawEvent = event;
