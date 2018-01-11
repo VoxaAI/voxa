@@ -8,12 +8,15 @@
 'use strict';
 
 const expect = require('chai').expect;
-const Voxa = require('../');
-const views = require('./views');
+const Voxa = require('../src/VoxaApp').VoxaApp;
+const views = require('./views').views;
 const variables = require('./variables');
 const _ = require('lodash');
-const AlexaEvent = require('../lib/adapters/alexa/AlexaEvent');
+const AlexaEvent = require('../src/adapters/alexa/AlexaEvent').AlexaEvent;
+const AlexaReply = require('../src/adapters/alexa/AlexaReply').AlexaReply;
 const tools = require('./tools');
+
+const PlayAudio = require('../src/adapters/alexa/directives').PlayAudio;
 
 const rb = new tools.AlexaRequestBuilder();
 
@@ -44,12 +47,7 @@ const states = {
       offsetInMilliseconds = request.context.AudioPlayer.offsetInMilliseconds;
     }
 
-    const directives = {};
-    directives.type = 'AudioPlayer.Play';
-    directives.playBehavior = 'REPLACE_ALL';
-    directives.token = createToken(index, shuffle, loop);
-    directives.url = TEST_URLS[index];
-    directives.offsetInMilliseconds = offsetInMilliseconds;
+    const directives = [PlayAudio(TEST_URLS[index], createToken(index, shuffle, loop), offsetInMilliseconds, 'REPLACE_ALL')]
 
     return { reply: 'LaunchIntent.OpenResponse', directives };
   },
@@ -76,10 +74,10 @@ describe('StateMachineApp', () => {
   });
 
   itIs('ResumeIntent', (reply) => {
-    expect(reply.msg.statements.join()).to.include('Hello! Good');
-    expect(reply.msg.directives[0].type).to.equal('AudioPlayer.Play');
-    expect(reply.msg.directives[0].playBehavior).to.equal('REPLACE_ALL');
-    expect(reply.msg.directives[0].audioItem.stream.offsetInMilliseconds).to.equal(353160);
+    expect(reply.response.statements.join()).to.include('Hello! Good');
+    expect(reply.response.directives[0].type).to.equal('AudioPlayer.Play');
+    expect(reply.response.directives[0].playBehavior).to.equal('REPLACE_ALL');
+    expect(reply.response.directives[0].audioItem.stream.offsetInMilliseconds).to.equal(353160);
   });
 
   function itIs(intentName, cb) {
@@ -91,7 +89,7 @@ describe('StateMachineApp', () => {
         playerActivity: 'STOPPED',
       };
 
-      return skill.execute(event).then(cb);
+      return skill.execute(event, AlexaReply).then(cb);
     });
   }
 });

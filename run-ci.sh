@@ -2,7 +2,7 @@
 set -ev
 
 yarn run test-ci
-yarn run cobertura
+yarn run report
 yarn run lint
 
 if [ "${CI}" = "true" ]; then

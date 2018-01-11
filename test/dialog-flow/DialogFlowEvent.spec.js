@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const DialogFlowEvent = require('../../lib/adapters/dialog-flow/DialogFlowEvent');
+const DialogFlowEvent = require('../../src/adapters/dialog-flow/DialogFlowEvent').DialogFlowEvent;
 const rawIntent = require('../requests/dialog-flow/pizzaIntent.json');
 const fallbackIntent = require('../requests/dialog-flow/fallbackIntent.json');
 

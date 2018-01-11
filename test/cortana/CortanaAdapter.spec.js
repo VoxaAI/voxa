@@ -4,12 +4,12 @@ const simple = require('simple-mock');
 const expect = require('chai').expect;
 const azure = require('botbuilder-azure');
 
-const CortanaAdapter = require('../../lib/adapters/cortana/CortanaAdapter');
-const LuisRecognizer = require('../../lib/adapters/cortana/LuisRecognizer');
-const VoxaApp = require('../../lib/StateMachineApp');
-const views = require('../views');
+const _ = require('lodash');
+const CortanaAdapter = require('../../src/adapters/cortana/CortanaAdapter').CortanaAdapter;
+const VoxaApp = require('../../src/VoxaApp').VoxaApp;
+const views = require('../views').views;
 const variables = require('../variables');
-const rawEvent = require('../requests/cortana/microsoft.launch.json');
+const rawEvent = _.cloneDeep(require('../requests/cortana/microsoft.launch.json'));
 
 describe('CortanaAdapter', () => {
   let adapter;
@@ -24,7 +24,6 @@ describe('CortanaAdapter', () => {
 
   beforeEach(() => {
     app = new VoxaApp({ views, variables });
-    recognizer = new LuisRecognizer('http://example.com');
     azureTableClient = new azure.AzureTableClient();
     storage = new azure.AzureBotStorage({ gzipData: false }, azureTableClient);
 
@@ -45,14 +44,6 @@ describe('CortanaAdapter', () => {
       .resolveWith(true);
   });
 
-  it('should throw an error if config doesn\'t include a recognizer', () => {
-    expect(() => { const a = new CortanaAdapter(app, {}); }).to.throw('Cortana requires a recognizer');
-  });
-
-  it('should throw an error if config doesn\'t include an storage', () => {
-    expect(() => { const a = new CortanaAdapter(app, { recognizer }); }).to.throw('Cortana requires a state storage');
-  });
-
   it('should request the authorization token on initialization', () => adapter.qAuthorization.then((authorization) => {
     expect(authorization).to.deep.equal({ access_token: 'ACCESS TOKEN' });
   }));
@@ -68,10 +59,11 @@ describe('CortanaAdapter', () => {
         return { reply: 'Count.Say', to: 'entry' };
       });
 
+
       return adapter.execute(rawEvent)
         .then(() => {
           expect(adapter.botApiRequest.calls.length).to.equal(3);
-          expect(adapter.botApiRequest.lastCall.args[2].voxaReply.msg.statements).to.deep.equal(['3']);
+          expect(adapter.botApiRequest.lastCall.args[2].text).to.equal('3');
         });
     });
   });

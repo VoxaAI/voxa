@@ -1,11 +1,11 @@
 'use strict';
 
 const expect = require('chai').expect;
-const DialogFlowAdapter = require('../../lib/adapters/dialog-flow/DialogFlowAdapter');
-const VoxaApp = require('../../lib/StateMachineApp');
-const views = require('../views');
-const VoxaReply = require('../../lib/VoxaReply');
-const DialogFlowEvent = require('../../lib/adapters/dialog-flow/DialogFlowEvent');
+const DialogFlowAdapter = require('../../src/adapters/dialog-flow/DialogFlowAdapter').DialogFlowAdapter;
+const VoxaApp = require('../../src/VoxaApp').VoxaApp;
+const views = require('../views').views;
+const VoxaReply = require('../../src/VoxaReply').VoxaReply;
+const DialogFlowEvent = require('../../src/adapters/dialog-flow/DialogFlowEvent').DialogFlowEvent;
 
 describe('DialogFlowAdapter', () => {
   describe('execute', () => {
@@ -24,34 +24,25 @@ describe('DialogFlowAdapter', () => {
     });
   });
 
-  describe('slack', () => {
-    it('should add the required slack structures', () => {
-      const rawEvent = require('../requests/dialog-flow/launchIntent.json');
-      const voxaEvent = new DialogFlowEvent(rawEvent);
-      const voxaReply = new VoxaReply(voxaEvent, { ask: 'Hi!' });
-      expect(DialogFlowAdapter.slack(voxaReply)).to.deep.equal({ text: 'Hi!' });
-    });
-  });
-
   describe('google', () => {
     it('should add the google card', () => {
       const rawEvent = require('../requests/dialog-flow/launchIntent.json');
-      const voxaEvent = new DialogFlowEvent(rawEvent);
-      const voxaReply = new VoxaReply(voxaEvent, {
-        ask: 'Hi!',
-        card: {
-          title: 'Title', subtitle: 'Subtitle', formattedText: 'The text', button: { title: 'ButtonTitle', url: 'https://example.com' },
-        },
-      });
-      expect(DialogFlowAdapter.google(voxaReply)).to.deep.equal({
-        expectUserResponse: true,
+      const event = new DialogFlowEvent(rawEvent);
+      const reply = new VoxaReply(event);
+
+      reply.response.statements.push('Hi!');
+      reply.response.directives.push({ basicCard: {
+        title: 'Title', subtitle: 'Subtitle', formattedText: 'The text', buttons: [ { title: 'ButtonTitle', openUrlAction: { url:  'https://example.com'} }],
+      } });
+      expect(DialogFlowAdapter.google(reply)).to.deep.equal({
+        expectUserResponse: false,
         isSsml: true,
         noInputPrompts: [],
+        possibleIntents: undefined,
         richResponse: {
           items: [
             {
               simpleResponse: {
-                displayText: 'Hi!',
                 ssml: '<speak>Hi!</speak>',
               },
             },
@@ -71,6 +62,8 @@ describe('DialogFlowAdapter', () => {
               },
             },
           ],
+          linkOutSuggestion: undefined,
+          suggestions: [],
         },
       });
     });

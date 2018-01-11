@@ -30,8 +30,8 @@ const variables = {
   exitArray: function exitArray() {
     return [{ a: 1 }, { b: 2 }, { c: 3 }];
   },
-  items(model) {
-    return model.items;
+  items: function items(request) {
+    return request.model.items;
   },
   time: function time() {
     const today = new Date();
@@ -50,14 +50,14 @@ const variables = {
     return 'example.com';
   },
 
-  count: function count(model) {
-    return Promise.resolve(model.count);
+  count: function count(request) {
+    return Promise.resolve(request.model.count);
   },
 
-  numberOne: function numberOne(model, request) {
-    if (request.request.locale === 'en-us') {
+  numberOne: function numberOne(request) {
+    if (request.request.locale === 'en-US') {
       return 'one';
-    } else if (request.request.locale === 'de-de') {
+    } else if (request.request.locale === 'de-DE') {
       return 'ein';
     }
 

@@ -7,10 +7,11 @@ chai.use(chaiAsPromised);
 
 const expect = chai.expect;
 const _ = require('lodash');
-const StateMachineApp = require('../../lib/StateMachineApp');
-const AlexaEvent = require('../../lib/adapters/alexa/AlexaEvent');
-const stateFlow = require('../../lib/plugins/state-flow');
-const views = require('../views');
+const StateMachineApp = require('../../src/VoxaApp').VoxaApp;
+const AlexaEvent = require('../../src/adapters/alexa/AlexaEvent').AlexaEvent;
+const AlexaReply = require('../../src/adapters/alexa/AlexaReply').AlexaReply;
+const stateFlow = require('../../src/plugins/state-flow');
+const views = require('../views').views;
 const variables = require('../variables');
 
 describe('StateFlow plugin', () => {
@@ -54,7 +55,7 @@ describe('StateFlow plugin', () => {
     });
 
 
-    return skill.execute(event)
+    return skill.execute(event, AlexaReply)
       .then((result) => {
         expect(result.voxaEvent.flow).to.deep.equal(['secondState', 'initState', 'die']);
       });
@@ -70,7 +71,7 @@ describe('StateFlow plugin', () => {
     event.session.attributes.model._state = 'fourthState';
     event.intent.name = 'OtherIntent';
 
-    return skill.execute(event)
+    return skill.execute(event, AlexaReply)
       .then((result) => {
         expect(result.voxaEvent.flow).to.deep.equal(['fourthState']);
       });
