@@ -1,12 +1,22 @@
 
 import * as bluebird from "bluebird";
-import { IBotStorage, IBotStorageContext, IBotStorageData, IChatConnectorAddress, IEntity, IIntent, IMessage, LuisRecognizer } from "botbuilder";
+import {
+  IBotStorage,
+  IBotStorageContext,
+  IBotStorageData,
+  IChatConnectorAddress,
+  IEntity,
+  IIntent,
+  IMessage,
+  LuisRecognizer,
+} from "botbuilder";
 import * as debug from "debug";
 import * as _ from "lodash";
 import * as rp from "request-promise";
 import { StatusCodeError } from "request-promise/errors";
 import * as url from "url";
 import * as uuid from "uuid";
+import { directiveHandler } from "../../directives";
 import { toSSML } from "../../ssml";
 import { ITransition } from "../../StateMachine";
 import { VoxaApp } from "../../VoxaApp";
@@ -17,8 +27,10 @@ import { CortanaEvent } from "./CortanaEvent";
 import { CortanaIntent } from "./CortanaIntent";
 import { IAuthorizationResponse } from "./CortanaInterfaces";
 import { CortanaReply } from "./CortanaReply";
+import { AudioCard, HeroCard, SuggestedActions } from "./directives";
 
 const log: debug.IDebugger = debug("voxa");
+const cortanalog: debug.IDebugger = debug("voxa:cortana");
 
 const CortanaRequests = [
   "conversationUpdate",
@@ -60,22 +72,24 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
     ) => this.partialReply(voxaEvent, reply, transition));
 
     _.forEach(CortanaRequests, (requestType: string) => voxaApp.registerRequestHandler(requestType));
+    _.map([HeroCard, AudioCard, SuggestedActions],
+      (handler: (value: any) => directiveHandler) => voxaApp.registerDirectiveHandler(handler, handler.name));
   }
 
   /*
    * Sends a partial reply after every state change
    */
-  public async partialReply(event: CortanaEvent, reply: CortanaReply, transition: ITransition): Promise<null> {
+  public async partialReply(event: CortanaEvent, reply: CortanaReply, transition: ITransition): Promise<ITransition> {
     if (!reply.hasMessages && !reply.hasDirectives) {
-      return null;
+      return transition;
     }
 
-    log("partialReply");
-    log({ hasMessages: reply.hasMessages, hasDirectives: reply.hasDirectives, msg: reply.response });
+    cortanalog("partialReply");
+    cortanalog({  msg: reply.response });
 
     await this.replyToActivity(event, reply);
     reply.clear();
-    return null;
+    return transition;
   }
 
   public async getAuthorization(): Promise<IAuthorizationResponse> {
@@ -90,8 +104,8 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
       method: "POST",
       url: "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token",
     };
-    log("getAuthorization");
-    log(requestOptions);
+    cortanalog("getAuthorization");
+    cortanalog(requestOptions);
 
     return rp(requestOptions);
   }
@@ -116,10 +130,12 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
     }
 
     const { intents, entities } = await new Promise<IRecognizeResult>((resolve, reject) => {
+      cortanalog({ text: msg.text });
       if (msg.text) {
         return LuisRecognizer.recognize(msg.text, this.config.recognizerURI,
           (err: Error, intents?: IIntent[], entities?: IEntity[]) => {
             if (err) { return reject(err); }
+            cortanalog({ intents, entities });
             resolve({ intents, entities });
           });
       }
@@ -169,8 +185,6 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
   }
 
   public replyToActivity(event: CortanaEvent, reply: CortanaReply): Promise<any> {
-    console.log(JSON.stringify({ event: event.rawEvent }, null, 2));
-
     const address: IChatConnectorAddress = event.rawEvent.address;
     const baseUri = address.serviceUrl;
     const conversationId = encodeURIComponent(event.session.sessionId);
@@ -228,7 +242,7 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
       // we're only gonna handle private conversation data, this keeps the code small
       // and more importantly it makes it so the programming model is the same between
       // the different platforms
-      privateConversationData: _.get(reply, "session.attributes"),
+      privateConversationData: _.get(reply, "session.attributes", {}),
       userData: {},
     };
 
@@ -253,8 +267,8 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
         },
       };
 
-      log("botApiRequest");
-      log(JSON.stringify(requestOptions, null, 2));
+      cortanalog("botApiRequest");
+      cortanalog(JSON.stringify(requestOptions, null, 2));
       return rp(requestOptions);
     } catch (reason) {
       if (reason instanceof StatusCodeError) {

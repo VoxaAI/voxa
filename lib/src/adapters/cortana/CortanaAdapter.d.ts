@@ -13,7 +13,7 @@ export declare class CortanaAdapter extends VoxaAdapter<CortanaReply> {
     applicationPassword: string;
     qAuthorization: PromiseLike<IAuthorizationResponse>;
     constructor(voxaApp: VoxaApp, config: any);
-    partialReply(event: CortanaEvent, reply: CortanaReply, transition: ITransition): Promise<null>;
+    partialReply(event: CortanaEvent, reply: CortanaReply, transition: ITransition): Promise<ITransition>;
     getAuthorization(): Promise<IAuthorizationResponse>;
     execute(msg: any, context: any): Promise<{}>;
     recognize(msg: IMessage): Promise<IVoxaIntent | undefined>;

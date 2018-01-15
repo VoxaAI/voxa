@@ -1,4 +1,10 @@
-import { HeroCard as HeroCardType, SuggestedActions as SuggestedActionsType } from "botbuilder";
+import {
+  AudioCard as AudioCardType,
+  HeroCard as HeroCardType,
+  IAttachment,
+  ICardMediaUrl,
+  SuggestedActions as SuggestedActionsType,
+} from "botbuilder";
 import * as _ from "lodash";
 import { directiveHandler } from "../../directives";
 import { CortanaEvent } from "./CortanaEvent";
@@ -27,4 +33,25 @@ export function SuggestedActions(templatePath: string|SuggestedActionsType): dir
 
     reply.response.directives.push({ type: "suggestedActions", suggestedActions });
   };
+}
+
+export function AudioCard(url: string, title: string = "", profile: string = ""): directiveHandler {
+  return  async (reply, event): Promise<void> => {
+    const attachment = new AudioCardType();
+    attachment.title(title);
+    const cardMedia: ICardMediaUrl = { url, profile };
+    attachment.media([cardMedia]);
+
+    reply.response.directives.push({ type: "attachment", attachment });
+    reply.response.terminate = true;
+    reply.yield();
+  };
+}
+
+export function isAttachment(object: any): object is IAttachment {
+  return "contentType" in object;
+}
+
+export function isSuggestedActions(object: any): object is SuggestedActionsType {
+  return "actions" in object;
 }

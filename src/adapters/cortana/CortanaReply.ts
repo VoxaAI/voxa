@@ -1,9 +1,20 @@
-import { AttachmentLayout, IAttachment, IChatConnectorAddress, IMessage, Keyboard, ReceiptCard, SigninCard, SuggestedActions } from "botbuilder";
+import {
+  AttachmentLayout,
+  IAttachment,
+  IChatConnectorAddress,
+  IIsAttachment,
+  IMessage,
+  Keyboard,
+  ReceiptCard,
+  SigninCard,
+  SuggestedActions,
+} from "botbuilder";
 import * as _ from "lodash";
 import * as uuid from "uuid";
 import { toSSML } from "../../ssml";
 import { VoxaReply } from "../../VoxaReply";
 import { CortanaEvent } from "./CortanaEvent";
+import { isAttachment, isSuggestedActions } from "./directives";
 
 export class CortanaReply extends VoxaReply {
   public voxaEvent: CortanaEvent;
@@ -18,14 +29,17 @@ export class CortanaReply extends VoxaReply {
       SigninCard,
     ];
 
-    const attachments: IAttachment[] = _(this.response.directives)
-      .filter((directive) => !!directive.attachment)
-      .map("attachment.data")
+    const attachments: any[] = _(this.response.directives)
+      .filter({ type: "attachment" })
+      .map("attachment")
+      .map((at: IIsAttachment) => at.toAttachment())
+      .filter((at: any) => isAttachment(at))
       .value();
 
-    const suggestedActions: SuggestedActions = _(this.response.directives)
-      .filter((directive) => !!directive.suggestedActions)
+    const suggestedActions: SuggestedActions|undefined = _(this.response.directives)
+      .filter({ type: "suggestedActions" })
       .map("suggestedActions")
+      .filter(isSuggestedActions)
       .find();
 
     return {
