@@ -1,11 +1,11 @@
 'use strict';
 
 const expect = require('chai').expect;
-const createServer = require('../src/adapters/create-server').createServer;
+const createServer = require('../src/platforms/create-server').createServer;
 const views = require('./views');
 const http = require('http');
 const StateMachineApp = require('../src/VoxaApp').VoxaApp;
-const AlexaAdapter = require('../src/adapters/alexa/AlexaAdapter').AlexaAdapter;
+const AlexaAdapter = require('../src/platforms/alexa/AlexaAdapter').AlexaAdapter;
 const portfinder = require('portfinder');
 
 const debug = require('debug')('test');

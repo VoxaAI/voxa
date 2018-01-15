@@ -1,11 +1,11 @@
 'use strict';
 
 const expect = require('chai').expect;
-const DialogFlowAdapter = require('../../src/adapters/dialog-flow/DialogFlowAdapter').DialogFlowAdapter;
+const DialogFlowAdapter = require('../../src/platforms/dialog-flow/DialogFlowAdapter').DialogFlowAdapter;
 const VoxaApp = require('../../src/VoxaApp').VoxaApp;
 const views = require('../views').views;
 const VoxaReply = require('../../src/VoxaReply').VoxaReply;
-const DialogFlowEvent = require('../../src/adapters/dialog-flow/DialogFlowEvent').DialogFlowEvent;
+const DialogFlowEvent = require('../../src/platforms/dialog-flow/DialogFlowEvent').DialogFlowEvent;
 
 describe('DialogFlowAdapter', () => {
   describe('execute', () => {
@@ -111,4 +111,3 @@ describe('DialogFlowAdapter', () => {
     });
   });
 });
-

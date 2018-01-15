@@ -1,8 +1,8 @@
 import { Session, SlotValue } from "alexa-sdk";
 import * as _ from "lodash";
 import { v1 } from "uuid";
-import { IAlexaRequest, ILaunchRequest, ISessionEndedRequest } from "../src/adapters/alexa/AlexaEvent";
-import { IIntentRequest } from "../src/adapters/alexa/AlexaIntent";
+import { IAlexaRequest, ILaunchRequest, ISessionEndedRequest } from "../src/platforms/alexa/AlexaEvent";
+import { IIntentRequest } from "../src/platforms/alexa/AlexaIntent";
 
 export class AlexaRequestBuilder {
   public version = "1.0";

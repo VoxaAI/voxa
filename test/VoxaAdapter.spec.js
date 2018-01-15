@@ -2,7 +2,7 @@
 
 const expect = require('chai').expect;
 const VoxaApp = require('../src/VoxaApp').VoxaApp;
-const VoxaAdapter = require('../src/adapters/VoxaAdapter').VoxaAdapter;
+const VoxaAdapter = require('../src/platforms/VoxaAdapter').VoxaAdapter;
 const views = require('./views');
 const AlexaRequestBuilder = require('./tools').AlexaRequestBuilder;
 

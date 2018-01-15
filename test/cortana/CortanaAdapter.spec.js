@@ -5,10 +5,10 @@ const expect = require('chai').expect;
 const azure = require('botbuilder-azure');
 
 const _ = require('lodash');
-const CortanaAdapter = require('../../src/adapters/cortana/CortanaAdapter').CortanaAdapter;
+const CortanaAdapter = require('../../src/platforms/cortana/CortanaAdapter').CortanaAdapter;
 const VoxaApp = require('../../src/VoxaApp').VoxaApp;
 const views = require('../views').views;
-const variables = require('../variables');
+const variables = require('../variables').variables;
 const rawEvent = _.cloneDeep(require('../requests/cortana/microsoft.launch.json'));
 
 describe('CortanaAdapter', () => {
@@ -27,7 +27,7 @@ describe('CortanaAdapter', () => {
     azureTableClient = new azure.AzureTableClient();
     storage = new azure.AzureBotStorage({ gzipData: false }, azureTableClient);
 
-    // we need to mock this before instantiating the adapters cause otherwise
+    // we need to mock this before instantiating the platforms cause otherwise
     // we try to get the authorization token
     simple.mock(CortanaAdapter.prototype, 'getAuthorization').resolveWith({
       access_token: 'ACCESS TOKEN',

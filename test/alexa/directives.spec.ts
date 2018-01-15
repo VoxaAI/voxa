@@ -2,17 +2,21 @@ import { expect, use } from "chai";
 import chaiAsPromised = require("chai-as-promised");
 import * as i18n from "i18next";
 import "mocha";
-import { AlexaAdapter } from "../../src/adapters/alexa/AlexaAdapter";
-import { AlexaEvent } from "../../src/adapters/alexa/AlexaEvent";
-import { AlexaReply } from "../../src/adapters/alexa/AlexaReply";
-import { DisplayTemplate } from "../../src/adapters/alexa/DisplayTemplateBuilder";
+import { AlexaAdapter } from "../../src/platforms/alexa/AlexaAdapter";
+import { AlexaEvent } from "../../src/platforms/alexa/AlexaEvent";
+import { AlexaReply } from "../../src/platforms/alexa/AlexaReply";
+import { DisplayTemplate } from "../../src/platforms/alexa/DisplayTemplateBuilder";
+import { CortanaEvent } from "../../src/platforms/cortana/CortanaEvent";
 import { Renderer } from "../../src/renderers/Renderer";
 import { VoxaApp } from "../../src/VoxaApp";
 import { IVoxaEvent } from "../../src/VoxaEvent";
-import { Hint, HomeCard } from "./../../src/adapters/alexa/directives";
+import { variables } from "../variables";
+import { Hint, HomeCard } from "./../../src/platforms/alexa/directives";
 import { AlexaRequestBuilder } from "./../tools";
-import * as variables from "./../variables";
 import { views } from "./../views";
+
+// tslint:disable-next-line
+const cortanaLaunch = require("../requests/cortana/microsoft.launch.json");
 
 use(chaiAsPromised);
 
@@ -20,6 +24,7 @@ describe("Alexa directives", () => {
   let event: any;
   let app: VoxaApp;
   let alexaSkill: AlexaAdapter;
+  let renderer: Renderer;
 
   before(() => {
     i18n .init({
@@ -34,6 +39,7 @@ describe("Alexa directives", () => {
     event = rb.getIntentRequest("AMAZON.YesIntent");
     app =  new VoxaApp({ views });
     alexaSkill = new AlexaAdapter(app);
+    renderer = new Renderer({ views, variables });
   });
 
   describe("RenderTemplate", () => {
@@ -101,17 +107,15 @@ describe("Alexa directives", () => {
   });
 
   describe("Hint", () => {
+    it("should not add to the reply if not an alexa event", async () => {
+      const cortanaEvent = new CortanaEvent(cortanaLaunch, {}, {});
+      const reply = new AlexaReply(cortanaEvent, renderer);
+
+      await Hint("Hint")(reply, event);
+      expect(reply.response.directives).to.be.empty;
+    });
+
     it("should only render a single Hint directive", async () => {
-      app.onIntent("YesIntent", {
-          Hint: "Hint",
-          directives: [Hint("Hint")],
-          to: "entry",
-      });
-
-      app.onError((request: AlexaEvent, error: Error) => {
-        expect(error.message).to.equal("At most one Hint directive can be specified in a response");
-      });
-
       const reply = await alexaSkill.execute(event, {});
       if (!reply.response.outputSpeech) {
         throw new Error("response missing");

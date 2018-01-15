@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const AlexaEvent = require('../../src/adapters/alexa/AlexaEvent').AlexaEvent;
+const AlexaEvent = require('../../src/platforms/alexa/AlexaEvent').AlexaEvent;
 const tools = require('../tools');
 
 const rb = new tools.AlexaRequestBuilder();

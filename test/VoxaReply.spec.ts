@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import * as _ from "lodash";
 import "mocha";
-import { AlexaEvent } from "../src/adapters/alexa/AlexaEvent";
+import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
 import { Renderer } from "../src/renderers/Renderer";
 import { VoxaReply as BaseVoxaReply } from "../src/VoxaReply";
 import { AlexaRequestBuilder } from "./tools";
@@ -42,12 +42,6 @@ describe("VoxaReply", () => {
     expect(reply.hasDirective(/^b/)).to.be.false;
     expect(reply.hasDirective((directive) => directive.type === "b")).to.be.false;
   });
-
-  //it("should throw on unknown directive type spec", () => {
-    ////const badFn = () =>  reply.hasDirective(true);
-    ////reply.response.directives = [{ type: "a" }];
-    ////expect(badFn).to.throw(Error, "Do not know how to use a boolean to find a directive");
-  //});
 
   it("should set yield to true on yield", () => {
     reply.yield();

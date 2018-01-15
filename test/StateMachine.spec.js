@@ -11,7 +11,7 @@ const expect = chai.expect;
 const StateMachine = require('../src/StateMachine').StateMachine;
 const errors = require('../src/errors');
 const Reply = require('../src/VoxaReply').VoxaReply;
-const AlexaEvent = require('../src/adapters/alexa/AlexaEvent').AlexaEvent;
+const AlexaEvent = require('../src/platforms/alexa/AlexaEvent').AlexaEvent;
 const tools = require('./tools');
 
 const rb = new tools.AlexaRequestBuilder()
@@ -109,7 +109,7 @@ describe('StateMachine', () => {
         states.entry.enter = { entry: () => null };
         const stateMachine = new StateMachine('entry', { states });
         const promise = stateMachine.runTransition({ intent: { name: 'LaunchIntent' } }, new Reply(voxaEvent));
-        return expect(promise).to.eventually.be.rejectedWith(errors.UnhandledState);
+        return expect(promise).to.eventually.be.rejectedWith(Error, 'LaunchIntent went unhandled on entry state');
       });
 
       it('should throw an exception on invalid transition from pojo controller', () => {
@@ -117,7 +117,7 @@ describe('StateMachine', () => {
         const stateMachine = new StateMachine('entry', { states });
         voxaEvent.intent.name = 'OtherIntent';
         const promise = stateMachine.runTransition(voxaEvent, new Reply(voxaEvent));
-        return expect(promise).to.eventually.be.rejectedWith(errors.UnhandledState, 'OtherIntent went unhandled on entry state');
+        return expect(promise).to.eventually.be.rejectedWith(Error, 'OtherIntent went unhandled on entry state');
       });
 
       it('should execute the onUnhandledState callbacks on invalid transition from pojo controller', () => {
@@ -139,7 +139,7 @@ describe('StateMachine', () => {
       const stateMachine = new StateMachine('entry', { states });
       voxaEvent.intent.name = 'LaunchIntent';
       return expect(stateMachine.runTransition(voxaEvent, new Reply(voxaEvent)))
-        .to.eventually.be.rejectedWith(errors.UnknownState);
+        .to.eventually.be.rejectedWith(Error, 'Unknown state undefinedState');
     });
 
     it('should throw UnknownState when transition.to goes to an undefined state', () => {
@@ -147,7 +147,7 @@ describe('StateMachine', () => {
       const stateMachine = new StateMachine('someState', { states });
 
       return expect(stateMachine.runTransition(voxaEvent, new Reply(voxaEvent)))
-        .to.eventually.be.rejectedWith(errors.UnknownState);
+        .to.eventually.be.rejectedWith(Error, 'Unknown state undefinedState');
     });
 
     it('should fallback to entry on no response', () => {

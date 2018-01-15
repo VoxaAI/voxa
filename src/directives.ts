@@ -22,16 +22,16 @@ export function reply(templatePaths: string|string[]): directiveHandler {
 
     await bluebird.map(templatePaths, async (tp: string): Promise<void> => {
       const message = await response.render(tp);
+      if (message.say) {
+        await sayP(message.say)(response, event);
+      }
+
       if (message.ask) {
         await askP(message.ask)(response, event);
       }
 
       if (message.tell) {
         await tellP(message.tell)(response, event);
-      }
-
-      if (message.say) {
-        await sayP(message.say)(response, event);
       }
 
       if (message.reprompt) {
@@ -110,6 +110,8 @@ export function repromptP(statement: string): directiveHandler {
 
 export function directives(functions: directiveHandler[]): directiveHandler {
   return async (response: VoxaReply, event: IVoxaEvent): Promise<void> => {
-    await bluebird.map(functions, (fn: directiveHandler) => fn(response, event));
+    if (functions && functions.length) {
+      await bluebird.map(functions, (fn: directiveHandler) => fn(response, event));
+    }
   };
 }

@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
     "outDir": "./lib/",
+    "declaration": true,
     "sourceMap": true,
     "strictNullChecks": true,
     "module": "commonjs",
-    "target": "ES6",
+    "target": "ES5",
     "noImplicitAny": true,
-    "allowJs": true,
+    "allowJs": false,
     "moduleResolution": "node",
     "strict": true,
     "lib": ["ES6", "ES2015"]
