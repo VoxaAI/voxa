@@ -36,10 +36,10 @@ export const views =  {
       },
       LaunchIntent: {
         OpenResponse: {
-          tell: "Hello! Good {time}",
           dialogFlow: {
             tell: "Hello from DialogFlow",
           },
+          tell: "Hello! Good {time}",
         },
       },
       RandomResponse: {

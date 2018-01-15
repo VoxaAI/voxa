@@ -22,7 +22,7 @@ const PlayAudio = require('../src/platforms/alexa/directives').PlayAudio;
 
 const rb = new AlexaRequestBuilder();
 
-describe('StateMachineApp', () => {
+describe('Renderer', () => {
   let statesDefinition;
   let event;
   let renderer;

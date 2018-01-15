@@ -10,7 +10,7 @@ const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-const StateMachineApp = require('../src/VoxaApp').VoxaApp;
+const VoxaApp = require('../src/VoxaApp').VoxaApp;
 const views = require('./views').views;
 const variables = require('./variables').variables;
 const Model = require('../src/Model').Model;
@@ -24,7 +24,7 @@ const PlayAudio = require('../src/platforms/alexa/directives').PlayAudio;
 
 const rb = new tools.AlexaRequestBuilder();
 
-describe('StateMachineApp', () => {
+describe('VoxaApp', () => {
   let statesDefinition;
   let event;
 
@@ -44,9 +44,9 @@ describe('StateMachineApp', () => {
 
   describe('entry', () => {
     it('should do multiple transitions inside a single entry state', () => {
-      const stateMachineApp = new StateMachineApp({ variables, views });
+      const voxaApp = new VoxaApp({ variables, views });
       event = new AlexaEvent(rb.getIntentRequest('LaunchIntent'));
-      stateMachineApp.onState('entry', {
+      voxaApp.onState('entry', {
         LaunchIntent: 'One',
         One: 'Two',
         Two: 'Three',
@@ -54,7 +54,7 @@ describe('StateMachineApp', () => {
         Exit: { reply: 'ExitIntent.Farewell' },
       });
 
-      return stateMachineApp.execute(event, AlexaReply)
+      return voxaApp.execute(event, AlexaReply)
         .then((reply) => {
           expect(reply.error).to.be.undefined;
           expect(reply.response.statements).to.deep.equal(['Ok. For more info visit example.com site.']);
@@ -64,18 +64,18 @@ describe('StateMachineApp', () => {
 
   describe('onState', () => {
     it('should accept new states', () => {
-      const stateMachineApp = new StateMachineApp({ variables, views });
+      const voxaApp = new VoxaApp({ variables, views });
       const fourthState = () => ({ to: 'endState' });
-      stateMachineApp.onState('fourthState', fourthState);
-      expect(stateMachineApp.states.fourthState.enter.entry).to.equal(fourthState);
+      voxaApp.onState('fourthState', fourthState);
+      expect(voxaApp.states.fourthState.enter.entry).to.equal(fourthState);
     });
 
     it('should register simple states', () => {
-      const stateMachineApp = new StateMachineApp({ variables, views });
+      const voxaApp = new VoxaApp({ variables, views });
       const stateFn = simple.stub();
-      stateMachineApp.onState('init', stateFn);
+      voxaApp.onState('init', stateFn);
 
-      expect(stateMachineApp.states.init).to.deep.equal({
+      expect(voxaApp.states.init).to.deep.equal({
         name: 'init',
         enter: {
           entry: stateFn,
@@ -84,25 +84,25 @@ describe('StateMachineApp', () => {
     });
 
     it('should register states for specific intents', () => {
-      const stateMachineApp = new StateMachineApp({ variables, views });
+      const voxaApp = new VoxaApp({ variables, views });
       const stateFn = simple.stub();
-      stateMachineApp.onState('init', stateFn, 'AMAZON.NoIntent');
+      voxaApp.onState('init', stateFn, 'AMAZON.NoIntent');
 
-      expect(stateMachineApp.states.init).to.deep.equal({
+      expect(voxaApp.states.init).to.deep.equal({
         name: 'init',
         enter: { 'AMAZON.NoIntent': stateFn },
       });
     });
 
     it('should register states for intent lists', () => {
-      const stateMachineApp = new StateMachineApp({ variables, views });
+      const voxaApp = new VoxaApp({ variables, views });
       const stateFn = simple.stub();
       const stateFn2 = simple.stub();
 
-      stateMachineApp.onState('init', stateFn, ['AMAZON.NoIntent', 'AMAZON.StopIntent']);
-      stateMachineApp.onState('init', stateFn2, 'AMAZON.YesIntent');
+      voxaApp.onState('init', stateFn, ['AMAZON.NoIntent', 'AMAZON.StopIntent']);
+      voxaApp.onState('init', stateFn2, 'AMAZON.YesIntent');
 
-      expect(stateMachineApp.states.init).to.deep.equal({
+      expect(voxaApp.states.init).to.deep.equal({
         name: 'init',
         enter: {
           'AMAZON.NoIntent': stateFn,
@@ -114,17 +114,17 @@ describe('StateMachineApp', () => {
   });
 
   it('should include the state in the session response', () => {
-    const stateMachineApp = new StateMachineApp({ variables, views });
-    stateMachineApp.onIntent('LaunchIntent', () => {
+    const voxaApp = new VoxaApp({ variables, views });
+    voxaApp.onIntent('LaunchIntent', () => {
       return { to: 'secondState', askP: 'This is my message' };
     });
 
-    stateMachineApp.onState('secondState', () => {
+    voxaApp.onState('secondState', () => {
 
     });
 
     event = new AlexaEvent(rb.getLaunchRequest());
-    return stateMachineApp.execute(event, AlexaReply)
+    return voxaApp.execute(event, AlexaReply)
       .then((reply) => {
         expect(reply.error).to.be.undefined;
         expect(reply.session.attributes.model.state).to.equal('secondState');
@@ -133,22 +133,22 @@ describe('StateMachineApp', () => {
   });
 
   it('should add the message key from the transition to the reply', () => {
-    const stateMachineApp = new StateMachineApp({ variables, views });
-    stateMachineApp.onIntent('LaunchIntent', () => ({ tellP: 'This is my message'}));
+    const voxaApp = new VoxaApp({ variables, views });
+    voxaApp.onIntent('LaunchIntent', () => ({ tellP: 'This is my message'}));
     event.intent.name = 'LaunchIntent';
 
-    return stateMachineApp.execute(event, AlexaReply)
+    return voxaApp.execute(event, AlexaReply)
       .then((reply) => {
         expect(reply.response.statements[0]).to.deep.equal('This is my message');
       });
   });
 
   it('should throw an error if trying to render a missing view', () => {
-    const stateMachineApp = new StateMachineApp({ variables, views });
-    stateMachineApp.onIntent('LaunchIntent', () => ({ reply: 'Missing.View' }));
+    const voxaApp = new VoxaApp({ variables, views });
+    voxaApp.onIntent('LaunchIntent', () => ({ reply: 'Missing.View' }));
     event.intent.name = 'LaunchIntent';
 
-    return stateMachineApp.execute(event, AlexaReply)
+    return voxaApp.execute(event, AlexaReply)
       .then((reply) => {
         expect(reply.error).to.be.an('error');
         expect(reply.error.message).to.equal('View Missing.View for en-US locale is missing');
@@ -156,21 +156,21 @@ describe('StateMachineApp', () => {
   });
 
   it('should allow multiple reply paths in reply key', () => {
-    const stateMachineApp = new StateMachineApp({ variables, views });
-    stateMachineApp.onIntent('LaunchIntent', (voxaEvent) => {
+    const voxaApp = new VoxaApp({ variables, views });
+    voxaApp.onIntent('LaunchIntent', (voxaEvent) => {
       voxaEvent.model.count = 0;
       return { reply: ['Count.Say', 'Count.Tell'] };
     });
     event.intent.name = 'LaunchIntent';
 
-    return stateMachineApp.execute(event, AlexaReply)
+    return voxaApp.execute(event, AlexaReply)
       .then((reply) => {
         expect(reply.response.statements).to.deep.equal(['0', '0']);
       });
   });
 
   it('should display element selected request', () => {
-    const stateMachineSkill = new StateMachineApp({ variables, views });
+    const stateMachineSkill = new VoxaApp({ variables, views });
     stateMachineSkill.onIntent('DisplayElementSelected', () => ({ reply: ['ExitIntent.Farewell'] }));
     event.request.type = 'Display.ElementSelected';
 
@@ -181,28 +181,28 @@ describe('StateMachineApp', () => {
   });
 
   it('should throw an error if multiple replies include anything after say or tell', () => {
-    const stateMachineApp = new StateMachineApp({ variables, views });
-    stateMachineApp.onIntent('LaunchIntent', (voxaEvent) => {
+    const voxaApp = new VoxaApp({ variables, views });
+    voxaApp.onIntent('LaunchIntent', (voxaEvent) => {
       voxaEvent.model.count = 0;
       return { reply: ['Count.Tell', 'Count.Say'] };
     });
     event.intent.name = 'LaunchIntent';
 
-    return stateMachineApp.execute(event, AlexaReply)
+    return voxaApp.execute(event, AlexaReply)
       .then((reply) => {
         expect(reply.error.message).to.equal('Can\'t append to already yielding response');
       });
   });
 
   it('should be able to just pass through some intents to states', () => {
-    const stateMachineApp = new StateMachineApp({ variables, views });
+    const voxaApp = new VoxaApp({ variables, views });
     let called = false;
-    stateMachineApp.onIntent('LoopOffIntent', () => {
+    voxaApp.onIntent('LoopOffIntent', () => {
       called = true;
       return { reply: 'ExitIntent.Farewell', to: 'die' };
     });
 
-    const alexa = new AlexaAdapter(stateMachineApp);
+    const alexa = new AlexaAdapter(voxaApp);
 
     const loopOffEvent = new AlexaEvent(rb.getIntentRequest('AMAZON.LoopOffIntent'));
 
@@ -213,8 +213,8 @@ describe('StateMachineApp', () => {
   });
 
   it('should accept onBeforeStateChanged callbacks', () => {
-    const stateMachineApp = new StateMachineApp({ variables, views });
-    stateMachineApp.onBeforeStateChanged(simple.stub());
+    const voxaApp = new VoxaApp({ variables, views });
+    voxaApp.onBeforeStateChanged(simple.stub());
   });
 
   it('should call the entry state on a new session', () => {
@@ -222,24 +222,24 @@ describe('StateMachineApp', () => {
       reply: 'ExitIntent.Farewell',
     });
 
-    const stateMachineApp = new StateMachineApp({ variables, views });
-    _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
+    const voxaApp = new VoxaApp({ variables, views });
+    _.map(statesDefinition, (state, name) => voxaApp.onState(name, state));
 
-    return stateMachineApp.execute(event, AlexaReply)
+    return voxaApp.execute(event, AlexaReply)
       .then(() => {
         expect(statesDefinition.entry.called).to.be.true;
       });
   });
 
   it('should throw an error if required properties missing from config', () => {
-    expect(() => new StateMachineApp({ Model: { } })).to.throw(Error, 'Model should have a fromEvent method');
-    expect(() => new StateMachineApp({ Model: { fromEvent: () => {} } })).to.throw(Error, 'Model should have a serialize method');
-    expect(() => new StateMachineApp({ Model })).to.throw(Error, 'DefaultRenderer config should include views');
-    expect(() => new StateMachineApp({ Model, views })).to.not.throw(Error);
+    expect(() => new VoxaApp({ Model: { } })).to.throw(Error, 'Model should have a fromEvent method');
+    expect(() => new VoxaApp({ Model: { fromEvent: () => {} } })).to.throw(Error, 'Model should have a serialize method');
+    expect(() => new VoxaApp({ Model })).to.throw(Error, 'DefaultRenderer config should include views');
+    expect(() => new VoxaApp({ Model, views })).to.not.throw(Error);
   });
 
   it('should set properties on request and have those available in the state callbacks', () => {
-    const stateMachineApp = new StateMachineApp({ views, variables });
+    const voxaApp = new VoxaApp({ views, variables });
     statesDefinition.entry = simple.spy((request) => {
       expect(request.model).to.not.be.undefined;
       expect(request.model).to.be.an.instanceOf(Model);
@@ -247,8 +247,8 @@ describe('StateMachineApp', () => {
       return { reply: 'ExitIntent.Farewell', to: 'die' };
     });
 
-    _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
-    return stateMachineApp.execute(event, AlexaReply)
+    _.map(statesDefinition, (state, name) => voxaApp.onState(name, state));
+    return voxaApp.execute(event, AlexaReply)
       .then(() => {
         expect(statesDefinition.entry.called).to.be.true;
         expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
@@ -256,13 +256,13 @@ describe('StateMachineApp', () => {
   });
 
   it('should simply set an empty session if serialize is missing', () => {
-    const stateMachineApp = new StateMachineApp({ views, variables });
+    const voxaApp = new VoxaApp({ views, variables });
     statesDefinition.entry = simple.spy((request) => {
       request.model = null;
       return { reply: 'Question.Ask', to: 'initState' };
     });
-    _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
-    return stateMachineApp.execute(event, AlexaReply)
+    _.map(statesDefinition, (state, name) => voxaApp.onState(name, state));
+    return voxaApp.execute(event, AlexaReply)
       .then((reply) => {
         expect(reply.error).to.be.undefined;
         expect(statesDefinition.entry.called).to.be.true;
@@ -280,15 +280,15 @@ describe('StateMachineApp', () => {
       }
     }
 
-    const stateMachineApp = new StateMachineApp({ views, variables, Model: PromisyModel });
+    const voxaApp = new VoxaApp({ views, variables, Model: PromisyModel });
     statesDefinition.entry = simple.spy((request) => {
       expect(request.model).to.not.be.undefined;
       expect(request.model).to.be.an.instanceOf(PromisyModel);
       return { reply: 'Question.Ask', to: 'initState' };
     });
 
-    _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
-    return stateMachineApp.execute(event, AlexaReply)
+    _.map(statesDefinition, (state, name) => voxaApp.onState(name, state));
+    return voxaApp.execute(event, AlexaReply)
       .then((reply) => {
         expect(statesDefinition.entry.called).to.be.true;
         expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
@@ -302,15 +302,15 @@ describe('StateMachineApp', () => {
         return Promise.resolve(new PromisyModel());
       }
     }
-    const stateMachineApp = new StateMachineApp({ views, variables, Model: PromisyModel });
+    const voxaApp = new VoxaApp({ views, variables, Model: PromisyModel });
     statesDefinition.entry = simple.spy((request) => {
       expect(request.model).to.not.be.undefined;
       expect(request.model).to.be.an.instanceOf(PromisyModel);
       return { reply: 'ExitIntent.Farewell', to: 'die' };
     });
 
-    _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
-    return stateMachineApp.execute(event, AlexaReply)
+    _.map(statesDefinition, (state, name) => voxaApp.onState(name, state));
+    return voxaApp.execute(event, AlexaReply)
       .then(() => {
         expect(statesDefinition.entry.called).to.be.true;
         expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
@@ -318,39 +318,39 @@ describe('StateMachineApp', () => {
   });
 
   it('should call onSessionEnded callbacks if state is die', () => {
-    const stateMachineApp = new StateMachineApp({ Model, views, variables });
-    _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
+    const voxaApp = new VoxaApp({ Model, views, variables });
+    _.map(statesDefinition, (state, name) => voxaApp.onState(name, state));
     const onSessionEnded = simple.stub();
-    stateMachineApp.onSessionEnded(onSessionEnded);
+    voxaApp.onSessionEnded(onSessionEnded);
 
-    return stateMachineApp.execute(event, AlexaReply)
+    return voxaApp.execute(event, AlexaReply)
       .then(() => {
         expect(onSessionEnded.called).to.be.true;
       });
   });
 
   it('should call onBeforeReplySent callbacks', () => {
-    const stateMachineApp = new StateMachineApp({ Model, views, variables });
-    _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
+    const voxaApp = new VoxaApp({ Model, views, variables });
+    _.map(statesDefinition, (state, name) => voxaApp.onState(name, state));
     const onBeforeReplySent = simple.stub();
-    stateMachineApp.onBeforeReplySent(onBeforeReplySent);
+    voxaApp.onBeforeReplySent(onBeforeReplySent);
 
-    return stateMachineApp.execute(event, AlexaReply)
+    return voxaApp.execute(event, AlexaReply)
       .then(() => {
         expect(onBeforeReplySent.called).to.be.true;
       });
   });
 
   it('should call entry on a LaunchRequest', () => {
-    const stateMachineApp = new StateMachineApp({ Model, views, variables });
+    const voxaApp = new VoxaApp({ Model, views, variables });
 
     event.intent.name = 'LaunchIntent';
     statesDefinition.entry = simple.stub().resolveWith({
       to: 'die',
     });
 
-    _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
-    return stateMachineApp.execute(event, AlexaReply)
+    _.map(statesDefinition, (state, name) => voxaApp.onState(name, state));
+    return voxaApp.execute(event, AlexaReply)
       .then(() => {
         expect(statesDefinition.entry.called).to.be.true;
       });
@@ -358,29 +358,29 @@ describe('StateMachineApp', () => {
 
   describe('onUnhandledState', () => {
     it('should give a proper error message when an intent is unhandled', () => {
-      const stateMachineApp = new StateMachineApp({ Model, views, variables });
+      const voxaApp = new VoxaApp({ Model, views, variables });
       event.intent.name = 'LaunchIntent';
-      stateMachineApp.onState('entry', { });
+      voxaApp.onState('entry', { });
 
-      return stateMachineApp.execute(event, AlexaReply)
+      return voxaApp.execute(event, AlexaReply)
         .then((reply) => {
           expect(reply.error.message).to.equal('LaunchIntent went unhandled on entry state');
         });
     });
 
     it('should call onUnhandledState callbacks when the state machine transition throws a UnhandledState error', () => {
-      const stateMachineApp = new StateMachineApp({ Model, views, variables });
+      const voxaApp = new VoxaApp({ Model, views, variables });
       const onUnhandledState = simple.stub().resolveWith({
         reply: 'ExitIntent.Farewell',
       });
 
-      stateMachineApp.onUnhandledState(onUnhandledState);
+      voxaApp.onUnhandledState(onUnhandledState);
 
       event.intent.name = 'LaunchIntent';
       statesDefinition.entry = simple.stub().resolveWith(null);
 
-      _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
-      return stateMachineApp.execute(event, AlexaReply)
+      _.map(statesDefinition, (state, name) => voxaApp.onState(name, state));
+      return voxaApp.execute(event, AlexaReply)
         .then((reply) => {
           expect(onUnhandledState.called).to.be.true;
           expect(reply.response.statements[0]).to.equal('Ok. For more info visit example.com site.');
@@ -389,17 +389,17 @@ describe('StateMachineApp', () => {
   });
 
   it('should include all directives in the reply', () => {
-    const stateMachineApp = new StateMachineApp({ Model, variables, views });
+    const voxaApp = new VoxaApp({ Model, variables, views });
 
     const directives = [PlayAudio('url', '123', 0, 'REPLACE_ALL')]
 
-    stateMachineApp.onIntent('SomeIntent', () => ({
+    voxaApp.onIntent('SomeIntent', () => ({
       reply: 'ExitIntent.Farewell',
       to: 'entry',
       directives,
     }));
 
-    return stateMachineApp.execute(event, AlexaReply)
+    return voxaApp.execute(event, AlexaReply)
       .then((reply) => {
         expect(reply.response.directives).to.not.be.undefined;
         expect(reply.response.directives).to.have.length(1);
@@ -418,16 +418,16 @@ describe('StateMachineApp', () => {
   });
 
   it('should include all directives in the reply even if die', () => {
-    const stateMachineApp = new StateMachineApp({ Model, variables, views });
+    const voxaApp = new VoxaApp({ Model, variables, views });
 
     const directives = [PlayAudio('url', '123', 0, 'REPLACE_ALL')]
 
-    stateMachineApp.onIntent('SomeIntent', () => ({
+    voxaApp.onIntent('SomeIntent', () => ({
       reply: 'ExitIntent.Farewell',
       directives,
     }));
 
-    return stateMachineApp.execute(event, AlexaReply)
+    return voxaApp.execute(event, AlexaReply)
       .then((reply) => {
         expect(reply.response.directives).to.not.be.undefined;
         expect(reply.response.directives).to.have.length(1);
@@ -446,7 +446,7 @@ describe('StateMachineApp', () => {
   });
 
   it('should render all messages after each transition', () => {
-    const stateMachineApp = new StateMachineApp({ Model, views, variables });
+    const voxaApp = new VoxaApp({ Model, views, variables });
 
     event.intent.name = 'LaunchIntent';
     statesDefinition.entry = {
@@ -463,21 +463,21 @@ describe('StateMachineApp', () => {
       return { reply: 'Count.Tell', to: 'die' };
     };
 
-    _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
-    return stateMachineApp.execute(event, AlexaReply)
+    _.map(statesDefinition, (state, name) => voxaApp.onState(name, state));
+    return voxaApp.execute(event, AlexaReply)
       .then((reply) => {
         expect(reply.response.statements).to.deep.equal(['0', '1']);
       });
   });
 
   it('should call onIntentRequest callbacks before the statemachine', () => {
-    const stateMachineApp = new StateMachineApp({ Model, views, variables });
-    _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
+    const voxaApp = new VoxaApp({ Model, views, variables });
+    _.map(statesDefinition, (state, name) => voxaApp.onState(name, state));
     const stubResponse = 'STUB RESPONSE';
     const stub = simple.stub().resolveWith(stubResponse);
-    stateMachineApp.onIntentRequest(stub);
+    voxaApp.onIntentRequest(stub);
 
-    return stateMachineApp.execute(event, AlexaReply)
+    return voxaApp.execute(event, AlexaReply)
       .then((reply) => {
         expect(stub.called).to.be.true;
         expect(reply).to.not.equal(stubResponse);
@@ -487,15 +487,15 @@ describe('StateMachineApp', () => {
 
   describe('onAfterStateChanged', () => {
     it('should return the onError response for exceptions thrown in onAfterStateChanged', () => {
-      const stateMachineApp = new StateMachineApp({ Model, views, variables });
-      _.map(statesDefinition, (state, name) => stateMachineApp.onState(name, state));
+      const voxaApp = new VoxaApp({ Model, views, variables });
+      _.map(statesDefinition, (state, name) => voxaApp.onState(name, state));
       const spy = simple.spy(() => {
         throw new Error('FAIL!');
       });
 
-      stateMachineApp.onAfterStateChanged(spy);
+      voxaApp.onAfterStateChanged(spy);
 
-      return stateMachineApp.execute(event, AlexaReply)
+      return voxaApp.execute(event, AlexaReply)
         .then((reply) => {
           expect(spy.called).to.be.true;
           expect(reply.error).to.be.an('error');
@@ -505,14 +505,14 @@ describe('StateMachineApp', () => {
 
   describe('onRequestStarted', () => {
     it('should return the onError response for exceptions thrown in onRequestStarted', () => {
-      const stateMachineApp = new StateMachineApp({ Model, views, variables });
+      const voxaApp = new VoxaApp({ Model, views, variables });
       const spy = simple.spy(() => {
         throw new Error('FAIL!');
       });
 
-      stateMachineApp.onRequestStarted(spy);
+      voxaApp.onRequestStarted(spy);
 
-      return stateMachineApp.execute(event, AlexaReply)
+      return voxaApp.execute(event, AlexaReply)
         .then((reply) => {
           expect(spy.called).to.be.true;
           expect(reply.error).to.be.an('error');

@@ -36,10 +36,10 @@ export declare const views: {
             };
             LaunchIntent: {
                 OpenResponse: {
-                    tell: string;
                     dialogFlow: {
                         tell: string;
                     };
+                    tell: string;
                 };
             };
             RandomResponse: {

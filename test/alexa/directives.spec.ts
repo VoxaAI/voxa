@@ -116,7 +116,6 @@ describe("Alexa directives", () => {
     });
 
     it("should only render a single Hint directive", async () => {
-
       const reply = await alexaSkill.execute(event, {});
       if (!reply.response.outputSpeech) {
         throw new Error("response missing");
