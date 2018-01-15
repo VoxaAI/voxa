@@ -1,6 +1,6 @@
 {
   "name": "voxa",
-  "version": "2.2.1",
+  "version": "3.0.0b",
   "description": "A fsm (state machine) framework for Alexa apps using Node.js",
   "main": "index.js",
   "scripts": {
@@ -55,9 +55,6 @@
     "botbuilder-azure": "^3.0.4",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
-    "gulp": "^3.9.1",
-    "gulp-typescript": "^3.2.3",
-    "gulp-util": "^3.0.8",
     "mocha": "^4.0.1",
     "mocha-jenkins-reporter": "^0.3.9",
     "nyc": "^11.4.1",

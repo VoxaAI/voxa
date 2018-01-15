@@ -11,14 +11,14 @@ const expect = chai.expect;
 const Voxa = require('../src/VoxaApp').VoxaApp;
 const Renderer = require('../src/renderers/Renderer').Renderer;
 const views = require('./views').views;
-const variables = require('./variables');
+const variables = require('./variables').variables;
 const _ = require('lodash');
 
-const AlexaEvent = require('../src/adapters/alexa/AlexaEvent').AlexaEvent;
-const AlexaReply = require('../src/adapters/alexa/AlexaReply').AlexaReply;
-const DialogFlowEvent = require('../src/adapters/dialog-flow/DialogFlowEvent').DialogFlowEvent;
+const AlexaEvent = require('../src/platforms/alexa/AlexaEvent').AlexaEvent;
+const AlexaReply = require('../src/platforms/alexa/AlexaReply').AlexaReply;
+const DialogFlowEvent = require('../src/platforms/dialog-flow/DialogFlowEvent').DialogFlowEvent;
 const AlexaRequestBuilder = require('./tools').AlexaRequestBuilder;
-const PlayAudio = require('../src/adapters/alexa/directives').PlayAudio;
+const PlayAudio = require('../src/platforms/alexa/directives').PlayAudio;
 
 const rb = new AlexaRequestBuilder();
 
@@ -125,7 +125,7 @@ describe('StateMachineApp', () => {
       });
 
       it('should return response with directives', () => {
-        PlayAudio('url', '123', 0,)
+        PlayAudio('url', '123', 0)
 
         skill.onIntent('SomeIntent', () => ({ reply: 'Question.Ask', to: 'entry', directives: [PlayAudio] }));
         event.request.locale = locale;

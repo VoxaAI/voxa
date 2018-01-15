@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import * as _ from "lodash";
 import "mocha";
-import { AlexaEvent } from "../src/adapters/alexa/AlexaEvent";
+import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
 import { Renderer } from "../src/renderers/Renderer";
 import { VoxaReply as BaseVoxaReply } from "../src/VoxaReply";
 import { AlexaRequestBuilder } from "./tools";

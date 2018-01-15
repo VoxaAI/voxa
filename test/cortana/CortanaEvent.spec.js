@@ -2,7 +2,7 @@
 
 const expect = require('chai').expect;
 const _ = require('lodash');
-const CortanaEvent = require('../../src/adapters/cortana/CortanaEvent').CortanaEvent;
+const CortanaEvent = require('../../src/platforms/cortana/CortanaEvent').CortanaEvent;
 
 describe('CortanaEvent', () => {
   it('should map a Microsoft.Launch intent to a voxa LaunchIntent', () => {
@@ -18,4 +18,3 @@ describe('CortanaEvent', () => {
     expect(event.request.type).to.equal('SessionEndedRequest');
   });
 });
-

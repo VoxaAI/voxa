@@ -1,0 +1,13 @@
+import { IVoxaEvent } from "./VoxaEvent";
+import { VoxaReply } from "./VoxaReply";
+export declare type directiveHandler = (reply: VoxaReply, event: IVoxaEvent) => Promise<void>;
+export declare function reply(templatePaths: string | string[]): directiveHandler;
+export declare function ask(templatePath: string): directiveHandler;
+export declare function askP(statement: string): directiveHandler;
+export declare function tell(templatePath: string): directiveHandler;
+export declare function tellP(statement: string): directiveHandler;
+export declare function say(templatePath: string): directiveHandler;
+export declare function sayP(statement: string): directiveHandler;
+export declare function reprompt(templatePath: string): directiveHandler;
+export declare function repromptP(statement: string): directiveHandler;
+export declare function directives(functions: directiveHandler[]): directiveHandler;

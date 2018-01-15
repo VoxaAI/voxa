@@ -1,7 +1,9 @@
 import * as _ from "lodash";
 import { IVoxaEvent } from "./VoxaEvent";
 
-class Model {
+export class Model {
+  [key: string]: any
+
   public static fromEvent(voxaEvent: IVoxaEvent) {
     return new this(voxaEvent.session.attributes.model);
   }
@@ -17,10 +19,8 @@ class Model {
   }
 }
 
-interface IModel {
+export interface IModel {
   new (data?: any): Model;
   fromEvent(data?: any): Model;
   serialize(): any;
 }
-
-export { Model, IModel };

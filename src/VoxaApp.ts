@@ -52,7 +52,8 @@ export class VoxaApp {
     _.forEach(this.requestTypes, (requestType) => this.registerRequestHandler(requestType));
     this.registerEvents();
     this.onError((voxaEvent: IVoxaEvent, error: Error, ReplyClass: IReply<VoxaReply>): VoxaReply => {
-      log("onError %s", error);
+      log("onError");
+      log(error);
       log(error.stack);
       const response =  new ReplyClass(voxaEvent, this.renderer);
       response.response.statements.push("An unrecoverable error occurred.");
@@ -136,7 +137,9 @@ export class VoxaApp {
    */
   public async handleErrors(event: IVoxaEvent, error: Error, ReplyClass: IReply<VoxaReply>): Promise<VoxaReply> {
     const errorHandlers = this.getOnErrorHandlers();
-    const replies: VoxaReply[] = await bluebird.map(errorHandlers, mapper);
+    const replies: VoxaReply[] = await bluebird.map(errorHandlers, async (errorHandler: IErrorHandler) => {
+      return await errorHandler(event, error, ReplyClass);
+    });
     let response: VoxaReply|undefined = _.find(replies);
     if (!response) {
       response = new ReplyClass(event, this.renderer);
@@ -144,10 +147,6 @@ export class VoxaApp {
 
     response.error = error;
     return response;
-
-    async function mapper(errorHandler: IErrorHandler) {
-      return await errorHandler(event, error, ReplyClass);
-    }
   }
 
   // Call the specific request handlers for each request type
@@ -181,10 +180,10 @@ export class VoxaApp {
         case "IntentRequest":
         case "SessionEndedRequest": {
           // call all onRequestStarted callbacks serially.
-          const result = await bluebird.mapSeries(this.getOnRequestStartedHandlers(), mapper);
-          function mapper(fn: IEventHandler) {
+          const result = await bluebird.mapSeries(this.getOnRequestStartedHandlers(), (fn: IEventHandler) => {
             return fn(voxaEvent, response);
-          }
+          });
+
           if (voxaEvent.request.type === "SessionEndedRequest" && _.get(voxaEvent, "request.reason") === "ERROR") {
             throw new OnSessionEndedError(_.get(voxaEvent, "request.error"));
           }
@@ -316,7 +315,7 @@ export class VoxaApp {
   }
 
   public async runStateMachine(voxaEvent: IVoxaEvent, response: VoxaReply): Promise<VoxaReply> {
-    let fromState = voxaEvent.session.new ? "entry" : _.get(voxaEvent, "session.attributes.model._state", "entry");
+    let fromState = voxaEvent.session.new ? "entry" : _.get(voxaEvent, "session.attributes.model.state", "entry");
     if (fromState === "die") {
       fromState = "entry";
     }

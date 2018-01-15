@@ -8,17 +8,17 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 const simple = require('simple-mock');
 const StateMachineApp = require('../../src/VoxaApp').VoxaApp;
-const autoLoad = require('../../src/plugins/auto-load');
+const autoLoad = require('../../src/plugins/auto-load').autoLoad;
 const views = require('../views').views;
-const variables = require('../variables');
-const AutoLoadAdapter = require('./autoLoadAdapter');
-const AlexaEvent = require('../../src/adapters/alexa/AlexaEvent').AlexaEvent;
-const AlexaReply = require('../../src/adapters/alexa/AlexaReply').AlexaReply;
+const variables = require('../variables').variables;
+const AutoLoadAdapter = require('./autoLoadAdapter').AutoLoadAdapter;
+const AlexaEvent = require('../../src/platforms/alexa/AlexaEvent').AlexaEvent;
+const AlexaReply = require('../../src/platforms/alexa/AlexaReply').AlexaReply;
 
-const adapter = new AutoLoadAdapter();
 
 describe('AutoLoad plugin', () => {
   let event;
+  let adapter;
 
   beforeEach(() => {
     event = new AlexaEvent({
@@ -39,6 +39,8 @@ describe('AutoLoad plugin', () => {
 
     simple.mock(AutoLoadAdapter.prototype, 'get')
       .resolveWith({ Id: 1 });
+
+    adapter = new AutoLoadAdapter();
   });
 
   afterEach(() => {
@@ -54,6 +56,7 @@ describe('AutoLoad plugin', () => {
 
     return skill.execute(event, AlexaReply)
       .then((result) => {
+        console.log(result.session.attributes.model)
         expect(spy.called).to.be.true;
         expect(spy.lastCall.args[0].intent.name).to.equal('LaunchIntent');
         expect(result.response.statements).to.have.lengthOf(1);

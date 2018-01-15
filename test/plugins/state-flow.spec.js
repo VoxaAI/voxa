@@ -8,11 +8,11 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 const _ = require('lodash');
 const StateMachineApp = require('../../src/VoxaApp').VoxaApp;
-const AlexaEvent = require('../../src/adapters/alexa/AlexaEvent').AlexaEvent;
-const AlexaReply = require('../../src/adapters/alexa/AlexaReply').AlexaReply;
-const stateFlow = require('../../src/plugins/state-flow');
+const AlexaEvent = require('../../src/platforms/alexa/AlexaEvent').AlexaEvent;
+const AlexaReply = require('../../src/platforms/alexa/AlexaReply').AlexaReply;
+const stateFlow = require('../../src/plugins/state-flow').register;
 const views = require('../views').views;
-const variables = require('../variables');
+const variables = require('../variables').variables;
 
 describe('StateFlow plugin', () => {
   let states;
@@ -32,7 +32,7 @@ describe('StateFlow plugin', () => {
         new: false,
         attributes: {
           model: {
-            _state: 'secondState',
+            state: 'secondState',
           },
         },
       },
@@ -49,11 +49,10 @@ describe('StateFlow plugin', () => {
 
   it('should store the execution flow in the request', () => {
     const skill = new StateMachineApp({ variables, views });
-    stateFlow(skill);
     _.map(states, (state, name) => {
       skill.onState(name, state);
     });
-
+    stateFlow(skill);
 
     return skill.execute(event, AlexaReply)
       .then((result) => {
@@ -68,7 +67,7 @@ describe('StateFlow plugin', () => {
     });
 
     stateFlow(skill);
-    event.session.attributes.model._state = 'fourthState';
+    event.session.attributes.model.state = 'fourthState';
     event.intent.name = 'OtherIntent';
 
     return skill.execute(event, AlexaReply)

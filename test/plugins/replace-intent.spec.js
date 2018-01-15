@@ -9,11 +9,11 @@ const simple = require('simple-mock');
 
 const expect = chai.expect;
 const StateMachineApp = require('../../src/VoxaApp').VoxaApp;
-const AlexaEvent = require('../../src/adapters/alexa/AlexaEvent').AlexaEvent;
-const AlexaReply = require('../../src/adapters/alexa/AlexaReply').AlexaReply;
-const replaceIntent = require('../../src/plugins/replace-intent');
+const AlexaEvent = require('../../src/platforms/alexa/AlexaEvent').AlexaEvent;
+const AlexaReply = require('../../src/platforms/alexa/AlexaReply').AlexaReply;
+const replaceIntent = require('../../src/plugins/replace-intent').register;
 const views = require('../views').views;
-const variables = require('../variables');
+const variables = require('../variables').variables;
 
 describe('ReplaceIntentPlugin', () => {
   it('should send to intent with Only', () => {

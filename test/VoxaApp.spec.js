@@ -12,15 +12,15 @@ const expect = chai.expect;
 
 const StateMachineApp = require('../src/VoxaApp').VoxaApp;
 const views = require('./views').views;
-const variables = require('./variables');
+const variables = require('./variables').variables;
 const Model = require('../src/Model').Model;
 const Reply = require('../src/VoxaReply').VoxaReply;
-const AlexaEvent = require('../src/adapters/alexa/AlexaEvent').AlexaEvent;
-const AlexaReply = require('../src/adapters/alexa/AlexaReply').AlexaReply;
-const AlexaAdapter = require('../src/adapters/alexa/AlexaAdapter').AlexaAdapter;
+const AlexaEvent = require('../src/platforms/alexa/AlexaEvent').AlexaEvent;
+const AlexaReply = require('../src/platforms/alexa/AlexaReply').AlexaReply;
+const AlexaAdapter = require('../src/platforms/alexa/AlexaAdapter').AlexaAdapter;
 const tools = require('./tools');
 
-const PlayAudio = require('../src/adapters/alexa/directives').PlayAudio;
+const PlayAudio = require('../src/platforms/alexa/directives').PlayAudio;
 
 const rb = new tools.AlexaRequestBuilder();
 
@@ -267,8 +267,7 @@ describe('StateMachineApp', () => {
         expect(reply.error).to.be.undefined;
         expect(statesDefinition.entry.called).to.be.true;
         expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
-        console.log(reply.session.attributes.model)
-        expect(reply.session.attributes.model).to.deep.equal({ state: 'initState' });
+        expect(reply.session.attributes.model).to.deep.equal(new Model({ state: 'initState' }));
       });
   });
 
