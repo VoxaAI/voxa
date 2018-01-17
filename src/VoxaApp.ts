@@ -213,7 +213,7 @@ export class VoxaApp {
       return;
     }
 
-    const eventName = `on${requestType}`;
+    const eventName = `on${_.upperFirst(requestType)}`;
     this.registerEvent(eventName);
 
     this.requestHandlers[requestType] = async (voxaEvent: IVoxaEvent, response: VoxaReply): Promise<VoxaReply> => {

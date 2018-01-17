@@ -164,7 +164,7 @@ export class StateMachine<Reply extends VoxaReply> {
         result.reply = transition.reply;
       }
       return result;
-    }
+    };
 
     this.currentState = this.states[to.name];
     return this.runTransition(voxaEvent, reply);

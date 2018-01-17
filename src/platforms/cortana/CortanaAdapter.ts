@@ -1,6 +1,15 @@
 
 import * as bluebird from "bluebird";
-import { IBotStorage, IBotStorageContext, IBotStorageData, IChatConnectorAddress, IEntity, IIntent, IMessage, LuisRecognizer } from "botbuilder";
+import {
+  IBotStorage,
+  IBotStorageContext,
+  IBotStorageData,
+  IChatConnectorAddress,
+  IEntity,
+  IIntent,
+  IMessage,
+  LuisRecognizer,
+} from "botbuilder";
 import * as debug from "debug";
 import * as _ from "lodash";
 import * as rp from "request-promise";
@@ -15,7 +24,6 @@ import { IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
 import { VoxaReply } from "../../VoxaReply";
 import { VoxaAdapter } from "../VoxaAdapter";
 import { CortanaEvent } from "./CortanaEvent";
-import { CortanaIntent } from "./CortanaIntent";
 import { IAuthorizationResponse } from "./CortanaInterfaces";
 import { CortanaReply } from "./CortanaReply";
 import { AudioCard, HeroCard, SuggestedActions } from "./directives";
@@ -108,9 +116,10 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
     const intent = await this.recognize(msg);
     const event = new CortanaEvent(msg, context, stateData, intent);
     const reply: CortanaReply = await this.app.execute(event, CortanaReply);
-    const promises = [this.saveStateData(event, reply)];
 
-    await Promise.all(promises);
+    await this.partialReply(event, reply, {});
+    await this.saveStateData(event, reply);
+
     return {};
   }
 

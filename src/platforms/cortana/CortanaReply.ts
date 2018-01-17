@@ -10,6 +10,7 @@ import {
   SuggestedActions,
 } from "botbuilder";
 import * as _ from "lodash";
+import * as striptags from "striptags";
 import * as uuid from "uuid";
 import { toSSML } from "../../ssml";
 import { VoxaReply } from "../../VoxaReply";
@@ -20,7 +21,7 @@ export class CortanaReply extends VoxaReply {
   public voxaEvent: CortanaEvent;
   public toJSON(): any {
     const speak = toSSML(this.response.statements.join("\n"));
-    const text = this.response.statements.join("\n");
+    const text = striptags(this.response.statements.join("\n"));
     const inputHint = this.response.terminate ? "acceptingInput" : "expectingInput";
 
     const attachmentTypes = [

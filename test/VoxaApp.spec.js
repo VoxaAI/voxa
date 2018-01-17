@@ -171,7 +171,8 @@ describe('VoxaApp', () => {
 
   it('should display element selected request', () => {
     const stateMachineSkill = new VoxaApp({ variables, views });
-    stateMachineSkill.onIntent('DisplayElementSelected', () => ({ reply: ['ExitIntent.Farewell'] }));
+    stateMachineSkill.onIntent('Display.ElementSelected', { to: 'die', reply: 'ExitIntent.Farewell' });
+    event.intent = undefined;
     event.request.type = 'Display.ElementSelected';
 
     return new AlexaAdapter(stateMachineSkill).execute(event, AlexaReply)

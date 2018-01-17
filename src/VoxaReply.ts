@@ -11,7 +11,6 @@
 import * as bluebird from "bluebird";
 import * as debug from "debug";
 import * as _ from "lodash";
-import * as striptags from "striptags";
 
 import { IMessage, Renderer } from "./renderers/Renderer";
 import { IVoxaEvent } from "./VoxaEvent";

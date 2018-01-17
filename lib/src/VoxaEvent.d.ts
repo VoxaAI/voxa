@@ -1,6 +1,9 @@
 /// <reference types="i18next" />
 import * as i18n from "i18next";
 import { Model } from "./Model";
+export interface IRequestTypeMap {
+    [x: string]: string;
+}
 export declare abstract class IVoxaEvent {
     executionContext: any;
     rawEvent: any;
@@ -11,8 +14,12 @@ export declare abstract class IVoxaEvent {
     model: Model;
     t: i18n.TranslationFunction;
     user: IVoxaUser;
+    requestToIntent: IRequestTypeMap;
+    requestToRequest: IRequestTypeMap;
     platform: string;
     constructor(event: any, context: any);
+    mapRequestToIntent(): void;
+    mapRequestToRequest(): void;
 }
 export interface IVoxaUser {
     id: string;

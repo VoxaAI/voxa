@@ -27,6 +27,14 @@ export class AlexaEvent extends IVoxaEvent {
   public intent: IVoxaIntent;
   public model: Model;
   public t: TranslationFunction;
+  public requestToIntent: any = {
+    "Display.ElementSelected": "Display.ElementSelected",
+    "LaunchRequest": "LaunchIntent",
+    "PlaybackController.NextCommandIssued": "PlaybackController.NextCommandIssued",
+    "PlaybackController.PauseCommandIssued": "PlaybackController.PauseCommandIssued",
+    "PlaybackController.PlayCommandIssued": "PlaybackController.PlayCommandIssued",
+    "PlaybackController.PreviousCommandIssued": "PlaybackController.PreviousCommandIssued",
+  };
 
   constructor(event: IAlexaRequest , context?: any) {
     super(event, context);
@@ -40,13 +48,9 @@ export class AlexaEvent extends IVoxaEvent {
       _.set(this, "session.attributes", {});
     }
 
-    if (_.get(event, "request.type") === "LaunchRequest") {
-      this.intent = new AlexaIntent({ name: "LaunchIntent", slots: {} });
-      this.request.type = "IntentRequest";
-    } else if (_.get(event, "request.type") === "Display.ElementSelected") {
-      this.intent = new AlexaIntent({ name: "DisplayElementSelected", slots: {} });
-      this.request.type = "IntentRequest";
-    } else {
+    this.mapRequestToIntent();
+
+    if (!this.intent) {
       this.intent = new AlexaIntent(this.request.intent);
     }
 

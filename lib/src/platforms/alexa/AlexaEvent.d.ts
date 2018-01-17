@@ -20,6 +20,7 @@ export declare class AlexaEvent extends IVoxaEvent {
     intent: IVoxaIntent;
     model: Model;
     t: TranslationFunction;
+    requestToIntent: any;
     constructor(event: IAlexaRequest, context?: any);
     readonly user: any;
     readonly token: any;

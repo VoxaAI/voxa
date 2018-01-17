@@ -1,11 +1,18 @@
 import * as _ from "lodash";
 
-import { IBotStorageData, IConversationUpdate, IEntity, IEvent, IIdentity, IIntentRecognizerResult, IMessage } from "botbuilder";
+import {
+  IBotStorageData,
+  IConversationUpdate,
+  IEntity,
+  IEvent,
+  IIdentity,
+  IIntentRecognizerResult,
+  IMessage,
+} from "botbuilder";
 import { UniversalBot } from "botbuilder";
 import { TranslationFunction } from "i18next";
 import { Model } from "../../Model";
-import { IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
-import { CortanaIntent, isIConversationUpdate, isIMessage } from "./CortanaIntent";
+import { IRequestTypeMap, IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
 import { ICortanaEntity } from "./CortanaInterfaces";
 
 export class CortanaEvent extends IVoxaEvent {
@@ -19,6 +26,11 @@ export class CortanaEvent extends IVoxaEvent {
   public executionContext: any;
   public rawEvent: IEvent;
 
+  public requestToRequest: IRequestTypeMap = {
+    endOfConversation: "SessionEndedRequest",
+    message: "IntentRequest",
+  };
+
   constructor(message: IEvent, context: any, stateData: IBotStorageData, intent?: IVoxaIntent) {
     super(message, context);
     this.platform = "cortana";
@@ -29,11 +41,13 @@ export class CortanaEvent extends IVoxaEvent {
     };
 
     this.context = {};
+    this.request = this.getRequest();
+    this.mapRequestToRequest();
 
     if (intent) {
       this.intent = intent;
     } else {
-      this.intent = new CortanaIntent(message);
+      this.mapRequestToIntent();
     }
   }
 
@@ -41,16 +55,42 @@ export class CortanaEvent extends IVoxaEvent {
     return _.merge(this.rawEvent.address.user, { userId: this.rawEvent.address.user.id });
   }
 
-  get request() {
-    let type = this.rawEvent.type;
-    let locale;
-    if (type === "endOfConversation") {
-      type = "SessionEndedRequest";
-    }
+  public mapRequestToIntent(): void {
+    if (isIMessage(this.rawEvent)) {
+      const entities: any[]|undefined = this.rawEvent.entities;
+      const intentEntity: any = _.find(this.rawEvent.entities, { name: "Microsoft.Launch" });
+      if (intentEntity) {
+        _.set(this, "intent", {
+          name: "LaunchIntent",
+          slots: {},
+        });
+        _.set(this, "request.type", "IntentRequest");
+        return;
+      }
+    } else if (isIConversationUpdate(this.rawEvent) && this.rawEvent.address.channelId === "webchat") {
+      // in webchat we get a conversationUpdate event when the application window is open and another when the
+      // user sends his first message, we want to identify that and only do a LaunchIntent for the first one
+      const membersAdded: IIdentity[]|undefined = this.rawEvent.membersAdded;
+      const bot: IIdentity|undefined =  this.rawEvent.address.bot;
 
-    if (this.intent && this.intent.name) {
-      type = "IntentRequest";
+      if (membersAdded && bot && membersAdded.length === 1) {
+        if (membersAdded[0].id === bot.id) {
+          _.set(this, "intent", {
+            name: "LaunchIntent",
+            slots: {},
+          });
+          _.set(this, "request.type", "IntentRequest");
+          return;
+        }
+      }
+    } else {
+      super.mapRequestToIntent();
     }
+  }
+
+  public getRequest() {
+    const type = this.rawEvent.type;
+    let locale;
 
     if (isIMessage(this.rawEvent)) {
       if (this.rawEvent.textLocale) {
@@ -72,4 +112,12 @@ export class CortanaEvent extends IVoxaEvent {
     return { type, locale };
   }
 
+}
+
+export function isIMessage(event: IEvent): event is IMessage {
+  return event.type === "message";
+}
+
+export function isIConversationUpdate(event: IEvent | IConversationUpdate): event is IConversationUpdate {
+  return event.type === "conversationUpdate";
 }
