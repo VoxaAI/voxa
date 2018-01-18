@@ -52,9 +52,9 @@ export class VoxaApp {
     _.forEach(this.requestTypes, (requestType) => this.registerRequestHandler(requestType));
     this.registerEvents();
     this.onError((voxaEvent: IVoxaEvent, error: Error, ReplyClass: IReply<VoxaReply>): VoxaReply => {
-      log("onError");
-      log(error);
-      log(error.stack);
+      console.error("onError");
+      console.error(error);
+      console.error(error.stack);
       const response =  new ReplyClass(voxaEvent, this.renderer);
       response.response.statements.push("An unrecoverable error occurred.");
       return response;
@@ -120,9 +120,9 @@ export class VoxaApp {
     ];
   }
 
-  public async handleOnSessionEnded(voxaEvent: IVoxaEvent, response: VoxaReply): Promise<VoxaReply> {
-    const sessionEndedHandlers = this.getOnSessionEndedHandlers();
-    const replies = await bluebird.mapSeries(sessionEndedHandlers, (fn: IEventHandler) => fn(voxaEvent, response));
+  public async handleOnSessionEnded(event: IVoxaEvent, response: VoxaReply): Promise<VoxaReply> {
+    const sessionEndedHandlers = this.getOnSessionEndedHandlers(event.platform);
+    const replies = await bluebird.mapSeries(sessionEndedHandlers, (fn: IEventHandler) => fn(event, response));
     const lastReply = _.last(replies);
     if (lastReply) {
       return lastReply;
@@ -136,7 +136,7 @@ export class VoxaApp {
    * generates a reply
    */
   public async handleErrors(event: IVoxaEvent, error: Error, ReplyClass: IReply<VoxaReply>): Promise<VoxaReply> {
-    const errorHandlers = this.getOnErrorHandlers();
+    const errorHandlers = this.getOnErrorHandlers(event.platform);
     const replies: VoxaReply[] = await bluebird.map(errorHandlers, async (errorHandler: IErrorHandler) => {
       return await errorHandler(event, error, ReplyClass);
     });
@@ -180,7 +180,7 @@ export class VoxaApp {
         case "IntentRequest":
         case "SessionEndedRequest": {
           // call all onRequestStarted callbacks serially.
-          const result = await bluebird.mapSeries(this.getOnRequestStartedHandlers(), (fn: IEventHandler) => {
+          const result = await bluebird.mapSeries(this.getOnRequestStartedHandlers(voxaEvent.platform), (fn: IEventHandler) => {
             return fn(voxaEvent, response);
           });
 
@@ -189,7 +189,7 @@ export class VoxaApp {
           }
 
           // call all onSessionStarted callbacks serially.
-          await bluebird.mapSeries(this.getOnSessionStartedHandlers(), (fn: IEventHandler) => fn(voxaEvent, response));
+          await bluebird.mapSeries(this.getOnSessionStartedHandlers(voxaEvent.platform), (fn: IEventHandler) => fn(voxaEvent, response));
           // Route the request to the proper handler which may have been overriden.
           return await requestHandler(voxaEvent, response);
         }
@@ -267,19 +267,43 @@ export class VoxaApp {
    * This will keep 2 separate lists of event callbacks
    */
   public registerEvent(eventName: string): void {
-    this.eventHandlers[eventName] = [];
-    this.eventHandlers[`_${eventName}`] = []; // we keep a separate list of event callbacks to alway execute them last
+    this.eventHandlers[eventName] = {
+      core: [],
+      coreLast: [], // we keep a separate list of event callbacks to alway execute them last
+    };
+
     if (!this[eventName]) {
       const capitalizedEventName = _.upperFirst(_.camelCase(eventName));
-      this[eventName] = (callback: IEventHandler, atLast: boolean) => {
+      this[eventName] = (callback: IEventHandler, atLast: boolean = false, platform: string  = "core") => {
         if (atLast) {
-          this.eventHandlers[`_${eventName}`].push(callback.bind(this));
+          this.eventHandlers[eventName][`${platform}Last`] = this.eventHandlers[eventName][`${platform}Last`] || [];
+          this.eventHandlers[eventName][`${platform}Last`].push(callback.bind(this));
         } else {
-          this.eventHandlers[eventName].push(callback.bind(this));
+          this.eventHandlers[eventName][platform] = this.eventHandlers[eventName][platform] || [];
+          this.eventHandlers[eventName][platform].push(callback.bind(this));
         }
       };
 
-      this[`get${capitalizedEventName}Handlers`] = (): IEventHandler[] => _.concat(this.eventHandlers[eventName], this.eventHandlers[`_${eventName}`]);
+      this[`get${capitalizedEventName}Handlers`] = (platform?: string): IEventHandler[] => {
+        let handlers: IEventHandler[];
+        if (platform) {
+          this.eventHandlers[eventName][platform] = this.eventHandlers[eventName][platform] || [];
+          this.eventHandlers[eventName][`${platform}Last`] = this.eventHandlers[eventName][`${platform}Last`] || [];
+          handlers = _.concat(
+            this.eventHandlers[eventName].core,
+            this.eventHandlers[eventName][platform],
+            this.eventHandlers[eventName].coreLast,
+            this.eventHandlers[eventName][`${platform}Last`],
+          );
+        } else {
+          handlers = _.concat(
+            this.eventHandlers[eventName].core,
+            this.eventHandlers[eventName].coreLast,
+          );
+        }
+
+        return handlers;
+      };
     }
   }
 
@@ -320,9 +344,9 @@ export class VoxaApp {
       fromState = "entry";
     }
     const stateMachine = new StateMachine(fromState, {
-      onAfterStateChanged: this.getOnAfterStateChangedHandlers(),
-      onBeforeStateChanged: this.getOnBeforeStateChangedHandlers(),
-      onUnhandledState: this.getOnUnhandledStateHandlers(),
+      onAfterStateChanged: this.getOnAfterStateChangedHandlers(voxaEvent.platform),
+      onBeforeStateChanged: this.getOnBeforeStateChangedHandlers(voxaEvent.platform),
+      onUnhandledState: this.getOnUnhandledStateHandlers(voxaEvent.platform),
       states: this.states,
     });
 
@@ -333,7 +357,7 @@ export class VoxaApp {
       await this.handleOnSessionEnded(voxaEvent, response);
     }
 
-    const onBeforeReplyHandlers = this.getOnBeforeReplySentHandlers();
+    const onBeforeReplyHandlers = this.getOnBeforeReplySentHandlers(voxaEvent.platform);
     log("Running onBeforeReplySent");
     await bluebird.mapSeries(onBeforeReplyHandlers, (fn: IEventHandler) => fn(voxaEvent, response, transition));
 

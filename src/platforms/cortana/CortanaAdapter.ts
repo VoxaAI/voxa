@@ -57,7 +57,7 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
   public storage: IBotStorage;
   public applicationId: string;
   public applicationPassword: string;
-  public qAuthorization: PromiseLike<IAuthorizationResponse>;
+  public qAuthorization: Promise<IAuthorizationResponse>;
 
   constructor(voxaApp: VoxaApp, config: any) {
     super(voxaApp, config);

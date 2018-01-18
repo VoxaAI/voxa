@@ -132,6 +132,8 @@ describe('ReplaceIntentPlugin', () => {
     replaceIntent(stateMachineSkill, { regex: /(.*)OnlyIntent$/, replace: '$1Intent' });
     replaceIntent(stateMachineSkill, { regex: /^VeryLong(.*)/, replace: 'Long$1' });
 
+console.log(stateMachineSkill.getOnIntentRequestHandlers())
+
     return stateMachineSkill.execute(event, AlexaReply)
       .then((reply) => {
         expect(spy.called).to.be.true;

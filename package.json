@@ -1,6 +1,6 @@
 {
   "name": "voxa",
-  "version": "3.0.1-b",
+  "version": "3.0.2-b",
   "description": "A fsm (state machine) framework for Alexa apps using Node.js",
   "main": "index.js",
   "scripts": {
@@ -28,18 +28,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "actions-on-google": "^1.6.1",
-    "bluebird": "^3.5.1",
-    "botbuilder": "^3.13.1",
-    "debug": "^3.1.0",
-    "i18next": "^9.0.1",
-    "lodash": "^4.13.1",
-    "request": "^2.83.0",
-    "request-promise": "^4.2.2",
-    "striptags": "^3.1.1",
-    "uuid": "^3.1.0"
-  },
-  "devDependencies": {
     "@types/actions-on-google": "^1.6.0",
     "@types/alexa-sdk": "^1.0.11",
     "@types/bluebird": "^3.5.18",
@@ -52,6 +40,20 @@
     "@types/node": "^8.0.58",
     "@types/request-promise": "^4.1.39",
     "@types/uuid": "^3.4.3",
+    "actions-on-google": "^1.6.1",
+    "bluebird": "^3.5.1",
+    "botbuilder": "^3.13.1",
+    "debug": "^3.1.0",
+    "i18next": "^9.0.1",
+    "lodash": "^4.13.1",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2",
+    "striptags": "^3.1.1",
+    "ts-node": "^4.0.2",
+    "typescript": "^2.6.2",
+    "uuid": "^3.1.0"
+  },
+  "devDependencies": {
     "botbuilder-azure": "^3.0.4",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
@@ -61,10 +63,8 @@
     "portfinder": "^1.0.13",
     "simple-mock": "^0.8.0",
     "source-map-loader": "^0.2.3",
-    "ts-node": "^4.0.2",
     "tslint": "^5.8.0",
-    "tslint-no-unused-expression-chai": "^0.0.3",
-    "typescript": "^2.6.2"
+    "tslint-no-unused-expression-chai": "^0.0.3"
   },
   "bugs": {
     "url": "https://github.com/mediarain/voxa/issues"

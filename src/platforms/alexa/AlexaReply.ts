@@ -2,6 +2,7 @@ import { OutputSpeech, Reprompt, Response, ResponseBody, Template } from "alexa-
 import * as _ from "lodash";
 import { toSSML } from "../../ssml";
 import { VoxaReply } from "../../VoxaReply";
+import { AlexaEvent } from "./AlexaEvent";
 
 const SSML = "SSML";
 
@@ -17,6 +18,7 @@ export class AlexaReply extends VoxaReply {
     return !!_.get(this, "voxaEvent.context.System.device.supportedInterfaces.Display");
   }
 
+  public voxaEvent: AlexaEvent;
   public toJSON(): ResponseBody {
     const say = toSSML(this.response.statements.join("\n"));
     const reprompt = toSSML(this.response.reprompt);

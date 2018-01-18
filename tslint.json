@@ -4,7 +4,11 @@
         "tslint:recommended",
         "tslint-no-unused-expression-chai"
     ],
-    "jsRules": {},
-    "rules": {},
+    "jsRules": {
+      "no-console": [true, true, true]
+    },
+    "rules": {
+      "no-console": [true, true, true]
+    },
     "rulesDirectory": []
 }
