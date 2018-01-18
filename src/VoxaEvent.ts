@@ -5,7 +5,7 @@ import * as _ from "lodash";
 
 import { Model} from "./Model";
 
-export interface IRequestTypeMap  {
+export interface ITypeMap  {
   [x: string]: string;
 }
 
@@ -19,8 +19,8 @@ export abstract class IVoxaEvent {
   public model: Model;
   public t: i18n.TranslationFunction;
   public user: IVoxaUser;
-  public requestToIntent: IRequestTypeMap = {};
-  public requestToRequest: IRequestTypeMap = {};
+  public requestToIntent: ITypeMap = {};
+  public requestToRequest: ITypeMap = {};
   public platform: string;
 
   constructor(event: any, context: any) {

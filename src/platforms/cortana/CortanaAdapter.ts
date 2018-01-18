@@ -20,7 +20,7 @@ import { directiveHandler } from "../../directives";
 import { toSSML } from "../../ssml";
 import { ITransition } from "../../StateMachine";
 import { VoxaApp } from "../../VoxaApp";
-import { IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
+import { ITypeMap, IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
 import { VoxaReply } from "../../VoxaReply";
 import { VoxaAdapter } from "../VoxaAdapter";
 import { CortanaEvent } from "./CortanaEvent";
@@ -36,6 +36,12 @@ const CortanaRequests = [
   "contactRelationUpdate",
   "message",
 ];
+
+const MicrosoftCortanaIntents: ITypeMap = {
+  "Microsoft.Launch": "LaunchIntent",
+  "Microsoft.NoIntent": "NoIntent",
+  "Microsoft.YesIntent": "YesIntent",
+};
 
 const toAddress = {
   channelId: "channelId",
@@ -113,14 +119,37 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
     this.prepIncomingMessage(msg);
 
     const stateData: IBotStorageData|undefined = await this.getStateData(msg);
-    const intent = await this.recognize(msg);
+    let intent: IVoxaIntent|undefined = this.getIntentFromEntity(msg);
+    if (!intent) {
+      intent = await this.recognize(msg);
+    }
+
     const event = new CortanaEvent(msg, context, stateData, intent);
     const reply: CortanaReply = await this.app.execute(event, CortanaReply);
 
-    await this.partialReply(event, reply, {});
-    await this.saveStateData(event, reply);
+    await Promise.all([
+      this.partialReply(event, reply, {}),
+      this.saveStateData(event, reply),
+    ]);
 
     return {};
+  }
+
+  public getIntentFromEntity(msg: IMessage): IVoxaIntent|undefined {
+    const entities: any[]|undefined = msg.entities;
+    const intentEntity: any = _.find(msg.entities, { type: "Intent" });
+
+    if (!intentEntity) {
+      return;
+    }
+
+    const name: string = MicrosoftCortanaIntents[intentEntity.name] || intentEntity.name;
+
+    return {
+      name,
+      params: {},
+      rawIntent: intentEntity,
+    };
   }
 
   public async recognize(msg: IMessage): Promise<IVoxaIntent|undefined> {
@@ -208,7 +237,7 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
     }
 
     const conversationId = encodeURIComponent(event.address.conversation.id);
-    const userId = encodeURIComponent(event.address.user.id);
+    const userId = encodeURIComponent(event.address.bot.id);
     const context: IBotStorageContext = {
       conversationId,
       persistConversationData: false,
@@ -227,7 +256,7 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
 
   public saveStateData(event: CortanaEvent, reply: CortanaReply): Promise<void> {
     const conversationId = encodeURIComponent(event.session.sessionId);
-    const userId = encodeURIComponent(event.rawEvent.address.user.id);
+    const userId = encodeURIComponent(event.rawEvent.address.bot.id);
     const persistConversationData = false;
     const persistUserData = false;
     const context: IBotStorageContext = {
@@ -258,13 +287,13 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
     try {
       const authorization: IAuthorizationResponse = await this.qAuthorization;
       const requestOptions: rp.Options = {
-        method,
-        uri,
-        body,
-        json: true,
         auth: {
           bearer: authorization.access_token,
         },
+        body,
+        json: true,
+        method,
+        uri,
       };
 
       cortanalog("botApiRequest");

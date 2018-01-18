@@ -1,12 +1,7 @@
 import {
-  AttachmentLayout,
   IAttachment,
   IChatConnectorAddress,
   IIsAttachment,
-  IMessage,
-  Keyboard,
-  ReceiptCard,
-  SigninCard,
   SuggestedActions,
 } from "botbuilder";
 import * as _ from "lodash";
@@ -22,31 +17,11 @@ export class CortanaReply extends VoxaReply {
   public toJSON(): any {
     const speak = toSSML(this.response.statements.join("\n"));
     const text = striptags(this.response.statements.join("\n"));
-    const inputHint = this.response.terminate ? "acceptingInput" : "expectingInput";
+    const inputHint: string = getInputHint(this);
 
-    const attachmentTypes = [
-      ReceiptCard,
-      Keyboard,
-      SigninCard,
-    ];
-
-    const attachments: any[] = _(this.response.directives)
-      .filter({ type: "attachment" })
-      .map("attachment")
-      .map((at: IIsAttachment) => at.toAttachment())
-      .filter((at: any) => isAttachment(at))
-      .value();
-
-    const suggestedActions: SuggestedActions|undefined = _(this.response.directives)
-      .filter({ type: "suggestedActions" })
-      .map("suggestedActions")
-      .filter(isSuggestedActions)
-      .find();
-
-    return {
+    const jsonReply: any =  {
       address: this.voxaEvent.rawEvent.address,
-      agent: "Voxa",
-      attachments,
+      agent: "botbuilder",
       channelId: this.voxaEvent.rawEvent.address.channelId,
       conversation: {
         id: this.voxaEvent.session.sessionId,
@@ -63,16 +38,59 @@ export class CortanaReply extends VoxaReply {
       },
       replyToId: (this.voxaEvent.rawEvent.address as IChatConnectorAddress).id,
       source: this.voxaEvent.rawEvent.source,
-      sourceEvent: "",
       speak,
-      suggestedActions: suggestedActions ? suggestedActions.toSuggestedActions() : undefined,
       text,
       textFormat: "plain",
       timestamp: new Date().toISOString(),
       type: "message",
       user: {
-        id: this.voxaEvent.rawEvent.address.user.id,
+        id: this.voxaEvent.user.id,
       },
     };
+
+    // AudioCards, HeroCard, etc
+    const attachments = getAttachments(this);
+    if (attachments.length) {
+      jsonReply.attachments = attachments;
+    }
+
+    const suggestedActions = getSuggestedActions(this);
+    if (suggestedActions) {
+      jsonReply.suggestedActions = suggestedActions.toSuggestedActions();
+    }
+
+    return jsonReply;
   }
+}
+
+export function getInputHint(reply: VoxaReply) {
+  // we're closing the session, cortana accepts input from other skills, etc
+  if (reply.response.terminate) {
+    return "acceptingInput";
+  }
+
+  // we just sent an ask and we're waiting for a reply
+  if (reply.isYielding()) {
+    return "expectingInput";
+  }
+
+  // this means we sent a partial reply, like a say
+  return "ignoringInput";
+}
+
+export function getAttachments(reply: VoxaReply): any[] {
+  return _(reply.response.directives)
+    .filter({ type: "attachment" })
+    .map("attachment")
+    .map((at: IIsAttachment) => at.toAttachment())
+    .filter(isAttachment)
+    .value();
+}
+
+export function getSuggestedActions(reply: VoxaReply): SuggestedActions|undefined {
+  return _(reply.response.directives)
+    .filter({ type: "suggestedActions" })
+    .map("suggestedActions")
+    .filter(isSuggestedActions)
+    .find();
 }

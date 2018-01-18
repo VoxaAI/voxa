@@ -12,7 +12,7 @@ import {
 import { UniversalBot } from "botbuilder";
 import { TranslationFunction } from "i18next";
 import { Model } from "../../Model";
-import { IRequestTypeMap, IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
+import { ITypeMap, IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
 import { ICortanaEntity } from "./CortanaInterfaces";
 
 export class CortanaEvent extends IVoxaEvent {
@@ -26,9 +26,8 @@ export class CortanaEvent extends IVoxaEvent {
   public executionContext: any;
   public rawEvent: IEvent;
 
-  public requestToRequest: IRequestTypeMap = {
+  public requestToRequest: ITypeMap = {
     endOfConversation: "SessionEndedRequest",
-    message: "IntentRequest",
   };
 
   constructor(message: IEvent, context: any, stateData: IBotStorageData, intent?: IVoxaIntent) {
@@ -45,6 +44,7 @@ export class CortanaEvent extends IVoxaEvent {
     this.mapRequestToRequest();
 
     if (intent) {
+      this.request.type = "IntentRequest";
       this.intent = intent;
     } else {
       this.mapRequestToIntent();
@@ -56,18 +56,7 @@ export class CortanaEvent extends IVoxaEvent {
   }
 
   public mapRequestToIntent(): void {
-    if (isIMessage(this.rawEvent)) {
-      const entities: any[]|undefined = this.rawEvent.entities;
-      const intentEntity: any = _.find(this.rawEvent.entities, { name: "Microsoft.Launch" });
-      if (intentEntity) {
-        _.set(this, "intent", {
-          name: "LaunchIntent",
-          slots: {},
-        });
-        _.set(this, "request.type", "IntentRequest");
-        return;
-      }
-    } else if (isIConversationUpdate(this.rawEvent) && this.rawEvent.address.channelId === "webchat") {
+    if (isIConversationUpdate(this.rawEvent) && this.rawEvent.address.channelId === "webchat") {
       // in webchat we get a conversationUpdate event when the application window is open and another when the
       // user sends his first message, we want to identify that and only do a LaunchIntent for the first one
       const membersAdded: IIdentity[]|undefined = this.rawEvent.membersAdded;

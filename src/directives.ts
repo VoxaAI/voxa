@@ -77,6 +77,7 @@ export function tell(templatePath: string): directiveHandler {
 export function tellP(statement: string): directiveHandler {
   return async (response: VoxaReply, event: IVoxaEvent): Promise<void> => {
     response.addStatement(statement);
+    response.response.terminate = true;
     response.yield();
   };
 }
