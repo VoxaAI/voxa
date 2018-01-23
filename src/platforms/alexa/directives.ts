@@ -16,7 +16,7 @@ function onlyAlexa(target: ((reply: VoxaReply, event: IVoxaEvent) => Promise<voi
   };
 }
 
-export function HomeCard(templatePath: string): directiveHandler {
+export function homeCard(templatePath: string): directiveHandler {
   return onlyAlexa(async (reply, event): Promise<void> => {
     const card = await reply.render(templatePath);
     if (reply.hasDirective("card")) {
@@ -27,7 +27,7 @@ export function HomeCard(templatePath: string): directiveHandler {
   });
 }
 
-export function DialogDelegate(slots?: any): directiveHandler  {
+export function dialogDelegate(slots?: any): directiveHandler  {
   return onlyAlexa(async (reply, event): Promise<void> => {
     if (!event.intent) {
       throw new Error("An intent is required");
@@ -67,7 +67,7 @@ export function DialogDelegate(slots?: any): directiveHandler  {
   });
 }
 
-export function RenderTemplate(templatePath: string|Template, token: string): directiveHandler {
+export function renderTemplate(templatePath: string|Template, token: string): directiveHandler {
   return onlyAlexa(async (reply, event): Promise<void> => {
     if (!(reply as AlexaReply).supportsDisplayInterface) {
       return;
@@ -86,7 +86,7 @@ export function RenderTemplate(templatePath: string|Template, token: string): di
   });
 }
 
-export function AccountLinkingCard(): directiveHandler {
+export function accountLinkingCard(): directiveHandler {
   return onlyAlexa(async (reply, event): Promise<void> => {
     if (reply.hasDirective("card")) {
       throw new Error("At most one card can be specified in a response");
@@ -96,7 +96,7 @@ export function AccountLinkingCard(): directiveHandler {
   });
 }
 
-export function Hint(templatePath: string): directiveHandler {
+export function hint(templatePath: string): directiveHandler {
   return onlyAlexa(async (reply, event): Promise<void> => {
     if (reply.hasDirective("Hint")) {
       throw new Error("At most one Hint directive can be specified in a response");
@@ -113,7 +113,7 @@ export function Hint(templatePath: string): directiveHandler {
   });
 }
 
-export function PlayAudio(url: string, token: string, offsetInMilliseconds: number, playBehavior: string= "REPLACE"): directiveHandler {
+export function playAudio(url: string, token: string, offsetInMilliseconds: number, playBehavior: string= "REPLACE"): directiveHandler {
   return onlyAlexa(async (reply, event): Promise<void> => {
     if (reply.hasDirective("VideoApp.Launch")) {
       throw new Error("Do not include both an AudioPlayer.Play directive and a VideoApp.Launch directive in the same response");

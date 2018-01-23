@@ -13,6 +13,7 @@ export function register(skill: VoxaApp) {
   });
 
   skill.onAfterStateChanged((voxaEvent: IVoxaEvent, reply: VoxaReply, transition: ITransition) => {
+    (voxaEvent as any).flow = (voxaEvent as any).flow || [];
     (voxaEvent as any).flow.push(transition.to);
     return transition;
   });

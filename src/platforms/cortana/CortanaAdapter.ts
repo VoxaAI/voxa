@@ -6,6 +6,7 @@ import {
   IBotStorageData,
   IChatConnectorAddress,
   IEntity,
+  IEvent,
   IIntent,
   IMessage,
   LuisRecognizer,
@@ -14,7 +15,7 @@ import * as debug from "debug";
 import * as _ from "lodash";
 import * as rp from "request-promise";
 import { StatusCodeError } from "request-promise/errors";
-import * as url from "url";
+import * as urljoin from "url-join";
 import * as uuid from "uuid";
 import { directiveHandler } from "../../directives";
 import { toSSML } from "../../ssml";
@@ -26,7 +27,7 @@ import { VoxaAdapter } from "../VoxaAdapter";
 import { CortanaEvent } from "./CortanaEvent";
 import { IAuthorizationResponse } from "./CortanaInterfaces";
 import { CortanaReply } from "./CortanaReply";
-import { AudioCard, HeroCard, SuggestedActions } from "./directives";
+import { audioCard, heroCard, suggestedActions } from "./directives";
 
 const log: debug.IDebugger = debug("voxa");
 const cortanalog: debug.IDebugger = debug("voxa:cortana");
@@ -70,15 +71,21 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
     this.applicationId = config.applicationId;
     this.applicationPassword = config.applicationPassword;
     this.qAuthorization = this.getAuthorization();
-    this.app.onAfterStateChanged((
+
+    const partialReply = (
       voxaEvent: CortanaEvent,
       reply: CortanaReply,
       transition: ITransition,
-    ) => this.partialReply(voxaEvent, reply, transition));
+    ) => this.partialReply(voxaEvent, reply, transition);
+    this.app.onAfterStateChanged(partialReply, false, "cortana");
 
     _.forEach(CortanaRequests, (requestType: string) => voxaApp.registerRequestHandler(requestType));
-    _.map([HeroCard, AudioCard, SuggestedActions],
-      (handler: (value: any) => directiveHandler) => voxaApp.registerDirectiveHandler(handler, handler.name));
+    _.map([heroCard, audioCard, suggestedActions],
+      (handler: (value: any) => directiveHandler) => {
+        const directiveKey = `cortana${_.upperFirst(handler.name)}`;
+        console.log({ directiveKey });
+        voxaApp.registerDirectiveHandler(handler, directiveKey);
+      });
   }
 
   /*
@@ -214,20 +221,7 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
   }
 
   public replyToActivity(event: CortanaEvent, reply: CortanaReply): Promise<any> {
-    const address: IChatConnectorAddress = event.rawEvent.address;
-    const baseUri = address.serviceUrl;
-    const conversationId = encodeURIComponent(event.session.sessionId);
-
-    if (!baseUri) {
-      throw new Error("serviceUrl is missing");
-    }
-
-    let path = `/v3/conversations/${conversationId}/activities`;
-    if (address.id) {
-      path += "/" + encodeURIComponent(address.id);
-    }
-
-    const uri = url.resolve(baseUri, path);
+    const uri = getReplyUri(event.rawEvent);
     return this.botApiRequest("POST", uri, reply.toJSON());
   }
 
@@ -326,4 +320,22 @@ export function moveFieldsTo(frm: any, to: any, fields: { [id: string]: string; 
       }
     }
   }
+}
+
+export function getReplyUri(event: IEvent): string {
+    const address: IChatConnectorAddress = event.address;
+    const baseUri = address.serviceUrl;
+
+    if (!baseUri || !address.conversation) {
+      throw new Error("serviceUrl is missing");
+    }
+
+    const conversationId = encodeURIComponent(address.conversation.id);
+
+    let path = `/v3/conversations/${conversationId}/activities`;
+    if (address.id) {
+      path += "/" + encodeURIComponent(address.id);
+    }
+
+    return urljoin(baseUri, path);
 }

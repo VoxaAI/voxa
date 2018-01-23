@@ -11,7 +11,7 @@ import { Renderer } from "../../src/renderers/Renderer";
 import { VoxaApp } from "../../src/VoxaApp";
 import { IVoxaEvent } from "../../src/VoxaEvent";
 import { variables } from "../variables";
-import { Hint, HomeCard } from "./../../src/platforms/alexa/directives";
+import { hint, homeCard } from "./../../src/platforms/alexa/directives";
 import { AlexaRequestBuilder } from "./../tools";
 import { views } from "./../views";
 
@@ -58,11 +58,12 @@ describe("Alexa directives", () => {
       app.onIntent("YesIntent", () => {
         const template = new DisplayTemplate("BodyTemplate1");
         return {
-          RenderTemplate: template,
+          alexaRenderTemplate: template,
         };
       });
 
       const reply = await alexaSkill.execute(event, {});
+      expect(reply.response.directives).to.not.be.undefined;
       expect(reply.response.directives[0]).to.deep.equal({
         template: {
           backButton: "VISIBLE",
@@ -74,11 +75,12 @@ describe("Alexa directives", () => {
 
     it("should add to the directives", async () => {
       app.onIntent("YesIntent", {
-        RenderTemplate: "RenderTemplate",
+        alexaRenderTemplate: "RenderTemplate",
         to: "die",
       });
 
       const reply = await alexaSkill.execute(event, {});
+      expect(reply.response.directives).to.not.be.undefined;
       expect(reply.response.directives[0]).to.deep.equal({
         template: {
           backButton: "VISIBLE",
@@ -111,7 +113,7 @@ describe("Alexa directives", () => {
       const cortanaEvent = new CortanaEvent(cortanaLaunch, {}, {});
       const reply = new AlexaReply(cortanaEvent, renderer);
 
-      await Hint("Hint")(reply, event);
+      await hint("Hint")(reply, event);
       expect(reply.response.directives).to.be.empty;
     });
 
@@ -126,7 +128,7 @@ describe("Alexa directives", () => {
 
     it("should render a Hint directive", async () => {
       app.onIntent("YesIntent", {
-        Hint: "Hint",
+        alexaHint: "Hint",
         to: "die",
       });
 
@@ -144,7 +146,7 @@ describe("Alexa directives", () => {
   describe("HomeCard", () => {
     it("should be usable from the directives", async () => {
       app.onIntent("YesIntent", {
-        directives: [HomeCard("Card")],
+        directives: [homeCard("Card")],
         to: "die",
       });
 
@@ -161,7 +163,7 @@ describe("Alexa directives", () => {
 
     it("should render the home card", async () => {
       app.onIntent("YesIntent", {
-        HomeCard: "Card",
+        alexaHomeCard: "Card",
         to: "die",
       });
 
@@ -178,8 +180,8 @@ describe("Alexa directives", () => {
 
     it("should not allow more than one card", async () => {
       app.onIntent("YesIntent", {
-        HomeCard: "Card",
-        directives: [HomeCard("Card")],
+        alexaHomeCard: "Card",
+        directives: [homeCard("Card")],
         to: "entry",
       });
 

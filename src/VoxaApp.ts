@@ -53,8 +53,11 @@ export class VoxaApp {
     this.registerEvents();
     this.onError((voxaEvent: IVoxaEvent, error: Error, ReplyClass: IReply<VoxaReply>): VoxaReply => {
       console.error("onError");
-      console.error(error);
-      console.error(error.stack);
+      console.error(error.message ? error.message : error);
+      console.trace();
+
+      log(error);
+
       const response =  new ReplyClass(voxaEvent, this.renderer);
       response.response.statements.push("An unrecoverable error occurred.");
       return response;

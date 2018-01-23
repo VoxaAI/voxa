@@ -20,8 +20,8 @@ export class CortanaReply extends VoxaReply {
     const inputHint: string = getInputHint(this);
 
     const jsonReply: any =  {
-      address: this.voxaEvent.rawEvent.address,
-      agent: "botbuilder",
+      // address: this.voxaEvent.rawEvent.address,
+      // agent: "botbuilder",
       channelId: this.voxaEvent.rawEvent.address.channelId,
       conversation: {
         id: this.voxaEvent.session.sessionId,
@@ -37,15 +37,15 @@ export class CortanaReply extends VoxaReply {
         name: this.voxaEvent.user.name,
       },
       replyToId: (this.voxaEvent.rawEvent.address as IChatConnectorAddress).id,
-      source: this.voxaEvent.rawEvent.source,
+      // source: this.voxaEvent.rawEvent.source,
       speak,
       text,
       textFormat: "plain",
       timestamp: new Date().toISOString(),
       type: "message",
-      user: {
-        id: this.voxaEvent.user.id,
-      },
+      // user: {
+        // id: this.voxaEvent.user.id,
+      // },
     };
 
     // AudioCards, HeroCard, etc

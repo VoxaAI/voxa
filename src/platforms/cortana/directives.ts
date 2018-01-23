@@ -22,7 +22,7 @@ function onlyCortana(target: ((reply: VoxaReply, event: IVoxaEvent) => Promise<v
   };
 }
 
-export function HeroCard(templatePath: string|HeroCardType): directiveHandler {
+export function heroCard(templatePath: string|HeroCardType): directiveHandler {
   return onlyCortana(async (reply, event): Promise<void> => {
     let attachment;
     if (_.isString(templatePath) ) {
@@ -34,20 +34,20 @@ export function HeroCard(templatePath: string|HeroCardType): directiveHandler {
   });
 }
 
-export function SuggestedActions(templatePath: string|SuggestedActionsType): directiveHandler {
+export function suggestedActions(templatePath: string|SuggestedActionsType): directiveHandler {
   return  onlyCortana(async (reply, event): Promise<void> => {
-    let suggestedActions;
+    let actions;
     if (_.isString(templatePath) ) {
-      suggestedActions = await reply.render(templatePath);
+      actions = await reply.render(templatePath);
     } else {
-      suggestedActions = templatePath;
+      actions = templatePath;
     }
 
-    reply.response.directives.push({ type: "suggestedActions", suggestedActions });
+    reply.response.directives.push({ type: "suggestedActions", suggestedActions: actions });
   });
 }
 
-export function AudioCard(url: string, title: string = "", profile: string = ""): directiveHandler {
+export function audioCard(url: string, title: string = "", profile: string = ""): directiveHandler {
   return  onlyCortana(async (reply, event): Promise<void> => {
     const attachment = new AudioCardType();
     attachment.title(title);

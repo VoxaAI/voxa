@@ -18,7 +18,7 @@ const AlexaEvent = require('../src/platforms/alexa/AlexaEvent').AlexaEvent;
 const AlexaReply = require('../src/platforms/alexa/AlexaReply').AlexaReply;
 const DialogFlowEvent = require('../src/platforms/dialog-flow/DialogFlowEvent').DialogFlowEvent;
 const AlexaRequestBuilder = require('./tools').AlexaRequestBuilder;
-const PlayAudio = require('../src/platforms/alexa/directives').PlayAudio;
+const playAudio = require('../src/platforms/alexa/directives').playAudio;
 
 const rb = new AlexaRequestBuilder();
 
@@ -125,9 +125,9 @@ describe('Renderer', () => {
       });
 
       it('should return response with directives', () => {
-        PlayAudio('url', '123', 0)
+        playAudio('url', '123', 0)
 
-        skill.onIntent('SomeIntent', () => ({ reply: 'Question.Ask', to: 'entry', directives: [PlayAudio] }));
+        skill.onIntent('SomeIntent', () => ({ reply: 'Question.Ask', to: 'entry', directives: [playAudio] }));
         event.request.locale = locale;
         return skill.execute(event, AlexaReply)
           .then((reply) => {

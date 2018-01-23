@@ -16,7 +16,7 @@ const AlexaEvent = require('../src/platforms/alexa/AlexaEvent').AlexaEvent;
 const AlexaReply = require('../src/platforms/alexa/AlexaReply').AlexaReply;
 const tools = require('./tools');
 
-const PlayAudio = require('../src/platforms/alexa/directives').PlayAudio;
+const playAudio = require('../src/platforms/alexa/directives').playAudio;
 
 const rb = new tools.AlexaRequestBuilder();
 
@@ -47,7 +47,7 @@ const states = {
       offsetInMilliseconds = request.context.AudioPlayer.offsetInMilliseconds;
     }
 
-    const directives = [PlayAudio(TEST_URLS[index], createToken(index, shuffle, loop), offsetInMilliseconds, 'REPLACE_ALL')]
+    const directives = [playAudio(TEST_URLS[index], createToken(index, shuffle, loop), offsetInMilliseconds, 'REPLACE_ALL')]
 
     return { reply: 'LaunchIntent.OpenResponse', directives };
   },

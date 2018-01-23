@@ -20,7 +20,7 @@ const AlexaReply = require('../src/platforms/alexa/AlexaReply').AlexaReply;
 const AlexaAdapter = require('../src/platforms/alexa/AlexaAdapter').AlexaAdapter;
 const tools = require('./tools');
 
-const PlayAudio = require('../src/platforms/alexa/directives').PlayAudio;
+const playAudio = require('../src/platforms/alexa/directives').playAudio;
 
 const rb = new tools.AlexaRequestBuilder();
 
@@ -392,7 +392,7 @@ describe('VoxaApp', () => {
   it('should include all directives in the reply', () => {
     const voxaApp = new VoxaApp({ Model, variables, views });
 
-    const directives = [PlayAudio('url', '123', 0, 'REPLACE_ALL')]
+    const directives = [playAudio('url', '123', 0, 'REPLACE_ALL')]
 
     voxaApp.onIntent('SomeIntent', () => ({
       reply: 'ExitIntent.Farewell',
@@ -421,7 +421,7 @@ describe('VoxaApp', () => {
   it('should include all directives in the reply even if die', () => {
     const voxaApp = new VoxaApp({ Model, variables, views });
 
-    const directives = [PlayAudio('url', '123', 0, 'REPLACE_ALL')]
+    const directives = [playAudio('url', '123', 0, 'REPLACE_ALL')]
 
     voxaApp.onIntent('SomeIntent', () => ({
       reply: 'ExitIntent.Farewell',

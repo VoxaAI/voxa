@@ -14,7 +14,7 @@ import { VoxaReply } from "../../VoxaReply";
 import { VoxaAdapter } from "../VoxaAdapter";
 import { AlexaEvent } from "./AlexaEvent";
 import { AlexaReply } from "./AlexaReply";
-import { AccountLinkingCard, DialogDelegate, Hint, HomeCard, PlayAudio, RenderTemplate } from "./directives";
+import { accountLinkingCard, dialogDelegate, hint, homeCard, playAudio, renderTemplate } from "./directives";
 
 const log: debug.IDebugger = debug("voxa");
 
@@ -98,14 +98,19 @@ export class AlexaAdapter extends VoxaAdapter<AlexaReply> {
   constructor(voxaApp: VoxaApp) {
     super(voxaApp);
 
-    _.map([HomeCard, DialogDelegate, RenderTemplate, AccountLinkingCard, Hint, PlayAudio],
-      (handler: (value: any) => directiveHandler) => voxaApp.registerDirectiveHandler(handler, handler.name));
+    _.map([homeCard, dialogDelegate, renderTemplate, accountLinkingCard, hint, playAudio],
+      (handler: (value: any) => directiveHandler) => {
+        const directiveKey = `alexa${_.upperFirst(handler.name)}`;
+        console.log({ directiveKey });
+        voxaApp.registerDirectiveHandler(handler, directiveKey);
+      });
 
-    this.app.onAfterStateChanged((
+    const partialReply = (
       voxaEvent: AlexaEvent,
       reply: AlexaReply,
       transition: ITransition,
-    ) => AlexaAdapter.partialReply(voxaEvent, reply, transition));
+    ) => AlexaAdapter.partialReply(voxaEvent, reply, transition);
+    this.app.onAfterStateChanged(partialReply, false, "alexa");
 
     _.forEach(AlexaRequests, (requestType) => voxaApp.registerRequestHandler(requestType));
   }

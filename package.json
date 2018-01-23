@@ -41,6 +41,7 @@
     "@types/mocha": "^2.2.45",
     "@types/node": "^8.0.58",
     "@types/request-promise": "^4.1.39",
+    "@types/url-join": "^0.8.2",
     "@types/uuid": "^3.4.3",
     "actions-on-google": "^1.6.1",
     "bluebird": "^3.5.1",
@@ -53,6 +54,7 @@
     "striptags": "^3.1.1",
     "ts-node": "^4.0.2",
     "typescript": "^2.6.2",
+    "url-join": "^3.0.0",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
