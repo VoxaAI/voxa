@@ -103,6 +103,10 @@
     "@types/express-serve-static-core" "*"
     "@types/mime" "*"
 
+"@types/simple-mock@^0.0.27":
+  version "0.0.27"
+  resolved "https://registry.yarnpkg.com/@types/simple-mock/-/simple-mock-0.0.27.tgz#a9f58db60b5c09c66156467346ff069f8d66352a"
+
 "@types/strip-bom@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/strip-bom/-/strip-bom-3.0.0.tgz#14a8ec3956c2e81edb7520790aecf21c290aebd2"

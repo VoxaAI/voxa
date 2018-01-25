@@ -16,7 +16,7 @@ const AlexaEvent = require('../src/platforms/alexa/AlexaEvent').AlexaEvent;
 const AlexaReply = require('../src/platforms/alexa/AlexaReply').AlexaReply;
 const tools = require('./tools');
 
-const playAudio = require('../src/platforms/alexa/directives').playAudio;
+const PlayAudio = require('../src/platforms/alexa/directives').PlayAudio;
 
 const rb = new tools.AlexaRequestBuilder();
 
@@ -47,15 +47,15 @@ const states = {
       offsetInMilliseconds = request.context.AudioPlayer.offsetInMilliseconds;
     }
 
-    const directives = [playAudio(TEST_URLS[index], createToken(index, shuffle, loop), offsetInMilliseconds, 'REPLACE_ALL')]
+    const directives = [new PlayAudio(TEST_URLS[index], createToken(index, shuffle, loop), offsetInMilliseconds, 'REPLACE_ALL')]
 
-    return { reply: 'LaunchIntent.OpenResponse', directives };
+    return { ask: 'LaunchIntent.OpenResponse', directives };
   },
   exit: function enter() {
-    return { reply: 'ExitIntent.Farewell' };
+    return { tell: 'ExitIntent.Farewell' };
   },
   launch: function enter() {
-    return { reply: 'LaunchIntent.OpenResponse' };
+    return { ask: 'LaunchIntent.OpenResponse' };
   },
 };
 
@@ -63,7 +63,7 @@ function createToken(index, shuffle, loop) {
   return JSON.stringify({ index, shuffle, loop });
 }
 
-describe('StateMachineApp', () => {
+describe('VoxaApp', () => {
   let skill;
 
   beforeEach(() => {
@@ -74,7 +74,7 @@ describe('StateMachineApp', () => {
   });
 
   itIs('ResumeIntent', (reply) => {
-    expect(reply.response.statements.join()).to.include('Hello! Good');
+    expect(reply.speech).to.include('Hello! Good ');
     expect(reply.response.directives[0].type).to.equal('AudioPlayer.Play');
     expect(reply.response.directives[0].playBehavior).to.equal('REPLACE_ALL');
     expect(reply.response.directives[0].audioItem.stream.offsetInMilliseconds).to.equal(353160);
@@ -89,7 +89,7 @@ describe('StateMachineApp', () => {
         playerActivity: 'STOPPED',
       };
 
-      return skill.execute(event, AlexaReply).then(cb);
+      return skill.execute(event, new AlexaReply()).then(cb);
     });
   }
 });

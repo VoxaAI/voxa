@@ -18,7 +18,7 @@ const AlexaEvent = require('../src/platforms/alexa/AlexaEvent').AlexaEvent;
 const AlexaReply = require('../src/platforms/alexa/AlexaReply').AlexaReply;
 const DialogFlowEvent = require('../src/platforms/dialog-flow/DialogFlowEvent').DialogFlowEvent;
 const AlexaRequestBuilder = require('./tools').AlexaRequestBuilder;
-const playAudio = require('../src/platforms/alexa/directives').playAudio;
+const PlayAudio = require('../src/platforms/alexa/directives').PlayAudio;
 
 const rb = new AlexaRequestBuilder();
 
@@ -40,7 +40,7 @@ describe('Renderer', () => {
     event.t = i18next.getFixedT('en-US');
 
     statesDefinition = {
-      entry: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }),
+      entry: () => ({ ask: 'ExitIntent.Farewell', to: 'die' }),
       initState: () => ({ to: 'endState' }),
       secondState: () => ({ to: 'initState' }),
       thirdState: () => Promise.resolve({ to: 'endState' }),
@@ -52,14 +52,14 @@ describe('Renderer', () => {
       site: 'Ok. For more info visit example.com site.',
       number: 'one',
       question: 'What time is it?',
-      say: ['say', 'What time is it?'],
+      say: 'say What time is it?',
       random: ['Random 1', 'Random 2', 'Random 3', 'Random 4'],
     },
     'de-DE': {
       site: 'Ok für weitere Infos besuchen example.com Website',
       number: 'ein',
       question: 'wie spät ist es?',
-      say: ['sagen', 'wie spät ist es?'],
+      say: 'sagen wie spät ist es?',
       random: ['zufällig1', 'zufällig2', 'zufällig3', 'zufällig4', 'zufällig5'],
     },
   };
@@ -67,13 +67,13 @@ describe('Renderer', () => {
   it('should return an error if the views file doesn\'t have the local strings', () => {
     const localeMissing = 'en-GB';
     const skill = new Voxa({ variables, views });
-    skill.onIntent('SomeIntent', () => ({ reply: 'Number.One' }));
+    skill.onIntent('SomeIntent', () => ({ ask: 'Number.One' }));
     event.request.locale = localeMissing;
 
-    return skill.execute(event, AlexaReply)
+    return skill.execute(event, new AlexaReply())
       .then((reply) => {
-        expect(reply.error.message).to.equal(`View Number.One for ${localeMissing} locale is missing`);
-        expect(reply.response.statements[0]).to.equal('An unrecoverable error occurred.');
+        // expect(reply.error.message).to.equal(`View Number.One for ${localeMissing} locale is missing`);
+        expect(reply.speech).to.equal('<speak>An unrecoverable error occurred.</speak>');
       });
   });
 
@@ -86,52 +86,53 @@ describe('Renderer', () => {
       });
 
       it(`shold return a random response from the views array for ${locale}`, () => {
-        skill.onIntent('SomeIntent', () => ({ reply: 'RandomResponse' }));
+        skill.onIntent('SomeIntent', () => ({ ask: 'RandomResponse' }));
         event.request.locale = locale;
-        return skill.execute(event, AlexaReply)
+        return skill.execute(event, new AlexaReply())
           .then((reply) => {
-            expect(reply.response.statements[0]).to.be.oneOf(translations.random);
+            expect(reply.speech).to.not.be.undefined;
+            expect(reply.speech).to.be.oneOf(_.map(translations.random, tr => `<speak>${tr}</speak>`));
           });
       });
 
       it(`should return the correct translation for ${locale}`, () => {
         _.map(statesDefinition, (state, name) => skill.onState(name, state));
         event.request.locale = locale;
-        return skill.execute(event, AlexaReply)
+        return skill.execute(event, new AlexaReply())
           .then((reply) => {
-            expect(reply.response.statements[0]).to.equal(translations.site);
-            expect(reply.response.directives).to.deep.equal([]);
+            expect(reply.speech).to.equal(`<speak>${translations.site}</speak>`);
+            expect(reply.response.directives).to.be.undefined;
           });
       });
 
       it(`work with array responses ${locale}`, () => {
-        skill.onIntent('SomeIntent', () => ({ reply: ['Say.Say', 'Question.Ask'], to: 'entry' }));
+        skill.onIntent('SomeIntent', () => ({ say: 'Say.Say', ask: 'Question.Ask', to: 'entry' }));
         event.request.locale = locale;
-        return skill.execute(event, AlexaReply)
+        return skill.execute(event, new AlexaReply())
           .then((reply) => {
-            expect(reply.response.statements).to.deep.equal(translations.say);
-            expect(reply.response.directives).to.deep.equal([]);
+            expect(reply.speech).to.deep.equal(`<speak>${translations.say}</speak>`);
+            expect(reply.response.directives).to.be.undefined;
           });
       });
 
       it('should have the locale available in variables', () => {
-        skill.onIntent('SomeIntent', () => ({ reply: 'Number.One' }));
+        skill.onIntent('SomeIntent', () => ({ tell: 'Number.One' }));
         event.request.locale = locale;
-        return skill.execute(event, AlexaReply)
+        return skill.execute(event, new AlexaReply())
           .then((reply) => {
-            expect(reply.response.statements[0]).to.equal(translations.number);
-            expect(reply.response.directives).to.deep.equal([]);
+            expect(reply.speech).to.equal(`<speak>${translations.number}</speak>`);
+            expect(reply.response.directives).to.be.undefined;
           });
       });
 
       it('should return response with directives', () => {
-        playAudio('url', '123', 0)
+        const playAudio = new PlayAudio('url', '123', 0)
 
-        skill.onIntent('SomeIntent', () => ({ reply: 'Question.Ask', to: 'entry', directives: [playAudio] }));
+        skill.onIntent('SomeIntent', () => ({ ask: 'Question.Ask', to: 'entry', directives: [playAudio] }));
         event.request.locale = locale;
-        return skill.execute(event, AlexaReply)
+        return skill.execute(event, new AlexaReply())
           .then((reply) => {
-            expect(reply.response.statements[0]).to.equal(translations.question);
+            expect(reply.speech).to.equal(`<speak>${translations.question}</speak>`);
             expect(reply.response.directives).to.be.ok;
           });
       });
@@ -144,7 +145,7 @@ describe('Renderer', () => {
   it('should throw an exception if path doesn\'t exists', () => expect(renderer.renderPath('Missing.Path', event)).to.eventually.be.rejectedWith(Error, 'View Missing.Path for en-US locale is missing'));
   it('should select a random option from the samples', () => (renderer.renderPath('RandomResponse', event))
     .then((rendered) => {
-      expect(rendered.tell).to.be.oneOf(['Random 1', 'Random 2', 'Random 3', 'Random 4']);
+      expect(rendered).to.be.oneOf(['Random 1', 'Random 2', 'Random 3', 'Random 4']);
     }));
   it('should use deeply search to render object variable', () => expect(renderer.renderMessage({ card: '{exitCard}', number: 1 }, { model: { count: 1 } }))
     .to.eventually.deep.equal({
@@ -181,7 +182,7 @@ describe('Renderer', () => {
     dialogFlowEvent.t = event.t;
     return renderer.renderPath('LaunchIntent.OpenResponse', dialogFlowEvent)
       .then((rendered) => {
-        expect(rendered.tell).to.equal('Hello from DialogFlow');
+        expect(rendered).to.equal('Hello from DialogFlow');
       });
   });
 });

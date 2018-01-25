@@ -3,95 +3,74 @@ import * as _ from "lodash";
 import { Responses } from "actions-on-google";
 import { StandardIntents } from "actions-on-google/assistant-app";
 import { Context, DialogflowApp } from "actions-on-google/dialogflow-app";
+import { Model } from "../../Model";
 import { toSSML } from "../../ssml";
 import { IVoxaSession } from "../../VoxaEvent";
-import { VoxaReply } from "../../VoxaReply";
+import { IVoxaReply } from "../../VoxaReply";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 
-export class DialogFlowReply extends VoxaReply {
-  public voxaEvent: DialogFlowEvent;
+export interface IDialogFlowData {
+  google: {
+    expectUserResponse: boolean;
+    isSsml: boolean;
+    noInputPrompts: string[];
+    richResponse: Responses.RichResponse;
+    possibleIntents?: any;
+  };
+}
 
-  public sessionToContext(): any[] {
-    if (!(this.session && !_.isEmpty(this.session.attributes))) {
-      return [];
-    }
+export class DialogFlowReply implements IVoxaReply {
+  public contextOut: Context[];
+  public speech: string;
+  public source: string = "Voxa";
+  public data: IDialogFlowData;
 
-    return _(this.session.attributes)
-      .map((parameters: any, name: string): any => {
-        if (!parameters || _.isEmpty(parameters)) {
-          return;
-        }
-
-        const currentContext: any = { name, lifespan: 10000, parameters: {} };
-        if (_.isPlainObject(parameters)) {
-          currentContext.parameters = parameters;
-        } else {
-          currentContext.parameters[name] = parameters;
-        }
-
-        return currentContext;
-      })
-      .filter()
-      .value();
-  }
-
-  public google() {
-    const speech = toSSML(this.response.statements.join("\n"));
-    const noInputPrompts = [];
-    let possibleIntents;
-
-    const richResponse = new Responses.RichResponse();
-    if (this.response.reprompt) {
-      noInputPrompts.push({
-        ssml: this.response.reprompt,
-      });
-    }
-
-    if (speech) {
-      richResponse.addSimpleResponse(speech);
-    }
-
-    _.map(this.response.directives, (directive: any) => {
-      if (directive.suggestions) {
-        richResponse.addSuggestions(directive.suggestions);
-      } else if (directive.basicCard) {
-        richResponse.addBasicCard(directive.basicCard);
-      } else if (directive.possibleIntents) {
-        possibleIntents = directive.possibleIntents;
-      }
-
-    });
-
-    return {
-      expectUserResponse: !this.response.terminate,
-      isSsml: true,
-      noInputPrompts,
-      possibleIntents,
-      richResponse,
+  constructor() {
+    this.data = {
+      google : {
+        expectUserResponse: true,
+        isSsml: true,
+        noInputPrompts: [],
+        richResponse: new Responses.RichResponse(),
+      },
     };
   }
 
-  public toJSON() {
-    const speech = toSSML(this.response.statements.join("\n"));
-    const contextOut = this.sessionToContext();
+  public get hasMessages(): boolean {
+    return false;
+  }
 
-    const source = _.get(this, "voxaEvent.originalRequest.source");
+  public get hasDirectives(): boolean {
+    return false;
+  }
 
-    const integrations: any = {
-      google: this.google.bind(this),
-    };
+  public get hasTerminated(): boolean {
+    return false;
+  }
 
-    const response: any = {
-      contextOut,
-      data: {},
-      source: "Voxa",
-      speech,
-    };
+  public clear() {
+    console.log("clear");
+  }
 
-    if (integrations[source]) {
-      response.data[source] = integrations[source]();
-    }
+  public terminate() {
+    console.log("temrinate");
+  }
 
-    return response;
+  public addStatement() {
+    console.log("terminate");
+  }
+
+  public hasDirective(type: string | RegExp): boolean {
+    return false;
+  }
+
+  public addReprompt(reprompt: string) {
+    this.data.google.noInputPrompts.push(reprompt);
+  }
+
+  public modelToSessionContext(model: Model): Context {
+    const currentContext: Context = { name: "model", lifespan: 10000, parameters: {} };
+    currentContext.parameters = model;
+    return currentContext;
   }
 }

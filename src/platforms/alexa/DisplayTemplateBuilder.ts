@@ -1,22 +1,18 @@
 import { Image, ListItem, Template, TemplateBackButtonVisibility, TemplateType, TextContent, TextField } from "alexa-sdk";
 
-export class DisplayTemplate implements Template {
-  public type: TemplateType;
-  public listItems: ListItem[];
-  public backButton: TemplateBackButtonVisibility;
-  public title: string;
-  public token: string;
-  public textContent: TextContent;
-  public backgroundImage?: Image;
+export class DisplayTemplate {
+  public type: string = "Display.RenderTemplate";
+  public template: any;
 
   constructor(type: TemplateType) {
-    this.type = type;
-    this.listItems = [];
-    this.backButton = "VISIBLE";
+    this.template = {
+      backButton: "VISIBLE",
+      type,
+    };
   }
 
   public setTitle(title: string) {
-    this.title = title;
+    this.template.title = title;
     return this;
   }
 
@@ -26,44 +22,31 @@ export class DisplayTemplate implements Template {
       textContent: toTextContext(text1, text2, text3),
       token,
     };
-    this.listItems.push(item);
+    this.template.listItems = this.template.listItems || [];
+    this.template.listItems.push(item);
     return this;
   }
 
   public setToken(token: string): DisplayTemplate {
-    this.token = token;
+    this.template.token = token;
     return this;
   }
 
   public setBackButton(state: TemplateBackButtonVisibility): DisplayTemplate {
-    this.backButton = state;
+    this.template.backButton = state;
     return this;
   }
 
   public setTextContent(text1: string, text2?: string, text3?: string): DisplayTemplate {
-    this.textContent = toTextContext(text1, text2, text3);
+    this.template.textContent = toTextContext(text1, text2, text3);
     return this;
   }
 
   public setBackgroundImage(backgroundImage: string): DisplayTemplate {
-    this.backgroundImage = toImage(backgroundImage);
+    this.template.backgroundImage = toImage(backgroundImage);
     return this;
   }
 
-  public toJSON() {
-    return {
-      template: {
-        backButton: this.backButton,
-        backgroundImage: this.backgroundImage,
-        listItems: this.listItems.length > 0 ? this.listItems : undefined,
-        textContent: this.textContent,
-        title: this.title,
-        token: this.token,
-        type: this.type,
-      },
-      type: "Display.RenderTemplate",
-    };
-  }
 }
 
 function toImage(image: string, contentDescription: string = ""): Image {

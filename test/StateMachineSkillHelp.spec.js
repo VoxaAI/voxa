@@ -25,9 +25,9 @@ const states = {
     StopIntent: 'exit',
     CancelIntent: 'exit',
   },
-  help: () => ({ reply: 'HelpIntent.HelpAboutSkill', to: 'die' }),
-  exit: () => ({ reply: 'ExitIntent.Farewell', to: 'die' }),
-  launch: () => ({ reply: 'LaunchIntent.OpenResponse', to: 'die' }),
+  help: () => ({ ask: 'HelpIntent.HelpAboutSkill', to: 'die' }),
+  exit: () => ({ tell: 'ExitIntent.Farewell', to: 'die' }),
+  launch: () => ({ ask: 'LaunchIntent.OpenResponse', to: 'die' }),
 };
 
 
@@ -42,13 +42,13 @@ describe('StateMachineSkill Help test', () => {
   });
 
   itIs('AMAZON.HelpIntent', (reply) => {
-    expect(reply.response.statements[0]).to.include('For more help visit');
+    expect(reply.speech).to.include('For more help visit');
   });
 
   function itIs(intentName, cb) {
     it(intentName, () => {
       const event = new AlexaEvent(rb.getIntentRequest(intentName));
-      return skill.execute(event, AlexaReply).then(cb);
+      return skill.execute(event, new AlexaReply()).then(cb);
     });
   }
 });

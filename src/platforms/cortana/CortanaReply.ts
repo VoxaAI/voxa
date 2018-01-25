@@ -1,96 +1,92 @@
 import {
+  IAddress,
   IAttachment,
+  ICardAction,
   IChatConnectorAddress,
+  IIdentity,
   IIsAttachment,
-  SuggestedActions,
+  IMessage,
+  ISuggestedActions,
 } from "botbuilder";
 import * as _ from "lodash";
 import * as striptags from "striptags";
 import * as uuid from "uuid";
+import { NotImplementedError } from "../../errors";
 import { toSSML } from "../../ssml";
-import { VoxaReply } from "../../VoxaReply";
+import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 import { CortanaEvent } from "./CortanaEvent";
-import { isAttachment, isSuggestedActions } from "./directives";
 
-export class CortanaReply extends VoxaReply {
-  public voxaEvent: CortanaEvent;
-  public toJSON(): any {
-    const speak = toSSML(this.response.statements.join("\n"));
-    const text = striptags(this.response.statements.join("\n"));
-    const inputHint: string = getInputHint(this);
+export class CortanaReply implements IVoxaReply {
+  public speech: string;
 
-    const jsonReply: any =  {
-      // address: this.voxaEvent.rawEvent.address,
-      // agent: "botbuilder",
-      channelId: this.voxaEvent.rawEvent.address.channelId,
-      conversation: {
-        id: this.voxaEvent.session.sessionId,
-      },
-      from: {
-        id: this.voxaEvent.rawEvent.address.bot.id,
-      },
-      id: uuid.v1(),
-      inputHint,
-      locale: this.voxaEvent.request.locale,
-      recipient: {
-        id: this.voxaEvent.user.id,
-        name: this.voxaEvent.user.name,
-      },
-      replyToId: (this.voxaEvent.rawEvent.address as IChatConnectorAddress).id,
-      // source: this.voxaEvent.rawEvent.source,
-      speak,
-      text,
-      textFormat: "plain",
-      timestamp: new Date().toISOString(),
-      type: "message",
-      // user: {
-        // id: this.voxaEvent.user.id,
-      // },
+  // IMessage
+  public channelId: string;
+  public conversation: IIdentity;
+  public from: IIdentity;
+  public id: string;
+  public inputHint: string;
+  public locale: string;
+  public recipient: IIdentity;
+  public replyToId?: string;
+  public speak: string = "";
+  public text: string = "";
+  public textFormat: string = "plain";
+  public timestamp: string;
+  public type: string = "message";
+  public attachments?: IAttachment[];
+  public suggestedActions?: ICardAction[];
+
+  constructor(event: CortanaEvent) {
+    this.channelId = event.rawEvent.address.channelId;
+    this.conversation = { id: event.session.sessionId };
+    this.from = { id: event.rawEvent.address.bot.id };
+    this.id = uuid.v1();
+    this.inputHint = "ignoringInput";
+    this.locale = event.request.locale;
+    this.recipient = {
+      id: event.user.id,
+      name: event.user.name,
     };
+    this.replyToId = (event.rawEvent.address as IChatConnectorAddress).id;
+    this.timestamp = new Date().toISOString();
+  }
 
-    // AudioCards, HeroCard, etc
-    const attachments = getAttachments(this);
-    if (attachments.length) {
-      jsonReply.attachments = attachments;
+  public get hasMessages(): boolean {
+    return !!this.speak || !!this.text;
+  }
+
+  public get hasDirectives(): boolean {
+    return !!this.attachments || !!this.suggestedActions;
+  }
+
+  public get hasTerminated(): boolean {
+    throw new NotImplementedError("hasTerminated");
+  }
+
+  public clear() {
+    this.attachments = undefined;
+    this.suggestedActions = undefined;
+    this.text = "";
+    this.speak = "";
+  }
+
+  public terminate() {
+    throw new NotImplementedError("terminate");
+  }
+
+  public addStatement(statement: string, isPlain: boolean = false) {
+    if (isPlain) {
+      this.text = addToText(this.text, statement);
+    } else {
+      this.speak = addToSSML(this.speak, statement);
     }
-
-    const suggestedActions = getSuggestedActions(this);
-    if (suggestedActions) {
-      jsonReply.suggestedActions = suggestedActions.toSuggestedActions();
-    }
-
-    return jsonReply;
-  }
-}
-
-export function getInputHint(reply: VoxaReply) {
-  // we're closing the session, cortana accepts input from other skills, etc
-  if (reply.response.terminate) {
-    return "acceptingInput";
   }
 
-  // we just sent an ask and we're waiting for a reply
-  if (reply.isYielding()) {
-    return "expectingInput";
+  public hasDirective(type: string | RegExp): boolean {
+    throw new NotImplementedError("hasDirective");
   }
 
-  // this means we sent a partial reply, like a say
-  return "ignoringInput";
-}
-
-export function getAttachments(reply: VoxaReply): any[] {
-  return _(reply.response.directives)
-    .filter({ type: "attachment" })
-    .map("attachment")
-    .map((at: IIsAttachment) => at.toAttachment())
-    .filter(isAttachment)
-    .value();
-}
-
-export function getSuggestedActions(reply: VoxaReply): SuggestedActions|undefined {
-  return _(reply.response.directives)
-    .filter({ type: "suggestedActions" })
-    .map("suggestedActions")
-    .filter(isSuggestedActions)
-    .find();
+  public addReprompt(reprompt: string) {
+    return;
+  }
 }

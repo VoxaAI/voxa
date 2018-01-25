@@ -7,13 +7,13 @@ import { Model } from "./Model";
 import { IMessage, Renderer } from "./renderers/Renderer";
 import { VoxaApp } from "./VoxaApp";
 import { IVoxaEvent } from "./VoxaEvent";
-import { VoxaReply } from "./VoxaReply";
+import { IVoxaReply } from "./VoxaReply";
 
 const log: debug.IDebugger = debug("voxa");
 
 export type IStateMachineCb = (
   event: IVoxaEvent,
-  reply: VoxaReply,
+  reply: IVoxaReply,
   transition: ITransition,
 ) => Promise<ITransition>;
 
@@ -24,7 +24,7 @@ export type IUnhandledStateCb = (
 
 export type IOnBeforeStateChangedCB = (
   event: IVoxaEvent,
-  reply: VoxaReply,
+  reply: IVoxaReply,
   state: IState,
 ) => Promise<void>;
 
@@ -38,7 +38,7 @@ export interface IStateMachineConfig {
 export interface ITransition {
   [propname: string]: any;
   to?: string|IState|ITransition; // default to 'entry'
-  reply?: string|VoxaReply;
+  reply?: string|IVoxaReply;
   directives?: any[];
   message?: any;
 }
@@ -46,7 +46,7 @@ export interface ITransition {
 export interface IState {
   name: string;
   enter: any;
-  to: IState|string;
+  to?: IState|string;
   isTerminal: boolean;
 }
 
@@ -58,7 +58,7 @@ export function isState(object: any): object is IState {
   return object  && "name" in object ;
 }
 
-export class StateMachine<Reply extends VoxaReply> {
+export class StateMachine {
   public states: any;
   public currentState: IState;
   public onBeforeStateChangedCallbacks: IOnBeforeStateChangedCB[];
@@ -90,12 +90,12 @@ export class StateMachine<Reply extends VoxaReply> {
     }
   }
 
-  public async checkOnUnhandledState(voxaEvent: IVoxaEvent, voxaReply: Reply, transition: ITransition): Promise<ITransition> {
+  public async checkOnUnhandledState(voxaEvent: IVoxaEvent, voxaReply: IVoxaReply, transition: ITransition): Promise<ITransition> {
     const runCallbacks = (fn: IUnhandledStateCb) => {
       return  fn(voxaEvent, this.currentState.name);
     };
 
-    if (!transition) {
+    if (!transition || _.isEmpty(transition)) {
       log("Running onUnhandledStateCallbacks");
       const onUnhandledStateTransitions = await bluebird.mapSeries(this.onUnhandledStateCallbacks, runCallbacks);
       const onUnhandledStateTransition = _.last(onUnhandledStateTransitions);
@@ -111,7 +111,7 @@ export class StateMachine<Reply extends VoxaReply> {
     return transition;
   }
 
-  public async checkForEntryFallback(voxaEvent: IVoxaEvent, reply: Reply, transition: ITransition): Promise<ITransition> {
+  public async checkForEntryFallback(voxaEvent: IVoxaEvent, reply: IVoxaReply, transition: ITransition): Promise<ITransition> {
     if (!transition && this.currentState.name !== "entry") {
       // If no response try falling back to entry
       if (!voxaEvent.intent) {
@@ -126,7 +126,7 @@ export class StateMachine<Reply extends VoxaReply> {
     return transition;
   }
 
-  public async onAfterStateChanged(voxaEvent: IVoxaEvent, reply: Reply, transition: ITransition): Promise<ITransition> {
+  public async onAfterStateChanged(voxaEvent: IVoxaEvent, reply: IVoxaReply, transition: ITransition): Promise<ITransition> {
     if (transition && !transition.to) {
       _.merge(transition, { to: "die" });
     }
@@ -137,17 +137,29 @@ export class StateMachine<Reply extends VoxaReply> {
       count += 1;
       return fn(voxaEvent, reply, transition);
     });
+
+    log("Transition is now", transition);
     return transition;
   }
 
-  public async runTransition(voxaEvent: IVoxaEvent, reply: Reply): Promise<ITransition> {
+  public async runTransition(voxaEvent: IVoxaEvent, reply: IVoxaReply): Promise<ITransition> {
     const onBeforeState = this.onBeforeStateChangedCallbacks;
     await bluebird.mapSeries(onBeforeState, (fn: IOnBeforeStateChangedCB) => fn(voxaEvent, reply, this.currentState));
     let transition: ITransition = await this.runCurrentState(voxaEvent, reply);
+
+    if (!!transition && !_.isObject(transition)) {
+      transition = { to: "die", flow: "terminate" };
+    }
+
+    if (_.isObject(transition) && !_.isEmpty(transition) && !transition.flow) {
+      transition.flow = "continue";
+    }
+
     transition = await this.checkForEntryFallback(voxaEvent, reply, transition);
     transition = await this.checkOnUnhandledState(voxaEvent, reply, transition);
     transition = await this.onAfterStateChanged(voxaEvent, reply, transition);
     let to;
+
     if (transition.to && _.isString(transition.to)) {
       if (!this.states[transition.to]) {
         throw new UnknownState(transition.to);
@@ -156,21 +168,22 @@ export class StateMachine<Reply extends VoxaReply> {
       transition.to = to;
     } else {
       to = { name: "die" };
+      transition.flow = "terminate";
     }
 
-    if (reply.isYielding() || !transition.to || isState(transition.to) && transition.to.isTerminal) {
+    if (transition.flow !== "continue" || !transition.to || isState(transition.to) && transition.to.isTerminal) {
       const result: any = { to };
       if (_.isString(transition.reply) || _.isArray(transition.reply)) {
         result.reply = transition.reply;
       }
       return result;
-    };
+    }
 
     this.currentState = this.states[to.name];
     return this.runTransition(voxaEvent, reply);
   }
 
-  public async runCurrentState(voxaEvent: IVoxaEvent, reply: Reply): Promise<ITransition> {
+  public async runCurrentState(voxaEvent: IVoxaEvent, reply: IVoxaReply): Promise<ITransition> {
     const self = this;
     if (!voxaEvent.intent) {
       throw new Error("Running the state machine without an intent");
@@ -206,7 +219,7 @@ export class StateMachine<Reply extends VoxaReply> {
 
     function simpleTransition(state: any, dest: string): any {
       if (!dest) {
-        return null;
+        return {};
       }
 
       if (_.isObject(dest)) {

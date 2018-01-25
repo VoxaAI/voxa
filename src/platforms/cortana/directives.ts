@@ -6,64 +6,87 @@ import {
   SuggestedActions as SuggestedActionsType,
 } from "botbuilder";
 import * as _ from "lodash";
-import { directiveHandler } from "../../directives";
+import { IDirective } from "../../directives";
+import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";
-import { VoxaReply } from "../../VoxaReply";
+import { IVoxaReply } from "../../VoxaReply";
 import { CortanaEvent } from "./CortanaEvent";
 import { CortanaReply } from "./CortanaReply";
 
-function onlyCortana(target: ((reply: VoxaReply, event: IVoxaEvent) => Promise<void>)) {
-  return async (reply: VoxaReply, event: IVoxaEvent): Promise<void> => {
-    if (event.platform !== "cortana") {
-      return;
-    }
+export class HeroCard implements IDirective {
+  public static platform: string = "cortana";
+  public static key: string = "cortanaHeroCard";
 
-    return await target(reply, event);
-  };
-}
+  public viewPath: string;
+  public card: HeroCardType;
 
-export function heroCard(templatePath: string|HeroCardType): directiveHandler {
-  return onlyCortana(async (reply, event): Promise<void> => {
-    let attachment;
-    if (_.isString(templatePath) ) {
-      attachment = await reply.render(templatePath);
+  constructor(viewPath: string|HeroCardType) {
+
+    if (_.isString(viewPath)) {
+      this.viewPath = viewPath;
     } else {
-      attachment = templatePath;
+      this.card = viewPath;
     }
-    reply.response.directives.push({ type: "attachment", attachment });
-  });
-}
+  }
 
-export function suggestedActions(templatePath: string|SuggestedActionsType): directiveHandler {
-  return  onlyCortana(async (reply, event): Promise<void> => {
-    let actions;
-    if (_.isString(templatePath) ) {
-      actions = await reply.render(templatePath);
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition) {
+    let card;
+    if (this.viewPath) {
+      card = await event.renderer.renderPath(this.viewPath, event);
     } else {
-      actions = templatePath;
+      card = this.card;
     }
-
-    reply.response.directives.push({ type: "suggestedActions", suggestedActions: actions });
-  });
+  }
 }
 
-export function audioCard(url: string, title: string = "", profile: string = ""): directiveHandler {
-  return  onlyCortana(async (reply, event): Promise<void> => {
-    const attachment = new AudioCardType();
-    attachment.title(title);
-    const cardMedia: ICardMediaUrl = { url, profile };
-    attachment.media([cardMedia]);
+export class SuggestedActions implements IDirective {
+  public static key: string = "cortanaSuggestedActions";
+  public static platform: string = "cortana";
 
-    reply.response.directives.push({ type: "attachment", attachment });
-    reply.response.terminate = true;
-    reply.yield();
-  });
+  public viewPath: string;
+  public suggestedActions: SuggestedActionsType;
+
+  constructor(viewPath: string|SuggestedActionsType) {
+
+    if (_.isString(viewPath)) {
+      this.viewPath = viewPath;
+    } else {
+      this.suggestedActions = viewPath;
+    }
+  }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition) {
+    let suggestedActions;
+    if (this.viewPath) {
+      suggestedActions = await event.renderer.renderPath(this.viewPath, event);
+    } else {
+      suggestedActions = this.suggestedActions;
+    }
+  }
 }
 
-export function isAttachment(object: any): object is IAttachment {
-  return "contentType" in object;
-}
+export class AudioCard implements IDirective {
+  public static key: string = "cortanaAudioCard";
+  public static platform: string = "cortana";
 
-export function isSuggestedActions(object: any): object is SuggestedActionsType {
-  return "actions" in object;
+  public viewPath: string;
+  public audioCard: AudioCardType;
+
+  constructor(viewPath: string|AudioCardType) {
+
+    if (_.isString(viewPath)) {
+      this.viewPath = viewPath;
+    } else {
+      this.audioCard = viewPath;
+    }
+  }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition) {
+    let audioCard;
+    if (this.viewPath) {
+      audioCard = await event.renderer.renderPath(this.viewPath, event);
+    } else {
+      audioCard = this.audioCard;
+    }
+  }
 }

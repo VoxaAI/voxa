@@ -3,12 +3,12 @@ import * as debug from "debug";
 
 import { VoxaApp } from "../VoxaApp";
 import { IVoxaEvent } from "../VoxaEvent";
-import { VoxaReply } from "../VoxaReply";
+import { IVoxaReply } from "../VoxaReply";
 import { createServer } from "./create-server";
 
 const log: debug.IDebugger = debug("voxa");
 
-abstract class VoxaAdapter<Reply extends VoxaReply> {
+export abstract class VoxaPlatform {
   public app: VoxaApp;
   public config: any;
 
@@ -37,5 +37,3 @@ abstract class VoxaAdapter<Reply extends VoxaReply> {
     };
   }
 }
-
-export { VoxaAdapter };

@@ -17,17 +17,16 @@ import * as rp from "request-promise";
 import { StatusCodeError } from "request-promise/errors";
 import * as urljoin from "url-join";
 import * as uuid from "uuid";
-import { directiveHandler } from "../../directives";
 import { toSSML } from "../../ssml";
 import { ITransition } from "../../StateMachine";
 import { VoxaApp } from "../../VoxaApp";
 import { ITypeMap, IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
-import { VoxaReply } from "../../VoxaReply";
-import { VoxaAdapter } from "../VoxaAdapter";
+import { IVoxaReply } from "../../VoxaReply";
+import { VoxaPlatform } from "../VoxaPlatform";
 import { CortanaEvent } from "./CortanaEvent";
 import { IAuthorizationResponse } from "./CortanaInterfaces";
 import { CortanaReply } from "./CortanaReply";
-import { audioCard, heroCard, suggestedActions } from "./directives";
+import { AudioCard, HeroCard, SuggestedActions } from "./directives";
 
 const log: debug.IDebugger = debug("voxa");
 const cortanalog: debug.IDebugger = debug("voxa:cortana");
@@ -53,7 +52,7 @@ const toAddress = {
   serviceUrl: "serviceUrl",
 };
 
-export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
+export class CortanaPlatform extends VoxaPlatform {
   public recognizerURI: string;
   public storage: IBotStorage;
   public applicationId: string;
@@ -80,12 +79,10 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
     this.app.onAfterStateChanged(partialReply, false, "cortana");
 
     _.forEach(CortanaRequests, (requestType: string) => voxaApp.registerRequestHandler(requestType));
-    _.map([heroCard, audioCard, suggestedActions],
-      (handler: (value: any) => directiveHandler) => {
-        const directiveKey = `cortana${_.upperFirst(handler.name)}`;
-        console.log({ directiveKey });
-        voxaApp.registerDirectiveHandler(handler, directiveKey);
-      });
+
+    this.app.directiveHandlers.push(HeroCard);
+    this.app.directiveHandlers.push(SuggestedActions);
+    this.app.directiveHandlers.push(AudioCard);
   }
 
   /*
@@ -97,7 +94,7 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
     }
 
     cortanalog("partialReply");
-    cortanalog({  msg: reply.response });
+    cortanalog({ reply });
 
     await this.replyToActivity(event, reply);
     reply.clear();
@@ -132,7 +129,7 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
     }
 
     const event = new CortanaEvent(msg, context, stateData, intent);
-    const reply: CortanaReply = await this.app.execute(event, CortanaReply);
+    const reply = await this.app.execute(event, new CortanaReply(event)) as CortanaReply;
 
     await Promise.all([
       this.partialReply(event, reply, {}),
@@ -222,7 +219,7 @@ export class CortanaAdapter extends VoxaAdapter<CortanaReply> {
 
   public replyToActivity(event: CortanaEvent, reply: CortanaReply): Promise<any> {
     const uri = getReplyUri(event.rawEvent);
-    return this.botApiRequest("POST", uri, reply.toJSON());
+    return this.botApiRequest("POST", uri, reply);
   }
 
   public async getStateData(event: IMessage): Promise<IBotStorageData> {

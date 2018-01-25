@@ -4,6 +4,7 @@ import * as i18n from "i18next";
 import * as _ from "lodash";
 
 import { Model} from "./Model";
+import { Renderer } from "./renderers/Renderer";
 
 export interface ITypeMap  {
   [x: string]: string;
@@ -18,6 +19,7 @@ export abstract class IVoxaEvent {
   public request: any;
   public model: Model;
   public t: i18n.TranslationFunction;
+  public renderer: Renderer;
   public user: IVoxaUser;
   public requestToIntent: ITypeMap = {};
   public requestToRequest: ITypeMap = {};

@@ -2,8 +2,8 @@ import { expect, use } from "chai";
 import chaiAsPromised = require("chai-as-promised");
 import * as i18n from "i18next";
 import "mocha";
-import { AlexaAdapter } from "../../src/platforms/alexa/AlexaAdapter";
 import { AlexaEvent } from "../../src/platforms/alexa/AlexaEvent";
+import { AlexaPlatform } from "../../src/platforms/alexa/AlexaPlatform";
 import { AlexaReply } from "../../src/platforms/alexa/AlexaReply";
 import { DisplayTemplate } from "../../src/platforms/alexa/DisplayTemplateBuilder";
 import { CortanaEvent } from "../../src/platforms/cortana/CortanaEvent";
@@ -11,7 +11,7 @@ import { Renderer } from "../../src/renderers/Renderer";
 import { VoxaApp } from "../../src/VoxaApp";
 import { IVoxaEvent } from "../../src/VoxaEvent";
 import { variables } from "../variables";
-import { hint, homeCard } from "./../../src/platforms/alexa/directives";
+import { Hint, HomeCard } from "./../../src/platforms/alexa/directives";
 import { AlexaRequestBuilder } from "./../tools";
 import { views } from "./../views";
 
@@ -23,7 +23,7 @@ use(chaiAsPromised);
 describe("Alexa directives", () => {
   let event: any;
   let app: VoxaApp;
-  let alexaSkill: AlexaAdapter;
+  let alexaSkill: AlexaPlatform;
   let renderer: Renderer;
 
   before(() => {
@@ -36,10 +36,10 @@ describe("Alexa directives", () => {
 
   beforeEach(() => {
     const rb = new AlexaRequestBuilder();
-    event = rb.getIntentRequest("AMAZON.YesIntent");
     app =  new VoxaApp({ views });
-    alexaSkill = new AlexaAdapter(app);
+    alexaSkill = new AlexaPlatform(app);
     renderer = new Renderer({ views, variables });
+    event = rb.getIntentRequest("AMAZON.YesIntent");
   });
 
   describe("RenderTemplate", () => {
@@ -64,12 +64,12 @@ describe("Alexa directives", () => {
 
       const reply = await alexaSkill.execute(event, {});
       expect(reply.response.directives).to.not.be.undefined;
-      expect(reply.response.directives[0]).to.deep.equal({
+      expect(JSON.parse(JSON.stringify(reply.response.directives[0]))).to.deep.equal({
+        type: "Display.RenderTemplate",
         template: {
           backButton: "VISIBLE",
           type: "BodyTemplate1",
         },
-        type: "Display.RenderTemplate",
       });
     });
 
@@ -109,13 +109,6 @@ describe("Alexa directives", () => {
   });
 
   describe("Hint", () => {
-    it("should not add to the reply if not an alexa event", async () => {
-      const cortanaEvent = new CortanaEvent(cortanaLaunch, {}, {});
-      const reply = new AlexaReply(cortanaEvent, renderer);
-
-      await hint("Hint")(reply, event);
-      expect(reply.response.directives).to.be.empty;
-    });
 
     it("should only render a single Hint directive", async () => {
       const reply = await alexaSkill.execute(event, {});
@@ -146,7 +139,7 @@ describe("Alexa directives", () => {
   describe("HomeCard", () => {
     it("should be usable from the directives", async () => {
       app.onIntent("YesIntent", {
-        directives: [homeCard("Card")],
+        directives: [new HomeCard("Card")],
         to: "die",
       });
 
@@ -163,7 +156,7 @@ describe("Alexa directives", () => {
 
     it("should render the home card", async () => {
       app.onIntent("YesIntent", {
-        alexaHomeCard: "Card",
+        alexaCard: "Card",
         to: "die",
       });
 
@@ -180,8 +173,8 @@ describe("Alexa directives", () => {
 
     it("should not allow more than one card", async () => {
       app.onIntent("YesIntent", {
-        alexaHomeCard: "Card",
-        directives: [homeCard("Card")],
+        alexaCard: "Card",
+        directives: [new HomeCard("Card")],
         to: "entry",
       });
 

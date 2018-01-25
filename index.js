@@ -17,7 +17,7 @@ const replaceIntent = require('./lib/src/plugins/replace-intent').register;
 const stateFlow = require('./lib/src/plugins/state-flow').register;
 const autoLoad = require('./lib/src/plugins/auto-load').autoLoad;
 
-const CortanaAdapter = require('./lib/src/platforms/cortana/CortanaAdapter').CortanaAdapter;
+const CortanaPlatform = require('./lib/src/platforms/cortana/CortanaPlatform').CortanaPlatform;
 
 const AlexaDirectives = require('./lib/src/platforms/alexa/directives');
 const DialogFlowDirectives = require('./lib/src/platforms/dialog-flow/directives');
@@ -26,23 +26,24 @@ const CortanaDirectives = require('./lib/src/platforms/cortana/directives');
 
 module.exports = VoxaApp;
 
-module.exports.Alexa = require('./lib/src/platforms/alexa/AlexaAdapter').AlexaAdapter;
+module.exports.Alexa = require('./lib/src/platforms/alexa/AlexaPlatform').AlexaPlatform;
 module.exports.Alexa.DisplayTemplate = require('./lib/src/platforms/alexa/DisplayTemplateBuilder').DisplayTemplate;
-module.exports.Alexa.renderTemplate = AlexaDirectives.renderTemplate;
-module.exports.Alexa.accountLinkingCard = AlexaDirectives.accountLinkingCard;
-module.exports.Alexa.playAudio = AlexaDirectives.playAudio;
-module.exports.Alexa.dialogDelegate = AlexaDirectives.dialogDelegate;
-module.exports.Alexa.homeCard = AlexaDirectives.homeCard;
+module.exports.Alexa.RenderTemplate = AlexaDirectives.RenderTemplate;
+module.exports.Alexa.AccountLinkingCard = AlexaDirectives.AccountLinkingCard;
+module.exports.Alexa.PlayAudio = AlexaDirectives.PlayAudio;
+module.exports.Alexa.StopAudio = AlexaDirectives.StopAudio;
+module.exports.Alexa.DialogDelegate = AlexaDirectives.DialogDelegate;
+module.exports.Alexa.HomeCard = AlexaDirectives.HomeCard;
 
-module.exports.DialogFlow = require('./lib/src/platforms/dialog-flow/DialogFlowAdapter').DialogFlowAdapter;
-module.exports.DialogFlow.list = DialogFlowDirectives.list;
-module.exports.DialogFlow.suggestions = DialogFlowDirectives.suggestions;
-module.exports.DialogFlow.basicCard = DialogFlowDirectives.basicCard;
+module.exports.DialogFlow = require('./lib/src/platforms/dialog-flow/DialogFlowPlatform').DialogFlowPlatform;
+module.exports.DialogFlow.List = DialogFlowDirectives.List;
+module.exports.DialogFlow.Suggestions = DialogFlowDirectives.Suggestions;
+module.exports.DialogFlow.BasicCard = DialogFlowDirectives.BasicCard;
 
-module.exports.Cortana = CortanaAdapter;
-module.exports.Cortana.heroCard = CortanaDirectives.heroCard;
-module.exports.Cortana.suggestedActions = CortanaDirectives.suggestedActions;
-module.exports.Cortana.audioCard = CortanaDirectives.audioCard;
+module.exports.Cortana = CortanaPlatform;
+module.exports.Cortana.HeroCard = CortanaDirectives.HeroCard;
+module.exports.Cortana.SuggestedActions = CortanaDirectives.SuggestedActions;
+module.exports.Cortana.AudioCard = CortanaDirectives.AudioCard;
 
 module.exports.Renderer = require('./lib/src/renderers/Renderer').Renderer
 
