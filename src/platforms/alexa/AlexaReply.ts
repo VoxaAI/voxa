@@ -46,7 +46,6 @@ export class AlexaReply implements IVoxaReply, ResponseBody {
 
   public get speech(): string {
     if (!!this.response && !!this.response.outputSpeech && !!this.response.outputSpeech.ssml) {
-      console.log("speech", this.response.outputSpeech.ssml);
       return this.response.outputSpeech.ssml;
     }
 

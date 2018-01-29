@@ -13,20 +13,17 @@ import {
 } from "botbuilder";
 import * as debug from "debug";
 import * as _ from "lodash";
-import * as rp from "request-promise";
 import { StatusCodeError } from "request-promise/errors";
 import * as urljoin from "url-join";
 import * as uuid from "uuid";
 import { toSSML } from "../../ssml";
-import { ITransition } from "../../StateMachine";
 import { VoxaApp } from "../../VoxaApp";
 import { ITypeMap, IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
 import { VoxaPlatform } from "../VoxaPlatform";
 import { CortanaEvent } from "./CortanaEvent";
-import { IAuthorizationResponse } from "./CortanaInterfaces";
 import { CortanaReply } from "./CortanaReply";
-import { AudioCard, HeroCard, SuggestedActions } from "./directives";
+import { Ask, AudioCard, HeroCard, Say, SuggestedActions } from "./directives";
 
 const log: debug.IDebugger = debug("voxa");
 const cortanalog: debug.IDebugger = debug("voxa:cortana");
@@ -57,7 +54,6 @@ export class CortanaPlatform extends VoxaPlatform {
   public storage: IBotStorage;
   public applicationId: string;
   public applicationPassword: string;
-  public qAuthorization: Promise<IAuthorizationResponse>;
 
   constructor(voxaApp: VoxaApp, config: any) {
     super(voxaApp, config);
@@ -69,54 +65,14 @@ export class CortanaPlatform extends VoxaPlatform {
     this.storage = config.storage;
     this.applicationId = config.applicationId;
     this.applicationPassword = config.applicationPassword;
-    this.qAuthorization = this.getAuthorization();
-
-    const partialReply = (
-      voxaEvent: CortanaEvent,
-      reply: CortanaReply,
-      transition: ITransition,
-    ) => this.partialReply(voxaEvent, reply, transition);
-    this.app.onAfterStateChanged(partialReply, false, "cortana");
 
     _.forEach(CortanaRequests, (requestType: string) => voxaApp.registerRequestHandler(requestType));
 
     this.app.directiveHandlers.push(HeroCard);
     this.app.directiveHandlers.push(SuggestedActions);
     this.app.directiveHandlers.push(AudioCard);
-  }
-
-  /*
-   * Sends a partial reply after every state change
-   */
-  public async partialReply(event: CortanaEvent, reply: CortanaReply, transition: ITransition): Promise<ITransition> {
-    if (!reply.hasMessages && !reply.hasDirectives) {
-      return transition;
-    }
-
-    cortanalog("partialReply");
-    cortanalog({ reply });
-
-    await this.replyToActivity(event, reply);
-    reply.clear();
-    return transition;
-  }
-
-  public async getAuthorization(): Promise<IAuthorizationResponse> {
-    const requestOptions: rp.Options = {
-      form: {
-        client_id: this.applicationId,
-        client_secret: this.applicationPassword,
-        grant_type: "client_credentials",
-        scope: "https://api.botframework.com/.default",
-      },
-      json: true,
-      method: "POST",
-      url: "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token",
-    };
-    cortanalog("getAuthorization");
-    cortanalog(requestOptions);
-
-    return rp(requestOptions);
+    this.app.directiveHandlers.push(Ask);
+    this.app.directiveHandlers.push(Say);
   }
 
   public async execute(msg: any, context: any) {
@@ -129,10 +85,16 @@ export class CortanaPlatform extends VoxaPlatform {
     }
 
     const event = new CortanaEvent(msg, context, stateData, intent);
+    event.applicationId = this.applicationId;
+    event.applicationPassword = this.applicationPassword;
+
+    if (!event.request.locale) {
+      event.request.locale = this.config.defaultLocale;
+    }
     const reply = await this.app.execute(event, new CortanaReply(event)) as CortanaReply;
 
     await Promise.all([
-      this.partialReply(event, reply, {}),
+      reply.send(event),
       this.saveStateData(event, reply),
     ]);
 
@@ -166,10 +128,10 @@ export class CortanaPlatform extends VoxaPlatform {
       cortanalog({ text: msg.text });
       if (msg.text) {
         return LuisRecognizer.recognize(msg.text, this.config.recognizerURI,
-          (err: Error, intents?: IIntent[], entities?: IEntity[]) => {
+          (err: Error, recognizedIntents?: IIntent[], recognizedEntities?: IEntity[]) => {
             if (err) { return reject(err); }
             cortanalog({ intents, entities });
-            resolve({ intents, entities });
+            resolve({ intents: recognizedIntents, entities: recognizedEntities });
           });
       }
 
@@ -217,18 +179,13 @@ export class CortanaPlatform extends VoxaPlatform {
     return msg;
   }
 
-  public replyToActivity(event: CortanaEvent, reply: CortanaReply): Promise<any> {
-    const uri = getReplyUri(event.rawEvent);
-    return this.botApiRequest("POST", uri, reply);
-  }
-
   public async getStateData(event: IMessage): Promise<IBotStorageData> {
     if (!event.address.conversation) {
       throw new Error("Missing conversation address");
     }
 
     const conversationId = encodeURIComponent(event.address.conversation.id);
-    const userId = encodeURIComponent(event.address.bot.id);
+    const userId = event.address.bot.id;
     const context: IBotStorageContext = {
       conversationId,
       persistConversationData: false,
@@ -239,68 +196,47 @@ export class CortanaPlatform extends VoxaPlatform {
     return new Promise((resolve, reject) => {
       this.storage.getData(context, (err: Error, result: IBotStorageData) => {
         if (err) { return reject(err); }
+
+        cortanalog("got stateData");
+        cortanalog(result, context);
         return resolve(result);
       });
     });
 
   }
 
-  public saveStateData(event: CortanaEvent, reply: CortanaReply): Promise<void> {
-    const conversationId = encodeURIComponent(event.session.sessionId);
-    const userId = encodeURIComponent(event.rawEvent.address.bot.id);
-    const persistConversationData = false;
-    const persistUserData = false;
+  public async saveStateData(event: CortanaEvent, reply: CortanaReply): Promise<void> {
+    const conversationId = event.session.sessionId;
+    const userId = event.rawEvent.address.bot.id;
     const context: IBotStorageContext = {
       conversationId,
-      persistConversationData,
-      persistUserData,
+      persistConversationData: false,
+      persistUserData: false,
       userId,
     };
+
+    if (!event.model) {
+      return;
+    }
 
     const data: IBotStorageData = {
       conversationData: {},
       // we're only gonna handle private conversation data, this keeps the code small
       // and more importantly it makes it so the programming model is the same between
       // the different platforms
-      privateConversationData: _.get(reply, "session.attributes", {}),
+      privateConversationData: await event.model.serialize(),
       userData: {},
     };
 
-    return new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
       this.storage.saveData(context, data, (error: Error) => {
         if (error) { return reject(error); }
+
+        cortanalog("savedStateData");
+        cortanalog(data, context);
         return resolve();
       });
     });
-  }
-
-  public async botApiRequest(method: string, uri: string, body: any): Promise<any> {
-    try {
-      const authorization: IAuthorizationResponse = await this.qAuthorization;
-      const requestOptions: rp.Options = {
-        auth: {
-          bearer: authorization.access_token,
-        },
-        body,
-        json: true,
-        method,
-        uri,
-      };
-
-      cortanalog("botApiRequest");
-      cortanalog(JSON.stringify(requestOptions, null, 2));
-      return rp(requestOptions);
-    } catch (reason) {
-      if (reason instanceof StatusCodeError) {
-        if (reason.statusCode === 401) {
-          this.qAuthorization = this.getAuthorization();
-          return this.botApiRequest(method, uri, body);
-        }
-      }
-
-      throw reason;
-    }
-
   }
 }
 
@@ -317,22 +253,4 @@ export function moveFieldsTo(frm: any, to: any, fields: { [id: string]: string; 
       }
     }
   }
-}
-
-export function getReplyUri(event: IEvent): string {
-    const address: IChatConnectorAddress = event.address;
-    const baseUri = address.serviceUrl;
-
-    if (!baseUri || !address.conversation) {
-      throw new Error("serviceUrl is missing");
-    }
-
-    const conversationId = encodeURIComponent(address.conversation.id);
-
-    let path = `/v3/conversations/${conversationId}/activities`;
-    if (address.id) {
-      path += "/" + encodeURIComponent(address.id);
-    }
-
-    return urljoin(baseUri, path);
 }

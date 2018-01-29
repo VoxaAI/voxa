@@ -40,6 +40,7 @@ const AlexaRequests = [
 ];
 
 export class AlexaPlatform extends VoxaPlatform {
+  public platform: string = "alexa";
 
   constructor(voxaApp: VoxaApp) {
     super(voxaApp);

@@ -23,6 +23,9 @@ export class CortanaEvent extends IVoxaEvent {
   public t: TranslationFunction;
   public intent?: IVoxaIntent;
 
+  public applicationPassword: string;
+  public applicationId: string;
+
   public executionContext: any;
   public rawEvent: IEvent;
 

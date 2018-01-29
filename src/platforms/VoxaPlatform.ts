@@ -1,7 +1,8 @@
 
 import * as debug from "debug";
 
-import { VoxaApp } from "../VoxaApp";
+import { ITransition } from "../StateMachine";
+import { IStateHandler, VoxaApp } from "../VoxaApp";
 import { IVoxaEvent } from "../VoxaEvent";
 import { IVoxaReply } from "../VoxaReply";
 import { createServer } from "./create-server";
@@ -11,6 +12,7 @@ const log: debug.IDebugger = debug("voxa");
 export abstract class VoxaPlatform {
   public app: VoxaApp;
   public config: any;
+  public platform: string;
 
   constructor(voxaApp: VoxaApp, config: any= {}) {
     this.app = voxaApp;
@@ -35,5 +37,13 @@ export abstract class VoxaPlatform {
         callback(error);
       }
     };
+  }
+
+  public onIntent(intentName: string, handler: IStateHandler|ITransition): void {
+    this.app.onIntent(intentName, handler, this.platform);
+  }
+
+  public onState(stateName: string, handler: IStateHandler | ITransition, intents: string[] | string = []): void {
+    this.app.onState(stateName, handler, intents, this.platform);
   }
 }

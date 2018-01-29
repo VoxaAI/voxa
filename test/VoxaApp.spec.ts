@@ -63,7 +63,7 @@ describe("VoxaApp", () => {
       const voxaApp = new VoxaApp({ variables, views });
       const fourthState = () => ({ to: "endState" });
       voxaApp.onState("fourthState", fourthState);
-      expect(voxaApp.states.fourthState.enter.entry).to.equal(fourthState);
+      expect(voxaApp.states.core.fourthState.enter.entry).to.equal(fourthState);
     });
 
     it("should register simple states", () => {
@@ -71,7 +71,7 @@ describe("VoxaApp", () => {
       const stateFn = simple.stub();
       voxaApp.onState("init", stateFn);
 
-      expect(voxaApp.states.init).to.deep.equal({
+      expect(voxaApp.states.core.init).to.deep.equal({
         enter: {
           entry: stateFn,
         },
@@ -84,7 +84,7 @@ describe("VoxaApp", () => {
       const stateFn = simple.stub();
       voxaApp.onState("init", stateFn, "AMAZON.NoIntent");
 
-      expect(voxaApp.states.init).to.deep.equal({
+      expect(voxaApp.states.core.init).to.deep.equal({
         enter: { "AMAZON.NoIntent": stateFn },
         name: "init",
       });
@@ -98,7 +98,7 @@ describe("VoxaApp", () => {
       voxaApp.onState("init", stateFn, ["AMAZON.NoIntent", "AMAZON.StopIntent"]);
       voxaApp.onState("init", stateFn2, "AMAZON.YesIntent");
 
-      expect(voxaApp.states.init).to.deep.equal({
+      expect(voxaApp.states.core.init).to.deep.equal({
         enter: {
           "AMAZON.NoIntent": stateFn,
           "AMAZON.StopIntent": stateFn,
@@ -120,7 +120,6 @@ describe("VoxaApp", () => {
     event = new AlexaEvent(rb.getLaunchRequest());
     const reply = await voxaApp.execute(event, new AlexaReply()) as AlexaReply;
     // expect(reply.error).to.be.undefined;
-    console.log({ reply });
     expect(event.model.state).to.equal("secondState");
     expect(reply.response.shouldEndSession).to.be.false;
   });
@@ -268,7 +267,6 @@ describe("VoxaApp", () => {
     const reply = await  platform.execute(event, {}) as AlexaReply;
     expect(statesDefinition.entry.called).to.be.true;
     expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
-    console.log(JSON.stringify(reply));
     expect(reply.sessionAttributes).to.deep.equal({ value: 1 });
   });
 

@@ -29,9 +29,6 @@ describe('CortanaPlatform', () => {
 
     // we need to mock this before instantiating the platforms cause otherwise
     // we try to get the authorization token
-    simple.mock(CortanaPlatform.prototype, 'getAuthorization').resolveWith({
-      access_token: 'ACCESS TOKEN',
-    });
 
     adapter = new CortanaPlatform(app, { recognizer, storage });
     simple.mock(storage, 'getData')
@@ -43,10 +40,6 @@ describe('CortanaPlatform', () => {
     simple.mock(adapter, 'botApiRequest')
       .resolveWith(true);
   });
-
-  it('should request the authorization token on initialization', () => adapter.qAuthorization.then((authorization) => {
-    expect(authorization).to.deep.equal({ access_token: 'ACCESS TOKEN' });
-  }));
 
   // describe('partialReply', () => {
     // it('should send multiple partial replies', () => {

@@ -18,7 +18,6 @@ export class HomeCard implements IDirective {
   }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    console.log("card writeToReply", reply.hasDirective("card"));
     if (reply.hasDirective("card")) {
        throw new Error("At most one card can be specified in a response");
     }

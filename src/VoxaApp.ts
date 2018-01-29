@@ -59,7 +59,9 @@ export class VoxaApp {
       return reply;
     }, true);
 
-    this.states = {};
+    this.states = {
+      core: {},
+    };
     this.config = _.assign({
       Model,
       RenderClass: Renderer,
@@ -146,7 +148,7 @@ export class VoxaApp {
   // Call the specific request handlers for each request type
   public async execute(voxaEvent: IVoxaEvent, reply: IVoxaReply): Promise<IVoxaReply> {
     log("Received new event");
-    log(JSON.stringify(voxaEvent, null, 2));
+    log(JSON.stringify(voxaEvent.rawEvent, null, 2));
     try {
       // Validate that this AlexaRequest originated from authorized source.
       if (this.config.appIds) {
@@ -300,8 +302,8 @@ export class VoxaApp {
     }
   }
 
-  public onState(stateName: string, handler: IStateHandler | ITransition, intents: string[] | string = []): void {
-    const state = _.get(this.states, stateName, { name: stateName });
+  public onState(stateName: string, handler: IStateHandler | ITransition, intents: string[] | string = [], platform: string = "core"): void {
+    const state = _.get(this.states[platform], stateName, { name: stateName });
     const stateEnter = _.get(state, "enter", {});
 
     if (_.isFunction(handler)) {
@@ -316,19 +318,20 @@ export class VoxaApp {
           .value());
       }
       state.enter = stateEnter;
-      this.states[stateName] = state;
+      this.states[platform][stateName] = state;
     } else {
       state.to = handler;
-      this.states[stateName] = state;
+      this.states[platform][stateName] = state;
     }
   }
 
-  public onIntent(intentName: string, handler: IStateHandler|ITransition): void {
-    if (!this.states.entry) {
-      this.states.entry = { to: {}, name: "entry" };
+  public onIntent(intentName: string, handler: IStateHandler|ITransition, platform: string = "core"): void {
+    if (!_.get(this.states, [platform, "entry"])) {
+      _.set(this.states, [platform, "entry"], { to: {}, name: "entry" });
     }
-    this.states.entry.to[intentName] = intentName;
-    this.onState(intentName, handler);
+
+    this.states[platform].entry.to[intentName] = intentName;
+    this.onState(intentName, handler, [], platform);
   }
 
   public async runStateMachine(voxaEvent: IVoxaEvent, response: IVoxaReply): Promise<IVoxaReply> {
@@ -337,7 +340,7 @@ export class VoxaApp {
       fromState = "entry";
     }
 
-    const stateMachine = new StateMachine(fromState, {
+    const stateMachine = new StateMachine({
       onAfterStateChanged: this.getOnAfterStateChangedHandlers(voxaEvent.platform),
       onBeforeStateChanged: this.getOnBeforeStateChangedHandlers(voxaEvent.platform),
       onUnhandledState: this.getOnUnhandledStateHandlers(voxaEvent.platform),
@@ -346,7 +349,7 @@ export class VoxaApp {
 
     log("Starting the state machine from %s state", fromState);
 
-    const transition: ITransition = await stateMachine.runTransition(voxaEvent, response);
+    const transition: ITransition = await stateMachine.runTransition(fromState, voxaEvent, response);
     if (!_.isString(transition.to) && _.get(transition, "to.isTerminal")) {
       await this.handleOnSessionEnded(voxaEvent, response);
     }
@@ -380,7 +383,6 @@ export class VoxaApp {
       await bluebird.mapSeries(handlers, (handler) => new handler(value).writeToReply(response, voxaEvent, transition));
     }
 
-    console.log(transition.directives);
     if (transition.directives) {
       await bluebird.mapSeries(transition.directives, (handler: IDirective) => handler.writeToReply(response, voxaEvent, transition));
     }

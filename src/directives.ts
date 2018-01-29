@@ -112,7 +112,6 @@ export class Tell implements IDirective {
     const statement = await event.renderer.renderPath(this.viewPath, event);
     reply.addStatement(statement);
     reply.terminate();
-
     transition.flow = "terminate";
   }
 }

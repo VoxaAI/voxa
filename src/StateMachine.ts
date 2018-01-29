@@ -65,17 +65,16 @@ export class StateMachine {
   public onAfterStateChangeCallbacks: IStateMachineCb[];
   public onUnhandledStateCallbacks: IUnhandledStateCb[];
 
-  constructor(currentState: string, config: IStateMachineConfig) {
+  constructor(config: IStateMachineConfig) {
     this.validateConfig(config);
     this.states = config.states;
-    this.currentState = this.states[currentState];
     this.onBeforeStateChangedCallbacks = config.onBeforeStateChanged || [];
     this.onAfterStateChangeCallbacks = config.onAfterStateChanged || [];
     this.onUnhandledStateCallbacks = config.onUnhandledState || [];
 
     // If die event does not exist auto complete it.
-    if (!_.has(this.states, "die")) {
-      _.assign(this.states, {
+    if (!_.has(this.states, "core.die")) {
+      _.assign(this.states.core, {
         die: { isTerminal: true, name: "die" },
       });
     }
@@ -85,7 +84,7 @@ export class StateMachine {
     if (!_.has(config, "states")) {
       throw new Error("State machine must have a `states` definition.");
     }
-    if (!_.has(config.states, "entry")) {
+    if (!_.has(config.states, "core.entry")) {
       throw new Error("State machine must have a `entry` state.");
     }
   }
@@ -112,6 +111,7 @@ export class StateMachine {
   }
 
   public async checkForEntryFallback(voxaEvent: IVoxaEvent, reply: IVoxaReply, transition: ITransition): Promise<ITransition> {
+    log("Checking entry fallback");
     if (!transition && this.currentState.name !== "entry") {
       // If no response try falling back to entry
       if (!voxaEvent.intent) {
@@ -119,7 +119,7 @@ export class StateMachine {
       }
 
       log(`No reply for ${voxaEvent.intent.name} in [${this.currentState.name}]. Trying [entry].`);
-      this.currentState = this.states.entry;
+      this.currentState = this.states.core.entry;
       return this.runCurrentState(voxaEvent, reply);
     }
 
@@ -142,8 +142,14 @@ export class StateMachine {
     return transition;
   }
 
-  public async runTransition(voxaEvent: IVoxaEvent, reply: IVoxaReply): Promise<ITransition> {
+  public async runTransition(currentState: string, voxaEvent: IVoxaEvent, reply: IVoxaReply): Promise<ITransition> {
+    this.currentState = _.get(this.states, [voxaEvent.platform, currentState]) || _.get(this.states, ["core", currentState]);
+    if (!this.currentState) {
+      throw new UnknownState(currentState);
+    }
+
     const onBeforeState = this.onBeforeStateChangedCallbacks;
+    log("Running onBeforeStateChanged");
     await bluebird.mapSeries(onBeforeState, (fn: IOnBeforeStateChangedCB) => fn(voxaEvent, reply, this.currentState));
     let transition: ITransition = await this.runCurrentState(voxaEvent, reply);
 
@@ -151,24 +157,28 @@ export class StateMachine {
       transition = { to: "die", flow: "terminate" };
     }
 
-    if (_.isObject(transition) && !_.isEmpty(transition) && !transition.flow) {
-      transition.flow = "continue";
-    }
-
     transition = await this.checkForEntryFallback(voxaEvent, reply, transition);
     transition = await this.checkOnUnhandledState(voxaEvent, reply, transition);
     transition = await this.onAfterStateChanged(voxaEvent, reply, transition);
     let to;
 
+    if (_.isObject(transition) && !_.isEmpty(transition) && !transition.flow) {
+      transition.flow = "continue";
+    }
+
     if (transition.to && _.isString(transition.to)) {
-      if (!this.states[transition.to]) {
+      if (!this.states.core[transition.to] && !_.get(this.states, [voxaEvent.platform, transition.to])) {
         throw new UnknownState(transition.to);
       }
-      to = this.states[transition.to];
+      to = _.get(this.states, [voxaEvent.platform, transition.to]) || this.states.core[transition.to];
       transition.to = to;
     } else {
       to = { name: "die" };
       transition.flow = "terminate";
+    }
+
+    if (transition.flow === "terminate") {
+      reply.terminate();
     }
 
     if (transition.flow !== "continue" || !transition.to || isState(transition.to) && transition.to.isTerminal) {
@@ -179,8 +189,7 @@ export class StateMachine {
       return result;
     }
 
-    this.currentState = this.states[to.name];
-    return this.runTransition(voxaEvent, reply);
+    return this.runTransition(to.name, voxaEvent, reply);
   }
 
   public async runCurrentState(voxaEvent: IVoxaEvent, reply: IVoxaReply): Promise<ITransition> {
@@ -214,34 +223,38 @@ export class StateMachine {
     }
 
     log(`Running simpleTransition for ${this.currentState.name}`);
-    const to = _.get(fromState, ["to", voxaEvent.intent.name]);
-    return simpleTransition(this.currentState, to);
-
-    function simpleTransition(state: any, dest: string): any {
-      if (!dest) {
-        return {};
-      }
-
-      if (_.isObject(dest)) {
-        return dest;
-      }
-
-      if (state.to[dest] && dest !== state.to[dest]) {
-        // on some ocassions a single object like state could have multiple transitions
-        // Eg:
-        // app.onState('entry', {
-        //   WelcomeIntent: 'LaunchIntent',
-        //   LaunchIntent: { reply: 'SomeReply' }
-        // });
-        return simpleTransition(state, state.to[dest]);
-      }
-
-      const destObj = self.states[dest];
-      if (!destObj) {
-        throw new UnknownState(dest);
-      }
-
-      return { to: dest };
+    let to = _.get(fromState, ["to", voxaEvent.intent.name]);
+    if (!to) {
+      to = _.get(this.states, ["core", fromState.name, "to", voxaEvent.intent.name]);
     }
+
+    return this.simpleTransition(voxaEvent, this.currentState, to);
+  }
+
+  public simpleTransition(voxaEvent: IVoxaEvent, state: any, dest: string): any {
+    if (!dest) {
+      return {};
+    }
+
+    if (_.isObject(dest)) {
+      return dest;
+    }
+
+    if (state.to[dest] && dest !== state.to[dest]) {
+      // on some ocassions a single object like state could have multiple transitions
+      // Eg:
+      // app.onState('entry', {
+      //   WelcomeIntent: 'LaunchIntent',
+      //   LaunchIntent: { reply: 'SomeReply' }
+      // });
+      return this.simpleTransition(voxaEvent, state, state.to[dest]);
+    }
+
+    const destObj = _.get(this.states, [voxaEvent.platform, dest]) || _.get(this.states, ["core", dest]);
+    if (!destObj) {
+      throw new UnknownState(dest);
+    }
+
+    return { to: dest };
   }
 }
