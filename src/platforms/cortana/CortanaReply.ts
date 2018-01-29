@@ -4,7 +4,6 @@ import {
   IChatConnectorAddress,
   IEvent,
   IIdentity,
-  IIsAttachment,
   IMessage,
 } from "botbuilder";
 import * as debug from "debug";

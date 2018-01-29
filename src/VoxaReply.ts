@@ -12,7 +12,6 @@ import * as bluebird from "bluebird";
 import * as debug from "debug";
 
 import { IMessage } from "./renderers/Renderer";
-import { IVoxaEvent } from "./VoxaEvent";
 
 const log: debug.IDebugger = debug("voxa");
 

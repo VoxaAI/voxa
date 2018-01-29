@@ -5,7 +5,6 @@ import {
   IBotStorageData,
   IChatConnectorAddress,
   IEntity,
-  IEvent,
   IIntent,
   IMessage,
   LuisRecognizer,

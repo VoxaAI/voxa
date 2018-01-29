@@ -452,7 +452,7 @@ describe("VoxaApp", () => {
 
       voxaApp.onRequestStarted(spy);
 
-      const reply: IVoxaReply = await voxaApp.execute(event, new AlexaReply()) as AlexaReply;
+      await voxaApp.execute(event, new AlexaReply());
       expect(spy.called).to.be.true;
     });
   });

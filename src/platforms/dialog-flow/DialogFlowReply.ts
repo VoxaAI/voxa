@@ -1,9 +1,6 @@
 import { Responses } from "actions-on-google";
-import { StandardIntents } from "actions-on-google/assistant-app";
-import { Context, DialogflowApp } from "actions-on-google/dialogflow-app";
+import { Context } from "actions-on-google/dialogflow-app";
 import { Model } from "../../Model";
-import { toSSML } from "../../ssml";
-import { IVoxaSession } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
 
 export interface IDialogFlowData {

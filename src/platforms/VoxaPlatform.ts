@@ -3,8 +3,6 @@ import * as debug from "debug";
 
 import { ITransition } from "../StateMachine";
 import { IStateHandler, VoxaApp } from "../VoxaApp";
-import { IVoxaEvent } from "../VoxaEvent";
-import { IVoxaReply } from "../VoxaReply";
 import { createServer } from "./create-server";
 
 const log: debug.IDebugger = debug("voxa");

@@ -1,10 +1,8 @@
 import * as _ from "lodash";
 import * as url from "url";
 
-import { OutputSpeech, Response, ResponseBody, Template } from "alexa-sdk";
+import { ResponseBody } from "alexa-sdk";
 
-import { toSSML } from "../../ssml";
-import { ITransition } from "../../StateMachine";
 import { VoxaApp } from "../../VoxaApp";
 import { VoxaPlatform } from "../VoxaPlatform";
 import { AlexaEvent } from "./AlexaEvent";

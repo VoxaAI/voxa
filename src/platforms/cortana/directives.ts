@@ -1,7 +1,6 @@
 import {
   AudioCard as AudioCardType,
   HeroCard as HeroCardType,
-  IAttachment,
   ICardMediaUrl,
   SuggestedActions as SuggestedActionsType,
 } from "botbuilder";
@@ -68,6 +67,8 @@ export class SuggestedActions implements IDirective {
     } else {
       suggestedActions = this.suggestedActions;
     }
+
+    (reply as CortanaReply).suggestedActions = suggestedActions.toSuggestedActions();
   }
 }
 

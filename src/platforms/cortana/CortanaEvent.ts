@@ -3,10 +3,8 @@ import * as _ from "lodash";
 import {
   IBotStorageData,
   IConversationUpdate,
-  IEntity,
   IEvent,
   IIdentity,
-  IIntentRecognizerResult,
   IMessage,
 } from "botbuilder";
 import { UniversalBot } from "botbuilder";

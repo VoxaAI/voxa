@@ -4,7 +4,7 @@ import * as botBuilder from "botbuilder";
 import { expect } from "chai";
 import * as i18n from "i18next";
 import * as _ from "lodash";
-import { Ask, Reprompt, Tell } from "../../src/directives";
+import { Tell } from "../../src/directives";
 import { AlexaEvent } from "../../src/platforms/alexa/AlexaEvent";
 import { AlexaReply } from "../../src/platforms/alexa/AlexaReply";
 import { Hint } from "../../src/platforms/alexa/directives";

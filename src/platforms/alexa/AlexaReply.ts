@@ -2,9 +2,6 @@ import { Reprompt, Response, ResponseBody, Template } from "alexa-sdk";
 import * as _ from "lodash";
 import { Model } from "../../Model";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
-import { AlexaEvent } from "./AlexaEvent";
-
-const SSML = "SSML";
 
 export class AlexaReply implements IVoxaReply, ResponseBody {
   public version = "1.0";
