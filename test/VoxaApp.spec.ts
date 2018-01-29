@@ -11,7 +11,6 @@ import { AlexaPlatform } from "../src/platforms/alexa/AlexaPlatform";
 import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
 import { VoxaApp } from "../src/VoxaApp";
 import { IVoxaEvent } from "../src/VoxaEvent";
-import { IVoxaReply } from "../src/VoxaReply";
 import { AlexaRequestBuilder } from "./tools";
 import { variables } from "./variables";
 import { views } from "./views";
@@ -324,18 +323,6 @@ describe("VoxaApp", () => {
   });
 
   describe("onUnhandledState", () => {
-    it("should give a proper error message when an intent is unhandled", async () => {
-      const voxaApp = new VoxaApp({ Model, views, variables });
-      event.intent.name = "LaunchIntent";
-      voxaApp.onState("entry", { });
-
-      voxaApp.onError((ev: IVoxaEvent, error: Error, repl: IVoxaReply) => {
-        expect(error.message).to.equal("LaunchIntent went unhandled on entry state");
-      });
-
-      const reply = await voxaApp.execute(event, new AlexaReply()) as AlexaReply;
-    });
-
     it("should call onUnhandledState callbacks when the state machine transition throws a UnhandledState error", async () => {
       const voxaApp = new VoxaApp({ Model, views, variables });
       const onUnhandledState = simple.stub().resolveWith({

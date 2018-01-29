@@ -1,5 +1,4 @@
 import * as _ from "lodash";
-import * as url from "url";
 
 import { ResponseBody } from "alexa-sdk";
 

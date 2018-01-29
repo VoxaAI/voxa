@@ -1,8 +1,5 @@
-import * as debug from "debug";
 import * as http from "http";
 import { VoxaPlatform } from "./VoxaPlatform";
-
-const log: debug.IDebugger = debug("voxa");
 
 function createServer(skill: VoxaPlatform): http.Server {
   return http.createServer((req, res) => {

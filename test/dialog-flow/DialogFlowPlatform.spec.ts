@@ -2,7 +2,6 @@ import { expect } from "chai";
 import { DialogFlowPlatform } from "../../src/platforms/dialog-flow/DialogFlowPlatform";
 import { DialogFlowReply } from "../../src/platforms/dialog-flow/DialogFlowReply";
 import { VoxaApp } from "../../src/VoxaApp";
-import { IVoxaReply } from "../../src/VoxaReply";
 import { views } from "../views";
 
 xdescribe("DialogFlowPlatform", () => {
