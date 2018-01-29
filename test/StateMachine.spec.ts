@@ -7,7 +7,7 @@ use(chaiAsPromised);
 
 import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
 import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
-import { isState, isTransition, StateMachine } from "../src/StateMachine";
+import { isState, StateMachine } from "../src/StateMachine";
 import { AlexaRequestBuilder } from "./tools";
 
 const rb = new AlexaRequestBuilder();

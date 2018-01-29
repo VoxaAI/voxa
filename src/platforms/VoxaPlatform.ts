@@ -22,7 +22,7 @@ export abstract class VoxaPlatform {
   public startServer(port: number): void {
     port = port || 3000;
     createServer(this).listen(port, () => {
-      debug(`Listening on port ${port}`);
+      log(`Listening on port ${port}`);
     });
   }
 

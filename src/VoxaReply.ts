@@ -10,9 +10,8 @@
 
 import * as bluebird from "bluebird";
 import * as debug from "debug";
-import * as _ from "lodash";
 
-import { IMessage, Renderer } from "./renderers/Renderer";
+import { IMessage } from "./renderers/Renderer";
 import { IVoxaEvent } from "./VoxaEvent";
 
 const log: debug.IDebugger = debug("voxa");

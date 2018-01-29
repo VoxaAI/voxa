@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import { DialogFlowEvent } from "../../src/platforms/dialog-flow/DialogFlowEvent";
 import { DialogFlowPlatform } from "../../src/platforms/dialog-flow/DialogFlowPlatform";
 import { DialogFlowReply } from "../../src/platforms/dialog-flow/DialogFlowReply";
 import { VoxaApp } from "../../src/VoxaApp";

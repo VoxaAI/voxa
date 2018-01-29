@@ -7,16 +7,12 @@ import { AlexaPlatform } from "../../src/platforms/alexa/AlexaPlatform";
 import { AlexaReply } from "../../src/platforms/alexa/AlexaReply";
 import { DisplayTemplate } from "../../src/platforms/alexa/DisplayTemplateBuilder";
 import { CortanaEvent } from "../../src/platforms/cortana/CortanaEvent";
-import { Renderer } from "../../src/renderers/Renderer";
 import { VoxaApp } from "../../src/VoxaApp";
 import { IVoxaEvent } from "../../src/VoxaEvent";
 import { variables } from "../variables";
-import { Hint, HomeCard } from "./../../src/platforms/alexa/directives";
+import { HomeCard } from "./../../src/platforms/alexa/directives";
 import { AlexaRequestBuilder } from "./../tools";
 import { views } from "./../views";
-
-// tslint:disable-next-line
-const cortanaLaunch = require("../requests/cortana/microsoft.launch.json");
 
 use(chaiAsPromised);
 
@@ -24,7 +20,6 @@ describe("Alexa directives", () => {
   let event: any;
   let app: VoxaApp;
   let alexaSkill: AlexaPlatform;
-  let renderer: Renderer;
 
   before(() => {
     i18n .init({
@@ -38,7 +33,6 @@ describe("Alexa directives", () => {
     const rb = new AlexaRequestBuilder();
     app =  new VoxaApp({ views });
     alexaSkill = new AlexaPlatform(app);
-    renderer = new Renderer({ views, variables });
     event = rb.getIntentRequest("AMAZON.YesIntent");
   });
 

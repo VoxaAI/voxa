@@ -1,5 +1,4 @@
 
-import * as bluebird from "bluebird";
 import {
   IBotStorage,
   IBotStorageContext,
@@ -13,19 +12,13 @@ import {
 } from "botbuilder";
 import * as debug from "debug";
 import * as _ from "lodash";
-import { StatusCodeError } from "request-promise/errors";
-import * as urljoin from "url-join";
-import * as uuid from "uuid";
-import { toSSML } from "../../ssml";
 import { VoxaApp } from "../../VoxaApp";
-import { ITypeMap, IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
-import { IVoxaReply } from "../../VoxaReply";
+import { ITypeMap, IVoxaIntent } from "../../VoxaEvent";
 import { VoxaPlatform } from "../VoxaPlatform";
 import { CortanaEvent } from "./CortanaEvent";
 import { CortanaReply } from "./CortanaReply";
 import { Ask, AudioCard, HeroCard, Say, SuggestedActions } from "./directives";
 
-const log: debug.IDebugger = debug("voxa");
 const cortanalog: debug.IDebugger = debug("voxa:cortana");
 
 const CortanaRequests = [
@@ -102,7 +95,6 @@ export class CortanaPlatform extends VoxaPlatform {
   }
 
   public getIntentFromEntity(msg: IMessage): IVoxaIntent|undefined {
-    const entities: any[]|undefined = msg.entities;
     const intentEntity: any = _.find(msg.entities, { type: "Intent" });
 
     if (!intentEntity) {

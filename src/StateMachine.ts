@@ -193,7 +193,6 @@ export class StateMachine {
   }
 
   public async runCurrentState(voxaEvent: IVoxaEvent, reply: IVoxaReply): Promise<ITransition> {
-    const self = this;
     if (!voxaEvent.intent) {
       throw new Error("Running the state machine without an intent");
     }

@@ -9,7 +9,6 @@
 
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
-import { Renderer } from "./renderers/Renderer";
 import { ITransition } from "./StateMachine";
 import { IVoxaEvent } from "./VoxaEvent";
 import { IVoxaReply } from "./VoxaReply";

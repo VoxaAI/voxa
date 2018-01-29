@@ -329,8 +329,11 @@ describe("VoxaApp", () => {
       event.intent.name = "LaunchIntent";
       voxaApp.onState("entry", { });
 
+      voxaApp.onError((ev: IVoxaEvent, error: Error, repl: IVoxaReply) => {
+        expect(error.message).to.equal("LaunchIntent went unhandled on entry state");
+      });
+
       const reply = await voxaApp.execute(event, new AlexaReply()) as AlexaReply;
-      // expect(reply.error.message).to.equal("LaunchIntent went unhandled on entry state");
     });
 
     it("should call onUnhandledState callbacks when the state machine transition throws a UnhandledState error", async () => {
@@ -438,22 +441,6 @@ describe("VoxaApp", () => {
     expect(stub.called).to.be.true;
     expect(reply).to.not.equal(stubResponse);
     expect(reply.speech).to.equal("<speak>Ok. For more info visit example.com site.</speak>");
-  });
-
-  describe("onAfterStateChanged", () => {
-    it("should return the onError response for exceptions thrown in onAfterStateChanged", async () => {
-      const voxaApp = new VoxaApp({ views, variables });
-      _.map(statesDefinition, (state: any, name: string) => voxaApp.onState(name, state));
-      const spy = simple.spy(() => {
-        throw new Error("FAIL!");
-      });
-
-      voxaApp.onAfterStateChanged(spy);
-
-      const reply = await voxaApp.execute(event, new AlexaReply()) as AlexaReply;
-      expect(spy.called).to.be.true;
-      // expect(reply.error).to.be.an("error");
-    });
   });
 
   describe("onRequestStarted", () => {

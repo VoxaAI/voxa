@@ -1,5 +1,4 @@
 import {
-  IAddress,
   IAttachment,
   ICardAction,
   IChatConnectorAddress,
@@ -7,17 +6,13 @@ import {
   IIdentity,
   IIsAttachment,
   IMessage,
-  ISuggestedActions,
 } from "botbuilder";
 import * as debug from "debug";
-import * as _ from "lodash";
 import * as rp from "request-promise";
 import { StatusCodeError } from "request-promise/errors";
-import * as striptags from "striptags";
 import * as urljoin from "url-join";
 import * as uuid from "uuid";
 import { NotImplementedError } from "../../errors";
-import { toSSML } from "../../ssml";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 import { CortanaEvent } from "./CortanaEvent";
 import { IAuthorizationResponse } from "./CortanaInterfaces";
@@ -138,10 +133,9 @@ export async function botApiRequest(method: string, uri: string, reply: CortanaR
     cortanalog(JSON.stringify(requestOptions, null, 2));
     return rp(requestOptions);
   } catch (reason) {
-    attempts += 1;
     if (reason instanceof StatusCodeError && attempts < 2) {
+      attempts += 1;
       if (reason.statusCode === 401) {
-        authorization = await getAuthorization(event.applicationId, event.applicationPassword);
         return botApiRequest(method, uri, reply, event, attempts);
       }
     }

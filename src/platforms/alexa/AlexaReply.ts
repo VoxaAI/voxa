@@ -1,7 +1,6 @@
-import { OutputSpeech, Reprompt, Response, ResponseBody, Session, Template } from "alexa-sdk";
+import { Reprompt, Response, ResponseBody, Template } from "alexa-sdk";
 import * as _ from "lodash";
 import { Model } from "../../Model";
-import { toSSML } from "../../ssml";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 import { AlexaEvent } from "./AlexaEvent";
 

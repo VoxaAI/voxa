@@ -1,6 +1,4 @@
-import * as debug from "debug";
 import * as _ from "lodash";
-import * as rp from "request-promise";
 import * as url from "url";
 
 import { OutputSpeech, Response, ResponseBody, Template } from "alexa-sdk";
@@ -8,14 +6,10 @@ import { OutputSpeech, Response, ResponseBody, Template } from "alexa-sdk";
 import { toSSML } from "../../ssml";
 import { ITransition } from "../../StateMachine";
 import { VoxaApp } from "../../VoxaApp";
-import { IVoxaEvent } from "../../VoxaEvent";
-import { IVoxaReply } from "../../VoxaReply";
 import { VoxaPlatform } from "../VoxaPlatform";
 import { AlexaEvent } from "./AlexaEvent";
 import { AlexaReply } from "./AlexaReply";
 import { AccountLinkingCard, DialogDelegate, Hint, HomeCard, PlayAudio, RenderTemplate } from "./directives";
-
-const log: debug.IDebugger = debug("voxa");
 
 const AlexaRequests = [
   "AudioPlayer.PlaybackStarted",

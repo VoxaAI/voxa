@@ -1,4 +1,4 @@
-import { Image, ListItem, Template, TemplateBackButtonVisibility, TemplateType, TextContent, TextField } from "alexa-sdk";
+import { Image, TemplateBackButtonVisibility, TemplateType, TextContent, TextField } from "alexa-sdk";
 
 export class DisplayTemplate {
   public type: string = "Display.RenderTemplate";

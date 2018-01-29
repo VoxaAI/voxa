@@ -1,6 +1,3 @@
-import * as _ from "lodash";
-
-import { VoxaApp } from "../../VoxaApp";
 import { IVoxaReply } from "../../VoxaReply";
 import { VoxaPlatform } from "../VoxaPlatform";
 import { DialogFlowEvent } from "./DialogFlowEvent";

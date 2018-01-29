@@ -1,7 +1,6 @@
 import { Card, Response, Template } from "alexa-sdk";
 import * as _ from "lodash";
 import { IDirective } from "../../directives";
-import { Renderer } from "../../renderers/Renderer";
 import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";

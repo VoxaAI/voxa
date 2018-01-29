@@ -37,6 +37,11 @@ export class HeroCard implements IDirective {
     } else {
       card = this.card;
     }
+
+    const attachments = (reply as CortanaReply).attachments || [];
+    attachments.push(card.toAttachment());
+
+    (reply as CortanaReply).attachments = attachments;
   }
 }
 

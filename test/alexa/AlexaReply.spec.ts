@@ -7,7 +7,7 @@ import * as _ from "lodash";
 import { Ask, Reprompt, Tell } from "../../src/directives";
 import { AlexaEvent } from "../../src/platforms/alexa/AlexaEvent";
 import { AlexaReply } from "../../src/platforms/alexa/AlexaReply";
-import { Hint, HomeCard } from "../../src/platforms/alexa/directives";
+import { Hint } from "../../src/platforms/alexa/directives";
 import { Renderer } from "../../src/renderers/Renderer";
 import { AlexaRequestBuilder } from "../tools";
 import { variables } from "../variables";
@@ -120,7 +120,6 @@ describe("AlexaReply", () => {
   // });
 
   it("should generate a correct alexa response persisting session attributes", () => {
-    const someIntentEvent = rb.getIntentRequest("SomeIntent");
     reply = new AlexaReply();
     reply.addStatement("tell");
     reply.terminate();
