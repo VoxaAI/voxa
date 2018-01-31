@@ -17,11 +17,12 @@ const replaceIntent = require('./lib/src/plugins/replace-intent').register;
 const stateFlow = require('./lib/src/plugins/state-flow').register;
 const autoLoad = require('./lib/src/plugins/auto-load').autoLoad;
 
-const CortanaPlatform = require('./lib/src/platforms/cortana/CortanaPlatform').CortanaPlatform;
+const BotFrameworkPlatform = require('./lib/src/platforms/botframework/BotFrameworkPlatform').BotFrameworkPlatform;
+const BotletPlatform = require('./lib/src/platforms/botlet/BotletPlatform').BotletPlatform;
 
 const AlexaDirectives = require('./lib/src/platforms/alexa/directives');
 const DialogFlowDirectives = require('./lib/src/platforms/dialog-flow/directives');
-const CortanaDirectives = require('./lib/src/platforms/cortana/directives');
+const CortanaDirectives = require('./lib/src/platforms/botframework/directives');
 
 
 module.exports = VoxaApp;
@@ -40,10 +41,16 @@ module.exports.DialogFlow.List = DialogFlowDirectives.List;
 module.exports.DialogFlow.Suggestions = DialogFlowDirectives.Suggestions;
 module.exports.DialogFlow.BasicCard = DialogFlowDirectives.BasicCard;
 
-module.exports.Cortana = CortanaPlatform;
-module.exports.Cortana.HeroCard = CortanaDirectives.HeroCard;
-module.exports.Cortana.SuggestedActions = CortanaDirectives.SuggestedActions;
-module.exports.Cortana.AudioCard = CortanaDirectives.AudioCard;
+module.exports.BotFramework = BotFrameworkPlatform;
+module.exports.BotFramework.HeroCard = CortanaDirectives.HeroCard;
+module.exports.BotFramework.SuggestedActions = CortanaDirectives.SuggestedActions;
+module.exports.BotFramework.AudioCard = CortanaDirectives.AudioCard;
+
+
+module.exports.Cortana = BotletPlatform;
+// module.exports.BotFramework.HeroCard = CortanaDirectives.HeroCard;
+// module.exports.BotFramework.SuggestedActions = CortanaDirectives.SuggestedActions;
+// module.exports.BotFramework.AudioCard = CortanaDirectives.AudioCard;
 
 module.exports.Renderer = require('./lib/src/renderers/Renderer').Renderer
 

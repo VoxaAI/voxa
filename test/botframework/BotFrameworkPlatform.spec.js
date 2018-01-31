@@ -5,13 +5,13 @@ const expect = require('chai').expect;
 const azure = require('botbuilder-azure');
 
 const _ = require('lodash');
-const CortanaPlatform = require('../../src/platforms/cortana/CortanaPlatform').CortanaPlatform;
+const BotFrameworkPlatform = require('../../src/platforms/botframework/BotFrameworkPlatform').BotFrameworkPlatform;
 const VoxaApp = require('../../src/VoxaApp').VoxaApp;
 const views = require('../views').views;
 const variables = require('../variables').variables;
-const rawEvent = _.cloneDeep(require('../requests/cortana/microsoft.launch.json'));
+const rawEvent = _.cloneDeep(require('../requests/botframework/microsoft.launch.json'));
 
-describe('CortanaPlatform', () => {
+describe('BotFrameworkPlatform', () => {
   let adapter;
   let recognizer;
   let app;
@@ -30,7 +30,7 @@ describe('CortanaPlatform', () => {
     // we need to mock this before instantiating the platforms cause otherwise
     // we try to get the authorization token
 
-    adapter = new CortanaPlatform(app, { recognizer, storage });
+    adapter = new BotFrameworkPlatform(app, { recognizer, storage });
     simple.mock(storage, 'getData')
       .callbackWith(null, {});
 

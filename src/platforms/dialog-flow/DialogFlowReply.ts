@@ -43,15 +43,15 @@ export class DialogFlowReply implements IVoxaReply {
   }
 
   public clear() {
-    console.log("clear");
+    throw new Error("Not Implemented");
   }
 
   public terminate() {
-    console.log("temrinate");
+    throw new Error("Not Implemented");
   }
 
   public addStatement() {
-    console.log("terminate");
+    throw new Error("Not Implemented");
   }
 
   public hasDirective(type: string | RegExp): boolean {

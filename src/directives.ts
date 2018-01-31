@@ -42,20 +42,22 @@ export class Reprompt implements IDirective {
 export class Ask implements IDirective {
   public static key: string = "ask";
   public static platform: string = "core";
-  public viewPath: string;
+  public viewPaths: string[];
 
-  constructor(viewPath: string) {
-    this.viewPath = viewPath;
+  constructor(viewPaths: string|string[]) {
+    this.viewPaths = _.isString(viewPaths) ? [viewPaths] : viewPaths;
   }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    const statement = await event.renderer.renderPath(this.viewPath, event);
-    if (_.isString(statement)) {
-      reply.addStatement(statement);
-    } else if (statement.ask) {
-      reply.addStatement(statement.ask);
-      if (statement.reprompt) {
-        reply.addReprompt(statement.reprompt);
+    for (const viewPath of this.viewPaths) {
+      const statement = await event.renderer.renderPath(viewPath, event);
+      if (_.isString(statement)) {
+        reply.addStatement(statement);
+      } else if (statement.ask) {
+        reply.addStatement(statement.ask);
+        if (statement.reprompt) {
+          reply.addReprompt(statement.reprompt);
+        }
       }
     }
 

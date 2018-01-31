@@ -15,7 +15,7 @@ describe("createServer", () => {
 
   before(async () => {
     const skill = new VoxaApp({ views });
-    const adapter = new AlexaPlatform(skill);
+    const adapter = new AlexaPlatform(skill, {});
     server = createServer(adapter);
     port = await portfinder.getPortPromise();
     server.listen(port, () => log(`Listening on ${port}`));

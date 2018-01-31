@@ -58,7 +58,6 @@ describe('AutoLoad plugin', () => {
 
     return platform.execute(event)
       .then((result) => {
-        console.log(JSON.stringify(result))
         expect(spy.lastCall.args[0].intent.name).to.equal('LaunchIntent');
         expect(result.response.outputSpeech.ssml).to.include("Hello! Good");
         expect(result.sessionAttributes.state).to.equal('die');

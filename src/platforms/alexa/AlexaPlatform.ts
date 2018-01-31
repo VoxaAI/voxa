@@ -33,15 +33,19 @@ const AlexaRequests = [
 export class AlexaPlatform extends VoxaPlatform {
   public platform: string = "alexa";
 
-  constructor(voxaApp: VoxaApp) {
-    super(voxaApp);
-    _.forEach(AlexaRequests, (requestType) => voxaApp.registerRequestHandler(requestType));
-    this.app.directiveHandlers.push(AccountLinkingCard);
-    this.app.directiveHandlers.push(DialogDelegate);
-    this.app.directiveHandlers.push(Hint);
-    this.app.directiveHandlers.push(HomeCard);
-    this.app.directiveHandlers.push(PlayAudio);
-    this.app.directiveHandlers.push(RenderTemplate);
+  public getDirectiveHandlers() {
+    return [
+      AccountLinkingCard,
+      DialogDelegate,
+      Hint,
+      HomeCard,
+      PlayAudio,
+      RenderTemplate,
+    ];
+  }
+
+  public getPlatformRequests() {
+    return AlexaRequests;
   }
 
   public async execute(rawEvent: any, context: any): Promise<ResponseBody> {

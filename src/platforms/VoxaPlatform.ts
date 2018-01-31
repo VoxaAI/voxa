@@ -1,6 +1,8 @@
 
 import * as debug from "debug";
+import * as _ from "lodash";
 
+import { IDirectiveClass } from "../directives";
 import { ITransition } from "../StateMachine";
 import { IStateHandler, VoxaApp } from "../VoxaApp";
 import { createServer } from "./create-server";
@@ -15,6 +17,9 @@ export abstract class VoxaPlatform {
   constructor(voxaApp: VoxaApp, config: any= {}) {
     this.app = voxaApp;
     this.config = config;
+
+    _.forEach(this.getDirectiveHandlers(), (directive) => this.app.directiveHandlers.push(directive));
+    _.forEach(this.getPlatformRequests(), (requestType) => voxaApp.registerRequestHandler(requestType));
   }
 
   public startServer(port: number): void {
@@ -22,6 +27,14 @@ export abstract class VoxaPlatform {
     createServer(this).listen(port, () => {
       log(`Listening on port ${port}`);
     });
+  }
+
+  public getDirectiveHandlers(): IDirectiveClass[] {
+    return [];
+  }
+
+  public getPlatformRequests(): string[] {
+    return [];
   }
 
   public abstract execute(event: any, context?: any): Promise<any>;
@@ -33,6 +46,17 @@ export abstract class VoxaPlatform {
         callback(null, result);
       } catch (error) {
         callback(error);
+      }
+    };
+  }
+
+  public azureFunction() {
+    return async (context: any, event: any) => {
+      try {
+        const result = await this.execute(event, {});
+        context.done(null, result);
+      } catch (error) {
+        context.done(error);
       }
     };
   }

@@ -384,7 +384,21 @@ export class VoxaApp {
     }
 
     if (transition.directives) {
-      await bluebird.mapSeries(transition.directives, (handler: IDirective) => handler.writeToReply(response, voxaEvent, transition));
+      if (_.isString(transition.directives)) {
+        transition.directives = await voxaEvent.renderer.renderPath(transition.directives, voxaEvent);
+      }
+
+      if (!transition.directives) {
+        return transition;
+      }
+
+      if (!_.isArray(transition.directives)) {
+        transition.directives = [transition.directives];
+      }
+
+      await bluebird.mapSeries(transition.directives, async (handler: IDirective) => {
+        handler.writeToReply(response, voxaEvent, transition);
+      });
     }
 
     return transition;

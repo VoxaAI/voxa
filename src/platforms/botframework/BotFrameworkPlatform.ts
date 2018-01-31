@@ -14,11 +14,11 @@ import * as _ from "lodash";
 import { VoxaApp } from "../../VoxaApp";
 import { ITypeMap, IVoxaIntent } from "../../VoxaEvent";
 import { VoxaPlatform } from "../VoxaPlatform";
-import { CortanaEvent } from "./CortanaEvent";
-import { CortanaReply } from "./CortanaReply";
+import { BotFrameworkEvent } from "./BotFrameworkEvent";
+import { BotFrameworkReply } from "./BotFrameworkReply";
 import { Ask, AudioCard, HeroCard, Say, SuggestedActions } from "./directives";
 
-const cortanalog: debug.IDebugger = debug("voxa:cortana");
+const botframeworklog: debug.IDebugger = debug("voxa:botframework");
 
 const CortanaRequests = [
   "conversationUpdate",
@@ -41,7 +41,7 @@ const toAddress = {
   serviceUrl: "serviceUrl",
 };
 
-export class CortanaPlatform extends VoxaPlatform {
+export class BotFrameworkPlatform extends VoxaPlatform {
   public recognizerURI: string;
   public storage: IBotStorage;
   public applicationId: string;
@@ -57,14 +57,20 @@ export class CortanaPlatform extends VoxaPlatform {
     this.storage = config.storage;
     this.applicationId = config.applicationId;
     this.applicationPassword = config.applicationPassword;
+  }
 
-    _.forEach(CortanaRequests, (requestType: string) => voxaApp.registerRequestHandler(requestType));
+  public getDirectiveHandlers() {
+    return [
+      HeroCard,
+      SuggestedActions,
+      AudioCard,
+      Ask,
+      Say,
+    ];
+  }
 
-    this.app.directiveHandlers.push(HeroCard);
-    this.app.directiveHandlers.push(SuggestedActions);
-    this.app.directiveHandlers.push(AudioCard);
-    this.app.directiveHandlers.push(Ask);
-    this.app.directiveHandlers.push(Say);
+  public getPlatformRequests() {
+    return CortanaRequests;
   }
 
   public async execute(msg: any, context: any) {
@@ -76,14 +82,15 @@ export class CortanaPlatform extends VoxaPlatform {
       intent = await this.recognize(msg);
     }
 
-    const event = new CortanaEvent(msg, context, stateData, intent);
+    const event = new BotFrameworkEvent(msg, context, stateData, intent);
     event.applicationId = this.applicationId;
     event.applicationPassword = this.applicationPassword;
 
     if (!event.request.locale) {
       event.request.locale = this.config.defaultLocale;
     }
-    const reply = await this.app.execute(event, new CortanaReply(event)) as CortanaReply;
+
+    const reply = await this.app.execute(event, new BotFrameworkReply(event)) as BotFrameworkReply;
 
     await Promise.all([
       reply.send(event),
@@ -116,12 +123,12 @@ export class CortanaPlatform extends VoxaPlatform {
     }
 
     const { intents, entities } = await new Promise<IRecognizeResult>((resolve, reject) => {
-      cortanalog({ text: msg.text });
+      botframeworklog({ text: msg.text });
       if (msg.text) {
         return LuisRecognizer.recognize(msg.text, this.config.recognizerURI,
           (err: Error, recognizedIntents?: IIntent[], recognizedEntities?: IEntity[]) => {
             if (err) { return reject(err); }
-            cortanalog({ intents, entities });
+            botframeworklog({ intents, entities });
             resolve({ intents: recognizedIntents, entities: recognizedEntities });
           });
       }
@@ -188,15 +195,14 @@ export class CortanaPlatform extends VoxaPlatform {
       this.storage.getData(context, (err: Error, result: IBotStorageData) => {
         if (err) { return reject(err); }
 
-        cortanalog("got stateData");
-        cortanalog(result, context);
+        botframeworklog("got stateData");
+        botframeworklog(result, context);
         return resolve(result);
       });
     });
-
   }
 
-  public async saveStateData(event: CortanaEvent, reply: CortanaReply): Promise<void> {
+  public async saveStateData(event: BotFrameworkEvent, reply: BotFrameworkReply): Promise<void> {
     const conversationId = event.session.sessionId;
     const userId = event.rawEvent.address.bot.id;
     const context: IBotStorageContext = {
@@ -223,8 +229,8 @@ export class CortanaPlatform extends VoxaPlatform {
       this.storage.saveData(context, data, (error: Error) => {
         if (error) { return reject(error); }
 
-        cortanalog("savedStateData");
-        cortanalog(data, context);
+        botframeworklog("savedStateData");
+        botframeworklog(data, context);
         return resolve();
       });
     });

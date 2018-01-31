@@ -72,5 +72,5 @@ export interface IVoxaIntent {
 export interface IVoxaSession {
   attributes: any;
   new: boolean;
-  sessionId?: string;
+  sessionId: string;
 }

@@ -24,8 +24,6 @@ export class DialogFlowEvent extends IVoxaEvent {
         locale: event.lang,
         type: "IntentRequest",
       },
-      session: {
-      },
     }, event);
 
     this.session = new DialogFlowSession(event);

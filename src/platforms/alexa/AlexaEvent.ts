@@ -28,6 +28,7 @@ export class AlexaEvent extends IVoxaEvent {
   public model: Model;
   public t: TranslationFunction;
   public requestToIntent: any = {
+    "AudioPlayer.PlaybackNearlyFinished": "AudioPlayer.PlaybackNearlyFinished",
     "Display.ElementSelected": "Display.ElementSelected",
     "LaunchRequest": "LaunchIntent",
     "PlaybackController.NextCommandIssued": "PlaybackController.NextCommandIssued",
@@ -38,11 +39,10 @@ export class AlexaEvent extends IVoxaEvent {
 
   constructor(event: IAlexaRequest , context?: any) {
     super(event, context);
-    this.session = event.session;
-    this.request = event.request;
-    this.context = event.context;
+    this.session = _.cloneDeep(event.session);
+    this.request = _.cloneDeep(event.request);
+    this.context = _.cloneDeep(event.context);
     this.executionContext = context;
-    this.rawEvent = event;
 
     if (_.isEmpty(_.get(this, "session.attributes"))) {
       _.set(this, "session.attributes", {});

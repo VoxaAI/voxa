@@ -10,12 +10,12 @@ import { IDirective } from "../../directives";
 import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
-import { CortanaEvent } from "./CortanaEvent";
-import { CortanaReply } from "./CortanaReply";
+import { BotFrameworkEvent } from "./BotFrameworkEvent";
+import { BotFrameworkReply } from "./BotFrameworkReply";
 
 export class HeroCard implements IDirective {
-  public static platform: string = "cortana";
-  public static key: string = "cortanaHeroCard";
+  public static platform: string = "botframework";
+  public static key: string = "botframeworkHeroCard";
 
   public viewPath: string;
   public card: HeroCardType;
@@ -37,16 +37,16 @@ export class HeroCard implements IDirective {
       card = this.card;
     }
 
-    const attachments = (reply as CortanaReply).attachments || [];
+    const attachments = (reply as BotFrameworkReply).attachments || [];
     attachments.push(card.toAttachment());
 
-    (reply as CortanaReply).attachments = attachments;
+    (reply as BotFrameworkReply).attachments = attachments;
   }
 }
 
 export class SuggestedActions implements IDirective {
-  public static key: string = "cortanaSuggestedActions";
-  public static platform: string = "cortana";
+  public static key: string = "botframeworkSuggestedActions";
+  public static platform: string = "botframework";
 
   public viewPath: string;
   public suggestedActions: SuggestedActionsType;
@@ -68,13 +68,13 @@ export class SuggestedActions implements IDirective {
       suggestedActions = this.suggestedActions;
     }
 
-    (reply as CortanaReply).suggestedActions = suggestedActions.toSuggestedActions();
+    (reply as BotFrameworkReply).suggestedActions = suggestedActions.toSuggestedActions();
   }
 }
 
 export class AudioCard implements IDirective {
-  public static key: string = "cortanaAudioCard";
-  public static platform: string = "cortana";
+  public static key: string = "botframeworkAudioCard";
+  public static platform: string = "botframework";
 
   public url: string;
   public audioCard: AudioCardType;
@@ -99,23 +99,24 @@ export class AudioCard implements IDirective {
     }
 
     // we want to send stuff before the audio card
-    (reply as CortanaReply).inputHint = "ignoringInput";
-    await (reply as CortanaReply).send(event as CortanaEvent);
-    reply.clear();
+    (reply as BotFrameworkReply).inputHint = "ignoringInput";
+    await (reply as BotFrameworkReply).send(event as BotFrameworkEvent);
 
     // and now we add the card
-    const attachments = (reply as CortanaReply).attachments || [];
+    const attachments = (reply as BotFrameworkReply).attachments || [];
     attachments.push(audioCard.toAttachment());
-    (reply as CortanaReply).attachments = attachments;
+    (reply as BotFrameworkReply).attachments = attachments;
     reply.terminate();
     transition.flow = "terminate";
+    await (reply as BotFrameworkReply).send(event as BotFrameworkEvent);
+
   }
 }
 
 // i want to add plain statements
 export class Ask implements IDirective {
   public static key: string = "ask";
-  public static platform: string = "cortana";
+  public static platform: string = "botframework";
   public viewPath: string;
 
   constructor(viewPath: string) {
@@ -139,7 +140,7 @@ export class Ask implements IDirective {
 // i want to add plain statements
 export class Say implements IDirective {
   public static key: string = "say";
-  public static platform: string = "cortana";
+  public static platform: string = "botframework";
   public viewPath: string;
 
   constructor(viewPath: string) {

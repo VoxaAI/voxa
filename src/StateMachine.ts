@@ -155,6 +155,7 @@ export class StateMachine {
 
     if (!!transition && !_.isObject(transition)) {
       transition = { to: "die", flow: "terminate" };
+      reply.terminate();
     }
 
     transition = await this.checkForEntryFallback(voxaEvent, reply, transition);
@@ -177,16 +178,18 @@ export class StateMachine {
       transition.flow = "terminate";
     }
 
-    if (transition.flow === "terminate") {
+    if (transition.flow === "terminate" ) {
       reply.terminate();
     }
 
-    if (transition.flow !== "continue" || !transition.to || isState(transition.to) && transition.to.isTerminal) {
-      const result: any = { to };
-      if (_.isString(transition.reply) || _.isArray(transition.reply)) {
-        result.reply = transition.reply;
+    if (isState(transition.to)) {
+      if (transition.to.isTerminal) {
+        reply.terminate();
       }
-      return result;
+    }
+
+    if (transition.flow !== "continue" || !transition.to || isState(transition.to) && transition.to.isTerminal) {
+      return _.merge(transition, to);
     }
 
     return this.runTransition(to.name, voxaEvent, reply);

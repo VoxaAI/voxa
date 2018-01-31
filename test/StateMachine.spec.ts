@@ -143,6 +143,10 @@ describe("StateMachine", () => {
         voxaEvent.intent.name = "OtherIntent";
         const promise = stateMachine.runTransition("entry", voxaEvent, reply);
         return expect(promise).to.eventually.deep.equal({
+          flow: "terminate",
+          isTerminal: true,
+          name: "die",
+          tell: "ExitIntent.Farewell",
           to: {
             isTerminal: true,
             name: "die",
@@ -180,6 +184,10 @@ describe("StateMachine", () => {
       const transition =  await stateMachine.runTransition("someState", voxaEvent, reply);
       // expect(states.someState.enter.entry.called).to.be.true;
       expect(transition).to.deep.equal({
+        flow: "terminate",
+        isTerminal: true,
+        name: "die",
+        tell: "ExitIntent.Farewell",
         to: {
           isTerminal: true,
           name: "die",

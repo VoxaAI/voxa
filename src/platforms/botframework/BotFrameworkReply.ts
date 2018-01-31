@@ -12,13 +12,14 @@ import { StatusCodeError } from "request-promise/errors";
 import * as urljoin from "url-join";
 import * as uuid from "uuid";
 import { NotImplementedError } from "../../errors";
+import { IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
-import { CortanaEvent } from "./CortanaEvent";
-import { IAuthorizationResponse } from "./CortanaInterfaces";
+import { BotFrameworkEvent } from "./BotFrameworkEvent";
+import { IAuthorizationResponse } from "./BotFrameworkInterfaces";
 
 const cortanalog: debug.IDebugger = debug("voxa:cortana");
 
-export class CortanaReply implements IVoxaReply {
+export class BotFrameworkReply implements IVoxaReply {
   public speech: string;
 
   // IMessage
@@ -38,11 +39,10 @@ export class CortanaReply implements IVoxaReply {
   public attachments?: IAttachment[];
   public suggestedActions?: ICardAction[];
 
-  constructor(event: CortanaEvent) {
+  constructor(event: IVoxaEvent) {
     this.channelId = event.rawEvent.address.channelId;
     this.conversation = { id: event.session.sessionId };
     this.from = { id: event.rawEvent.address.bot.id };
-    this.id = uuid.v1();
     this.inputHint = "ignoringInput";
     this.locale = event.request.locale;
     this.recipient = {
@@ -96,7 +96,7 @@ export class CortanaReply implements IVoxaReply {
     return;
   }
 
-  public async send(event: CortanaEvent) {
+  public async send(event: BotFrameworkEvent) {
     cortanalog("partialReply");
     cortanalog({
       hasDirectives: this.hasDirectives,
@@ -109,12 +109,13 @@ export class CortanaReply implements IVoxaReply {
     }
 
     const uri = getReplyUri(event.rawEvent);
+    this.id = uuid.v1();
     await botApiRequest("POST", uri, this, event);
     this.clear();
   }
 }
 
-export async function botApiRequest(method: string, uri: string, reply: CortanaReply, event: CortanaEvent, attempts: number = 0): Promise<any> {
+export async function botApiRequest(method: string, uri: string, reply: BotFrameworkReply, event: BotFrameworkEvent, attempts: number = 0): Promise<any> {
   let authorization: IAuthorizationResponse;
   try {
     authorization = await getAuthorization(event.applicationId, event.applicationPassword);

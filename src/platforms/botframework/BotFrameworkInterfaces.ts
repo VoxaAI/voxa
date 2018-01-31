@@ -1,7 +1,7 @@
 import * as builder from "botbuilder";
 import { IVoxaIntent } from "../../VoxaEvent";
 
-export interface ICortanaEntity {
+export interface IBotFrameworkEntity {
     type: string;
     name?: string;
     supportsDisplay?: boolean;

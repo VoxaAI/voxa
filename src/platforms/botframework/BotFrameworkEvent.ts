@@ -7,13 +7,12 @@ import {
   IIdentity,
   IMessage,
 } from "botbuilder";
-import { UniversalBot } from "botbuilder";
 import { TranslationFunction } from "i18next";
 import { Model } from "../../Model";
 import { ITypeMap, IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
-import { ICortanaEntity } from "./CortanaInterfaces";
+import { IBotFrameworkEntity } from "./BotFrameworkInterfaces";
 
-export class CortanaEvent extends IVoxaEvent {
+export class BotFrameworkEvent extends IVoxaEvent {
   public platform: string;
   public session: any;
   public context: any;
@@ -33,7 +32,7 @@ export class CortanaEvent extends IVoxaEvent {
 
   constructor(message: IEvent, context: any, stateData: IBotStorageData, intent?: IVoxaIntent) {
     super(message, context);
-    this.platform = "cortana";
+    this.platform = "botframework";
     this.session = {
       attributes: stateData.privateConversationData || {},
       new: _.isEmpty(stateData.privateConversationData),
