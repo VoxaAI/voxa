@@ -52,8 +52,9 @@ export abstract class VoxaPlatform {
 
   public azureFunction() {
     return async (context: any, event: any) => {
+      context.log({ event, context });
       try {
-        const result = await this.execute(event, {});
+        const result = await this.execute(event.body, {});
         context.done(null, result);
       } catch (error) {
         context.done(error);
