@@ -42,8 +42,8 @@ export class DisplayTemplate {
     return this;
   }
 
-  public setBackgroundImage(backgroundImage: string): DisplayTemplate {
-    this.template.backgroundImage = toImage(backgroundImage);
+  public setBackgroundImage(backgroundImage: string, contentDescription: string = ""): DisplayTemplate {
+    this.template.backgroundImage = toImage(backgroundImage, contentDescription);
     return this;
   }
 
