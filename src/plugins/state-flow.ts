@@ -8,13 +8,13 @@ import { IVoxaReply } from "../VoxaReply";
 
 export function register(skill: VoxaApp) {
   skill.onRequestStarted((voxaEvent: IVoxaEvent) => {
-    const fromState = voxaEvent.session.new ? "entry" : _.get(voxaEvent, "session.attributes.model.state", "entry");
-    (voxaEvent as any).flow = [fromState];
+    const fromState = voxaEvent.session.new ? "entry" : voxaEvent.model.state || "entry";
+    voxaEvent.model.flow = [fromState];
   });
 
   skill.onAfterStateChanged((voxaEvent: IVoxaEvent, reply: IVoxaReply, transition: ITransition) => {
-    (voxaEvent as any).flow = (voxaEvent as any).flow || [];
-    (voxaEvent as any).flow.push(transition.to);
+    voxaEvent.model.flow = voxaEvent.model.flow || [];
+    voxaEvent.model.flow.push(transition.to);
     return transition;
   });
 }

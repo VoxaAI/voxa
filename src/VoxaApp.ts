@@ -321,7 +321,7 @@ export class VoxaApp {
       this.states[platform][stateName] = state;
     } else {
       state.to = handler;
-      this.states[platform][stateName] = state;
+      _.set(this.states, [platform, stateName], state);
     }
   }
 
