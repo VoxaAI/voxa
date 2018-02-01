@@ -12,7 +12,7 @@ const log: debug.IDebugger = debug("voxa");
 export abstract class VoxaPlatform {
   public app: VoxaApp;
   public config: any;
-  public platform: string;
+  public platform?: string;
 
   constructor(voxaApp: VoxaApp, config: any= {}) {
     this.app = voxaApp;
@@ -52,7 +52,6 @@ export abstract class VoxaPlatform {
 
   public azureFunction() {
     return async (context: any, event: any) => {
-      context.log({ event, context });
       try {
         const result = await this.execute(event.body, {});
         context.done(null, result);

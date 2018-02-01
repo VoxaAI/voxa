@@ -107,6 +107,10 @@ export class BotFrameworkPlatform extends VoxaPlatform {
       return;
     }
 
+    if (intentEntity.name  === "None") {
+      return;
+    }
+
     const name: string = MicrosoftCortanaIntents[intentEntity.name] || intentEntity.name;
 
     return {
