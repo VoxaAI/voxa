@@ -110,7 +110,7 @@ export class BasicCard implements IDirective {
   public static key: string = "dialogFlowCard";
 
   public viewPath?: string;
-  public basicCard: Responses.BasicCard;
+  public basicCard?: Responses.BasicCard;
 
   constructor(viewPath: string|Responses.BasicCard) {
 

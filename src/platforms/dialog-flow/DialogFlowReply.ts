@@ -14,8 +14,8 @@ export interface IDialogFlowData {
 }
 
 export class DialogFlowReply implements IVoxaReply {
-  public contextOut: Context[];
-  public speech: string;
+  public contextOut: Context[] = [];
+  public speech: string = "";
   public source: string = "Voxa";
   public data: IDialogFlowData;
 

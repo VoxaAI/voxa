@@ -11,22 +11,22 @@ export interface ITypeMap  {
 }
 
 export abstract class IVoxaEvent {
-  public executionContext: any;
-  public rawEvent: any;
-  public session: IVoxaSession;
+  public executionContext: any; // this would a lambda or azure function context
+  public rawEvent: any; // the raw event as sent by the service
+  public session!: IVoxaSession;
   public intent?: IVoxaIntent;
   public context: any;
   public request: any;
-  public model: Model;
-  public t: i18n.TranslationFunction;
-  public renderer: Renderer;
-  public user: IVoxaUser;
+  public model!: Model;
+  public t!: i18n.TranslationFunction;
+  public renderer!: Renderer;
+  public user!: IVoxaUser;
   public requestToIntent: ITypeMap = {};
   public requestToRequest: ITypeMap = {};
-  public platform: string;
+  public platform!: string;
 
   constructor(event: any, context: any) {
-    this.rawEvent = event;
+    this.rawEvent = _.cloneDeep(event);
     this.executionContext = context;
   }
 

@@ -17,8 +17,8 @@ export class HeroCard implements IDirective {
   public static platform: string = "botframework";
   public static key: string = "botframeworkHeroCard";
 
-  public viewPath: string;
-  public card: HeroCardType;
+  public viewPath?: string;
+  public card?: HeroCardType;
 
   constructor(viewPath: string|HeroCardType) {
 
@@ -32,6 +32,10 @@ export class HeroCard implements IDirective {
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition) {
     let card;
     if (this.viewPath) {
+      if (!event.renderer) {
+        throw new Error("event.renderer is missing");
+      }
+
       card = await event.renderer.renderPath(this.viewPath, event);
     } else {
       card = this.card;
@@ -48,8 +52,8 @@ export class SuggestedActions implements IDirective {
   public static key: string = "botframeworkSuggestedActions";
   public static platform: string = "botframework";
 
-  public viewPath: string;
-  public suggestedActions: SuggestedActionsType;
+  public viewPath?: string;
+  public suggestedActions?: SuggestedActionsType;
 
   constructor(viewPath: string|SuggestedActionsType) {
 
@@ -63,6 +67,10 @@ export class SuggestedActions implements IDirective {
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition) {
     let suggestedActions;
     if (this.viewPath) {
+      if (!event.renderer) {
+        throw new Error("event.renderer is missing");
+      }
+
       suggestedActions = await event.renderer.renderPath(this.viewPath, event);
     } else {
       suggestedActions = this.suggestedActions;
@@ -76,8 +84,8 @@ export class AudioCard implements IDirective {
   public static key: string = "botframeworkAudioCard";
   public static platform: string = "botframework";
 
-  public url: string;
-  public audioCard: AudioCardType;
+  public url?: string;
+  public audioCard?: AudioCardType;
 
   constructor(url: string|AudioCardType, public profile: string = "") {
 
@@ -104,6 +112,11 @@ export class AudioCard implements IDirective {
 
     // and now we add the card
     const attachments = (reply as BotFrameworkReply).attachments || [];
+
+    if (!audioCard) {
+      throw new Error("audioCard was not initialized");
+    }
+
     attachments.push(audioCard.toAttachment());
     (reply as BotFrameworkReply).attachments = attachments;
     reply.terminate();
@@ -128,6 +141,10 @@ export class Ask implements IDirective {
       return;
     }
 
+    if (!event.renderer) {
+      throw new Error("event.renderer is missing");
+    }
+
     const statement = await event.renderer.renderPath(this.viewPath, event);
     if (_.isString(statement)) {
       reply.addStatement(striptags(statement), true);
@@ -150,6 +167,10 @@ export class Say implements IDirective {
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     if (event.rawEvent.address.channelId !== "webchat") {
       return;
+    }
+
+    if (!event.renderer) {
+      throw new Error("event.renderer is missing");
     }
 
     const statement = await event.renderer.renderPath(this.viewPath, event);

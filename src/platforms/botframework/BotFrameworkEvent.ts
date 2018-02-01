@@ -16,15 +16,12 @@ export class BotFrameworkEvent extends IVoxaEvent {
   public platform: string;
   public session: any;
   public context: any;
-  public model: Model;
-  public t: TranslationFunction;
-  public intent?: IVoxaIntent;
 
-  public applicationPassword: string;
-  public applicationId: string;
+  public applicationPassword!: string;
+  public applicationId!: string;
 
   public executionContext: any;
-  public rawEvent: IEvent;
+  public rawEvent!: IEvent;
 
   public requestToRequest: ITypeMap = {
     endOfConversation: "SessionEndedRequest",

@@ -114,9 +114,9 @@ describe("VoxaApp", () => {
       return { to: "secondState", sayp: "This is my message", flow: "yield" };
     });
 
-    voxaApp.onState("secondState", () => {});
+    voxaApp.onState("secondState", () => ({}));
 
-    event = new AlexaEvent(rb.getLaunchRequest());
+    event = new AlexaEvent(rb.getIntentRequest("LaunchIntent"));
     const reply = await voxaApp.execute(event, new AlexaReply()) as AlexaReply;
     // expect(reply.error).to.be.undefined;
     expect(event.model.state).to.equal("secondState");

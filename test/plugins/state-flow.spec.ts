@@ -49,7 +49,6 @@ describe("StateFlow plugin", () => {
     stateFlow.register(skill);
 
     const result = await skill.execute(event, new AlexaReply());
-    console.log(event.model);
     expect(event.model.flow).to.deep.equal(["secondState", "initState", "die"]);
   });
 

@@ -50,7 +50,7 @@ export class AlexaPlatform extends VoxaPlatform {
 
   public async execute(rawEvent: any, context: any): Promise<ResponseBody> {
     const alexaEvent = new AlexaEvent(rawEvent, context);
-    const reply: AlexaReply = await this.app.execute(alexaEvent, new AlexaReply()) as AlexaReply;
+    const reply = await this.app.execute(alexaEvent, new AlexaReply()) as AlexaReply;
 
     if (alexaEvent.model) {
       await reply.setSession(alexaEvent.model);

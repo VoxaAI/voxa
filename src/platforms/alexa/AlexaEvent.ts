@@ -19,14 +19,8 @@ export interface ISessionEndedRequest extends alexa.RequestBody<alexa.SessionEnd
 }
 
 export class AlexaEvent extends IVoxaEvent {
+  public intent!: IVoxaIntent;
 
-  public session: any;
-  public request: any;
-  public platform: string;
-  public context: any;
-  public intent: IVoxaIntent;
-  public model: Model;
-  public t: TranslationFunction;
   public requestToIntent: any = {
     "AudioPlayer.PlaybackNearlyFinished": "AudioPlayer.PlaybackNearlyFinished",
     "Display.ElementSelected": "Display.ElementSelected",

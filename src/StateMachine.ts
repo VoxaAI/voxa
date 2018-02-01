@@ -60,7 +60,7 @@ export function isState(object: any): object is IState {
 
 export class StateMachine {
   public states: any;
-  public currentState: IState;
+  public currentState?: IState;
   public onBeforeStateChangedCallbacks: IOnBeforeStateChangedCB[];
   public onAfterStateChangeCallbacks: IStateMachineCb[];
   public onUnhandledStateCallbacks: IUnhandledStateCb[];
@@ -90,7 +90,15 @@ export class StateMachine {
   }
 
   public async checkOnUnhandledState(voxaEvent: IVoxaEvent, voxaReply: IVoxaReply, transition: ITransition): Promise<ITransition> {
+    if (!isState(this.currentState)) {
+      throw new Error("this.currentState is not a state");
+    }
+
     const runCallbacks = (fn: IUnhandledStateCb) => {
+      if (!isState(this.currentState)) {
+        throw new Error("this.currentState is not a state");
+      }
+
       return  fn(voxaEvent, this.currentState.name);
     };
 
@@ -112,6 +120,10 @@ export class StateMachine {
 
   public async checkForEntryFallback(voxaEvent: IVoxaEvent, reply: IVoxaReply, transition: ITransition): Promise<ITransition> {
     log("Checking entry fallback");
+    if (!isState(this.currentState)) {
+      throw new Error("this.currentState is not a state");
+    }
+
     if (!transition && this.currentState.name !== "entry") {
       // If no response try falling back to entry
       if (!voxaEvent.intent) {
@@ -130,6 +142,11 @@ export class StateMachine {
     if (transition && !transition.to) {
       _.merge(transition, { to: "die" });
     }
+
+    if (!isState(this.currentState)) {
+      throw new Error("this.currentState is not a state");
+    }
+
     log(`${this.currentState.name} transition resulted in %j`, transition);
     log("Running onAfterStateChangeCallbacks");
     let count = 0;
@@ -143,14 +160,19 @@ export class StateMachine {
   }
 
   public async runTransition(currentState: string, voxaEvent: IVoxaEvent, reply: IVoxaReply): Promise<ITransition> {
-    this.currentState = _.get(this.states, [voxaEvent.platform, currentState]) || _.get(this.states, ["core", currentState]);
-    if (!this.currentState) {
-      throw new UnknownState(currentState);
-    }
+    this.currentState = _.get( this.states,
+      [voxaEvent.platform, currentState]) || _.get(this.states, ["core", currentState]);
 
     const onBeforeState = this.onBeforeStateChangedCallbacks;
     log("Running onBeforeStateChanged");
-    await bluebird.mapSeries(onBeforeState, (fn: IOnBeforeStateChangedCB) => fn(voxaEvent, reply, this.currentState));
+
+    await bluebird.mapSeries(onBeforeState, (fn: IOnBeforeStateChangedCB) => {
+      if (!isState(this.currentState)) {
+        throw new Error("this.currentState is not a state");
+      }
+
+      return fn(voxaEvent, reply, this.currentState);
+    });
     let transition: ITransition = await this.runCurrentState(voxaEvent, reply);
 
     if (!!transition && !_.isObject(transition)) {
@@ -200,6 +222,10 @@ export class StateMachine {
       throw new Error("Running the state machine without an intent");
     }
 
+    if (!isState(this.currentState)) {
+      throw new Error(`${JSON.stringify(this.currentState)} is not a state`);
+    }
+
     if (_.get(this.currentState, ["enter", voxaEvent.intent.name])) {
       log(`Running ${this.currentState.name} enter function for ${voxaEvent.intent.name}`);
       return this.currentState.enter[voxaEvent.intent.name](voxaEvent, reply);
@@ -220,6 +246,10 @@ export class StateMachine {
     //   Hint: 'Hint'
     // });
     //
+    if (!isState(fromState)) {
+      throw new Error(`${JSON.stringify(fromState)} is not a state`);
+    }
+
     if (isTransition(fromState.to)) {
       return  fromState.to;
     }

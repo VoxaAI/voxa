@@ -20,13 +20,13 @@ import { IAuthorizationResponse } from "./BotFrameworkInterfaces";
 const cortanalog: debug.IDebugger = debug("voxa:cortana");
 
 export class BotFrameworkReply implements IVoxaReply {
-  public speech: string;
+  public speech: string = "";
 
   // IMessage
   public channelId: string;
   public conversation: IIdentity;
   public from: IIdentity;
-  public id: string;
+  public id?: string;
   public inputHint: string;
   public locale: string;
   public recipient: IIdentity;
@@ -41,10 +41,19 @@ export class BotFrameworkReply implements IVoxaReply {
 
   constructor(event: IVoxaEvent) {
     this.channelId = event.rawEvent.address.channelId;
+    if (!event.session) {
+      throw new Error("event.session is missing");
+    }
+
     this.conversation = { id: event.session.sessionId };
     this.from = { id: event.rawEvent.address.bot.id };
     this.inputHint = "ignoringInput";
     this.locale = event.request.locale;
+
+    if (!event.user) {
+      throw new Error("event.user is missing");
+    }
+
     this.recipient = {
       id: event.user.id,
       name: event.user.name,

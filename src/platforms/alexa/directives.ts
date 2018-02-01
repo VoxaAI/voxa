@@ -111,7 +111,7 @@ export class RenderTemplate implements IDirective {
 
   public viewPath?: string;
   public token?: string;
-  public template: Template;
+  public template?: Template;
 
   constructor(viewPath: string|Template, token?: string) {
     if (_.isString(viewPath)) {
