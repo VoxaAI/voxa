@@ -5,6 +5,7 @@
  * Licensed under the MIT license.
  */
 
+import { Hint } from "../src/platforms/alexa/directives";
 import { IVoxaEvent } from "../src/VoxaEvent";
 
 export const variables = {
@@ -24,6 +25,9 @@ export const variables = {
         largeImageUrl: "largeImage.jpg",
       },
     };
+  },
+  hintDirective: () => {
+    return new Hint("this is the hint");
   },
   exitArray: function exitArray() {
     return [{ a: 1 }, { b: 2 }, { c: 3 }];

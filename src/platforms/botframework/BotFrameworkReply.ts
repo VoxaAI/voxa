@@ -20,8 +20,6 @@ import { IAuthorizationResponse } from "./BotFrameworkInterfaces";
 const cortanalog: debug.IDebugger = debug("voxa:cortana");
 
 export class BotFrameworkReply implements IVoxaReply {
-  public speech: string = "";
-
   // IMessage
   public channelId: string;
   public conversation: IIdentity;
@@ -83,6 +81,14 @@ export class BotFrameworkReply implements IVoxaReply {
 
   public terminate() {
     this.inputHint = "acceptingInput";
+  }
+
+  public get speech(): string {
+    if (!this.speak) {
+      return "";
+    }
+
+    return this.speak;
   }
 
   public addStatement(statement: string, isPlain: boolean = false) {

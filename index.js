@@ -18,7 +18,6 @@ const stateFlow = require('./lib/src/plugins/state-flow').register;
 const autoLoad = require('./lib/src/plugins/auto-load').autoLoad;
 
 const BotFrameworkPlatform = require('./lib/src/platforms/botframework/BotFrameworkPlatform').BotFrameworkPlatform;
-const BotletPlatform = require('./lib/src/platforms/botlet/BotletPlatform').BotletPlatform;
 
 const AlexaDirectives = require('./lib/src/platforms/alexa/directives');
 const DialogFlowDirectives = require('./lib/src/platforms/dialog-flow/directives');
@@ -45,12 +44,7 @@ module.exports.BotFramework = BotFrameworkPlatform;
 module.exports.BotFramework.HeroCard = CortanaDirectives.HeroCard;
 module.exports.BotFramework.SuggestedActions = CortanaDirectives.SuggestedActions;
 module.exports.BotFramework.AudioCard = CortanaDirectives.AudioCard;
-
-
-module.exports.Cortana = BotletPlatform;
-// module.exports.BotFramework.HeroCard = CortanaDirectives.HeroCard;
-// module.exports.BotFramework.SuggestedActions = CortanaDirectives.SuggestedActions;
-// module.exports.BotFramework.AudioCard = CortanaDirectives.AudioCard;
+module.exports.BotFramework.SiginCard = CortanaDirectives.SigninCard;
 
 module.exports.Renderer = require('./lib/src/renderers/Renderer').Renderer
 

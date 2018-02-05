@@ -396,15 +396,20 @@ export class VoxaApp {
         transition.directives = [transition.directives];
       }
 
+      transition.directives = _.concat(
+        _.filter(transition.directives, (directive: any) => directive.constructor.platform === "core"),
+        _.filter(transition.directives, (directive: any) => directive.constructor.platform === voxaEvent.platform),
+      );
+
       await bluebird.mapSeries(transition.directives, async (handler: IDirective) => {
         handler.writeToReply(response, voxaEvent, transition);
       });
-    }
+  }
 
     return transition;
   }
 
-  public async serializeModel(voxaEvent: IVoxaEvent, response: IVoxaReply, transition: ITransition): Promise<void > {
+  public async serializeModel(voxaEvent: IVoxaEvent, response: IVoxaReply, transition: ITransition): Promise <void> {
     const serialize = _.get(voxaEvent, "model.serialize");
 
     // we do require models to have a serialize method and check that when Voxa is initialized,
@@ -419,7 +424,7 @@ export class VoxaApp {
       throw new Error("Missing transition");
     }
 
-    if (typeof transition.to === "string") {
+    if (typeof transition.to === "string"  ) {
       voxaEvent.model.state = transition.to;
     } else if (isState(transition.to)) {
       voxaEvent.model.state = transition.to.name;
@@ -429,7 +434,7 @@ export class VoxaApp {
     voxaEvent.session.attributes.model = modelData;
   }
 
-  public async transformRequest(voxaEvent: IVoxaEvent): Promise<void> {
+  public async transformRequest(voxaEvent: IVoxaEvent): Promise <void> {
     await this.i18nextPromise;
     let model: Model;
     if (this.config.Model) {

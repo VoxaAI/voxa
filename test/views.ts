@@ -79,6 +79,23 @@ export const views =  {
           say: "I'm sorry. I didn't understand.",
         },
       },
+      Reply: {
+        Directives: {
+          directives: ["{hintDirective}"],
+        },
+        Tell: {
+          tell: "this is a tell",
+        },
+        Ask: {
+          ask: "this is an ask",
+          reprompt: "this is a reprompt",
+        },
+        Combined: {
+          ask: "this is an ask",
+          directives: ["{hintDirective}"],
+          reprompt: "this is a reprompt",
+        },
+      },
     },
   },
   "de-DE": {

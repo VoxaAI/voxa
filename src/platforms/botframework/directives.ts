@@ -2,6 +2,7 @@ import {
   AudioCard as AudioCardType,
   HeroCard as HeroCardType,
   ICardMediaUrl,
+  SigninCard as SigninCardType,
   SuggestedActions as SuggestedActionsType,
 } from "botbuilder";
 import * as _ from "lodash";
@@ -12,6 +13,24 @@ import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
 import { BotFrameworkEvent } from "./BotFrameworkEvent";
 import { BotFrameworkReply } from "./BotFrameworkReply";
+
+export class SigninCard implements IDirective {
+  public static platform: string = "botframework";
+  public static key: string = "botframeworkSigninCard";
+
+  constructor(public url: string, public cardText: string = "", public buttonTitle: string = "") {}
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition) {
+    const card = new SigninCardType();
+    card.button(this.buttonTitle, this.url);
+    card.text(this.cardText);
+
+    const attachments = (reply as BotFrameworkReply).attachments || [];
+    attachments.push(card.toAttachment());
+
+    (reply as BotFrameworkReply).attachments = attachments;
+  }
+}
 
 export class HeroCard implements IDirective {
   public static platform: string = "botframework";

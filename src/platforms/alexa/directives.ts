@@ -10,11 +10,8 @@ import { AlexaReply } from "./AlexaReply";
 export class HomeCard implements IDirective {
   public static platform: string = "alexa";
   public static key: string = "alexaCard";
-  public viewPath: string;
 
-  constructor(viewPath: string) {
-    this.viewPath = viewPath;
-  }
+  constructor(public viewPath: string) { }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     if (reply.hasDirective("card")) {
@@ -30,11 +27,8 @@ export class HomeCard implements IDirective {
 export class Hint implements IDirective {
   public static platform: string = "alexa";
   public static key: string = "alexaHint";
-  public viewPath: string;
 
-  constructor(viewPath: string) {
-    this.viewPath = viewPath;
-  }
+  constructor(public  viewPath: string) { }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     if (reply.hasDirective("Hint")) {
@@ -62,11 +56,7 @@ export class DialogDelegate implements IDirective {
   public static platform: string = "alexa";
   public static key: string = "alexaDialogDelegate";
 
-  public slots: any;
-
-  constructor(slots?: any) {
-    this.slots = slots;
-  }
+  constructor(public slots?: any) { }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     if (!event.intent) {

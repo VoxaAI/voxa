@@ -33,6 +33,24 @@ describe("VoxaPlatform", () => {
     });
   });
 
+  describe("lambdaHTTP", () => {
+    it("should return a lambda http proxy response object", (done) => {
+      const app = new VoxaApp({ views });
+      const adapter = new Platform(app);
+      const handler = adapter.lambdaHTTP();
+      const event = { body: JSON.stringify(rb.getSessionEndedRequest()) };
+      const context = { context: "context" };
+      const callback = (error: Error|null, result: any) => {
+        expect(error).to.be.null;
+        expect(result.statusCode).to.equal(200);
+        expect(result.headers["Content-Type"]).to.equal("application/json");
+        done();
+      };
+
+      handler(event, context, callback);
+    });
+  });
+
   describe("azureFunction", () => {
     it("should call the execute method with the event body", (done) => {
       const app = new VoxaApp({ views });

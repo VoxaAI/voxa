@@ -50,6 +50,26 @@ export abstract class VoxaPlatform {
     };
   }
 
+  public lambdaHTTP() {
+    return async (event: any, context: any, callback: (err: Error|null, result?: any) => void) => {
+      try {
+        const body = JSON.parse(event.body);
+        const result = await this.execute(body, context);
+        const response = {
+          body: JSON.stringify(result),
+          headers: {
+            "Content-Type" : "application/json",
+          },
+          statusCode: 200,
+        };
+
+        callback(null, response);
+      } catch (error) {
+        callback(error);
+      }
+    };
+  }
+
   public azureFunction() {
     return async (context: any, event: any) => {
       try {

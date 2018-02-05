@@ -24,6 +24,50 @@ export interface IDirective {
   writeToReply: (reply: IVoxaReply, event: IVoxaEvent, transition: ITransition) => Promise<void>;
 }
 
+export class Reply implements IDirective {
+  public static key: string = "reply";
+  public static platform: string = "core";
+
+  constructor(public viewPaths: string|string[]) {}
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    let viewPaths = this.viewPaths;
+    if (!_.isArray(viewPaths)) {
+      viewPaths = [viewPaths];
+    }
+
+    await bluebird.map(viewPaths, async (viewPath: string): Promise<void> => {
+      const message = await event.renderer.renderPath(viewPath, event);
+      if (message.say) {
+        await new SayP(message.say).writeToReply(reply, event, transition);
+      }
+
+      if (message.ask) {
+        reply.addStatement(message.ask);
+        transition.flow = "yield";
+      }
+
+      if (message.tell) {
+        reply.addStatement(message.tell);
+        reply.terminate();
+        transition.flow = "terminate";
+      }
+
+      if (message.reprompt) {
+        reply.addReprompt(message.reprompt);
+      }
+
+      if (message.directives) {
+        if (transition.directives) {
+          transition.directives = transition.directives.concat(message.directives);
+        } else {
+          transition.directives = message.directives;
+        }
+      }
+    });
+  }
+}
+
 export class Reprompt implements IDirective {
   public static key: string = "ask";
   public static platform: string = "core";

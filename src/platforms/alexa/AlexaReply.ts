@@ -77,13 +77,14 @@ export class AlexaReply implements IVoxaReply, ResponseBody {
     if (!this.response.reprompt) {
       this.response.reprompt = {
         outputSpeech: {
-          ssml: `<speak>${statement}</speak>`,
+          ssml: "<speak></speak>",
           type: "SSML",
         },
       };
-    } else {
-      this.response.reprompt.outputSpeech.ssml = `<speak>${statement}</speak>`;
     }
+
+    const base = _.get(this.response, "reprompt.outputSpeech.ssml", "");
+    this.response.reprompt.outputSpeech.ssml = addToSSML(base, statement);
   }
 
   public clear() {

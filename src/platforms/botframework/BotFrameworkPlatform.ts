@@ -16,7 +16,7 @@ import { ITypeMap, IVoxaIntent } from "../../VoxaEvent";
 import { VoxaPlatform } from "../VoxaPlatform";
 import { BotFrameworkEvent } from "./BotFrameworkEvent";
 import { BotFrameworkReply } from "./BotFrameworkReply";
-import { Ask, AudioCard, HeroCard, Say, SuggestedActions } from "./directives";
+import { Ask, AudioCard, HeroCard, Say, SigninCard, SuggestedActions } from "./directives";
 
 const botframeworklog: debug.IDebugger = debug("voxa:botframework");
 
@@ -65,6 +65,7 @@ export class BotFrameworkPlatform extends VoxaPlatform {
       SuggestedActions,
       AudioCard,
       Ask,
+      SigninCard,
       Say,
     ];
   }

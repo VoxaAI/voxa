@@ -60,5 +60,9 @@ export function addToSSML(ssml: string, statement: string): string {
 }
 
 export function addToText(text: string, statement: string): string {
+  if (!text) {
+    return statement;
+  }
+
   return `${text} ${statement}`;
 }
