@@ -1,10 +1,6 @@
 'use strict';
 
 const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
-
-chai.use(chaiAsPromised);
-
 const expect = chai.expect;
 const simple = require('simple-mock');
 const StateMachineApp = require('../../src/VoxaApp').VoxaApp;
@@ -13,6 +9,7 @@ const views = require('../views').views;
 const variables = require('../variables').variables;
 const AutoLoadAdapter = require('./autoLoadAdapter').AutoLoadAdapter;
 const AlexaEvent = require('../../src/platforms/alexa/AlexaEvent').AlexaEvent;
+const AlexaPlatform = require('../../src/platforms/alexa/AlexaPlatform').AlexaPlatform;
 const AlexaReply = require('../../src/platforms/alexa/AlexaReply').AlexaReply;
 
 
@@ -51,18 +48,16 @@ describe('AutoLoad plugin', () => {
     const skill = new StateMachineApp({ variables, views });
     autoLoad(skill, { adapter });
 
-    const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
+    const spy = simple.spy(() => ({ ask: 'LaunchIntent.OpenResponse' }));
     skill.onIntent('LaunchIntent', spy);
+    const platform = new AlexaPlatform(skill)
 
-    return skill.execute(event, AlexaReply)
+    return platform.execute(event)
       .then((result) => {
-        console.log(result.session.attributes.model)
-        expect(spy.called).to.be.true;
         expect(spy.lastCall.args[0].intent.name).to.equal('LaunchIntent');
-        expect(result.response.statements).to.have.lengthOf(1);
-        expect(result.response.statements[0]).to.contain('Hello! Good');
-        expect(result.session.attributes.model.state).to.equal('die');
-        expect(result.session.attributes.model.user.Id).to.equal(1);
+        expect(result.response.outputSpeech.ssml).to.include("Hello! Good");
+        expect(result.sessionAttributes.state).to.equal('die');
+        expect(result.sessionAttributes.user.Id).to.equal(1);
       });
   });
 
@@ -70,17 +65,20 @@ describe('AutoLoad plugin', () => {
     const skill = new StateMachineApp({ variables, views });
     autoLoad(skill, { adapter });
 
-    const spy = simple.spy(() => ({ reply: 'LaunchIntent.OpenResponse' }));
+    const spy = simple.spy(() => ({ ask: 'LaunchIntent.OpenResponse' }));
     skill.onIntent('LaunchIntent', spy);
 
     simple.mock(adapter, 'get')
       .rejectWith(new Error('Random error'));
 
-    return skill.execute(event, AlexaReply)
+    const platform = new AlexaPlatform(skill)
+
+    return platform.execute(event, {})
       .then((reply) => {
-        expect(reply.session.attributes).to.be.empty;
-        expect(reply.error).to.not.be.undefined;
-        expect(reply.error.message).to.equal('Random error');
+        expect(reply.sessionAttributes).to.be.empty;
+        expect(reply.speech).to.equal('<speak>An unrecoverable error occurred.</speak>')
+        // expect(reply.error).to.not.be.undefined;
+        // expect(reply.error.message).to.equal('Random error');
       });
   });
 

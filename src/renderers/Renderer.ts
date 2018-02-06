@@ -57,7 +57,12 @@ export class Renderer {
       throw new Error(`View ${view} for ${locale} locale is missing`);
     }
 
-    return await this.renderMessage(message, voxaEvent);
+    const statement =  await this.renderMessage(message, voxaEvent);
+    if (_.isArray(statement)) {
+      return _.sample(statement);
+    }
+
+    return statement;
   }
 
   public renderMessage(msg: any, event: IVoxaEvent) {

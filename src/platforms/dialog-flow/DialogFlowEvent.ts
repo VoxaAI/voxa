@@ -14,8 +14,6 @@ export class DialogFlowEvent extends IVoxaEvent {
   public platform: string;
   public context: any;
   public intent: DialogFlowIntent;
-  public model: Model;
-  public t: TranslationFunction;
 
   constructor(event: any, context: any) {
     super(event, context);
@@ -23,8 +21,6 @@ export class DialogFlowEvent extends IVoxaEvent {
       request: {
         locale: event.lang,
         type: "IntentRequest",
-      },
-      session: {
       },
     }, event);
 

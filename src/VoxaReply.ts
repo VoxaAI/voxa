@@ -10,89 +10,59 @@
 
 import * as bluebird from "bluebird";
 import * as debug from "debug";
-import * as _ from "lodash";
-import * as striptags from "striptags";
 
-import { IMessage, Renderer } from "./renderers/Renderer";
-import { IVoxaEvent } from "./VoxaEvent";
+import { IMessage } from "./renderers/Renderer";
 
 const log: debug.IDebugger = debug("voxa");
 
-export interface IReply<Reply extends VoxaReply> {
-  new(event: IVoxaEvent, renderer: Renderer): Reply;
+export interface IVoxaReply {
+  hasMessages: boolean;
+  hasDirectives: boolean;
+  hasTerminated: boolean;
+
+  // empty the reply
+  clear: () => void;
+
+  // end the conversation
+  terminate: () => void;
+
+  // will return the ssml
+  speech: string;
+  reprompt?: string;
+
+  // should return plain text for platforms that support it,
+  // for example microsoft bot framework chat, dialog flow
+  plain?: string;
+
+  // adds an SSML or plain statement
+  addStatement: (statement: string, isPlain?: boolean) => void;
+
+  // adds an SSML or plain statement
+  addReprompt: (statement: string) => void;
+
+  hasDirective: (type: string | RegExp) => boolean;
+    // return this.response.directives.some((directive: any) => {
+      // if (_.isRegExp(type)) { return !!type.exec(directive.type); }
+      // if (_.isString(type)) { return type === directive.type; }
+      // if (_.isFunction(type)) { return type(directive); }
+      // throw new Error(`Do not know how to use a ${typeof type} to find a directive`);
+    // });
+  // }
 }
 
-export interface IResponse {
-  statements: string[];
-  reprompt: string;
-  terminate: boolean;
-  directives: any[];
-  yield: boolean;
+export function addToSSML(ssml: string, statement: string): string {
+  const base = ssml.replace(/^<speak>(.*)<\/speak>$/g,  "$1");
+  if (!base) {
+    return `<speak>${statement}</speak>`;
+  }
+
+  return `<speak>${base} ${statement}</speak>`;
 }
 
-export abstract class VoxaReply {
-  public voxaEvent: IVoxaEvent;
-  public session: any;
-  public response: IResponse;
-  public error?: Error;
-  public renderer: Renderer;
-
-  constructor(voxaEvent: IVoxaEvent, renderer: Renderer) {
-    this.voxaEvent = voxaEvent;
-    this.session = voxaEvent.session;
-    this.renderer = renderer;
-
-    this.response = {
-      directives: [],
-      reprompt: "", // Since only one reprompt is possible, only the latest value is kept
-      statements: [], // Statements will be concatenated together before being sent
-      terminate: true, // The conversation is over
-      yield: false, // The conversation should be yielded back to the Voxa for a response
-    };
-
+export function addToText(text: string, statement: string): string {
+  if (!text) {
+    return statement;
   }
 
-  public async render(templatePath: string, variables?: any): Promise<string|any> {
-    return await this.renderer.renderPath(templatePath, this.voxaEvent, variables);
-  }
-
-  public addStatement(statement: string): void {
-    if (this.isYielding()) {
-      throw new Error("Can't append to already yielding response");
-    }
-
-    this.response.statements.push(statement);
-  }
-
-  get hasMessages(): boolean {
-    return this.response.statements.length > 0;
-  }
-
-  get hasDirectives(): boolean {
-    return this.response.directives.length > 0;
-  }
-
-  public clear(): void {
-    this.response.reprompt = "";
-    this.response.statements = [];
-    this.response.directives = [];
-  }
-
-  public yield() {
-    this.response.yield = true;
-    return this;
-  }
-
-  public hasDirective(type: string|RegExp|((x: any) => boolean)): boolean {
-    return this.response.directives.some((directive: any) => {
-      if (_.isRegExp(type)) { return !!type.exec(directive.type); }
-      if (_.isString(type)) { return type === directive.type; }
-      if (_.isFunction(type)) { return type(directive); }
-      throw new Error(`Do not know how to use a ${typeof type} to find a directive`);
-    });
-  }
-
-  public isYielding(): boolean {
-    return this.response.yield;
-  }
+  return `${text} ${statement}`;
 }
