@@ -27,6 +27,20 @@ export class BotFrameworkEvent extends IVoxaEvent {
     endOfConversation: "SessionEndedRequest",
   };
 
+  public utilitiesIntentMapping: ITypeMap = {
+    "Utilities.Cancel": "CancelIntent",
+    "Utilities.Confirm": "YesIntent",
+    // ther's no evident map of this ones so i just leave them as is
+    // "Utilities.FinishTask": "",
+    // "Utilities.GoBack": "",
+    "Utilities.Help": "HelpIntent",
+    "Utilities.Repeat": "RepeatIntent",
+    "Utilities.ShowNext": "NextIntent",
+    "Utilities.ShowPrevious": "PreviousIntent",
+    "Utilities.StartOver": "StartOverIntent",
+    "Utilities.Stop": "StopIntent",
+  };
+
   constructor(message: IEvent, context: any, stateData: IBotStorageData, intent?: IVoxaIntent) {
     super(message, context);
     this.platform = "botframework";
@@ -42,10 +56,18 @@ export class BotFrameworkEvent extends IVoxaEvent {
 
     if (intent) {
       this.request.type = "IntentRequest";
-      this.intent = intent;
+      this.intent = this.mapUtilitiesIntent(intent);
     } else {
       this.mapRequestToIntent();
     }
+  }
+
+  public mapUtilitiesIntent(intent: IVoxaIntent): IVoxaIntent {
+    if (this.utilitiesIntentMapping[intent.name]) {
+      intent.name = this.utilitiesIntentMapping[intent.name];
+    }
+
+    return intent;
   }
 
   get user() {

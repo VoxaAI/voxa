@@ -44,7 +44,7 @@ module.exports.BotFramework = BotFrameworkPlatform;
 module.exports.BotFramework.HeroCard = CortanaDirectives.HeroCard;
 module.exports.BotFramework.SuggestedActions = CortanaDirectives.SuggestedActions;
 module.exports.BotFramework.AudioCard = CortanaDirectives.AudioCard;
-module.exports.BotFramework.SiginCard = CortanaDirectives.SigninCard;
+module.exports.BotFramework.SigninCard = CortanaDirectives.SigninCard;
 
 module.exports.Renderer = require('./lib/src/renderers/Renderer').Renderer
 

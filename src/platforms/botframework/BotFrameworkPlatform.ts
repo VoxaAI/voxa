@@ -128,12 +128,11 @@ export class BotFrameworkPlatform extends VoxaPlatform {
     }
 
     const { intents, entities } = await new Promise<IRecognizeResult>((resolve, reject) => {
-      botframeworklog({ text: msg.text });
       if (msg.text) {
         return LuisRecognizer.recognize(msg.text, this.config.recognizerURI,
           (err: Error, recognizedIntents?: IIntent[], recognizedEntities?: IEntity[]) => {
             if (err) { return reject(err); }
-            botframeworklog({ intents, entities });
+            botframeworklog("Luis.ai response", { intents: recognizedIntents, entities: recognizedEntities });
             resolve({ intents: recognizedIntents, entities: recognizedEntities });
           });
       }

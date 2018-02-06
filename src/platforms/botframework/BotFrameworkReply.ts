@@ -17,7 +17,7 @@ import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 import { BotFrameworkEvent } from "./BotFrameworkEvent";
 import { IAuthorizationResponse } from "./BotFrameworkInterfaces";
 
-const cortanalog: debug.IDebugger = debug("voxa:cortana");
+const cortanalog: debug.IDebugger = debug("voxa:botframework");
 
 export class BotFrameworkReply implements IVoxaReply {
   // IMessage
