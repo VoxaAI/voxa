@@ -1,7 +1,6 @@
 import "mocha";
 
 import { expect, use } from "chai";
-import chaiAsPromised = require("chai-as-promised");
 import * as  _ from "lodash";
 import * as simple from "simple-mock";
 
@@ -18,8 +17,6 @@ import { views } from "./views";
 import { PlayAudio } from "../src/platforms/alexa/directives";
 
 const rb = new AlexaRequestBuilder();
-
-use(chaiAsPromised);
 
 describe("VoxaApp", () => {
   let statesDefinition: any;

@@ -1,5 +1,4 @@
 import { expect, use } from "chai";
-import chaiAsPromised = require("chai-as-promised");
 import * as i18n from "i18next";
 import "mocha";
 import { Ask, Reply, Reprompt, Say, Tell } from "../src/directives";
@@ -11,8 +10,6 @@ import { IVoxaEvent } from "../src/VoxaEvent";
 import { AlexaRequestBuilder } from "./tools";
 import { variables } from "./variables";
 import { views } from "./views";
-
-use(chaiAsPromised);
 
 describe("directives", () => {
   let response: AlexaReply;

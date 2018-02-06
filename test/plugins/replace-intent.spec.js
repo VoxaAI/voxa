@@ -1,10 +1,6 @@
 'use strict';
 
 const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
-
-chai.use(chaiAsPromised);
-
 const simple = require('simple-mock');
 
 const expect = chai.expect;

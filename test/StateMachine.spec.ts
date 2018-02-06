@@ -1,10 +1,6 @@
 "use strict";
 import { expect, use } from "chai";
-import chaiAsPromised = require("chai-as-promised");
 import * as simple from "simple-mock";
-
-use(chaiAsPromised);
-
 import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
 import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
 import { isState, StateMachine } from "../src/StateMachine";
@@ -109,30 +105,38 @@ describe("StateMachine", () => {
       }
     });
 
-    it("should throw an error if there's no transition and no intent", () => {
+    it("should throw an error if there's no transition and no intent", (done) => {
       delete voxaEvent.intent;
       const stateMachine = new StateMachine({ states });
-      return expect(stateMachine.runTransition("thirdState", voxaEvent, reply))
-        .to.eventually.be.rejectedWith(Error, "Running the state machine without an intent");
+      stateMachine.runTransition("thirdState", voxaEvent, reply)
+        .then(() => done("Should have thrown"), (error) => {
+          expect(error.message).to.equal("Running the state machine without an intent");
+          done();
+        });
     });
 
     describe("UnhandledState", () => {
-      it("should throw UnhandledState on a falsey response from the state transition", () => {
+      it("should throw UnhandledState on a falsey response from the state transition", (done) => {
         states.core.entry.enter = { entry: () => null };
         const stateMachine = new StateMachine({ states });
-        const promise = stateMachine.runTransition("entry", new AlexaEvent(rb.getIntentRequest("LaunchIntent"), {}), reply);
-        return expect(promise).to.eventually.be.rejectedWith(Error, "LaunchIntent went unhandled on entry state");
+        const launchIntent = new AlexaEvent(rb.getIntentRequest("LaunchIntent"));
+        stateMachine.runTransition("entry", launchIntent, reply).then(() => done("should have thrown"), (error) => {
+          expect(error.message).to.equal("LaunchIntent went unhandled on entry state");
+          done();
+        });
       });
 
-      it("should throw an exception on invalid transition from pojo controller", () => {
+      it("should throw an exception on invalid transition from pojo controller", (done) => {
         states.core.entry = { to: { TestIntent: "die" }, name: "entry" };
         const stateMachine = new StateMachine({ states });
         voxaEvent.intent.name = "OtherIntent";
-        const promise = stateMachine.runTransition("entry", voxaEvent, reply);
-        return expect(promise).to.eventually.be.rejectedWith(Error, "OtherIntent went unhandled on entry state");
+        stateMachine.runTransition("entry", voxaEvent, reply).then(() => done("should have thrown"), (error) => {
+          expect(error.message).to.equal("OtherIntent went unhandled on entry state");
+          done();
+        });
       });
 
-      it("should execute the onUnhandledState callbacks on invalid transition from pojo controller", () => {
+      it("should execute the onUnhandledState callbacks on invalid transition from pojo controller", async () => {
         states.entry = { to: { TestIntent: "die" }, name: "entry" };
         const onUnhandledState = simple.stub().returnWith(Promise.resolve({ to: "die" }));
         const stateMachine = new StateMachine({
@@ -141,8 +145,8 @@ describe("StateMachine", () => {
         });
 
         voxaEvent.intent.name = "OtherIntent";
-        const promise = stateMachine.runTransition("entry", voxaEvent, reply);
-        return expect(promise).to.eventually.deep.equal({
+        const response = await stateMachine.runTransition("entry", voxaEvent, reply);
+        return expect(response).to.deep.equal({
           flow: "terminate",
           isTerminal: true,
           name: "die",
@@ -154,20 +158,24 @@ describe("StateMachine", () => {
         });
       });
     });
-    it("should throw UnknownState when transition.to goes to an undefined state from simple transition", () => {
+    it("should throw UnknownState when transition.to goes to an undefined state from simple transition", (done) => {
       states.core.entry = { to: { LaunchIntent: "undefinedState" }, name: "entry" };
       const stateMachine = new StateMachine({ states });
       voxaEvent.intent.name = "LaunchIntent";
-      return expect(stateMachine.runTransition("entry", voxaEvent, reply))
-        .to.eventually.be.rejectedWith(Error, "Unknown state undefinedState");
+      stateMachine.runTransition("entry", voxaEvent, reply).then(() => done("Should have thrown"), (error) => {
+        expect(error.message).to.equal("Unknown state undefinedState");
+        done();
+      });
     });
 
-    it("should throw UnknownState when transition.to goes to an undefined state", () => {
+    it("should throw UnknownState when transition.to goes to an undefined state", (done) => {
       states.core.someState = { enter: { entry: () => ({ to: "undefinedState" }) }, name: "someState" };
       const stateMachine = new StateMachine({ states });
 
-      return expect(stateMachine.runTransition("someState", voxaEvent, reply))
-        .to.eventually.be.rejectedWith(Error, "Unknown state undefinedState");
+      stateMachine.runTransition("someState", voxaEvent, reply).then(() => done("should have thrown"), (error) => {
+        expect(error.message).to.equal("Unknown state undefinedState");
+        done();
+      });
     });
 
     it("should fallback to entry on no response", async () => {
@@ -197,11 +205,13 @@ describe("StateMachine", () => {
   });
 
   describe("runCurrentState", () => {
-    it("should throw an error if run without an intent", () => {
+    it("should throw an error if run without an intent", (done) => {
       delete voxaEvent.intent;
       const stateMachine = new StateMachine({ states });
-      return expect(stateMachine.runCurrentState(voxaEvent, reply))
-        .to.eventually.be.rejectedWith(Error, "Running the state machine without an intent");
+      stateMachine.runCurrentState(voxaEvent, reply).then(() => "should have thrown", (error) => {
+        expect(error.message).to.equal("Running the state machine without an intent");
+        done();
+      });
     });
 
     it("should run the specific intent enter function", async () => {

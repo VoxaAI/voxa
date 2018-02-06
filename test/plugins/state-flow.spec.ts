@@ -1,7 +1,6 @@
 import "mocha";
 
 import { expect, use } from "chai";
-import chaiAsPromised = require("chai-as-promised");
 
 import * as _ from "lodash";
 import { AlexaEvent } from "../../src/platforms/alexa/AlexaEvent";
@@ -13,8 +12,6 @@ import { IVoxaReply } from "../../src/VoxaReply";
 import { AlexaRequestBuilder } from "../tools";
 import { variables } from "../variables";
 import { views } from "../views";
-
-use(chaiAsPromised);
 
 const rb = new AlexaRequestBuilder();
 

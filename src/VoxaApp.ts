@@ -26,7 +26,7 @@ export type IErrorHandler = (event: IVoxaEvent, error: Error, ReplyClass: IVoxaR
 export type IStateHandler = (event: IVoxaEvent) => ITransition;
 
 export class VoxaApp {
-  [x: string]: any;
+  [key: string]: any;
   public eventHandlers: any;
   public requestHandlers: any;
 

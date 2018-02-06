@@ -1,11 +1,7 @@
 import "mocha";
 
 import { expect, use } from "chai";
-import * as  chaiAsPromised from "chai-as-promised";
 import * as i18n from "i18next";
-
-use(chaiAsPromised);
-
 import * as _ from "lodash";
 import { Model } from "../src/Model";
 import { Renderer } from "../src/renderers/Renderer";
@@ -128,9 +124,10 @@ describe("Renderer", () => {
     });
   });
 
-  it("should render the correct view based on path", () =>
-    expect(renderer.renderPath("Question.Ask", event))
-    .to.eventually.deep.equal({ ask: "What time is it?", reprompt: "What time is it?" }));
+  it("should render the correct view based on path", async () => {
+    const rendered =  await renderer.renderPath("Question.Ask", event);
+    expect(rendered).to.deep.equal({ ask: "What time is it?", reprompt: "What time is it?" });
+  });
 
   it("should use the passed variables and model", async () => {
     event.model = new Model();
@@ -139,13 +136,20 @@ describe("Renderer", () => {
     expect(rendered).to.deep.equal({ say: "1" });
   });
 
-  it("should fail for missing variables", () =>
-    expect(renderer.renderMessage({ say: "{missing}" }, event))
-    .to.eventually.be.rejectedWith(Error, "No such variable in views, ReferenceError: missing is not defined"));
+  it("should fail for missing variables", (done) => {
+    renderer.renderMessage({ say: "{missing}" }, event).then(() => done("Should have thrown"), (error) => {
+      expect(error.message).to.equal("No such variable in views, ReferenceError: missing is not defined");
+      done();
+    });
+  });
 
-  it("should throw an exception if path doesn't exists", () =>
-    expect(renderer.renderPath("Missing.Path", event))
-    .to.eventually.be.rejectedWith(Error, "View Missing.Path for en-US locale is missing"));
+  it("should throw an exception if path doesn't exists", (done) => {
+    renderer.renderPath("Missing.Path", event).then(() => done("Should have thrown"), (error) => {
+      expect(error.message).to.equal("View Missing.Path for en-US locale is missing");
+      done();
+    });
+  });
+
   it("should select a random option from the samples", async () => {
     const rendered = await renderer.renderPath("RandomResponse", event);
     expect(rendered).to.be.oneOf(["Random 1", "Random 2", "Random 3", "Random 4"]);
