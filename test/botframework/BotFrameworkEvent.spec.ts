@@ -5,6 +5,16 @@ import { BotFrameworkEvent } from "../../src/platforms/botframework/BotFramework
 import { prepIncomingMessage } from "../../src/platforms/botframework/BotFrameworkPlatform";
 
 describe("BotFrameworkEvent", () => {
+  it("should map a webchat conversationUpdate to a LaunchIntent", () => {
+    const rawEvent = prepIncomingMessage(_.cloneDeep(require("../requests/botframework/conversationUpdate.json")));
+    const event = new BotFrameworkEvent(rawEvent, {}, {});
+    expect(event.request.type).to.equal("IntentRequest");
+    if (!event.intent) {
+      throw new Error("Intent should not be undefined");
+    }
+    expect(event.intent.name).to.equal("LaunchIntent");
+  });
+
   it("should map a Microsoft.Launch intent to a voxa LaunchIntent", () => {
     const rawEvent = _.cloneDeep(require("../requests/botframework/microsoft.launch.json"));
     const event = new BotFrameworkEvent(rawEvent, {}, {});

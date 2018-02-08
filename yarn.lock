@@ -65,8 +65,8 @@
   resolved "https://registry.yarnpkg.com/@types/i18next/-/i18next-8.4.3.tgz#9136a9551bf5bf7169aa9f3125c1743f1f8dd6de"
 
 "@types/lodash@^4.14.88":
-  version "4.14.99"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.99.tgz#e6e10c0a4cc16c7409b3181f1e66880d2fb7d4dc"
+  version "4.14.102"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.102.tgz#586a3e22385fc79b07cef9c5a1c8a5387986fbc8"
 
 "@types/mime@*":
   version "2.0.0"
@@ -81,8 +81,8 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-9.4.0.tgz#b85a0bcf1e1cc84eb4901b7e96966aedc6f078d1"
 
 "@types/node@^8.0.58":
-  version "8.5.9"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.5.9.tgz#7155cfb4ae405bca4dd8df1a214c339e939109bf"
+  version "8.9.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.9.1.tgz#5a329d73a97f3c5a626dfe0ed8c0b831fee5357a"
 
 "@types/request-promise@^4.1.39":
   version "4.1.41"
@@ -134,8 +134,8 @@
     "@types/node" "*"
 
 actions-on-google@^1.6.1:
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/actions-on-google/-/actions-on-google-1.8.1.tgz#2a50447300daa8984e10fc52d82b145924dc3ad3"
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/actions-on-google/-/actions-on-google-1.8.2.tgz#a37ab75841cb18b58a54b953bf8286079b2f807f"
   dependencies:
     debug "^2.2.0"
     google-auth-library "^1.0.0"
@@ -980,8 +980,8 @@ globals@^9.18.0:
   resolved "https://registry.yarnpkg.com/globals/-/globals-9.18.0.tgz#aa3896b3e69b487f17e31ed2143d69a8e30c2d8a"
 
 google-auth-library@^1.0.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/google-auth-library/-/google-auth-library-1.2.0.tgz#d73a616b93829cef4efcd1a954ee3789e484fba6"
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/google-auth-library/-/google-auth-library-1.2.1.tgz#20eb9d585b1837a703712abdb787da4984982b64"
   dependencies:
     axios "^0.17.1"
     gtoken "^2.1.0"
@@ -1536,7 +1536,11 @@ lodash.snakecase@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/lodash.snakecase/-/lodash.snakecase-4.1.1.tgz#39d714a35357147837aefd64b5dcbb16becd8f8d"
 
-lodash@^4.13.1, lodash@^4.14.0, lodash@^4.17.4:
+lodash@^4.13.1:
+  version "4.17.5"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.5.tgz#99a92d65c0272debe8c96b6057bc8fbfa3bed511"
+
+lodash@^4.14.0, lodash@^4.17.4:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 

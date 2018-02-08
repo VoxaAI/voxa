@@ -54,8 +54,11 @@ export class BotFrameworkReply implements IVoxaReply {
 
     this.recipient = {
       id: event.user.id,
-      name: event.user.name,
     };
+    if (event.user.name) {
+      this.recipient.name = event.user.name;
+    }
+
     this.replyToId = (event.rawEvent.address as IChatConnectorAddress).id;
     this.timestamp = new Date().toISOString();
   }
@@ -69,7 +72,7 @@ export class BotFrameworkReply implements IVoxaReply {
   }
 
   public get hasTerminated(): boolean {
-    throw new NotImplementedError("hasTerminated");
+    return this.inputHint === "acceptingInput";
   }
 
   public clear() {
