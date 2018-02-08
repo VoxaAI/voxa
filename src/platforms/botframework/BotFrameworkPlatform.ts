@@ -26,12 +26,6 @@ const CortanaRequests = [
   "message",
 ];
 
-const MicrosoftCortanaIntents: ITypeMap = {
-  "Microsoft.Launch": "LaunchIntent",
-  "Microsoft.NoIntent": "NoIntent",
-  "Microsoft.YesIntent": "YesIntent",
-};
-
 const toAddress = {
   channelId: "channelId",
   conversation: "conversation",
@@ -75,13 +69,10 @@ export class BotFrameworkPlatform extends VoxaPlatform {
   }
 
   public async execute(msg: any, context: any) {
-    this.prepIncomingMessage(msg);
+    msg = prepIncomingMessage(msg);
 
     const stateData: IBotStorageData|undefined = await this.getStateData(msg);
-    let intent: IVoxaIntent|undefined = this.getIntentFromEntity(msg);
-    if (!intent) {
-      intent = await this.recognize(msg);
-    }
+    const intent = await this.recognize(msg);
 
     const event = new BotFrameworkEvent(msg, context, stateData, intent);
     event.applicationId = this.applicationId;
@@ -99,26 +90,6 @@ export class BotFrameworkPlatform extends VoxaPlatform {
     ]);
 
     return {};
-  }
-
-  public getIntentFromEntity(msg: IMessage): IVoxaIntent|undefined {
-    const intentEntity: any = _.find(msg.entities, { type: "Intent" });
-
-    if (!intentEntity) {
-      return;
-    }
-
-    if (intentEntity.name  === "None") {
-      return;
-    }
-
-    const name: string = MicrosoftCortanaIntents[intentEntity.name] || intentEntity.name;
-
-    return {
-      name,
-      params: {},
-      rawIntent: intentEntity,
-    };
   }
 
   public async recognize(msg: IMessage): Promise<IVoxaIntent|undefined> {
@@ -153,32 +124,6 @@ export class BotFrameworkPlatform extends VoxaPlatform {
     function entityToParam(entity: IEntity) {
       return [entity.type, entity.entity];
     }
-  }
-
-  public prepIncomingMessage(msg: IMessage): IMessage {
-    // Patch locale and channelData
-    moveFieldsTo(msg, msg, {
-      channelData: "sourceEvent",
-      locale: "textLocale",
-    });
-
-    // Ensure basic fields are there
-    msg.text = msg.text || "";
-    msg.attachments = msg.attachments || [];
-    msg.entities = msg.entities || [];
-
-    // Break out address fields
-    const address = {} as IChatConnectorAddress;
-    moveFieldsTo(msg, address, toAddress as any);
-    msg.address = address;
-    msg.source = address.channelId;
-
-    // Check for facebook quick replies
-    if (msg.source === "facebook" && msg.sourceEvent && msg.sourceEvent.message && msg.sourceEvent.message.quick_reply) {
-      msg.text = msg.sourceEvent.message.quick_reply.payload;
-    }
-
-    return msg;
   }
 
   public async getStateData(event: IMessage): Promise<IBotStorageData> {
@@ -254,4 +199,30 @@ export function moveFieldsTo(frm: any, to: any, fields: { [id: string]: string; 
       }
     }
   }
+}
+
+export function prepIncomingMessage(msg: IMessage): IMessage {
+  // Patch locale and channelData
+  moveFieldsTo(msg, msg, {
+    channelData: "sourceEvent",
+    locale: "textLocale",
+  });
+
+  // Ensure basic fields are there
+  msg.text = msg.text || "";
+  msg.attachments = msg.attachments || [];
+  msg.entities = msg.entities || [];
+
+  // Break out address fields
+  const address = {} as IChatConnectorAddress;
+  moveFieldsTo(msg, address, toAddress as any);
+  msg.address = address;
+  msg.source = address.channelId;
+
+  // Check for facebook quick replies
+  if (msg.source === "facebook" && msg.sourceEvent && msg.sourceEvent.message && msg.sourceEvent.message.quick_reply) {
+    msg.text = msg.sourceEvent.message.quick_reply.payload;
+  }
+
+  return msg;
 }

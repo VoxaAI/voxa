@@ -1,0 +1,61 @@
+import("mocha");
+import { expect } from "chai";
+import * as _ from "lodash";
+import { BotFrameworkEvent } from "../../src/platforms/botframework/BotFrameworkEvent";
+import { prepIncomingMessage } from "../../src/platforms/botframework/BotFrameworkPlatform";
+
+describe("BotFrameworkEvent", () => {
+  it("should map a Microsoft.Launch intent to a voxa LaunchIntent", () => {
+    const rawEvent = _.cloneDeep(require("../requests/botframework/microsoft.launch.json"));
+    const event = new BotFrameworkEvent(rawEvent, {}, {});
+    expect(event.request.type).to.equal("IntentRequest");
+    if (!event.intent) {
+      throw new Error("Intent should not be undefined");
+    }
+    expect(event.intent.name).to.equal("LaunchIntent");
+  });
+
+  it("should map an endOfConversation request to a voxa SessionEndedRequest", () => {
+    const rawEvent = require("../requests/botframework/endOfRequest.json");
+    const event = new BotFrameworkEvent(rawEvent, {}, {});
+    expect(event.request.type).to.equal("SessionEndedRequest");
+  });
+
+  const utilitiesIntentMapping = {
+    "Utilities.Cancel": "CancelIntent",
+    "Utilities.Confirm": "YesIntent",
+    "Utilities.Help": "HelpIntent",
+    "Utilities.Repeat": "RepeatIntent",
+    "Utilities.ShowNext": "NextIntent",
+    "Utilities.ShowPrevious": "PreviousIntent",
+    "Utilities.StartOver": "StartOverIntent",
+    "Utilities.Stop": "StopIntent",
+  };
+
+  _.map(utilitiesIntentMapping, (to, from) => {
+    it(`should map ${from} intento to ${to}`, () => {
+      const rawEvent = _.cloneDeep(require("../requests/botframework/StaintIntent.json"));
+      const intent = {
+        name: from,
+        params: {},
+        rawIntent: {},
+      };
+
+      const event = new BotFrameworkEvent(rawEvent, {}, {}, intent);
+      if (!event.intent) {
+        throw new Error("Intent should not be undefined");
+      }
+      expect(event.intent.name).to.equal(to);
+    });
+  });
+
+  it("should correctly map the user", () => {
+    const rawEvent = prepIncomingMessage(_.cloneDeep(require("../requests/botframework/StaintIntent.json")));
+    const event = new BotFrameworkEvent(rawEvent, {}, {});
+    expect(event.user).to.deep.equal({
+      id: "LTSO852UtAD",
+      name: "You",
+      userId: "LTSO852UtAD",
+    });
+  });
+});

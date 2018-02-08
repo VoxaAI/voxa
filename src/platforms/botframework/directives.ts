@@ -40,7 +40,6 @@ export class HeroCard implements IDirective {
   public card?: HeroCardType;
 
   constructor(viewPath: string|HeroCardType) {
-
     if (_.isString(viewPath)) {
       this.viewPath = viewPath;
     } else {
@@ -125,9 +124,12 @@ export class AudioCard implements IDirective {
       audioCard = this.audioCard;
     }
 
-    // we want to send stuff before the audio card
-    (reply as BotFrameworkReply).inputHint = "ignoringInput";
-    await (reply as BotFrameworkReply).send(event as BotFrameworkEvent);
+    if (reply.hasMessages) {
+      // we want to send stuff before the audio card
+      (reply as BotFrameworkReply).inputHint = "ignoringInput";
+      await (reply as BotFrameworkReply).send(event as BotFrameworkEvent);
+      reply.clear();
+    }
 
     // and now we add the card
     const attachments = (reply as BotFrameworkReply).attachments || [];

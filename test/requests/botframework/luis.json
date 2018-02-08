@@ -1,62 +1,109 @@
 {
-  "query": "wine",
-  "topScoringIntent": {
-    "intent": "SpecificStainIntent",
-    "score": 0.9994542
-  },
   "intents": [
     {
-      "intent": "SpecificStainIntent",
-      "score": 0.9994542
+      "intent": "TestEveningIntent",
+      "score": 0.09795597
     },
     {
-      "intent": "PhoneNumberIntent",
-      "score": 0.017553173
+      "intent": "TestDailyIntent",
+      "score": 0.09621426
     },
     {
-      "intent": "CancelIntent",
-      "score": 0.008527397
+      "intent": "Utilities.Cancel",
+      "score": 0.0521897376
+    },
+    {
+      "intent": "ResetIntent",
+      "score": 0.0512148142
+    },
+    {
+      "intent": "LaunchIntent",
+      "score": 0.0227567572
+    },
+    {
+      "intent": "Utilities.Confirm",
+      "score": 0.0124043152
+    },
+    {
+      "intent": "EveningRoutineIntent",
+      "score": 0.008280804
+    },
+    {
+      "intent": "AboutAndyIntent",
+      "score": 0.005275759
+    },
+    {
+      "intent": "Utilities.StartOver",
+      "score": 0.00404491043
     },
     {
       "intent": "None",
-      "score": 0.00274220086
+      "score": 0.00325992727
     },
     {
-      "intent": "YesIntent",
-      "score": 0.002400018
+      "intent": "FeelingIntent",
+      "score": 0.002776836
     },
     {
-      "intent": "StartOverIntent",
-      "score": 0.00111396774
+      "intent": "Utilities.Stop",
+      "score": 0.00272650272
     },
     {
-      "intent": "StopIntent",
-      "score": 0.000422734418
+      "intent": "DailyMeditationIntent",
+      "score": 0.00231648865
     },
     {
-      "intent": "HelpIntent",
-      "score": 0.000149068044
+      "intent": "AboutMeditationIntent",
+      "score": 0.00223172712
+    },
+    {
+      "intent": "Utilities.Help",
+      "score": 0.00221650628
+    },
+    {
+      "intent": "FarewellIntent",
+      "score": 0.00197799644
+    },
+    {
+      "intent": "Utilities.ShowNext",
+      "score": 0.001966572
+    },
+    {
+      "intent": "AboutHeadspaceIntent",
+      "score": 0.000288415671
+    },
+    {
+      "intent": "TrySomethingElseIntent",
+      "score": 5.406569e-7
+    },
+    {
+      "intent": "Utilities.GoBack",
+      "score": 5.156869e-7
+    },
+    {
+      "intent": "Utilities.ShowPrevious",
+      "score": 4.786749e-7
     },
     {
       "intent": "NoIntent",
-      "score": 0.000111394751
+      "score": 3.030012e-7
     },
     {
-      "intent": "RepeatIntent",
-      "score": 3.74045555e-7
+      "intent": "ResumeIntent",
+      "score": 2.59103416e-7
+    },
+    {
+      "intent": "PauseIntent",
+      "score": 2.4752228e-7
+    },
+    {
+      "intent": "Utilities.Repeat",
+      "score": 2.140297e-7
+    },
+    {
+      "intent": "Utilities.FinishTask",
+      "score": 1.07372788e-9
     }
   ],
-  "entities": [
-    {
-      "entity": "wine",
-      "type": "stainType",
-      "startIndex": 0,
-      "endIndex": 3,
-      "resolution": {
-        "values": [
-          "Wine"
-        ]
-      }
-    }
-  ]
+  "entities": []
 }

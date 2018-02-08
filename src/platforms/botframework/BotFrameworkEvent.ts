@@ -12,6 +12,12 @@ import { Model } from "../../Model";
 import { ITypeMap, IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
 import { IBotFrameworkEntity } from "./BotFrameworkInterfaces";
 
+const MicrosoftCortanaIntents: ITypeMap = {
+  "Microsoft.Launch": "LaunchIntent",
+  "Microsoft.NoIntent": "NoIntent",
+  "Microsoft.YesIntent": "YesIntent",
+};
+
 export class BotFrameworkEvent extends IVoxaEvent {
   public platform: string;
   public session: any;
@@ -59,7 +65,32 @@ export class BotFrameworkEvent extends IVoxaEvent {
       this.intent = this.mapUtilitiesIntent(intent);
     } else {
       this.mapRequestToIntent();
+      this.getIntentFromEntity();
     }
+  }
+
+  public getIntentFromEntity(): void {
+    if (!isIMessage(this.rawEvent)) {
+      return;
+    }
+
+    const intentEntity: any = _.find(this.rawEvent.entities, { type: "Intent" });
+
+    if (!intentEntity) {
+      return;
+    }
+
+    if (intentEntity.name  === "None") {
+      return;
+    }
+
+    this.request.type = "IntentRequest";
+    this.intent = {
+      name: MicrosoftCortanaIntents[intentEntity.name] || intentEntity.name,
+      params: {},
+      rawIntent: intentEntity,
+    };
+
   }
 
   public mapUtilitiesIntent(intent: IVoxaIntent): IVoxaIntent {

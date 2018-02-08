@@ -380,7 +380,10 @@ export class VoxaApp {
         continue;
       }
 
-      await bluebird.mapSeries(handlers, (handler) => new handler(value).writeToReply(response, voxaEvent, transition));
+      for (const handler of handlers) {
+        await new handler(value).writeToReply(response, voxaEvent, transition);
+      }
+
     }
 
     if (transition.directives) {
@@ -401,10 +404,10 @@ export class VoxaApp {
         _.filter(transition.directives, (directive: any) => directive.constructor.platform === voxaEvent.platform),
       );
 
-      await bluebird.mapSeries(transition.directives, async (handler: IDirective) => {
-        handler.writeToReply(response, voxaEvent, transition);
-      });
-  }
+      for (const handler of transition.directives) {
+        return await handler.writeToReply(response, voxaEvent, transition);
+      }
+    }
 
     return transition;
   }
