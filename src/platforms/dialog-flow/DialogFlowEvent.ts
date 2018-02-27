@@ -30,6 +30,6 @@ export class DialogFlowEvent extends IVoxaEvent {
   }
 
   get user() {
-    return _.get(this, "originalRequest.data.user");
+    return _.get(this, "originalRequest.data.user", {});
   }
 }

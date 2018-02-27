@@ -33,7 +33,7 @@ describe("Alexa directives", () => {
   describe("RenderTemplate", () => {
     it("should only add the template if request supports it", async () => {
       app.onIntent("YesIntent",  {
-        RenderTemplate: "RenderTemplate",
+        alexaRenderTemplate: "RenderTemplate",
         to: "die",
       });
 
@@ -53,11 +53,11 @@ describe("Alexa directives", () => {
       const reply = await alexaSkill.execute(event, {});
       expect(reply.response.directives).to.not.be.undefined;
       expect(JSON.parse(JSON.stringify(reply.response.directives[0]))).to.deep.equal({
-        type: "Display.RenderTemplate",
         template: {
           backButton: "VISIBLE",
           type: "BodyTemplate1",
         },
+        type: "Display.RenderTemplate",
       });
     });
 
@@ -120,6 +120,45 @@ describe("Alexa directives", () => {
           type: "PlainText",
         },
         type: "Hint",
+      }]);
+    });
+  });
+
+  describe("StopAudio", () => {
+    it("should render an AudioPlayer.Stop directive", async () => {
+      app.onIntent("YesIntent", {
+        alexaStopAudio: undefined,
+        to: "die",
+      });
+      const reply = await alexaSkill.execute(event, {});
+      expect(reply.response.directives).to.deep.equal([{
+        type: "AudioPlayer.Stop",
+      }]);
+    });
+  });
+
+  describe("AccountLinkingCard", () => {
+    it("should render an AccountLinkingCard", async () => {
+      app.onIntent("YesIntent", {
+        alexaAccountLinkingCard: undefined,
+        to: "die",
+      });
+      const reply = await alexaSkill.execute(event, {});
+      expect(reply.response.card).to.deep.equal({
+        type: "LinkAccount",
+      });
+    });
+  });
+
+  describe("DialogDelegate", () => {
+    it("should render a DialogDelegate directive", async () => {
+      app.onIntent("YesIntent", {
+        alexaDialogDelegate: undefined,
+        to: "die",
+      });
+      const reply = await alexaSkill.execute(event, {});
+      expect(reply.response.directives).to.deep.equal([{
+        type: "Dialog.Delegate",
       }]);
     });
   });

@@ -91,7 +91,11 @@ export class DialogDelegate implements IDirective {
       };
     }
 
-    (reply as AlexaReply).response.directives.push(directive);
+    const response: Response = (reply as AlexaReply).response;
+    response.directives = response.directives || [];
+    response.directives.push(directive);
+
+    (reply as AlexaReply).response = response;
   }
 }
 
@@ -118,6 +122,11 @@ export class RenderTemplate implements IDirective {
 
     if (reply.hasDirective("Display.RenderTemplate")) {
       throw new Error("At most one Display.RenderTemplate directive can be specified in a response");
+    }
+
+    const context = (event as AlexaEvent).context;
+    if (! context.System.device.supportedInterfaces.Display) {
+      return;
     }
 
     if (this.viewPath) {

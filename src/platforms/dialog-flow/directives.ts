@@ -1,6 +1,6 @@
+import { AssistantApp, Responses } from "actions-on-google";
 import * as _ from "lodash";
 
-import { AssistantApp, Responses } from "actions-on-google";
 import { IDirective } from "../../directives";
 import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";

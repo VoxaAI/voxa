@@ -149,9 +149,7 @@ export class StateMachine {
 
     log(`${this.currentState.name} transition resulted in %j`, transition);
     log("Running onAfterStateChangeCallbacks");
-    let count = 0;
     await bluebird.mapSeries(this.onAfterStateChangeCallbacks, (fn) => {
-      count += 1;
       return fn(voxaEvent, reply, transition);
     });
 

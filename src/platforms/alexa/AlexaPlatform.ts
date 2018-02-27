@@ -6,7 +6,7 @@ import { VoxaApp } from "../../VoxaApp";
 import { VoxaPlatform } from "../VoxaPlatform";
 import { AlexaEvent } from "./AlexaEvent";
 import { AlexaReply } from "./AlexaReply";
-import { AccountLinkingCard, DialogDelegate, Hint, HomeCard, PlayAudio, RenderTemplate } from "./directives";
+import { AccountLinkingCard, DialogDelegate, Hint, HomeCard, PlayAudio, RenderTemplate, StopAudio } from "./directives";
 
 const AlexaRequests = [
   "AudioPlayer.PlaybackStarted",
@@ -41,6 +41,7 @@ export class AlexaPlatform extends VoxaPlatform {
       HomeCard,
       PlayAudio,
       RenderTemplate,
+      StopAudio,
     ];
   }
 

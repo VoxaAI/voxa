@@ -14,8 +14,8 @@ import { IVoxaEvent } from "./VoxaEvent";
 import { IVoxaReply } from "./VoxaReply";
 
 export interface IDirectiveClass {
-  platform: string;
-  key: string;
+  platform: string; // botframework, dialogFlow or alexa
+  key: string; // The key in the transition that links to the specific directive
 
   new(...args: any[]): IDirective;
 }

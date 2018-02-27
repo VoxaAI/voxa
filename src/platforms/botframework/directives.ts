@@ -142,8 +142,7 @@ export class AudioCard implements IDirective {
     (reply as BotFrameworkReply).attachments = attachments;
     reply.terminate();
     transition.flow = "terminate";
-    await (reply as BotFrameworkReply).send(event as BotFrameworkEvent);
-
+    return await (reply as BotFrameworkReply).send(event as BotFrameworkEvent);
   }
 }
 

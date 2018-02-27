@@ -8,6 +8,7 @@
 
 export { AlexaPlatform } from "./platforms/alexa/AlexaPlatform";
 export { BotFrameworkPlatform } from "./platforms/botframework/BotFrameworkPlatform";
+export { DialogFlowPlatform } from "./platforms/dialog-flow/DialogFlowPlatform";
 export { Renderer } from "./renderers/Renderer";
 export { VoxaApp } from "./VoxaApp";
 

@@ -1,7 +1,7 @@
 import { Responses } from "actions-on-google";
 import { Context } from "actions-on-google/dialogflow-app";
 import { Model } from "../../Model";
-import { IVoxaReply } from "../../VoxaReply";
+import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 
 export interface IDialogFlowData {
   google: {
@@ -31,7 +31,7 @@ export class DialogFlowReply implements IVoxaReply {
   }
 
   public get hasMessages(): boolean {
-    return false;
+    return this.speech !== "";
   }
 
   public get hasDirectives(): boolean {
@@ -39,19 +39,21 @@ export class DialogFlowReply implements IVoxaReply {
   }
 
   public get hasTerminated(): boolean {
-    return false;
+    return !this.data.google.expectUserResponse;
   }
 
   public clear() {
-    throw new Error("Not Implemented");
+    this.data.google.richResponse = new Responses.RichResponse();
+    this.speech = "";
   }
 
   public terminate() {
-    throw new Error("Not Implemented");
+    this.data.google.expectUserResponse = false;
   }
 
-  public addStatement() {
-    throw new Error("Not Implemented");
+  public addStatement(statement: string) {
+    this.speech = addToSSML(this.speech, statement);
+    this.data.google.richResponse.addSimpleResponse(statement);
   }
 
   public hasDirective(type: string | RegExp): boolean {

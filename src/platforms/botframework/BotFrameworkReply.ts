@@ -7,6 +7,7 @@ import {
   IMessage,
 } from "botbuilder";
 import * as debug from "debug";
+import * as _ from "lodash";
 import * as rp from "request-promise";
 import { StatusCodeError } from "request-promise/errors";
 import * as urljoin from "url-join";
@@ -126,75 +127,75 @@ export class BotFrameworkReply implements IVoxaReply {
       return;
     }
 
-    const uri = getReplyUri(event.rawEvent);
+    const uri = this.getReplyUri(event.rawEvent);
     this.id = uuid.v1();
-    await botApiRequest("POST", uri, this, event);
+    await this.botApiRequest("POST", uri, _.clone(this), event);
     this.clear();
   }
-}
 
-export async function botApiRequest(method: string, uri: string, reply: BotFrameworkReply, event: BotFrameworkEvent, attempts: number = 0): Promise<any> {
-  let authorization: IAuthorizationResponse;
-  try {
-    authorization = await getAuthorization(event.applicationId, event.applicationPassword);
-    const requestOptions: rp.Options = {
-      auth: {
-        bearer: authorization.access_token,
-      },
-      body: reply,
-      json: true,
-      method,
-      uri,
-    };
+  public async botApiRequest(method: string, uri: string, reply: BotFrameworkReply, event: BotFrameworkEvent, attempts: number = 0): Promise<any> {
+    let authorization: IAuthorizationResponse;
+    try {
+      authorization = await this.getAuthorization(event.applicationId, event.applicationPassword);
+      const requestOptions: rp.Options = {
+        auth: {
+          bearer: authorization.access_token,
+        },
+        body: this,
+        json: true,
+        method,
+        uri,
+      };
 
-    cortanalog("botApiRequest");
-    cortanalog(JSON.stringify(requestOptions, null, 2));
-    return rp(requestOptions);
-  } catch (reason) {
-    if (reason instanceof StatusCodeError && attempts < 2) {
-      attempts += 1;
-      if (reason.statusCode === 401) {
-        return botApiRequest(method, uri, reply, event, attempts);
+      cortanalog("botApiRequest");
+      cortanalog(JSON.stringify(requestOptions, null, 2));
+      return rp(requestOptions);
+    } catch (reason) {
+      if (reason instanceof StatusCodeError && attempts < 2) {
+        attempts += 1;
+        if (reason.statusCode === 401) {
+          return this.botApiRequest(method, uri, reply, event, attempts);
+        }
       }
+
+      throw reason;
+    }
+  }
+
+  public getReplyUri(event: IEvent): string {
+    const address: IChatConnectorAddress = event.address;
+    const baseUri = address.serviceUrl;
+
+    if (!baseUri || !address.conversation) {
+      throw new Error("serviceUrl is missing");
     }
 
-    throw reason;
+    const conversationId = encodeURIComponent(address.conversation.id);
+
+    let path = `/v3/conversations/${conversationId}/activities`;
+    if (address.id) {
+      path += "/" + encodeURIComponent(address.id);
+    }
+
+    return urljoin(baseUri, path);
   }
 
-}
+  public async getAuthorization(applicationId: string, applicationPassword: string): Promise<IAuthorizationResponse> {
+    const requestOptions: rp.Options = {
+      form: {
+        client_id: applicationId,
+        client_secret: applicationPassword,
+        grant_type: "client_credentials",
+        scope: "https://api.botframework.com/.default",
+      },
+      json: true,
+      method: "POST",
+      url: "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token",
+    };
+    cortanalog("getAuthorization");
+    cortanalog(requestOptions);
 
-export function getReplyUri(event: IEvent): string {
-  const address: IChatConnectorAddress = event.address;
-  const baseUri = address.serviceUrl;
-
-  if (!baseUri || !address.conversation) {
-    throw new Error("serviceUrl is missing");
+    return await rp(requestOptions) as IAuthorizationResponse;
   }
 
-  const conversationId = encodeURIComponent(address.conversation.id);
-
-  let path = `/v3/conversations/${conversationId}/activities`;
-  if (address.id) {
-    path += "/" + encodeURIComponent(address.id);
-  }
-
-  return urljoin(baseUri, path);
-}
-
-export async function getAuthorization(applicationId: string, applicationPassword: string): Promise<IAuthorizationResponse> {
-  const requestOptions: rp.Options = {
-    form: {
-      client_id: applicationId,
-      client_secret: applicationPassword,
-      grant_type: "client_credentials",
-      scope: "https://api.botframework.com/.default",
-    },
-    json: true,
-    method: "POST",
-    url: "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token",
-  };
-  cortanalog("getAuthorization");
-  cortanalog(requestOptions);
-
-  return rp(requestOptions);
 }
