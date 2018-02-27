@@ -318,7 +318,7 @@ export class VoxaApp {
           .value());
       }
       state.enter = stateEnter;
-      this.states[platform][stateName] = state;
+      _.set(this.states, [platform, stateName], state);
     } else {
       state.to = handler;
       _.set(this.states, [platform, stateName], state);

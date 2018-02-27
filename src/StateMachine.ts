@@ -84,7 +84,8 @@ export class StateMachine {
     if (!_.has(config, "states")) {
       throw new Error("State machine must have a `states` definition.");
     }
-    if (!_.has(config.states, "core.entry")) {
+
+    if (!_.filter(config.states, "entry").length) {
       throw new Error("State machine must have a `entry` state.");
     }
   }

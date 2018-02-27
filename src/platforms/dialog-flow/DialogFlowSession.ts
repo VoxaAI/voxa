@@ -7,12 +7,18 @@ export class DialogFlowSession implements IVoxaSession {
   public contexts: Context[];
   public new: boolean;
   public sessionId: string;
+  public user: any;
 
   constructor(rawEvent: any) {
     this.contexts = rawEvent.result.contexts;
     this.new = false;
     this.attributes = this.getAttributes();
     this.sessionId = ""; // TODO: fix this
+    this.user = this.getUser(rawEvent);
+  }
+
+  public getUser(rawEvent: any) {
+    return _.get(rawEvent, "originalRequest.data.user", {});
   }
 
   public getAttributes() {
