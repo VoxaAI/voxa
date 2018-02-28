@@ -44,6 +44,7 @@ export class DialogFlowReply implements IVoxaReply {
 
   public clear() {
     this.data.google.richResponse = new Responses.RichResponse();
+    this.data.google.noInputPrompts = [];
     this.speech = "";
   }
 
@@ -64,9 +65,9 @@ export class DialogFlowReply implements IVoxaReply {
     this.data.google.noInputPrompts.push(reprompt);
   }
 
-  public modelToSessionContext(model: Model): Context {
+  public async modelToSessionContext(model: Model): Promise<Context> {
     const currentContext: Context = { name: "model", lifespan: 10000, parameters: {} };
-    currentContext.parameters = model;
+    currentContext.parameters = await model.serialize();
     return currentContext;
   }
 }

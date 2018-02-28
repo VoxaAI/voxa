@@ -1,12 +1,13 @@
-import { Image, TemplateBackButtonVisibility, TemplateType, TextContent, TextField } from "alexa-sdk";
+import { Image, Template, TemplateBackButtonVisibility, TemplateType, TextContent, TextField } from "alexa-sdk";
 
 export class DisplayTemplate {
   public type: string = "Display.RenderTemplate";
-  public template: any;
+  public template: Template;
 
   constructor(type: TemplateType) {
     this.template = {
       backButton: "VISIBLE",
+      token: "",
       type,
     };
   }
@@ -38,7 +39,7 @@ export class DisplayTemplate {
   }
 
   public setTextContent(text1: string, text2?: string, text3?: string): DisplayTemplate {
-    this.template.textContent = toTextContext(text1, text2, text3);
+    (this.template as any).textContent = toTextContext(text1, text2, text3);
     return this;
   }
 

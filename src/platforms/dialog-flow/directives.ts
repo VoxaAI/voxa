@@ -30,7 +30,7 @@ export class List implements IDirective {
     if (this.viewPath) {
       listSelect = await event.renderer.renderPath(this.viewPath, event);
     } else {
-      listSelect = this.viewPath;
+      listSelect = this.list;
     }
 
     (reply as DialogFlowReply).data.google.possibleIntents = {

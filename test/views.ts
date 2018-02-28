@@ -9,6 +9,20 @@ export const views =  {
         title: "Title",
         type: "Standard",
       },
+      Card2: "{card2}",
+      DialogFlowListSelect: {
+        items: [
+          {
+            description: "The item description",
+            image: {
+              accessibilityText: "The image",
+              url: "http://example.com/image.jpg",
+            },
+            title: "The list item",
+          },
+        ],
+        title: "The list select",
+      },
       Hint: "string",
       RenderTemplate: {
         template: {

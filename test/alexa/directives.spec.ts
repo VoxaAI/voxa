@@ -1,6 +1,8 @@
-import { expect, use } from "chai";
+import { expect } from "chai";
 import * as i18n from "i18next";
+import * as _ from "lodash";
 import "mocha";
+
 import { AlexaEvent } from "../../src/platforms/alexa/AlexaEvent";
 import { AlexaPlatform } from "../../src/platforms/alexa/AlexaPlatform";
 import { DisplayTemplate } from "../../src/platforms/alexa/DisplayTemplateBuilder";
@@ -8,6 +10,7 @@ import { VoxaApp } from "../../src/VoxaApp";
 import { IVoxaEvent } from "../../src/VoxaEvent";
 import { HomeCard } from "./../../src/platforms/alexa/directives";
 import { AlexaRequestBuilder } from "./../tools";
+import { variables } from "./../variables";
 import { views } from "./../views";
 
 describe("Alexa directives", () => {
@@ -25,7 +28,7 @@ describe("Alexa directives", () => {
 
   beforeEach(() => {
     const rb = new AlexaRequestBuilder();
-    app =  new VoxaApp({ views });
+    app =  new VoxaApp({ views, variables });
     alexaSkill = new AlexaPlatform(app);
     event = rb.getIntentRequest("AMAZON.YesIntent");
   });
@@ -55,6 +58,7 @@ describe("Alexa directives", () => {
       expect(JSON.parse(JSON.stringify(reply.response.directives[0]))).to.deep.equal({
         template: {
           backButton: "VISIBLE",
+          token: "",
           type: "BodyTemplate1",
         },
         type: "Display.RenderTemplate",
@@ -196,6 +200,17 @@ describe("Alexa directives", () => {
         title: "Title",
         type: "Standard",
       });
+    });
+
+    it("should render faile if variable doesn't return a card like object", async () => {
+      app.onIntent("YesIntent", {
+        alexaCard: "Card2",
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event, {});
+      expect(reply.response.card).to.be.undefined;
+      expect(_.get(reply, "response.outputSpeech.ssml")).to.include("An unrecoverable error");
     });
 
     it("should not allow more than one card", async () => {

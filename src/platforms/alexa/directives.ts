@@ -7,20 +7,39 @@ import { IVoxaReply } from "../../VoxaReply";
 import { AlexaEvent } from "./AlexaEvent";
 import { AlexaReply } from "./AlexaReply";
 
+function isCard(card: any): card is Card {
+  if (!("type" in card)) {
+    return false;
+  }
+
+  return _.includes(["Standard" , "Simple" , "LinkAccount" , "AskForPermissionsConsent"], card.type);
+}
+
 export class HomeCard implements IDirective {
   public static platform: string = "alexa";
   public static key: string = "alexaCard";
 
-  constructor(public viewPath: string) { }
+  constructor(public viewPath: string|Card) { }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     if (reply.hasDirective("card")) {
        throw new Error("At most one card can be specified in a response");
     }
+    console.log("write to reply");
 
-    const card: Card = await event.renderer.renderPath(this.viewPath, event);
+    let card: Card;
+    if (_.isString(this.viewPath)) {
+      card = await event.renderer.renderPath(this.viewPath, event);
+      if (!isCard(card)) {
+        throw new Error("Thew view should return a Card like object");
+      }
+    } else if (isCard(this.viewPath)) {
+      card = this.viewPath;
+    } else {
+      throw new Error("Argument should be a viewPath or a Card like object");
+    }
+
     (reply as AlexaReply).response.card = card;
-
   }
 }
 

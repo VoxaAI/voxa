@@ -4,13 +4,13 @@ import { DialogFlowReply } from "../../src/platforms/dialog-flow/DialogFlowReply
 import { VoxaApp } from "../../src/VoxaApp";
 import { views } from "../views";
 
-xdescribe("DialogFlowPlatform", () => {
+describe("DialogFlowPlatform", () => {
   describe("execute", () => {
     it("should convert the voxaReply to a Dialog Flow response", async () => {
       const rawEvent = require("../requests/dialog-flow/launchIntent.json");
       const voxaApp = new VoxaApp({ views });
 
-      voxaApp.onIntent("LaunchIntent", () => ({ reply: "LaunchIntent.OpenResponse" }));
+      voxaApp.onIntent("LaunchIntent", () => ({ say: "LaunchIntent.OpenResponse" }));
 
       const platform = new DialogFlowPlatform(voxaApp);
 
