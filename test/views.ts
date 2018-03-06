@@ -23,6 +23,7 @@ export const views =  {
         ],
         title: "The list select",
       },
+      Help: "This is the help",
       Hint: "string",
       RenderTemplate: {
         template: {

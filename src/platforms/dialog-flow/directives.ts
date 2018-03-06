@@ -64,7 +64,7 @@ export class Carousel implements IDirective {
     if (this.viewPath) {
       carouselselect = await event.renderer.renderPath(this.viewPath, event);
     } else {
-      carouselselect = this.viewPath;
+      carouselselect = this.list;
     }
 
     (reply as DialogFlowReply).data.google.possibleIntents = {
@@ -101,7 +101,10 @@ export class Suggestions implements IDirective {
       suggestions = this.suggestions;
     }
 
-    (reply as DialogFlowReply).data.google.richResponse.addSuggestions(suggestions);
+    const richResponse = _.get(reply, "data.google.richResponse", new Responses.RichResponse());
+    richResponse.addSuggestions(suggestions)
+
+    (reply as DialogFlowReply).data.google.richResponse = richResponse;
   }
 }
 
@@ -129,6 +132,33 @@ export class BasicCard implements IDirective {
       basicCard = this.basicCard;
     }
 
-    (reply as DialogFlowReply).data.google.richResponse.addBasicCard(basicCard);
+    const richResponse = _.get(reply, "data.google.richResponse", new Responses.RichResponse());
+    richResponse.addBasicCard(basicCard);
+
+    (reply as DialogFlowReply).data.google.richResponse = richResponse;
+  }
+}
+
+export class AccountLinkingCard implements IDirective {
+  public static platform: string = "dialogFlow";
+  public static key: string = "dialogFlowAccountLinkingCard";
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    reply.speech = "login";
+    (reply as DialogFlowReply).data.google = {
+      expectUserResponse: true,
+      inputPrompt: {
+        initialPrompts: [
+          {
+            textToSpeech: "PLACEHOLDER_FOR_SIGN_IN",
+          },
+        ],
+        noInputPrompts: [],
+      },
+      systemIntent: {
+        inputValueData: {},
+        intent: "actions.intent.SIGN_IN",
+      },
+    };
   }
 }

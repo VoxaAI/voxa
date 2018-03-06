@@ -28,6 +28,46 @@ describe("DialogFlow Directives", () => {
     event = require("../requests/dialog-flow/launchIntent.json");
   });
 
+  describe("Carousel", () => {
+    it("should add a carousel from a Responses.Carousel to the reply", async () => {
+
+      const carousel = new Responses.Carousel();
+
+      const optionItem = new Responses.OptionItem()
+        .setTitle("The list item")
+        .setDescription("The item description")
+        .setImage("http://example.com/image.jpg", "The image");
+      carousel.addItems(optionItem);
+
+      app.onIntent("LaunchIntent", {
+        dialogFlowCarousel: carousel,
+        to: "die",
+      });
+
+      const reply = await dialogFlowAgent.execute(event, {});
+      expect(reply.data.google.possibleIntents).to.deep.equal({
+        inputValueData: {
+          "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
+          "carouselselect": {
+            items: [{
+              description: "The item description",
+              image: {
+                accessibilityText: "The image",
+                url: "http://example.com/image.jpg",
+              },
+              optionInfo: {
+                key: "",
+                synonyms: [],
+              },
+              title: "The list item",
+            }],
+          },
+        },
+        intent: "actions.intent.OPTION",
+      });
+    });
+  });
+
   describe("List", () => {
     it("should add a List from a view to the reply", async () => {
       app.onIntent("LaunchIntent", {

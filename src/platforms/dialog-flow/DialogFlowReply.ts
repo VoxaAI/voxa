@@ -6,10 +6,14 @@ import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 export interface IDialogFlowData {
   google: {
     expectUserResponse: boolean;
-    isSsml: boolean;
-    noInputPrompts: string[];
-    richResponse: Responses.RichResponse;
+    noInputPrompts?: any[];
+    richResponse?: Responses.RichResponse;
     possibleIntents?: any;
+    expectedInputs?: any;
+    inputPrompt?: any;
+    systemIntent?: any;
+    isSsml?: boolean;
+    conversationToken?: string;
   };
 }
 
@@ -54,7 +58,10 @@ export class DialogFlowReply implements IVoxaReply {
 
   public addStatement(statement: string) {
     this.speech = addToSSML(this.speech, statement);
-    this.data.google.richResponse.addSimpleResponse(statement);
+    const richResponse = this.data.google.richResponse || new Responses.RichResponse();
+    richResponse.addSimpleResponse(addToSSML("", statement));
+
+    this.data.google.richResponse = richResponse;
   }
 
   public hasDirective(type: string | RegExp): boolean {
@@ -62,7 +69,12 @@ export class DialogFlowReply implements IVoxaReply {
   }
 
   public addReprompt(reprompt: string) {
-    this.data.google.noInputPrompts.push(reprompt);
+    const noInputPrompts = this.data.google.noInputPrompts || [];
+    noInputPrompts.push({
+      textToSpeech: reprompt,
+    });
+
+    this.data.google.noInputPrompts = noInputPrompts;
   }
 
   public async modelToSessionContext(model: Model): Promise<Context> {

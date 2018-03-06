@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import * as _  from "lodash";
 import { Model } from "../../src/Model";
 import { DialogFlowEvent } from "../../src/platforms/dialog-flow/DialogFlowEvent";
 import { DialogFlowPlatform } from "../../src/platforms/dialog-flow/DialogFlowPlatform";
@@ -20,9 +21,8 @@ describe("DialogFlowReply", () => {
     it("should add to both the speech and richResponse", () => {
       reply.addStatement("THIS IS A TEST");
       expect(reply.speech).to.equal("<speak>THIS IS A TEST</speak>");
-      console.log(reply.data.google.richResponse.items[0]);
-      expect(reply.data.google.richResponse.items[0]).to.deep.equal({
-        simpleResponse: { textToSpeech: "THIS IS A TEST" },
+      expect(_.get(reply, "data.google.richResponse.items[0]")).to.deep.equal({
+        simpleResponse: { ssml: "<speak>THIS IS A TEST</speak>" },
       });
     });
   });
@@ -34,7 +34,7 @@ describe("DialogFlowReply", () => {
       reply.clear();
 
       expect(reply.speech).to.equal("");
-      expect(reply.data.google.richResponse.items).to.be.empty;
+      expect(_.get(reply, "data.google.richResponse.items")).to.be.empty;
       expect(reply.data.google.noInputPrompts).to.be.empty;
     });
   });
