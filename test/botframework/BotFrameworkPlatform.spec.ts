@@ -1,5 +1,5 @@
+import { AzureBotStorage, AzureTableClient } from "@sheerun/botbuilder-azure";
 import { LuisRecognizer } from "botbuilder";
-import { AzureBotStorage, AzureTableClient } from "botbuilder-azure";
 import { expect } from "chai";
 import * as _ from "lodash";
 import * as simple from "simple-mock";
