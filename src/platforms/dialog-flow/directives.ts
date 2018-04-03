@@ -162,3 +162,16 @@ export class AccountLinkingCard implements IDirective {
     };
   }
 }
+
+// export class MediaResponse implements IDirective {
+  // public static platform: string = "dialogFlow";
+  // public static key: string = "dialogFlowMediaResponse";
+
+  // public constructor(public mediaObject: Responses.MediaObject) { }
+
+  // public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    // const mediaResponse: Responses.MediaResponse = {
+
+    // }
+  // }
+// }

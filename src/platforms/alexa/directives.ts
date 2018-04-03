@@ -25,13 +25,12 @@ export class HomeCard implements IDirective {
     if (reply.hasDirective("card")) {
        throw new Error("At most one card can be specified in a response");
     }
-    console.log("write to reply");
 
     let card: Card;
     if (_.isString(this.viewPath)) {
       card = await event.renderer.renderPath(this.viewPath, event);
       if (!isCard(card)) {
-        throw new Error("Thew view should return a Card like object");
+        throw new Error("The view should return a Card like object");
       }
     } else if (isCard(this.viewPath)) {
       card = this.viewPath;
@@ -143,7 +142,12 @@ export class RenderTemplate implements IDirective {
       throw new Error("At most one Display.RenderTemplate directive can be specified in a response");
     }
 
-    const context = (event as AlexaEvent).context;
+    const context = (event.rawEvent as AlexaEvent).context;
+
+    if (!context) {
+      return;
+    }
+
     if (! context.System.device.supportedInterfaces.Display) {
       return;
     }

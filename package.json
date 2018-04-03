@@ -1,6 +1,6 @@
 {
   "name": "voxa",
-  "version": "3.0.0-alpha8",
+  "version": "3.0.0-alpha9",
   "description": "A fsm (state machine) framework for Alexa apps using Node.js",
   "main": "./lib/src/main.js",
   "types": "./lib/src/main.d.ts",
@@ -8,8 +8,8 @@
     "clean": "rimraf lib/",
     "compile": "tsc",
     "lint": "tslint -c tslint.json src/**/*.ts",
-    "prepublish": "npm run clean && tsc",
     "report": "nyc report",
+    "prepublish": "npm run clean && tsc",
     "test": "mocha test/*.spec.* test/**/*.spec.*",
     "test-ci": "nyc mocha --colors --reporter mocha-jenkins-reporter test test/*.spec.* test/**/*.spec.*"
   },
@@ -39,6 +39,7 @@
     "@types/lodash": "^4.14.88",
     "@types/node": "^8.0.58",
     "@types/request-promise": "^4.1.39",
+    "@types/tedious": "^1.8.32",
     "@types/url-join": "^0.8.2",
     "@types/uuid": "^3.4.3",
     "actions-on-google": "^1.9.0",

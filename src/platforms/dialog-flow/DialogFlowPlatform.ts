@@ -1,7 +1,7 @@
 import { VoxaPlatform } from "../VoxaPlatform";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 import { DialogFlowReply } from "./DialogFlowReply";
-import { AccountLinkingCard, BasicCard, Carousel, List, Suggestions  } from "./directives";
+import { AccountLinkingCard, BasicCard, Carousel, List,  Suggestions  } from "./directives";
 
 export class DialogFlowPlatform extends VoxaPlatform {
   public async execute(rawEvent: any, context: any): Promise<DialogFlowReply> {

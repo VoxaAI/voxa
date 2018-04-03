@@ -33,10 +33,12 @@ export class VoxaApp {
   public config: any;
   public renderer: Renderer;
   public i18nextPromise: PromiseLike<i18n.TranslationFunction>;
+  public i18n: i18n.i18n;
   public states: any;
   public directiveHandlers: IDirectiveClass[];
 
   constructor(config: IVoxaAppConfig) {
+    this.i18n = i18n.createInstance();
     this.config = config;
     this.eventHandlers = {};
     this.directiveHandlers = [];
@@ -70,7 +72,7 @@ export class VoxaApp {
     this.validateConfig();
 
     this.i18nextPromise = new Promise((resolve, reject) => {
-      i18n.init({
+      this.i18n.init({
         fallbackLng: "en",
         load: "all",
         nonExplicitWhitelist: true,
@@ -448,7 +450,7 @@ export class VoxaApp {
 
     voxaEvent.model = model;
     log("Initialized model like %s", JSON.stringify(voxaEvent.model));
-    voxaEvent.t = i18n.getFixedT(voxaEvent.request.locale);
+    voxaEvent.t = this.i18n.getFixedT(voxaEvent.request.locale);
     voxaEvent.renderer = this.renderer;
   }
 }

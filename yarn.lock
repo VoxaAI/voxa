@@ -81,8 +81,8 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-9.4.6.tgz#d8176d864ee48753d053783e4e463aec86b8d82e"
 
 "@types/node@^8.0.58":
-  version "8.9.4"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.9.4.tgz#dfd327582a06c114eb6e0441fa3d6fab35edad48"
+  version "8.9.5"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.9.5.tgz#162b864bc70be077e6db212b322754917929e976"
 
 "@types/request-promise@^4.1.39":
   version "4.1.41"
@@ -119,6 +119,13 @@
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/strip-json-comments/-/strip-json-comments-0.0.30.tgz#9aa30c04db212a9a0649d6ae6fd50accc40748a1"
 
+"@types/tedious@^1.8.32":
+  version "1.8.32"
+  resolved "https://registry.yarnpkg.com/@types/tedious/-/tedious-1.8.32.tgz#1ac19b54a05123cbd282dcd2146828562631b661"
+  dependencies:
+    "@types/events" "*"
+    "@types/node" "*"
+
 "@types/tough-cookie@*":
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/@types/tough-cookie/-/tough-cookie-2.3.2.tgz#e0d481d8bb282ad8a8c9e100ceb72c995fb5e709"
@@ -134,8 +141,8 @@
     "@types/node" "*"
 
 actions-on-google@^1.9.0:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/actions-on-google/-/actions-on-google-1.9.0.tgz#55df99974b8aa98bebbd812af20479fc12bac2f5"
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/actions-on-google/-/actions-on-google-1.10.0.tgz#fe6eb671b3ebe5e4d7360dc7577eb87ec1df8f8f"
   dependencies:
     debug "^2.2.0"
     google-auth-library "^1.0.0"
@@ -982,10 +989,10 @@ google-auth-library@^1.0.0:
     retry-axios "^0.3.2"
 
 google-p12-pem@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/google-p12-pem/-/google-p12-pem-1.0.0.tgz#375cc4e977a311908d365b47ed3519e7207c1f77"
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/google-p12-pem/-/google-p12-pem-1.0.2.tgz#c8a3843504012283a0dbffc7430b7c753ecd4b07"
   dependencies:
-    node-forge "^0.7.1"
+    node-forge "^0.7.4"
     pify "^3.0.0"
 
 graceful-fs@^4.1.11, graceful-fs@^4.1.2:
@@ -1538,9 +1545,16 @@ loose-envify@^1.0.0:
   dependencies:
     js-tokens "^3.0.0"
 
-lru-cache@^4.0.1, lru-cache@^4.1.1:
+lru-cache@^4.0.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-4.1.1.tgz#622e32e82488b49279114a4f9ecf45e7cd6bba55"
+  dependencies:
+    pseudomap "^1.0.2"
+    yallist "^2.1.2"
+
+lru-cache@^4.1.1:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-4.1.2.tgz#45234b2e6e2f2b33da125624c4664929a0224c3f"
   dependencies:
     pseudomap "^1.0.2"
     yallist "^2.1.2"
@@ -1684,9 +1698,9 @@ ms@^2.0.0:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
 
-node-forge@^0.7.1:
-  version "0.7.3"
-  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.7.3.tgz#03188af9dd2401c55e040150ba3c708575678e1a"
+node-forge@^0.7.4:
+  version "0.7.4"
+  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.7.4.tgz#8e6e9f563a1e32213aa7508cded22aa791dbf986"
 
 node-uuid@~1.4.0, node-uuid@~1.4.7:
   version "1.4.8"
