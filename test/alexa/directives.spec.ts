@@ -1,30 +1,22 @@
-import { expect, use } from "chai";
-import chaiAsPromised = require("chai-as-promised");
+import { expect } from "chai";
 import * as i18n from "i18next";
+import * as _ from "lodash";
 import "mocha";
-import { AlexaAdapter } from "../../src/platforms/alexa/AlexaAdapter";
+
 import { AlexaEvent } from "../../src/platforms/alexa/AlexaEvent";
-import { AlexaReply } from "../../src/platforms/alexa/AlexaReply";
+import { AlexaPlatform } from "../../src/platforms/alexa/AlexaPlatform";
 import { DisplayTemplate } from "../../src/platforms/alexa/DisplayTemplateBuilder";
-import { CortanaEvent } from "../../src/platforms/cortana/CortanaEvent";
-import { Renderer } from "../../src/renderers/Renderer";
 import { VoxaApp } from "../../src/VoxaApp";
 import { IVoxaEvent } from "../../src/VoxaEvent";
-import { variables } from "../variables";
-import { Hint, HomeCard } from "./../../src/platforms/alexa/directives";
+import { HomeCard } from "./../../src/platforms/alexa/directives";
 import { AlexaRequestBuilder } from "./../tools";
+import { variables } from "./../variables";
 import { views } from "./../views";
-
-// tslint:disable-next-line
-const cortanaLaunch = require("../requests/cortana/microsoft.launch.json");
-
-use(chaiAsPromised);
 
 describe("Alexa directives", () => {
   let event: any;
   let app: VoxaApp;
-  let alexaSkill: AlexaAdapter;
-  let renderer: Renderer;
+  let alexaSkill: AlexaPlatform;
 
   before(() => {
     i18n .init({
@@ -36,16 +28,15 @@ describe("Alexa directives", () => {
 
   beforeEach(() => {
     const rb = new AlexaRequestBuilder();
+    app =  new VoxaApp({ views, variables });
+    alexaSkill = new AlexaPlatform(app);
     event = rb.getIntentRequest("AMAZON.YesIntent");
-    app =  new VoxaApp({ views });
-    alexaSkill = new AlexaAdapter(app);
-    renderer = new Renderer({ views, variables });
   });
 
   describe("RenderTemplate", () => {
     it("should only add the template if request supports it", async () => {
       app.onIntent("YesIntent",  {
-        RenderTemplate: "RenderTemplate",
+        alexaRenderTemplate: "RenderTemplate",
         to: "die",
       });
 
@@ -58,14 +49,16 @@ describe("Alexa directives", () => {
       app.onIntent("YesIntent", () => {
         const template = new DisplayTemplate("BodyTemplate1");
         return {
-          RenderTemplate: template,
+          alexaRenderTemplate: template,
         };
       });
 
       const reply = await alexaSkill.execute(event, {});
-      expect(reply.response.directives[0]).to.deep.equal({
+      expect(reply.response.directives).to.not.be.undefined;
+      expect(JSON.parse(JSON.stringify(reply.response.directives[0]))).to.deep.equal({
         template: {
           backButton: "VISIBLE",
+          token: "",
           type: "BodyTemplate1",
         },
         type: "Display.RenderTemplate",
@@ -74,11 +67,12 @@ describe("Alexa directives", () => {
 
     it("should add to the directives", async () => {
       app.onIntent("YesIntent", {
-        RenderTemplate: "RenderTemplate",
+        alexaRenderTemplate: "RenderTemplate",
         to: "die",
       });
 
       const reply = await alexaSkill.execute(event, {});
+      expect(reply.response.directives).to.not.be.undefined;
       expect(reply.response.directives[0]).to.deep.equal({
         template: {
           backButton: "VISIBLE",
@@ -107,13 +101,6 @@ describe("Alexa directives", () => {
   });
 
   describe("Hint", () => {
-    it("should not add to the reply if not an alexa event", async () => {
-      const cortanaEvent = new CortanaEvent(cortanaLaunch, {}, {});
-      const reply = new AlexaReply(cortanaEvent, renderer);
-
-      await Hint("Hint")(reply, event);
-      expect(reply.response.directives).to.be.empty;
-    });
 
     it("should only render a single Hint directive", async () => {
       const reply = await alexaSkill.execute(event, {});
@@ -126,7 +113,7 @@ describe("Alexa directives", () => {
 
     it("should render a Hint directive", async () => {
       app.onIntent("YesIntent", {
-        Hint: "Hint",
+        alexaHint: "Hint",
         to: "die",
       });
 
@@ -141,10 +128,49 @@ describe("Alexa directives", () => {
     });
   });
 
+  describe("StopAudio", () => {
+    it("should render an AudioPlayer.Stop directive", async () => {
+      app.onIntent("YesIntent", {
+        alexaStopAudio: undefined,
+        to: "die",
+      });
+      const reply = await alexaSkill.execute(event, {});
+      expect(reply.response.directives).to.deep.equal([{
+        type: "AudioPlayer.Stop",
+      }]);
+    });
+  });
+
+  describe("AccountLinkingCard", () => {
+    it("should render an AccountLinkingCard", async () => {
+      app.onIntent("YesIntent", {
+        alexaAccountLinkingCard: undefined,
+        to: "die",
+      });
+      const reply = await alexaSkill.execute(event, {});
+      expect(reply.response.card).to.deep.equal({
+        type: "LinkAccount",
+      });
+    });
+  });
+
+  describe("DialogDelegate", () => {
+    it("should render a DialogDelegate directive", async () => {
+      app.onIntent("YesIntent", {
+        alexaDialogDelegate: undefined,
+        to: "die",
+      });
+      const reply = await alexaSkill.execute(event, {});
+      expect(reply.response.directives).to.deep.equal([{
+        type: "Dialog.Delegate",
+      }]);
+    });
+  });
+
   describe("HomeCard", () => {
     it("should be usable from the directives", async () => {
       app.onIntent("YesIntent", {
-        directives: [HomeCard("Card")],
+        directives: [new HomeCard("Card")],
         to: "die",
       });
 
@@ -161,7 +187,7 @@ describe("Alexa directives", () => {
 
     it("should render the home card", async () => {
       app.onIntent("YesIntent", {
-        HomeCard: "Card",
+        alexaCard: "Card",
         to: "die",
       });
 
@@ -176,10 +202,21 @@ describe("Alexa directives", () => {
       });
     });
 
+    it("should render faile if variable doesn't return a card like object", async () => {
+      app.onIntent("YesIntent", {
+        alexaCard: "Card2",
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event, {});
+      expect(reply.response.card).to.be.undefined;
+      expect(_.get(reply, "response.outputSpeech.ssml")).to.include("An unrecoverable error");
+    });
+
     it("should not allow more than one card", async () => {
       app.onIntent("YesIntent", {
-        HomeCard: "Card",
-        directives: [HomeCard("Card")],
+        alexaCard: "Card",
+        directives: [new HomeCard("Card")],
         to: "entry",
       });
 

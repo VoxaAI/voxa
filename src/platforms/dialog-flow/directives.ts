@@ -1,75 +1,177 @@
+import { AssistantApp, Responses } from "actions-on-google";
 import * as _ from "lodash";
 
-import { AssistantApp, Responses } from "actions-on-google";
-import { directiveHandler } from "../../directives";
+import { IDirective } from "../../directives";
+import { ITransition } from "../../StateMachine";
+import { IVoxaEvent } from "../../VoxaEvent";
+import { IVoxaReply } from "../../VoxaReply";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 import { DialogFlowReply } from "./DialogFlowReply";
 import { InputValueDataTypes, StandardIntents } from "./interfaces";
 
-export function List(templatePath: string|Responses.List): directiveHandler {
-  return  async (reply, event): Promise<void> => {
+export class List implements IDirective {
+  public static  platform: string = "dialogFlow";
+  public static key: string = "dialogFlowList";
+
+  public viewPath?: string;
+  public list?: Responses.List;
+
+  constructor(viewPath: string|Responses.List) {
+
+    if (_.isString(viewPath)) {
+      this.viewPath = viewPath;
+    } else {
+      this.list = viewPath;
+    }
+  }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     let listSelect;
-    if (_.isString(templatePath) ) {
-      listSelect = await reply.render(templatePath);
+    if (this.viewPath) {
+      listSelect = await event.renderer.renderPath(this.viewPath, event);
     } else {
-      listSelect = templatePath;
+      listSelect = this.list;
     }
 
-    reply.response.directives.push({
-      possibleIntents: {
-        inputValueData: {
-          "@type": InputValueDataTypes.OPTION,
-          listSelect,
-        },
-        intent: StandardIntents.OPTION,
+    (reply as DialogFlowReply).data.google.possibleIntents = {
+      inputValueData: {
+        "@type": InputValueDataTypes.OPTION,
+        listSelect,
       },
-      type: "possibleIntents",
-    });
-  };
+      intent: StandardIntents.OPTION,
+    };
+  }
 }
 
-export function Carousel(templatePath: string|Responses.Carousel): directiveHandler {
-  return  async (reply, event): Promise<void> => {
-    let carouselSelect;
-    if (_.isString(templatePath) ) {
-      carouselSelect = await reply.render(templatePath);
+export class Carousel implements IDirective {
+  public static  platform: string = "dialogFlow";
+  public static key: string = "dialogFlowCarousel";
+
+  public viewPath?: string;
+  public list?: Responses.Carousel;
+
+  constructor(viewPath: string|Responses.Carousel) {
+
+    if (_.isString(viewPath)) {
+      this.viewPath = viewPath;
     } else {
-      carouselSelect = templatePath;
+      this.list = viewPath;
+    }
+  }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    let carouselselect;
+    if (this.viewPath) {
+      carouselselect = await event.renderer.renderPath(this.viewPath, event);
+    } else {
+      carouselselect = this.list;
     }
 
-    reply.response.directives.push({
-      systemIntent: {
-        intent: StandardIntents.OPTION,
-        spec: {
-          optionValueSpec: {
-            carouselSelect,
-          },
-        },
+    (reply as DialogFlowReply).data.google.possibleIntents = {
+      inputValueData: {
+        "@type": InputValueDataTypes.OPTION,
+        carouselselect,
       },
-      type: "systemIntent",
-    });
-  };
+      intent: StandardIntents.OPTION,
+    };
+  }
 }
 
-export function Suggestions(suggestions: string[]|string): directiveHandler {
-  return  async (reply, event): Promise<void> => {
+export class Suggestions implements IDirective {
+  public static  platform: string = "dialogFlow";
+  public static key: string = "dialogFlowSuggestions";
+
+  public viewPath?: string;
+  public suggestions?: string[];
+
+  constructor(suggestions: string|string[]) {
+
     if (_.isString(suggestions)) {
-      suggestions = await reply.render(suggestions);
-    }
-
-    reply.response.directives.push({ suggestions, type: "suggestions"  });
-  };
-}
-
-export function BasicCard(templatePath: string|Responses.BasicCard): directiveHandler {
-  return  async (reply, event): Promise<void> => {
-    let basicCard;
-    if (_.isString(templatePath) ) {
-      basicCard = await reply.render(templatePath);
+      this.viewPath = suggestions;
     } else {
-      basicCard = templatePath;
+      this.suggestions = suggestions;
+    }
+  }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    let suggestions;
+    if (this.viewPath) {
+      suggestions = await event.renderer.renderPath(this.viewPath, event);
+    } else {
+      suggestions = this.suggestions;
     }
 
-    reply.response.directives.push({ basicCard, type: "basicCard"  });
-  };
+    const richResponse = _.get(reply, "data.google.richResponse", new Responses.RichResponse());
+    richResponse.addSuggestions(suggestions)
+
+    (reply as DialogFlowReply).data.google.richResponse = richResponse;
+  }
 }
+
+export class BasicCard implements IDirective {
+  public static  platform: string = "dialogFlow";
+  public static key: string = "dialogFlowCard";
+
+  public viewPath?: string;
+  public basicCard?: Responses.BasicCard;
+
+  constructor(viewPath: string|Responses.BasicCard) {
+
+    if (_.isString(viewPath)) {
+      this.viewPath = viewPath;
+    } else {
+      this.basicCard = viewPath;
+    }
+  }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    let basicCard;
+    if (this.viewPath) {
+      basicCard = await event.renderer.renderPath(this.viewPath, event);
+    } else {
+      basicCard = this.basicCard;
+    }
+
+    const richResponse = _.get(reply, "data.google.richResponse", new Responses.RichResponse());
+    richResponse.addBasicCard(basicCard);
+
+    (reply as DialogFlowReply).data.google.richResponse = richResponse;
+  }
+}
+
+export class AccountLinkingCard implements IDirective {
+  public static platform: string = "dialogFlow";
+  public static key: string = "dialogFlowAccountLinkingCard";
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    reply.speech = "login";
+    (reply as DialogFlowReply).data.google = {
+      expectUserResponse: true,
+      inputPrompt: {
+        initialPrompts: [
+          {
+            textToSpeech: "PLACEHOLDER_FOR_SIGN_IN",
+          },
+        ],
+        noInputPrompts: [],
+      },
+      systemIntent: {
+        inputValueData: {},
+        intent: "actions.intent.SIGN_IN",
+      },
+    };
+  }
+}
+
+// export class MediaResponse implements IDirective {
+  // public static platform: string = "dialogFlow";
+  // public static key: string = "dialogFlowMediaResponse";
+
+  // public constructor(public mediaObject: Responses.MediaObject) { }
+
+  // public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    // const mediaResponse: Responses.MediaResponse = {
+
+    // }
+  // }
+// }

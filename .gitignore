@@ -1,3 +1,7 @@
+# compiled typescript
+
+lib/
+
 junit.xml
 # Sphinx documentation
 docs/_build/

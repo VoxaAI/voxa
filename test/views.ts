@@ -9,6 +9,21 @@ export const views =  {
         title: "Title",
         type: "Standard",
       },
+      Card2: "{card2}",
+      DialogFlowListSelect: {
+        items: [
+          {
+            description: "The item description",
+            image: {
+              accessibilityText: "The image",
+              url: "http://example.com/image.jpg",
+            },
+            title: "The list item",
+          },
+        ],
+        title: "The list select",
+      },
+      Help: "This is the help",
       Hint: "string",
       RenderTemplate: {
         template: {
@@ -36,20 +51,16 @@ export const views =  {
       },
       LaunchIntent: {
         OpenResponse: {
-          dialogFlow: {
-            tell: "Hello from DialogFlow",
-          },
-          tell: "Hello! Good {time}",
+          alexa: "Hello! Good {time}",
+          dialogFlow: "Hello from DialogFlow",
         },
       },
-      RandomResponse: {
-        tell: [
-          "Random 1",
-          "Random 2",
-          "Random 3",
-          "Random 4",
-        ],
-      },
+      RandomResponse: [
+        "Random 1",
+        "Random 2",
+        "Random 3",
+        "Random 4",
+      ],
       Question: {
         Ask: {
           ask: "What time is it?",
@@ -58,20 +69,20 @@ export const views =  {
 
       },
       ExitIntent: {
-        Farewell: { tell: "Ok. For more info visit {site} site." },
+        Farewell: "Ok. For more info visit {site} site.",
       },
       Number: {
-        One: { tell: "{numberOne}" },
+        One: "{numberOne}" ,
       },
       Say: {
-        Say: { say: "say" },
+        Say: "say" ,
       },
       HelpIntent: {
-        HelpAboutSkill: { tell: "For more help visit www.rain.agency" },
+        HelpAboutSkill: "For more help visit www.rain.agency" ,
       },
       Count: {
-        Say: { say: "{count}" },
-        Tell: { tell: "{count}" },
+        Say:  "{count}",
+        Tell: "{count}" ,
       },
       Playing: {
         SayStop: {
@@ -83,33 +94,48 @@ export const views =  {
           say: "I'm sorry. I didn't understand.",
         },
       },
+      Reply: {
+        Directives: {
+          directives: ["{hintDirective}"],
+        },
+        Tell: {
+          tell: "this is a tell",
+        },
+        Ask: {
+          ask: "this is an ask",
+          reprompt: "this is a reprompt",
+        },
+        Combined: {
+          ask: "this is an ask",
+          directives: ["{hintDirective}"],
+          reprompt: "this is a reprompt",
+        },
+      },
     },
   },
   "de-DE": {
     translation: {
       LaunchIntent: {
-        OpenResponse: { tell: "Hallo! guten {time}" },
+        OpenResponse: "Hallo! guten {time}",
       },
-      RandomResponse: {
-        tell: [
-          "zufällig1",
-          "zufällig2",
-          "zufällig3",
-          "zufällig4",
-          "zufällig5",
-        ],
-      },
+      RandomResponse: [
+        "zufällig1",
+        "zufällig2",
+        "zufällig3",
+        "zufällig4",
+        "zufällig5",
+      ],
       Question: {
-        Ask: { ask: "wie spät ist es?" },
+        Ask:  "wie spät ist es?" ,
       },
       ExitIntent: {
-        Farewell: { tell: "Ok für weitere Infos besuchen {site} Website" },
+        Farewell: "Ok für weitere Infos besuchen {site} Website" ,
       },
       Number: {
-        One: { tell: "{numberOne}" },
+        One:  "{numberOne}" ,
       },
       Say: {
-        Say: { say: "sagen" },
+        Say: "sagen" ,
       },
     },
   },

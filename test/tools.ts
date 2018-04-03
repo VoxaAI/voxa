@@ -16,7 +16,7 @@ export class AlexaRequestBuilder {
     this.deviceId = applicationId || `amzn1.ask.device.${v1()}`;
   }
 
-  public getSessionEndedRequest(reason: string): ISessionEndedRequest {
+  public getSessionEndedRequest(reason: string = "ERROR"): ISessionEndedRequest {
     return {
       context: this.getContextData(),
       request: {

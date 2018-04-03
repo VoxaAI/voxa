@@ -5,28 +5,42 @@
  * Licensed under the MIT license.
  */
 
+import { Hint, HomeCard } from "../src/platforms/alexa/directives";
 import { IVoxaEvent } from "../src/VoxaEvent";
 
 export const variables = {
+  card2: () => {
+    return new HomeCard({
+      image: {
+        largeImageUrl: "http://example.com/large.jpg",
+        smallImageUrl: "http://example.com/small.jpg",
+      },
+      title: "Title",
+      type: "Standard",
+    });
+  },
+  exitArray: function exitArray() {
+    return [{ a: 1 }, { b: 2 }, { c: 3 }];
+  },
+  exitCard: function exitCard() {
+    return {
+      image: {
+        largeImageUrl: "largeImage.jpg",
+        smallImageUrl: "smallImage.jpg",
+      },
+      text: "text",
+      title: "title",
+      type: "Standard",
+    };
+  },
   exitDirectiveMessage: function exitDirectiveMessage() {
     return ({
       text: "Thanks for playing!",
       type: "PlainText",
     });
   },
-  exitCard: function exitCard() {
-    return {
-      type: "Standard",
-      title: "title",
-      text: "text",
-      image: {
-        smallImageUrl: "smallImage.jpg",
-        largeImageUrl: "largeImage.jpg",
-      },
-    };
-  },
-  exitArray: function exitArray() {
-    return [{ a: 1 }, { b: 2 }, { c: 3 }];
+  hintDirective: () => {
+    return new Hint("this is the hint");
   },
   items: function items(request: IVoxaEvent) {
     return request.model.items;

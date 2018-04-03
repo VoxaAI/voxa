@@ -19,34 +19,32 @@ export interface ISessionEndedRequest extends alexa.RequestBody<alexa.SessionEnd
 }
 
 export class AlexaEvent extends IVoxaEvent {
+  public intent!: IVoxaIntent;
 
-  public session: any;
-  public request: any;
-  public platform: string;
-  public context: any;
-  public intent: IVoxaIntent;
-  public model: Model;
-  public t: TranslationFunction;
+  public requestToIntent: any = {
+    "AudioPlayer.PlaybackNearlyFinished": "AudioPlayer.PlaybackNearlyFinished",
+    "Display.ElementSelected": "Display.ElementSelected",
+    "LaunchRequest": "LaunchIntent",
+    "PlaybackController.NextCommandIssued": "PlaybackController.NextCommandIssued",
+    "PlaybackController.PauseCommandIssued": "PlaybackController.PauseCommandIssued",
+    "PlaybackController.PlayCommandIssued": "PlaybackController.PlayCommandIssued",
+    "PlaybackController.PreviousCommandIssued": "PlaybackController.PreviousCommandIssued",
+  };
 
   constructor(event: IAlexaRequest , context?: any) {
     super(event, context);
-    this.session = event.session;
-    this.request = event.request;
-    this.context = event.context;
+    this.session = _.cloneDeep(event.session);
+    this.request = _.cloneDeep(event.request);
+    this.context = _.cloneDeep(event.context);
     this.executionContext = context;
-    this.rawEvent = event;
 
     if (_.isEmpty(_.get(this, "session.attributes"))) {
       _.set(this, "session.attributes", {});
     }
 
-    if (_.get(event, "request.type") === "LaunchRequest") {
-      this.intent = new AlexaIntent({ name: "LaunchIntent", slots: {} });
-      this.request.type = "IntentRequest";
-    } else if (_.get(event, "request.type") === "Display.ElementSelected") {
-      this.intent = new AlexaIntent({ name: "DisplayElementSelected", slots: {} });
-      this.request.type = "IntentRequest";
-    } else {
+    this.mapRequestToIntent();
+
+    if (!this.intent) {
       this.intent = new AlexaIntent(this.request.intent);
     }
 

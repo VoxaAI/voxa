@@ -9,109 +9,154 @@
 
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
+import { ITransition } from "./StateMachine";
 import { IVoxaEvent } from "./VoxaEvent";
-import { VoxaReply } from "./VoxaReply";
+import { IVoxaReply } from "./VoxaReply";
 
-export type directiveHandler = (reply: VoxaReply, event: IVoxaEvent) => Promise<void>;
+export interface IDirectiveClass {
+  platform: string; // botframework, dialogFlow or alexa
+  key: string; // The key in the transition that links to the specific directive
 
-export function reply(templatePaths: string|string[]): directiveHandler {
-  return async (response: VoxaReply, event: IVoxaEvent): Promise<void> => {
-    if (!_.isArray(templatePaths)) {
-      templatePaths = [templatePaths];
+  new(...args: any[]): IDirective;
+}
+
+export interface IDirective {
+  writeToReply: (reply: IVoxaReply, event: IVoxaEvent, transition: ITransition) => Promise<void>;
+}
+
+export class Reply implements IDirective {
+  public static key: string = "reply";
+  public static platform: string = "core";
+
+  constructor(public viewPaths: string|string[]) {}
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    let viewPaths = this.viewPaths;
+    if (!_.isArray(viewPaths)) {
+      viewPaths = [viewPaths];
     }
 
-    await bluebird.map(templatePaths, async (tp: string): Promise<void> => {
-      const message = await response.render(tp);
+    await bluebird.map(viewPaths, async (viewPath: string): Promise<void> => {
+      const message = await event.renderer.renderPath(viewPath, event);
       if (message.say) {
-        await sayP(message.say)(response, event);
+        await new SayP(message.say).writeToReply(reply, event, transition);
       }
 
       if (message.ask) {
-        await askP(message.ask)(response, event);
+        reply.addStatement(message.ask);
+        transition.flow = "yield";
       }
 
       if (message.tell) {
-        await tellP(message.tell)(response, event);
+        reply.addStatement(message.tell);
+        reply.terminate();
+        transition.flow = "terminate";
       }
 
       if (message.reprompt) {
-        await repromptP(message.reprompt)(response, event);
+        reply.addReprompt(message.reprompt);
       }
 
       if (message.directives) {
-        await directives(message.directives)(response, event);
+        if (transition.directives) {
+          transition.directives = transition.directives.concat(message.directives);
+        } else {
+          transition.directives = message.directives;
+        }
       }
     });
-  };
+  }
 }
 
-/*
- * Takes a template path and renders it, then adds it to the reply as an ask statement
- */
-export function ask(templatePath: string): directiveHandler {
-  return async (response: VoxaReply, event: IVoxaEvent): Promise<void> => {
-    const statement: string = await response.render(templatePath);
-    return await askP(statement)(response, event);
-  };
+export class Reprompt implements IDirective {
+  public static key: string = "ask";
+  public static platform: string = "core";
+  public viewPath: string;
+
+  constructor(viewPath: string) {
+    this.viewPath = viewPath;
+  }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    const statement = await event.renderer.renderPath(this.viewPath, event);
+    reply.addReprompt(statement);
+  }
 }
 
-/*
- * Plain version of ask, takes an statement and adds it directly to the reply without
- * rendering it first
- */
-export function askP(statement: string): directiveHandler {
-  return async (response: VoxaReply, event: IVoxaEvent): Promise<void> => {
-    response.addStatement(statement);
-    response.response.terminate = false;
-    response.yield();
-  };
-}
+export class Ask implements IDirective {
+  public static key: string = "ask";
+  public static platform: string = "core";
+  public viewPaths: string[];
 
-export function tell(templatePath: string): directiveHandler {
-  return async (response: VoxaReply, event: IVoxaEvent): Promise<void> => {
-    const statement: string = await response.render(templatePath);
-    return await tellP(statement)(response, event);
-  };
-}
+  constructor(viewPaths: string|string[]) {
+    this.viewPaths = _.isString(viewPaths) ? [viewPaths] : viewPaths;
+  }
 
-export function tellP(statement: string): directiveHandler {
-  return async (response: VoxaReply, event: IVoxaEvent): Promise<void> => {
-    response.addStatement(statement);
-    response.yield();
-  };
-}
-
-export function say(templatePath: string): directiveHandler {
-  return async (response: VoxaReply, event: IVoxaEvent): Promise<void> => {
-    const statement: string = await response.render(templatePath);
-    return await sayP(statement)(response, event);
-  };
-}
-
-export function sayP(statement: string): directiveHandler {
-  return async (response: VoxaReply, event: IVoxaEvent): Promise<void> => {
-    response.addStatement(statement);
-    response.response.terminate = false;
-  };
-}
-
-export function reprompt(templatePath: string): directiveHandler {
-  return async (response: VoxaReply, event: IVoxaEvent): Promise<void> => {
-    const statement: string = await response.render(templatePath);
-    return await repromptP(statement)(response, event);
-  };
-}
-
-export function repromptP(statement: string): directiveHandler {
-  return async (response: VoxaReply, event: IVoxaEvent): Promise<void> => {
-    response.response.reprompt = statement;
-  };
-}
-
-export function directives(functions: directiveHandler[]): directiveHandler {
-  return async (response: VoxaReply, event: IVoxaEvent): Promise<void> => {
-    if (functions && functions.length) {
-      await bluebird.map(functions, (fn: directiveHandler) => fn(response, event));
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    for (const viewPath of this.viewPaths) {
+      const statement = await event.renderer.renderPath(viewPath, event);
+      if (_.isString(statement)) {
+        reply.addStatement(statement);
+      } else if (statement.ask) {
+        reply.addStatement(statement.ask);
+        if (statement.reprompt) {
+          reply.addReprompt(statement.reprompt);
+        }
+      }
     }
-  };
+
+    transition.flow = "yield";
+  }
+}
+
+export class Say implements IDirective {
+  public static key: string = "say";
+  public static platform: string = "core";
+
+  constructor(public viewPaths: string|string[]) { }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    let viewPaths = this.viewPaths;
+    if (_.isString(viewPaths)) {
+      viewPaths = [viewPaths];
+    }
+
+    await bluebird.mapSeries(viewPaths, async (view: string) => {
+      const statement = await event.renderer.renderPath(view, event);
+      reply.addStatement(statement);
+    });
+  }
+}
+
+export class SayP implements IDirective {
+  public static key: string = "sayp";
+  public static platform: string = "core";
+
+  constructor(public statements: string|string[]) { }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    let statements = this.statements;
+    if (_.isString(statements)) {
+      statements = [statements];
+    }
+
+    _.map(statements, (s) => reply.addStatement(s));
+  }
+}
+
+export class Tell implements IDirective {
+  public static key: string = "tell";
+  public static platform: string = "core";
+  public viewPath: string;
+
+  constructor(viewPath: string) {
+    this.viewPath = viewPath;
+  }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    const statement = await event.renderer.renderPath(this.viewPath, event);
+    reply.addStatement(statement);
+    reply.terminate();
+    transition.flow = "terminate";
+  }
 }

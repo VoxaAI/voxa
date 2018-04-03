@@ -1,16 +1,15 @@
 import { expect, use } from "chai";
-import chaiAsPromised = require("chai-as-promised");
 import * as i18n from "i18next";
 import "mocha";
-import { ask, reply,  reprompt,  say, tell } from "../src/directives";
+import { Ask, Reply, Reprompt, Say, Tell } from "../src/directives";
 import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
 import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
+import { Hint } from "../src/platforms/alexa/directives";
 import { Renderer } from "../src/renderers/Renderer";
 import { IVoxaEvent } from "../src/VoxaEvent";
 import { AlexaRequestBuilder } from "./tools";
+import { variables } from "./variables";
 import { views } from "./views";
-
-use(chaiAsPromised);
 
 describe("directives", () => {
   let response: AlexaReply;
@@ -26,66 +25,84 @@ describe("directives", () => {
 
   beforeEach(() => {
     const rb = new AlexaRequestBuilder();
-    const renderer = new Renderer({ views });
+    const renderer = new Renderer({ views, variables });
     event = new AlexaEvent(rb.getIntentRequest("AMAZON.YesIntent"));
 
     event.t = i18n.getFixedT(event.request.locale);
-    response = new AlexaReply(event, renderer);
+    event.renderer = renderer;
+    response = new AlexaReply();
   });
 
   describe("reply", () => {
-    it("should render arrays", async () => {
-      await reply(["Say.Say", "Question.Ask"])(response, event);
-      expect(response.response.statements).to.deep.equal(["say", "What time is it?"]);
+    it("should pick up the directive statements", async () => {
+      const transition: any = {};
+      await new Reply("Reply.Directives").writeToReply(response, event, transition);
+      expect(transition.directives).to.have.lengthOf(1);
+      expect(transition.directives[0]).to.be.an.instanceof(Hint);
+      expect(response.hasTerminated).to.be.false;
     });
 
-    it("should fail to add after a yield arrays", () => {
-      return expect(reply(["Question.Ask", "Question.Ask"])(response, event))
-        .to.eventually.be.rejectedWith(Error, "Can't append to already yielding response");
+    it("should pick up the tell statements", async () => {
+      await new Reply("Reply.Tell").writeToReply(response, event, {});
+      expect(response.speech).to.deep.equal("<speak>this is a tell</speak>");
+      expect(response.hasTerminated).to.be.true;
     });
+
+    it("should pick up the ask statements", async () => {
+      await new Reply("Reply.Ask").writeToReply(response, event, {});
+      expect(response.speech).to.deep.equal("<speak>this is an ask</speak>");
+      expect(response.reprompt).to.deep.equal("<speak>this is a reprompt</speak>");
+      expect(response.hasTerminated).to.be.false;
+    });
+
+    it("should ask and directives and reprmpt", async () => {
+      const transition: any = {};
+      await new Reply("Reply.Combined").writeToReply(response, event, transition);
+      expect(response.speech).to.deep.equal("<speak>this is an ask</speak>");
+      expect(response.reprompt).to.deep.equal("<speak>this is a reprompt</speak>");
+      expect(transition.directives).to.have.lengthOf(1);
+      expect(transition.directives[0]).to.be.an.instanceof(Hint);
+      expect(response.hasTerminated).to.be.false;
+    });
+
   });
 
   describe("tell", () => {
     it("should end the session", async () => {
-      await tell("Question.Ask.ask")(response, event);
-      expect(response.response.statements).to.deep.equal(["What time is it?"]);
-      expect(response.response.terminate).to.be.true;
+      await new Tell("Question.Ask.ask").writeToReply(response, event, {});
+      expect(response.speech).to.deep.equal("<speak>What time is it?</speak>");
+      expect(response.hasTerminated).to.be.true;
     });
   });
 
   describe("ask", () => {
     it("should render ask statements", async () => {
-      await ask("Question.Ask.ask")(response, event);
-      expect(response.response.statements).to.deep.equal(["What time is it?"]);
+      await new Ask("Question.Ask.ask").writeToReply(response, event, {});
+      expect(response.speech).to.deep.equal("<speak>What time is it?</speak>");
     });
 
     it("should not terminate the session", async () => {
-      await ask("Question.Ask.ask")(response, event);
-      expect(response.response.terminate).to.be.false;
-    });
-
-    it("should yield", async () => {
-      await ask("Question.Ask.ask")(response, event);
-      expect(response.isYielding()).to.be.true;
+      await new Ask("Question.Ask.ask").writeToReply(response, event, {});
+      expect(response.hasTerminated).to.be.false;
     });
   });
 
   describe("say", () => {
     it("should render ask statements", async () => {
-      await say("Question.Ask.ask")(response, event);
-      expect(response.response.statements).to.deep.equal(["What time is it?"]);
+      await new Say("Question.Ask.ask").writeToReply(response, event, {});
+      expect(response.speech).to.deep.equal("<speak>What time is it?</speak>");
     });
 
     it("should not terminate the session", async () => {
-      await say("Question.Ask.ask")(response, event);
-      expect(response.response.terminate).to.be.false;
+      await new Say("Question.Ask.ask").writeToReply(response, event, {});
+      expect(response.hasTerminated).to.be.false;
     });
   });
 
   describe("reprompt", () => {
     it("should render reprompt statements", async () => {
-      await reprompt("Question.Ask.ask")(response, event);
-      expect(response.response.reprompt).to.equal("What time is it?");
+      await new Reprompt("Question.Ask.ask").writeToReply(response, event, {});
+      expect(response.reprompt).to.equal("<speak>What time is it?</speak>");
     });
   });
 });
