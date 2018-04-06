@@ -5,12 +5,12 @@
     "sourceMap": true,
     "strictNullChecks": true,
     "module": "commonjs",
-    "target": "ES5",
+    "target": "ES6",
     "noImplicitAny": true,
     "allowJs": false,
     "moduleResolution": "node",
     "strict": true,
-    "lib": ["ES6", "ES2015"]
+    "lib": ["ES2015"]
   },
   "include": [
     "./src/",

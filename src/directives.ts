@@ -69,7 +69,7 @@ export class Reply implements IDirective {
 }
 
 export class Reprompt implements IDirective {
-  public static key: string = "ask";
+  public static key: string = "reprompt";
   public static platform: string = "core";
   public viewPath: string;
 

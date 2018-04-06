@@ -32,4 +32,8 @@ export class DialogFlowEvent extends IVoxaEvent {
   get user() {
     return _.get(this, "originalRequest.data.user", {});
   }
+
+  get capabilities() {
+    return _.map(_.get(this, "originalRequest.data.surface.capabilities"), "name");
+  }
 }

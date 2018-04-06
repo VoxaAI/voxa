@@ -163,15 +163,24 @@ export class AccountLinkingCard implements IDirective {
   }
 }
 
-// export class MediaResponse implements IDirective {
-  // public static platform: string = "dialogFlow";
-  // public static key: string = "dialogFlowMediaResponse";
+export class MediaResponse implements IDirective {
+  public static platform: string = "dialogFlow";
+  public static key: string = "dialogFlowMediaResponse";
 
-  // public constructor(public mediaObject: Responses.MediaObject) { }
+  public constructor(public mediaObject: Responses.MediaObject) { }
 
-  // public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    // const mediaResponse: Responses.MediaResponse = {
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    const dialogFlowEvent = event as DialogFlowEvent;
+    if (!_.includes(dialogFlowEvent.capabilities, "actions.capability.AUDIO_OUTPUT")) {
+      return;
+    }
 
-    // }
-  // }
-// }
+    const mediaResponse = new Responses.MediaResponse(Responses.MediaValues.Type.AUDIO)
+      .addMediaObjects(this.mediaObject);
+
+    const richResponse = _.get(reply, "data.google.richResponse", new Responses.RichResponse());
+    richResponse.addMediaResponse(mediaResponse);
+
+    (reply as DialogFlowReply).data.google.richResponse = richResponse;
+  }
+}

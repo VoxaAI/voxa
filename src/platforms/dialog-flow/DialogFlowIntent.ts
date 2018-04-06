@@ -17,6 +17,7 @@ export class DialogFlowIntent implements IVoxaIntent {
       this.name = rawEvent.result.metadata.intentName;
     }
 
+    this.name = this.name.replace(/^AMAZON./, "");
     this.params = this.getParams();
   }
 

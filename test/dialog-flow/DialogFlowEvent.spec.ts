@@ -20,17 +20,11 @@ describe("DialogFlowEvent", () => {
   it("should format session parameters", () => {
     const event = new DialogFlowEvent(fallbackIntent, {});
     expect(event.session.attributes).to.deep.equal({
-      actions_capability_audio_output: {},
-      actions_capability_screen_output: {},
-      google_assistant_input_type_keyboard: {},
-      model: {
         command: {
           buy: 0,
           feed: 0,
           plant: 0,
         },
-      },
-      state: "die",
     });
   });
 });
