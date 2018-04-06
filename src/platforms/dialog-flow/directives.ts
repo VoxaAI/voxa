@@ -102,9 +102,7 @@ export class Suggestions implements IDirective {
     }
 
     const richResponse = _.get(reply, "data.google.richResponse", new Responses.RichResponse());
-    richResponse.addSuggestions(suggestions)
-
-    (reply as DialogFlowReply).data.google.richResponse = richResponse;
+    (reply as DialogFlowReply).data.google.richResponse = richResponse.addSuggestions(suggestions);
   }
 }
 
@@ -133,9 +131,7 @@ export class BasicCard implements IDirective {
     }
 
     const richResponse = _.get(reply, "data.google.richResponse", new Responses.RichResponse());
-    richResponse.addBasicCard(basicCard);
-
-    (reply as DialogFlowReply).data.google.richResponse = richResponse;
+    (reply as DialogFlowReply).data.google.richResponse = richResponse.addBasicCard(basicCard);
   }
 }
 
@@ -179,8 +175,10 @@ export class MediaResponse implements IDirective {
       .addMediaObjects(this.mediaObject);
 
     const richResponse = _.get(reply, "data.google.richResponse", new Responses.RichResponse());
-    richResponse.addMediaResponse(mediaResponse);
+    if (richResponse.items.length === 0) {
+      throw new Error("MediaResponse requires another simple response first");
+    }
 
-    (reply as DialogFlowReply).data.google.richResponse = richResponse;
+    (reply as DialogFlowReply).data.google.richResponse = richResponse.addMediaResponse(mediaResponse);
   }
 }
