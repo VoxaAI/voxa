@@ -388,7 +388,6 @@ export class VoxaApp {
 
     }
 
-
     if (transition.directives) {
       if (_.isString(transition.directives)) {
         transition.directives = await voxaEvent.renderer.renderPath(transition.directives, voxaEvent);
