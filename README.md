@@ -1,6 +1,6 @@
 Voxa
 ====================
-Voxa is an framework that provides a way to organize a conversational experience into a state machine. Even the most complex voice user interface (VUI) can be represented through the state machine and it provides the flexibility needed to both be rigid when needed in specific states and flexible to jump around states when needed.  
+Voxa is a framework that provides a way to organize a conversational experience into a state machine. Even the most complex voice user interface (VUI) can be represented through the state machine and it provides the flexibility needed to both be rigid when needed in specific states and flexible to jump around states when needed. 
 
 Why Voxa vs other frameworks
 ----------------------------
