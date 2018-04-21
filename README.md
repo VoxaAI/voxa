@@ -1,12 +1,16 @@
 Voxa
 ====================
+Voxa is an framework that provides a way to organize a conversational experience into a state machine. Even the most complex voice user interface (VUI) can be represented through the state machine and it provides the flexibility needed to both be rigid when needed in specific states and flexible to jump around states when needed.  
 
-[![Build Status](https://travis-ci.org/mediarain/voxa.svg?branch=master)](https://travis-ci.org/mediarain/voxa)
-[![Coverage Status](https://coveralls.io/repos/github/mediarain/voxa/badge.svg?branch=master)](https://coveralls.io/github/mediarain/voxa?branch=master)
-[![Documentation](https://readthedocs.org/projects/voxa/badge/)](http://voxa.readthedocs.io/en/latest/)
-[![npm](https://img.shields.io/npm/dm/voxa.svg)](https://www.npmjs.com/package/voxa)
+Why Voxa vs other frameworks
+----------------------------
+Voxa provides a more robust framework for building Alexa skills.  It provides a design pattern that wasn’t found in other frameworks.   Critical to Voxa was providing a pluggable interface and supporting all of the latest ASK features.  
 
-A fsm (state machine) framework for Alexa apps using Node.js
+Platform Support
+-------------
+
+![Alexa](/assets/img/alexa.png) ![Assistant](/assets/img/assistant.png) ![Cortana](/assets/img/cortana.png)
+
 
 Installation
 -------------
@@ -53,6 +57,12 @@ An extensive test suite with more than 90% code coverage
 ```bash
 npm run test
 ```
+
+[![Build Status](https://travis-ci.org/mediarain/voxa.svg?branch=master)](https://travis-ci.org/mediarain/voxa)
+[![Coverage Status](https://coveralls.io/repos/github/mediarain/voxa/badge.svg?branch=master)](https://coveralls.io/github/mediarain/voxa?branch=master)
+[![Documentation](https://readthedocs.org/projects/voxa/badge/)](http://voxa.readthedocs.io/en/latest/)
+[![npm](https://img.shields.io/npm/dm/voxa.svg)](https://www.npmjs.com/package/voxa)
+
 
 JS Code linting
 -----------------
