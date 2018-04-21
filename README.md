@@ -52,7 +52,7 @@ exports.handler = function handler(event, context, callback) {
 Tests
 ------
 
-An extensive test suite with more than 90% code coverage
+An extensive test suite with more than 99% code coverage
 
 ```bash
 npm run test
@@ -76,5 +76,3 @@ Resources
 
 * [Documentation](http://voxa.readthedocs.io/en/latest/)
 * [Bug Tracker](https://github.com/mediarain/voxa/issues)
-* [Mail List](https://groups.google.com/d/forum/voxa-framework) (https://groups.google.com/d/forum/voxa-framework)
-* [IRC](irc://chat.freenode.net/voxa) (chat.freenode.net, #voxa)
