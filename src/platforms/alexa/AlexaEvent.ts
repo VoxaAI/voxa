@@ -22,6 +22,8 @@ export class AlexaEvent extends IVoxaEvent {
   public intent!: IVoxaIntent;
 
   public requestToIntent: any = {
+    "AlexaSkillEvent.SkillEnabled": "AlexaSkillEvent.SkillEnabled",
+    "AlexaSkillEvent.SkillDisabled": "AlexaSkillEvent.SkillDisabled",
     "AudioPlayer.PlaybackStarted": "AudioPlayer.PlaybackStarted",
     "AudioPlayer.PlaybackFinished": "AudioPlayer.PlaybackFinished",
     "AudioPlayer.PlaybackStopped": "AudioPlayer.PlaybackStopped",
