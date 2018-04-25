@@ -22,6 +22,10 @@ export class AlexaEvent extends IVoxaEvent {
   public intent!: IVoxaIntent;
 
   public requestToIntent: any = {
+    "AudioPlayer.PlaybackStarted": "AudioPlayer.PlaybackStarted",
+    "AudioPlayer.PlaybackFinished": "AudioPlayer.PlaybackFinished",
+    "AudioPlayer.PlaybackStopped": "AudioPlayer.PlaybackStopped",
+    "AudioPlayer.PlaybackFailed": "AudioPlayer.PlaybackFailed",
     "AudioPlayer.PlaybackNearlyFinished": "AudioPlayer.PlaybackNearlyFinished",
     "Display.ElementSelected": "Display.ElementSelected",
     "LaunchRequest": "LaunchIntent",
