@@ -369,7 +369,16 @@ export class VoxaApp {
       _.filter(this.directiveHandlers, { platform: voxaEvent.platform }),
     );
 
-    const pairs = _.toPairs(transition);
+    const directivesKeyOrder = _.map(directives, "key");
+
+    const pairs = _(transition)
+    .toPairs()
+    .sortBy((pair) => {
+      const [key, value] = pair;
+      return _.indexOf(directivesKeyOrder, key);
+    })
+    .value();
+
     while (pairs.length) {
       const pair = pairs.shift();
       if (!pair) {

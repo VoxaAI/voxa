@@ -4,7 +4,10 @@ import * as i18n from "i18next";
 import * as _ from "lodash";
 import "mocha";
 
+import { DialogFlowEvent } from "../../src/platforms/dialog-flow/DialogFlowEvent";
 import { DialogFlowPlatform } from "../../src/platforms/dialog-flow/DialogFlowPlatform";
+import { DialogFlowReply } from "../../src/platforms/dialog-flow/DialogFlowReply";
+import { MediaResponse } from "../../src/platforms/dialog-flow/directives";
 import { VoxaApp } from "../../src/VoxaApp";
 import { variables } from "./../variables";
 import { views } from "./../views";
@@ -26,6 +29,66 @@ describe("DialogFlow Directives", () => {
     app =  new VoxaApp({ views, variables });
     dialogFlowAgent = new DialogFlowPlatform(app);
     event = require("../requests/dialog-flow/launchIntent.json");
+  });
+
+  describe("MediaResponse", () => {
+    it("should add a MediaResponse", async () => {
+      const mediaObject = new Responses.MediaObject("Title", "https://example.com/example.mp3");
+
+      app.onIntent("LaunchIntent", {
+        dialogFlowMediaResponse: mediaObject,
+        sayp: "Hello!",
+        to: "die",
+      });
+
+      const reply = await dialogFlowAgent.execute(event, {});
+
+      expect(reply.data.google.richResponse).to.deep.equal({
+      items: [
+        {
+          simpleResponse: {
+            ssml: "<speak>Hello!</speak>",
+          },
+        },
+        {
+          mediaResponse: {
+            mediaObjects: [
+              {
+                contentUrl: "https://example.com/example.mp3",
+                description: undefined,
+                icon: undefined,
+                largeImage: undefined,
+                name: "Title",
+              },
+            ],
+            mediaType: "AUDIO",
+          },
+        },
+      ],
+      linkOutSuggestion: undefined,
+      suggestions: [],
+      });
+    });
+
+    it("should throw an error if trying to add a MediaResponse without a simpleResponse first", async () => {
+      const reply = new DialogFlowReply();
+      const dialogFlowEvent = new DialogFlowEvent(event, {});
+      const mediaObject = new Responses.MediaObject("Title", "https://example.com/example.mp3");
+      const mediaResponse = new MediaResponse(mediaObject);
+
+      let error: Error|null = null;
+      try {
+        await mediaResponse.writeToReply(reply, dialogFlowEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("Error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+      expect(error.message).to.equal("MediaResponse requires another simple response first");
+    });
   });
 
   describe("Carousel", () => {

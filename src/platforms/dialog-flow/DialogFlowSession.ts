@@ -26,6 +26,7 @@ export class DialogFlowSession implements IVoxaSession {
       return {};
     }
     const attributes = _(this.contexts)
+      .filter({ name: "model" })
       .map((context: any) => {
         const contextName = context.name;
         let contextParams: any;
@@ -39,6 +40,6 @@ export class DialogFlowSession implements IVoxaSession {
       .fromPairs()
       .value();
 
-    return attributes;
+    return attributes.model || {};
   }
 }

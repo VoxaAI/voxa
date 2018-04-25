@@ -13,7 +13,7 @@ export { Renderer } from "./renderers/Renderer";
 export { VoxaApp } from "./VoxaApp";
 
 import {
-  AccountLinkingCard,
+  AccountLinkingCard as AlexaAccountLinkingCard,
   DialogDelegate,
   HomeCard,
   PlayAudio,
@@ -29,6 +29,17 @@ import {
   SuggestedActions,
 } from "./platforms/botframework/directives";
 
+import { BotFrameworkReply } from "./platforms/botframework/BotFrameworkReply";
+
+import {
+  AccountLinkingCard as DialogFlowAccountLinkingCard,
+  BasicCard,
+  Carousel,
+  List,
+  MediaResponse,
+  Suggestions,
+} from "./platforms/dialog-flow/directives";
+
 import {
   autoLoad,
   replaceIntent,
@@ -42,7 +53,7 @@ export const plugins = {
 };
 
 export const alexa = {
-  AccountLinkingCard,
+  AccountLinkingCard: AlexaAccountLinkingCard,
   DialogDelegate,
   DisplayTemplate,
   HomeCard,
@@ -53,7 +64,17 @@ export const alexa = {
 
 export const botframework = {
   AudioCard,
+  BotFrameworkReply,
   HeroCard,
   SigninCard,
   SuggestedActions,
+};
+
+export const dialogFlow = {
+  AccountLinkingCard: DialogFlowAccountLinkingCard,
+  BasicCard,
+  Carousel,
+  List,
+  MediaResponse,
+  Suggestions,
 };
