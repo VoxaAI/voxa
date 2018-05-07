@@ -121,27 +121,27 @@ export class Renderer {
       .uniq(statement.match(tokenRegx) || [])
       .map((str: string) => str.substring(1, str.length - 1));
 
-    const qVariables = _(this.config.variables)
-      .toPairs()
-      .filter((item) => _.includes(tokenKeys, item[0]))
-      .map((item) => [item[0], item[1](voxaEvent) ])
+    const qVariables = _(tokenKeys)
+      .map((token) => {
+        if (!this.config.variables[token]) {
+          throw new Error(`No such variable in views, ${token}`);
+        }
+
+        return [token, this.config.variables[token](voxaEvent)];
+      })
       .flatten()
       .value();
 
-    try {
-      const vars = await Promise.all(qVariables);
-      const data = _(vars).chunk(2).fromPairs().value();
-      const dataKeys = _.keys(data);
-      const dataValues = _.values(data);
+    const vars = await Promise.all(qVariables);
+    const data = _(vars).chunk(2).fromPairs().value();
+    const dataKeys = _.keys(data);
+    const dataValues = _.values(data);
 
-      if (_.isEmpty(statement.replace(tokenRegx, "").trim()) && dataKeys.length === 1) {
-        const singleValue = (_.head(dataValues));
-        return _.isObject(singleValue) ? singleValue : _.template(statement)(data);
-      }
-
-      return _.template(statement)(data);
-    } catch (err) {
-      throw new Error(`No such variable in views, ${err}`);
+    if (_.isEmpty(statement.replace(tokenRegx, "").trim()) && dataKeys.length === 1) {
+      const singleValue = (_.head(dataValues));
+      return _.isObject(singleValue) ? singleValue : _.template(statement)(data);
     }
+
+    return _.template(statement)(data);
   }
 }
