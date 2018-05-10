@@ -108,10 +108,10 @@ describe("DialogFlow Directives", () => {
       });
 
       const reply = await dialogFlowAgent.execute(event, {});
-      expect(reply.data.google.possibleIntents).to.deep.equal({
-        inputValueData: {
+      expect(reply.data.google.systemIntent).to.deep.equal({
+        data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
-          "carouselselect": {
+          "carouselSelect": {
             items: [{
               description: "The item description",
               image: {
@@ -139,8 +139,8 @@ describe("DialogFlow Directives", () => {
       });
 
       const reply = await dialogFlowAgent.execute(event, {});
-      expect(reply.data.google.possibleIntents).to.deep.equal({
-        inputValueData: {
+      expect(reply.data.google.systemIntent).to.deep.equal({
+        data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
           "listSelect": {
             items: [{
@@ -174,8 +174,8 @@ describe("DialogFlow Directives", () => {
       });
 
       const reply = await dialogFlowAgent.execute(event, {});
-      expect(reply.data.google.possibleIntents).to.deep.equal({
-        inputValueData: {
+      expect(reply.data.google.systemIntent).to.deep.equal({
+        data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
           "listSelect": {
             items: [{

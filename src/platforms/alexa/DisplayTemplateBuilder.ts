@@ -1,28 +1,51 @@
-import { Image, Template, TemplateBackButtonVisibility, TemplateType, TextContent, TextField } from "alexa-sdk";
+import { interfaces } from "ask-sdk-model";
+import * as _ from "lodash";
 
-export class DisplayTemplate {
-  public type: string = "Display.RenderTemplate";
-  public template: Template;
+export type TitleTemplateType = (
+  interfaces.display.BodyTemplate1 |
+  interfaces.display.BodyTemplate2 |
+  interfaces.display.BodyTemplate3 |
+  interfaces.display.BodyTemplate7 |
+  interfaces.display.ListTemplate1 |
+  interfaces.display.ListTemplate2
+);
 
-  constructor(type: TemplateType) {
+export type ListTemplateType = (
+  interfaces.display.ListTemplate1 |
+  interfaces.display.ListTemplate2
+);
+
+export class DisplayTemplate implements interfaces.display.RenderTemplateDirective {
+  public type!: "Display.RenderTemplate";
+  public template!: interfaces.display.Template;
+
+  constructor(type: any) {
+    this.type = "Display.RenderTemplate";
     this.template = {
-      backButton: "VISIBLE",
-      token: "",
       type,
     };
   }
 
   public setTitle(title: string) {
+    if (!isTitleTemplate(this.template)) {
+      throw new Error("This template does not support a title");
+    }
+
     this.template.title = title;
     return this;
   }
 
   public addItem(token: string, image: string, text1: string, text2?: string, text3?: string): DisplayTemplate {
-    const item = {
+    if (!isListTemplate(this.template)) {
+      throw new Error("This template does not support a list items");
+    }
+
+    const item: interfaces.display.ListItem = {
       image: image ? toImage(image) : undefined,
       textContent: toTextContext(text1, text2, text3),
       token,
     };
+
     this.template.listItems = this.template.listItems || [];
     this.template.listItems.push(item);
     return this;
@@ -33,7 +56,7 @@ export class DisplayTemplate {
     return this;
   }
 
-  public setBackButton(state: TemplateBackButtonVisibility): DisplayTemplate {
+  public setBackButton(state: interfaces.display.BackButtonBehavior): DisplayTemplate {
     this.template.backButton = state;
     return this;
   }
@@ -50,7 +73,7 @@ export class DisplayTemplate {
 
 }
 
-function toImage(image: string, contentDescription: string = ""): Image {
+function toImage(image: string, contentDescription: string = ""): interfaces.display.Image {
   return {
     contentDescription,
     sources: [
@@ -61,8 +84,8 @@ function toImage(image: string, contentDescription: string = ""): Image {
   };
 }
 
-function toTextContext(text1: string, text2?: string, text3?: string): TextContent {
-  const textContent: TextContent = {
+function toTextContext(text1: string, text2?: string, text3?: string): interfaces.display.TextContent {
+  const textContent: interfaces.display.TextContent = {
     primaryText: toRichText(text1),
   };
 
@@ -77,9 +100,27 @@ function toTextContext(text1: string, text2?: string, text3?: string): TextConte
   return textContent;
 }
 
-function toRichText(text: string): TextField {
+function toRichText(text: string): interfaces.display.TextField {
   return {
     text,
     type: "RichText",
   };
+}
+
+function isTitleTemplate(template: any): template is TitleTemplateType  {
+  return _.includes([
+    "BodyTemplate1",
+    "BodyTemplate2",
+    "BodyTemplate3",
+    "BodyTemplate7",
+    "ListTemplate1",
+    "ListTemplate2",
+  ], template.type);
+}
+
+function isListTemplate(template: any): template is ListTemplateType {
+  return _.includes([
+    "ListTemplate1",
+    "ListTemplate2",
+  ], template.type);
 }

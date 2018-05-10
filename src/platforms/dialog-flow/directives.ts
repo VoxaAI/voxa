@@ -4,7 +4,7 @@ import * as _ from "lodash";
 import { IDirective } from "../../directives";
 import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";
-import { IVoxaReply } from "../../VoxaReply";
+import { addToSSML, IVoxaReply } from "../../VoxaReply";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 import { DialogFlowReply } from "./DialogFlowReply";
 import { InputValueDataTypes, StandardIntents } from "./interfaces";
@@ -33,13 +33,15 @@ export class List implements IDirective {
       listSelect = this.list;
     }
 
-    (reply as DialogFlowReply).data.google.possibleIntents = {
-      inputValueData: {
+    const systemIntent = {
+      data: {
         "@type": InputValueDataTypes.OPTION,
         listSelect,
       },
-      intent: StandardIntents.OPTION,
+      intent: "actions.intent.OPTION",
     };
+
+    (reply as DialogFlowReply).data.google.systemIntent =  systemIntent;
   }
 }
 
@@ -60,20 +62,22 @@ export class Carousel implements IDirective {
   }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    let carouselselect;
+    let carouselSelect;
     if (this.viewPath) {
-      carouselselect = await event.renderer.renderPath(this.viewPath, event);
+      carouselSelect = await event.renderer.renderPath(this.viewPath, event);
     } else {
-      carouselselect = this.list;
+      carouselSelect = this.list;
     }
 
-    (reply as DialogFlowReply).data.google.possibleIntents = {
-      inputValueData: {
+    const systemIntent = {
+      data: {
         "@type": InputValueDataTypes.OPTION,
-        carouselselect,
+        carouselSelect,
       },
-      intent: StandardIntents.OPTION,
+      intent: "actions.intent.OPTION",
     };
+
+    (reply as DialogFlowReply).data.google.systemIntent =  systemIntent;
   }
 }
 
@@ -141,20 +145,19 @@ export class AccountLinkingCard implements IDirective {
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     reply.speech = "login";
-    (reply as DialogFlowReply).data.google = {
-      expectUserResponse: true,
-      inputPrompt: {
-        initialPrompts: [
-          {
-            textToSpeech: "PLACEHOLDER_FOR_SIGN_IN",
-          },
-        ],
-        noInputPrompts: [],
-      },
-      systemIntent: {
-        inputValueData: {},
-        intent: "actions.intent.SIGN_IN",
-      },
+    const google: any = (reply as DialogFlowReply).data.google;
+    google.expectUserResponse = true;
+    google.inputPrompt = {
+      initialPrompts: [
+        {
+          textToSpeech: "PLACEHOLDER_FOR_SIGN_IN",
+        },
+      ],
+      noInputPrompts: [],
+    };
+    google.systemIntent = {
+      inputValueData: {},
+      intent: "actions.intent.SIGN_IN",
     };
   }
 }
@@ -172,7 +175,7 @@ export class MediaResponse implements IDirective {
     }
 
     const mediaResponse = new Responses.MediaResponse(Responses.MediaValues.Type.AUDIO)
-      .addMediaObjects(this.mediaObject);
+    .addMediaObjects(this.mediaObject);
 
     const richResponse = _.get(reply, "data.google.richResponse", new Responses.RichResponse());
     if (richResponse.items.length === 0) {

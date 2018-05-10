@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 
-import { ResponseBody } from "alexa-sdk";
+import { ResponseEnvelope } from "ask-sdk-model";
 
 import { VoxaApp } from "../../VoxaApp";
 import { VoxaPlatform } from "../VoxaPlatform";
@@ -49,7 +49,7 @@ export class AlexaPlatform extends VoxaPlatform {
     return AlexaRequests;
   }
 
-  public async execute(rawEvent: any, context: any): Promise<ResponseBody> {
+  public async execute(rawEvent: any, context: any): Promise<ResponseEnvelope> {
     const alexaEvent = new AlexaEvent(rawEvent, context);
     const reply = await this.app.execute(alexaEvent, new AlexaReply()) as AlexaReply;
 
