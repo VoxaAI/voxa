@@ -55,14 +55,12 @@ describe("Alexa directives", () => {
 
       const reply = await alexaSkill.execute(event, {});
       expect(reply.response.directives).to.not.be.undefined;
-      expect(JSON.parse(JSON.stringify(reply.response.directives[0]))).to.deep.equal({
+      expect(JSON.parse(JSON.stringify(reply.response.directives))).to.deep.equal([{
         template: {
-          backButton: "VISIBLE",
-          token: "",
           type: "BodyTemplate1",
         },
         type: "Display.RenderTemplate",
-      });
+      }]);
     });
 
     it("should add to the directives", async () => {
@@ -73,7 +71,7 @@ describe("Alexa directives", () => {
 
       const reply = await alexaSkill.execute(event, {});
       expect(reply.response.directives).to.not.be.undefined;
-      expect(reply.response.directives[0]).to.deep.equal({
+      expect(reply.response.directives).to.deep.equal([{
         template: {
           backButton: "VISIBLE",
           backgroundImage: "Image",
@@ -96,21 +94,11 @@ describe("Alexa directives", () => {
           type: "BodyTemplate1",
         },
         type: "Display.RenderTemplate",
-      });
+      }]);
     });
   });
 
   describe("Hint", () => {
-
-    it("should only render a single Hint directive", async () => {
-      const reply = await alexaSkill.execute(event, {});
-      if (!reply.response.outputSpeech) {
-        throw new Error("response missing");
-      }
-
-      expect(reply.response.outputSpeech.ssml).to.equal("<speak>An unrecoverable error occurred.</speak>");
-    });
-
     it("should render a Hint directive", async () => {
       app.onIntent("YesIntent", {
         alexaHint: "Hint",
@@ -229,7 +217,7 @@ describe("Alexa directives", () => {
         throw new Error("response missing");
       }
 
-      expect(reply.response.outputSpeech.ssml).to.equal("<speak>An unrecoverable error occurred.</speak>");
+      expect(_.get(reply.response, "outputSpeech.ssml")).to.equal("<speak>An unrecoverable error occurred.</speak>");
     });
   });
 });

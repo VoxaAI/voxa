@@ -137,10 +137,13 @@ describe("Renderer", () => {
   });
 
   it("should fail for missing variables", (done) => {
-    renderer.renderMessage({ say: "{missing}" }, event).then(() => done("Should have thrown"), (error) => {
-      expect(error.message).to.equal("No such variable in views, ReferenceError: missing is not defined");
-      done();
-    });
+    renderer.renderMessage({ say: "{missing}" }, event)
+      .then(() => done("Should have failed"))
+      .catch((error) => {
+        expect(error.message).to.equal("No such variable in views, missing");
+        done();
+      });
+
   });
 
   it("should throw an exception if path doesn't exists", (done) => {

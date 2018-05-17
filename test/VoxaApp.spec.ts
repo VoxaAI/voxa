@@ -352,8 +352,9 @@ describe("VoxaApp", () => {
     const reply = await voxaApp.execute(event, new AlexaReply()) as AlexaReply;
     expect(reply.response.directives).to.not.be.undefined;
     expect(reply.response.directives).to.have.length(1);
-    expect(reply.response.directives[0]).to.deep.equal({
+    expect(reply.response.directives).to.deep.equal([{
       audioItem: {
+        metadata: {},
         stream: {
           offsetInMilliseconds: 0,
           token: "123",
@@ -362,7 +363,7 @@ describe("VoxaApp", () => {
       },
       playBehavior: "REPLACE_ALL",
       type: "AudioPlayer.Play",
-    });
+    }]);
   });
 
   it("should include all directives in the reply even if die", async () => {
@@ -378,8 +379,9 @@ describe("VoxaApp", () => {
     const reply = await voxaApp.execute(event, new AlexaReply()) as AlexaReply;
     expect(reply.response.directives).to.not.be.undefined;
     expect(reply.response.directives).to.have.length(1);
-    expect(reply.response.directives[0]).to.deep.equal({
+    expect(reply.response.directives).to.deep.equal([{
       audioItem: {
+        metadata: {},
         stream: {
           offsetInMilliseconds: 0,
           token: "123",
@@ -388,7 +390,7 @@ describe("VoxaApp", () => {
       },
       playBehavior: "REPLACE_ALL",
       type: "AudioPlayer.Play",
-    });
+    }]);
   });
 
   it("should render all messages after each transition", async () => {

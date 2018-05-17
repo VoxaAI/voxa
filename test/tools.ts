@@ -1,8 +1,11 @@
-import { Session, SlotValue } from "alexa-sdk";
+import {
+  Context,
+  RequestEnvelope,
+  Session,
+  SessionEndedReason,
+} from "ask-sdk-model";
 import * as _ from "lodash";
 import { v1 } from "uuid";
-import { IAlexaRequest, ILaunchRequest, ISessionEndedRequest } from "../src/platforms/alexa/AlexaEvent";
-import { IIntentRequest } from "../src/platforms/alexa/AlexaIntent";
 
 export class AlexaRequestBuilder {
   public version = "1.0";
@@ -16,7 +19,7 @@ export class AlexaRequestBuilder {
     this.deviceId = applicationId || `amzn1.ask.device.${v1()}`;
   }
 
-  public getSessionEndedRequest(reason: string = "ERROR"): ISessionEndedRequest {
+  public getSessionEndedRequest(reason: SessionEndedReason = "ERROR"): RequestEnvelope {
     return {
       context: this.getContextData(),
       request: {
@@ -31,7 +34,7 @@ export class AlexaRequestBuilder {
     };
   }
 
-  public getIntentRequest(intentName: string, slots?: any): IIntentRequest {
+  public getIntentRequest(intentName: string, slots?: any): RequestEnvelope {
     if (!slots) {
       slots = {};
     } else {
@@ -45,7 +48,8 @@ export class AlexaRequestBuilder {
     return {
       context: this.getContextData(),
       request: {
-        intent: { name: intentName, slots },
+        dialogState: "STARTED",
+        intent: { name: intentName, slots, confirmationStatus: "NONE" },
         locale: "en-US",
         requestId: `EdwRequestId.${v1()}`,
         timestamp: new Date().toISOString(),
@@ -56,7 +60,7 @@ export class AlexaRequestBuilder {
     };
   }
 
-  public getContextData() {
+  public getContextData(): Context {
     return {
       AudioPlayer: {
         playerActivity: "IDLE",
@@ -92,7 +96,7 @@ export class AlexaRequestBuilder {
     };
   }
 
-  public getLaunchRequest(): ILaunchRequest {
+  public getLaunchRequest(): RequestEnvelope {
     return {
       context: this.getContextData(),
       request: {

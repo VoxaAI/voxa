@@ -1,9 +1,12 @@
-import { Reprompt, Response, ResponseBody, Template } from "alexa-sdk";
+import {
+  Response,
+  ResponseEnvelope,
+} from "ask-sdk-model";
 import * as _ from "lodash";
 import { Model } from "../../Model";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 
-export class AlexaReply implements IVoxaReply, ResponseBody {
+export class AlexaReply implements IVoxaReply, ResponseEnvelope {
   public version = "1.0";
   public response: Response = {};
   public sessionAttributes: any;
@@ -41,11 +44,7 @@ export class AlexaReply implements IVoxaReply, ResponseBody {
   }
 
   public get speech(): string {
-    if (!!this.response && !!this.response.outputSpeech && !!this.response.outputSpeech.ssml) {
-      return this.response.outputSpeech.ssml;
-    }
-
-    return "";
+    return _.get(this.response, "outputSpeech.ssml", "");
   }
 
   public get reprompt(): string {
@@ -53,38 +52,49 @@ export class AlexaReply implements IVoxaReply, ResponseBody {
   }
 
   public addStatement(statement: string, isPlain: boolean = false) {
-    const type = isPlain ? "PlainText" : "SSML";
-    if (!this.response.outputSpeech) {
-      this.response.outputSpeech = { type };
-    }
-
     if (!("shouldEndSession" in this.response)) {
       this.response.shouldEndSession = false;
     }
 
     if (isPlain) {
-      this.response.outputSpeech.ssml = undefined;
-      this.response.outputSpeech.text = this.response.outputSpeech.text || "";
-      this.response.outputSpeech.text = addToText(this.response.outputSpeech.text, statement);
+      let text: string = _.get(this.response, "outputSpeech.text", "");
+      text = addToText(text, statement);
+      this.response.outputSpeech = {
+        text,
+        type: "PlainText",
+      };
     } else {
-      this.response.outputSpeech.text = undefined;
-      this.response.outputSpeech.ssml = this.response.outputSpeech.ssml || "<speak></speak>";
-      this.response.outputSpeech.ssml = addToSSML(this.response.outputSpeech.ssml, statement);
+      let ssml: string = _.get(this.response, "outputSpeech.ssml", "<speak></speak>");
+      ssml = addToSSML(ssml, statement);
+      this.response.outputSpeech = {
+        ssml,
+        type: "SSML",
+      };
     }
   }
 
-  public addReprompt(statement: string) {
-    if (!this.response.reprompt) {
+  public addReprompt(statement: string, isPlain: boolean = false) {
+    const type = isPlain ? "PlainText" : "SSML";
+    if (isPlain) {
+      let text: string = _.get(this.response.reprompt, "outputSpeech.text", "");
+      text = addToText(text, statement);
       this.response.reprompt = {
-        outputSpeech: {
-          ssml: "<speak></speak>",
+        outputSpeech : {
+          text,
+          type: "PlainText",
+        },
+      };
+    } else {
+      let ssml: string = _.get(this.response.reprompt, "outputSpeech.ssml", "<speak></speak>");
+      ssml = addToSSML(ssml, statement);
+      this.response.reprompt = {
+        outputSpeech : {
+          ssml,
           type: "SSML",
         },
       };
     }
 
-    const base = _.get(this.response, "reprompt.outputSpeech.ssml", "");
-    this.response.reprompt.outputSpeech.ssml = addToSSML(base, statement);
   }
 
   public clear() {
@@ -96,9 +106,9 @@ export class AlexaReply implements IVoxaReply, ResponseBody {
       return false;
     }
 
-    const allDirectives = this.response.directives || [];
+    let allDirectives: any[] = this.response.directives || [];
     if (this.response.card) {
-      allDirectives.push({ type: "card", card: this.response.card });
+      allDirectives = _.concat(allDirectives, { type: "card", card: this.response.card });
     }
 
     return allDirectives.some((directive: any) => {

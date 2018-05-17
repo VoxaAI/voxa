@@ -1,23 +1,18 @@
-import { IntentRequest, SlotValue } from "alexa-sdk";
-import * as alexa from "alexa-sdk";
+import { Intent, Slot } from "ask-sdk-model";
 import * as _ from "lodash";
 import { IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
-
-export interface IIntentRequest extends alexa.RequestBody<alexa.IntentRequest> {
-  context: any;
-}
 
 export class AlexaIntent implements IVoxaIntent {
   public rawIntent: any;
   public name: string;
   public params: any;
 
-  constructor(rawIntent: alexa.Intent) {
+  constructor(rawIntent: Intent) {
     this.rawIntent = rawIntent;
     if (rawIntent) {
       this.name = rawIntent.name.replace(/^AMAZON./, "");
       this.params = _(rawIntent.slots)
-        .map((s: SlotValue) => [s.name, s.value])
+        .map((s: Slot) => [s.name, s.value])
         .fromPairs()
         .value();
     } else {
