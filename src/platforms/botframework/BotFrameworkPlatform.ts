@@ -53,6 +53,49 @@ export class BotFrameworkPlatform extends VoxaPlatform {
     this.applicationPassword = config.applicationPassword;
   }
 
+  // Botframework requires a lot more headers to work than
+  // the other platforms
+  public lambdaHTTP() {
+    const ALLOWED_HEADERS = [
+      "Content-Type",
+      "X-Amz-Date",
+      "Authorization",
+      "X-Api-Key",
+      "X-Amz-Security-Token",
+      "X-Amz-User-Agent",
+      "x-ms-client-session-id",
+      "x-ms-client-request-id",
+      "x-ms-effective-locale",
+    ];
+
+    return async (event: any, context: any, callback: (err: Error|null, result?: any) => void) => {
+      const response = {
+        body: "{}",
+        headers: {
+          "Access-Control-Allow-Headers": ALLOWED_HEADERS.join(","),
+          "Access-Control-Allow-Methods": "OPTIONS,POST,GET",
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json",
+        },
+        statusCode: 200,
+      };
+
+      if (event.httpMethod !== "POST") {
+        return callback(null, response);
+      }
+
+      try {
+        const body = JSON.parse(event.body);
+        const result = await this.execute(body, context);
+        response.body = JSON.stringify(result);
+
+        return callback(null, response);
+      } catch (error) {
+        return callback(error);
+      }
+    };
+  }
+
   public getDirectiveHandlers() {
     return [
       HeroCard,
