@@ -19,7 +19,7 @@ export class DialogFlowEvent extends IVoxaEvent {
     super(event, context);
     _.merge(this, {
       request: {
-        locale: event.lang,
+        locale: event.queryResult.languageCode,
         type: "IntentRequest",
       },
     }, event);
@@ -30,15 +30,15 @@ export class DialogFlowEvent extends IVoxaEvent {
   }
 
   get user() {
-    const userData = _.get(this, "originalRequest.data.user", {});
-    if (_.get(this, "originalRequest.data.user.user_id")) {
-      userData.userId = _.get(this, "originalRequest.data.user.user_id");
+    const userData = _.get(this, "originalDetectIntentRequest.payload.user", {});
+    if (userData.user_id) {
+      userData.userId = userData.user_id;
     }
 
     return userData;
   }
 
   get capabilities() {
-    return _.map(_.get(this, "originalRequest.data.surface.capabilities"), "name");
+    return _.map(_.get(this, "originalDetectIntentRequest.payload.surface.capabilities"), "name");
   }
 }

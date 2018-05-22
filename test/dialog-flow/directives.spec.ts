@@ -1,4 +1,4 @@
-import { Responses } from "actions-on-google";
+import { Carousel, List, MediaObject } from "actions-on-google";
 import { expect } from "chai";
 import * as i18n from "i18next";
 import * as _ from "lodash";
@@ -33,7 +33,10 @@ describe("DialogFlow Directives", () => {
 
   describe("MediaResponse", () => {
     it("should add a MediaResponse", async () => {
-      const mediaObject = new Responses.MediaObject("Title", "https://example.com/example.mp3");
+      const mediaObject = new MediaObject({
+        description: "Title",
+        url: "https://example.com/example.mp3",
+      });
 
       app.onIntent("LaunchIntent", {
         dialogFlowMediaResponse: mediaObject,
@@ -43,11 +46,11 @@ describe("DialogFlow Directives", () => {
 
       const reply = await dialogFlowAgent.execute(event, {});
 
-      expect(reply.data.google.richResponse).to.deep.equal({
+      expect(reply.payload.google.richResponse).to.deep.equal({
       items: [
         {
           simpleResponse: {
-            ssml: "<speak>Hello!</speak>",
+            textToSpeech: "<speak>Hello!</speak>",
           },
         },
         {
@@ -55,25 +58,26 @@ describe("DialogFlow Directives", () => {
             mediaObjects: [
               {
                 contentUrl: "https://example.com/example.mp3",
-                description: undefined,
+                description: "Title",
                 icon: undefined,
                 largeImage: undefined,
-                name: "Title",
+                name: undefined,
               },
             ],
             mediaType: "AUDIO",
           },
         },
       ],
-      linkOutSuggestion: undefined,
-      suggestions: [],
       });
     });
 
     it("should throw an error if trying to add a MediaResponse without a simpleResponse first", async () => {
       const reply = new DialogFlowReply();
       const dialogFlowEvent = new DialogFlowEvent(event, {});
-      const mediaObject = new Responses.MediaObject("Title", "https://example.com/example.mp3");
+      const mediaObject = new MediaObject({
+        description: "Title",
+        url: "https://example.com/example.mp3",
+      });
       const mediaResponse = new MediaResponse(mediaObject);
 
       let error: Error|null = null;
@@ -94,13 +98,14 @@ describe("DialogFlow Directives", () => {
   describe("Carousel", () => {
     it("should add a carousel from a Responses.Carousel to the reply", async () => {
 
-      const carousel = new Responses.Carousel();
-
-      const optionItem = new Responses.OptionItem()
-        .setTitle("The list item")
-        .setDescription("The item description")
-        .setImage("http://example.com/image.jpg", "The image");
-      carousel.addItems(optionItem);
+      const carousel = new Carousel({
+        items: {
+          LIST_ITEM: {
+            description: "The item description",
+            title: "the list item",
+          },
+        },
+      });
 
       app.onIntent("LaunchIntent", {
         dialogFlowCarousel: carousel,
@@ -108,22 +113,28 @@ describe("DialogFlow Directives", () => {
       });
 
       const reply = await dialogFlowAgent.execute(event, {});
-      expect(reply.data.google.systemIntent).to.deep.equal({
+      expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
           "carouselSelect": {
-            items: [{
-              description: "The item description",
-              image: {
-                accessibilityText: "The image",
-                url: "http://example.com/image.jpg",
+            intent: "actions.intent.OPTION",
+            inputValueData: {
+              "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
+              "carouselSelect": {
+                imageDisplayOptions: undefined,
+                items: [
+                  {
+                    optionInfo: {
+                      key: "LIST_ITEM",
+                      synonyms: undefined,
+                    },
+                    description: "The item description",
+                    image: undefined,
+                    title: "the list item",
+                  },
+                ],
               },
-              optionInfo: {
-                key: "",
-                synonyms: [],
-              },
-              title: "The list item",
-            }],
+            },
           },
         },
         intent: "actions.intent.OPTION",
@@ -139,7 +150,7 @@ describe("DialogFlow Directives", () => {
       });
 
       const reply = await dialogFlowAgent.execute(event, {});
-      expect(reply.data.google.systemIntent).to.deep.equal({
+      expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
           "listSelect": {
@@ -159,14 +170,19 @@ describe("DialogFlow Directives", () => {
     });
 
     it("should add a list from a Responses.List to the reply", async () => {
-      const list = new Responses.List()
-        .setTitle("The list select");
-
-      const optionItem = new Responses.OptionItem()
-        .setTitle("The list item")
-        .setDescription("The item description")
-        .setImage("http://example.com/image.jpg", "The image");
-      list.addItems(optionItem);
+      const list = new List({
+        items: {
+          LIST_ITEM: {
+            description: "The item description",
+            image: {
+              accessibilityText: "The image",
+              url: "http://example.com/image.jpg",
+            },
+            title: "The list item",
+          },
+        },
+        title: "The list select",
+      });
 
       app.onIntent("LaunchIntent", {
         dialogFlowList: list,
@@ -174,23 +190,32 @@ describe("DialogFlow Directives", () => {
       });
 
       const reply = await dialogFlowAgent.execute(event, {});
-      expect(reply.data.google.systemIntent).to.deep.equal({
+      console.log(JSON.stringify(reply.payload.google.systemIntent, null, 2));
+      expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
           "listSelect": {
-            items: [{
-              description: "The item description",
-              image: {
-                accessibilityText: "The image",
-                url: "http://example.com/image.jpg",
+            intent: "actions.intent.OPTION",
+            inputValueData: {
+              "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
+              "listSelect": {
+                title: "The list select",
+                items: [
+                  {
+                    optionInfo: {
+                      key: "LIST_ITEM",
+                      synonyms: undefined,
+                    },
+                    description: "The item description",
+                    image: {
+                      accessibilityText: "The image",
+                      url: "http://example.com/image.jpg",
+                    },
+                    title: "The list item",
+                  },
+                ],
               },
-              optionInfo: {
-                key: "",
-                synonyms: [],
-              },
-              title: "The list item",
-            }],
-            title: "The list select",
+            },
           },
         },
         intent: "actions.intent.OPTION",

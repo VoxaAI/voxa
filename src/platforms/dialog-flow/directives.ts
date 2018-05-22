@@ -1,4 +1,12 @@
-import { AssistantApp, Responses } from "actions-on-google";
+import {
+  GoogleActionsV2MediaObject,
+  GoogleActionsV2UiElementsBasicCard,
+  GoogleActionsV2UiElementsCarouselSelect,
+  GoogleCloudDialogflowV2IntentMessageListSelect,
+  MediaResponse as ActionsOnGoogleMediaResponse,
+  RichResponse,
+  Suggestions as ActionsOnGoogleSuggestions,
+} from "actions-on-google";
 import * as _ from "lodash";
 
 import { IDirective } from "../../directives";
@@ -14,9 +22,9 @@ export class List implements IDirective {
   public static key: string = "dialogFlowList";
 
   public viewPath?: string;
-  public list?: Responses.List;
+  public list?: GoogleCloudDialogflowV2IntentMessageListSelect;
 
-  constructor(viewPath: string|Responses.List) {
+  constructor(viewPath: string|GoogleCloudDialogflowV2IntentMessageListSelect) {
 
     if (_.isString(viewPath)) {
       this.viewPath = viewPath;
@@ -41,7 +49,7 @@ export class List implements IDirective {
       intent: "actions.intent.OPTION",
     };
 
-    (reply as DialogFlowReply).data.google.systemIntent =  systemIntent;
+    (reply as DialogFlowReply).payload.google.systemIntent =  systemIntent;
   }
 }
 
@@ -50,9 +58,9 @@ export class Carousel implements IDirective {
   public static key: string = "dialogFlowCarousel";
 
   public viewPath?: string;
-  public list?: Responses.Carousel;
+  public list?: GoogleActionsV2UiElementsCarouselSelect;
 
-  constructor(viewPath: string|Responses.Carousel) {
+  constructor(viewPath: string|GoogleActionsV2UiElementsCarouselSelect) {
 
     if (_.isString(viewPath)) {
       this.viewPath = viewPath;
@@ -77,7 +85,7 @@ export class Carousel implements IDirective {
       intent: "actions.intent.OPTION",
     };
 
-    (reply as DialogFlowReply).data.google.systemIntent =  systemIntent;
+    (reply as DialogFlowReply).payload.google.systemIntent =  systemIntent;
   }
 }
 
@@ -102,11 +110,12 @@ export class Suggestions implements IDirective {
     if (this.viewPath) {
       suggestions = await event.renderer.renderPath(this.viewPath, event);
     } else {
-      suggestions = this.suggestions;
+      suggestions = new ActionsOnGoogleSuggestions(this.suggestions || []);
     }
 
-    const richResponse = _.get(reply, "data.google.richResponse", new Responses.RichResponse());
-    (reply as DialogFlowReply).data.google.richResponse = richResponse.addSuggestions(suggestions);
+    console.log({ suggestions });
+    const richResponse = _.get(reply, "payload.google.richResponse", new RichResponse());
+    (reply as DialogFlowReply).payload.google.richResponse = richResponse.addSuggestion(suggestions);
   }
 }
 
@@ -115,9 +124,9 @@ export class BasicCard implements IDirective {
   public static key: string = "dialogFlowCard";
 
   public viewPath?: string;
-  public basicCard?: Responses.BasicCard;
+  public basicCard?: GoogleActionsV2UiElementsBasicCard;
 
-  constructor(viewPath: string|Responses.BasicCard) {
+  constructor(viewPath: string|GoogleActionsV2UiElementsBasicCard) {
 
     if (_.isString(viewPath)) {
       this.viewPath = viewPath;
@@ -134,8 +143,8 @@ export class BasicCard implements IDirective {
       basicCard = this.basicCard;
     }
 
-    const richResponse = _.get(reply, "data.google.richResponse", new Responses.RichResponse());
-    (reply as DialogFlowReply).data.google.richResponse = richResponse.addBasicCard(basicCard);
+    const richResponse = _.get(reply, "payload.google.richResponse", new RichResponse());
+    (reply as DialogFlowReply).payload.google.richResponse = richResponse.addBasicCard(basicCard);
   }
 }
 
@@ -144,8 +153,9 @@ export class AccountLinkingCard implements IDirective {
   public static key: string = "dialogFlowAccountLinkingCard";
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    reply.speech = "login";
-    const google: any = (reply as DialogFlowReply).data.google;
+    (reply as DialogFlowReply).fulfillmentText = "login";
+
+    const google: any = (reply as DialogFlowReply).payload.google;
     google.expectUserResponse = true;
     google.inputPrompt = {
       initialPrompts: [
@@ -166,7 +176,7 @@ export class MediaResponse implements IDirective {
   public static platform: string = "dialogFlow";
   public static key: string = "dialogFlowMediaResponse";
 
-  public constructor(public mediaObject: Responses.MediaObject) { }
+  public constructor(public mediaObject: GoogleActionsV2MediaObject) { }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     const dialogFlowEvent = event as DialogFlowEvent;
@@ -174,14 +184,13 @@ export class MediaResponse implements IDirective {
       return;
     }
 
-    const mediaResponse = new Responses.MediaResponse(Responses.MediaValues.Type.AUDIO)
-    .addMediaObjects(this.mediaObject);
+    const mediaResponse = new ActionsOnGoogleMediaResponse(this.mediaObject);
 
-    const richResponse = _.get(reply, "data.google.richResponse", new Responses.RichResponse());
+    const richResponse = _.get(reply, "payload.google.richResponse", new RichResponse());
     if (richResponse.items.length === 0) {
       throw new Error("MediaResponse requires another simple response first");
     }
 
-    (reply as DialogFlowReply).data.google.richResponse = richResponse.addMediaResponse(mediaResponse);
+    (reply as DialogFlowReply).payload.google.richResponse = richResponse.add(mediaResponse);
   }
 }

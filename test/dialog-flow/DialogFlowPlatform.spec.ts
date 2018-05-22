@@ -33,7 +33,7 @@ describe("DialogFlowPlatform", () => {
 
       const reply = await platform.execute(rawEvent, {}) as DialogFlowReply;
       expect(reply.speech).to.equal("<speak>This is the help</speak>");
-      expect(reply.data.google.expectUserResponse).to.be.true;
+      expect(reply.payload.google.expectUserResponse).to.be.true;
     });
   });
 });

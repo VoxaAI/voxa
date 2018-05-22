@@ -1,45 +1,39 @@
-import { Context } from "actions-on-google/dialogflow-app";
+import { GoogleCloudDialogflowV2Context } from "actions-on-google";
 import * as _ from "lodash";
 import { IVoxaSession } from "../../VoxaEvent";
 
 export class DialogFlowSession implements IVoxaSession {
   public attributes: any;
-  public contexts: Context[];
+  public contexts: GoogleCloudDialogflowV2Context[];
   public new: boolean;
   public sessionId: string;
   public user: any;
 
   constructor(rawEvent: any) {
-    this.contexts = rawEvent.result.contexts;
+    this.contexts = rawEvent.queryResult.outputContexts;
     this.new = false;
-    this.attributes = this.getAttributes();
-    this.sessionId = ""; // TODO: fix this
+    this.sessionId = rawEvent.session;
     this.user = this.getUser(rawEvent);
+    this.attributes = this.getAttributes(rawEvent);
   }
 
   public getUser(rawEvent: any) {
-    return _.get(rawEvent, "originalRequest.data.user", {});
+    return _.get(rawEvent, "originalDetectIntentRequest.data.user", {});
   }
 
-  public getAttributes() {
+  public getAttributes(rawEvent: any) {
     if (!this.contexts) {
       return {};
     }
-    const attributes = _(this.contexts)
-      .filter({ name: "model" })
-      .map((context: any) => {
-        const contextName = context.name;
-        let contextParams: any;
-        if (context.parameters[contextName]) {
-          contextParams = context.parameters[contextName];
-        } else {
-          contextParams = context.parameters;
-        }
-        return [contextName, contextParams];
-      })
-      .fromPairs()
-      .value();
 
-    return attributes.model || {};
+    const context: GoogleCloudDialogflowV2Context|undefined = _.find(this.contexts, {
+      name: `${this.sessionId}/contexts/model`,
+    });
+
+    if (context && context.parameters && context.parameters.model) {
+      return JSON.parse(context.parameters.model);
+    }
+
+    return  {};
   }
 }

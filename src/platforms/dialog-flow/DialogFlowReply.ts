@@ -1,13 +1,12 @@
-import { Responses } from "actions-on-google";
-import { Context } from "actions-on-google/dialogflow-app";
+import { GoogleCloudDialogflowV2Context, RichResponse } from "actions-on-google";
 import { Model } from "../../Model";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 
-export interface IDialogFlowData {
+export interface IDialogFlowPayload {
   google: {
     expectUserResponse: boolean;
     noInputPrompts?: any[];
-    richResponse?: Responses.RichResponse;
+    richResponse?: RichResponse;
     possibleIntents?: any;
     expectedInputs?: any;
     inputPrompt?: any;
@@ -18,24 +17,28 @@ export interface IDialogFlowData {
 }
 
 export class DialogFlowReply implements IVoxaReply {
-  public contextOut: Context[] = [];
-  public speech: string = "";
+  public outputContexts: GoogleCloudDialogflowV2Context[] = [];
+  public fulfillmentText: string = "";
   public source: string = "Voxa";
-  public data: IDialogFlowData;
+  public payload: IDialogFlowPayload;
 
   constructor() {
-    this.data = {
+    this.payload = {
       google : {
         expectUserResponse: true,
         isSsml: true,
         noInputPrompts: [],
-        richResponse: new Responses.RichResponse(),
+        richResponse: new RichResponse(),
       },
     };
   }
 
+  public get speech() {
+    return this.fulfillmentText;
+  }
+
   public get hasMessages(): boolean {
-    return this.speech !== "";
+    return this.fulfillmentText !== "";
   }
 
   public get hasDirectives(): boolean {
@@ -43,25 +46,25 @@ export class DialogFlowReply implements IVoxaReply {
   }
 
   public get hasTerminated(): boolean {
-    return !this.data.google.expectUserResponse;
+    return !this.payload.google.expectUserResponse;
   }
 
   public clear() {
-    this.data.google.richResponse = new Responses.RichResponse();
-    this.data.google.noInputPrompts = [];
-    this.speech = "";
+    this.payload.google.richResponse = new RichResponse();
+    this.payload.google.noInputPrompts = [];
+    this.fulfillmentText = "";
   }
 
   public terminate() {
-    this.data.google.expectUserResponse = false;
+    this.payload.google.expectUserResponse = false;
   }
 
   public addStatement(statement: string) {
-    this.speech = addToSSML(this.speech, statement);
-    const richResponse = this.data.google.richResponse || new Responses.RichResponse();
-    richResponse.addSimpleResponse(addToSSML("", statement));
+    this.fulfillmentText = addToSSML(this.fulfillmentText, statement);
+    const richResponse = this.payload.google.richResponse || new RichResponse();
+    richResponse.add(addToSSML("", statement));
 
-    this.data.google.richResponse = richResponse;
+    this.payload.google.richResponse = richResponse;
   }
 
   public hasDirective(type: string | RegExp): boolean {
@@ -69,17 +72,12 @@ export class DialogFlowReply implements IVoxaReply {
   }
 
   public addReprompt(reprompt: string) {
-    const noInputPrompts = this.data.google.noInputPrompts || [];
+    const noInputPrompts = this.payload.google.noInputPrompts || [];
     noInputPrompts.push({
       textToSpeech: reprompt,
     });
 
-    this.data.google.noInputPrompts = noInputPrompts;
+    this.payload.google.noInputPrompts = noInputPrompts;
   }
 
-  public async modelToSessionContext(model: Model): Promise<Context> {
-    const currentContext: Context = { name: "model", lifespan: 10000, parameters: {} };
-    currentContext.parameters = await model.serialize();
-    return currentContext;
-  }
 }
