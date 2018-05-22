@@ -1,4 +1,4 @@
-import { IntentArgument } from "actions-on-google/assistant-app";
+import { IntentArgument, SignInStatus } from "actions-on-google/assistant-app";
 import * as _ from "lodash";
 import { IVoxaIntent } from "../../VoxaEvent";
 import { StandardIntents } from "./interfaces";
@@ -22,21 +22,42 @@ export class DialogFlowIntent implements IVoxaIntent {
   }
 
   public getParams(): any {
-    if (this.rawIntent.resolvedQuery === "actions_intent_OPTION") {
-      const input: any = _.find(this.rawIntent.originalRequest.data.inputs, (input) => input.intent == StandardIntents.OPTION);
+    if (this.rawIntent.result.resolvedQuery === "actions_intent_OPTION") {
+      return getOptionsValue(this.rawIntent);
+    }
 
-      if (!input) {
-        return {};
-      }
-
-      const args = _(input.arguments)
-        .map((argument: IntentArgument) => [argument.name, argument.textValue])
-        .fromPairs()
-        .value();
-
-      return args;
+    if (this.rawIntent.result.resolvedQuery === "actions_intent_SIGN_IN") {
+      return getSiginStatus(this.rawIntent);
     }
 
     return this.rawIntent.result.parameters;
   }
+}
+
+function getSiginStatus(rawIntent: any): any {
+  const input: any = _.find(rawIntent.originalRequest.data.inputs, { intent: StandardIntents.SIGN_IN });
+  if (!input) {
+    return {};
+  }
+
+  return {
+    signin: {
+      status: input.arguments[0].extension.status,
+    },
+  };
+}
+
+function getOptionsValue(rawIntent: any): any {
+  const input: any = _.find(rawIntent.originalRequest.data.inputs, { intent: StandardIntents.OPTION });
+
+  if (!input) {
+    return {};
+  }
+
+  const args = _(input.arguments)
+    .map((argument: IntentArgument) => [argument.name, argument.textValue])
+    .fromPairs()
+    .value();
+
+  return args;
 }

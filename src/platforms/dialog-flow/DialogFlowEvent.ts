@@ -30,7 +30,12 @@ export class DialogFlowEvent extends IVoxaEvent {
   }
 
   get user() {
-    return _.get(this, "originalRequest.data.user", {});
+    const userData = _.get(this, "originalRequest.data.user", {});
+    if (_.get(this, "originalRequest.data.user.user_id")) {
+      userData.userId = _.get(this, "originalRequest.data.user.user_id");
+    }
+
+    return userData;
   }
 
   get capabilities() {

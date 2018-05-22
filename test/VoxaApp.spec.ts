@@ -148,7 +148,7 @@ describe("VoxaApp", () => {
     event.intent.name = "LaunchIntent";
 
     const reply = await voxaApp.execute(event, new AlexaReply()) as AlexaReply;
-    expect(reply.speech).to.deep.equal("<speak>0 0</speak>");
+    expect(reply.speech).to.deep.equal("<speak>0\n0</speak>");
   });
 
   it("should display element selected request", async () => {
@@ -352,8 +352,9 @@ describe("VoxaApp", () => {
     const reply = await voxaApp.execute(event, new AlexaReply()) as AlexaReply;
     expect(reply.response.directives).to.not.be.undefined;
     expect(reply.response.directives).to.have.length(1);
-    expect(reply.response.directives[0]).to.deep.equal({
+    expect(reply.response.directives).to.deep.equal([{
       audioItem: {
+        metadata: {},
         stream: {
           offsetInMilliseconds: 0,
           token: "123",
@@ -362,7 +363,7 @@ describe("VoxaApp", () => {
       },
       playBehavior: "REPLACE_ALL",
       type: "AudioPlayer.Play",
-    });
+    }]);
   });
 
   it("should include all directives in the reply even if die", async () => {
@@ -378,8 +379,9 @@ describe("VoxaApp", () => {
     const reply = await voxaApp.execute(event, new AlexaReply()) as AlexaReply;
     expect(reply.response.directives).to.not.be.undefined;
     expect(reply.response.directives).to.have.length(1);
-    expect(reply.response.directives[0]).to.deep.equal({
+    expect(reply.response.directives).to.deep.equal([{
       audioItem: {
+        metadata: {},
         stream: {
           offsetInMilliseconds: 0,
           token: "123",
@@ -388,7 +390,7 @@ describe("VoxaApp", () => {
       },
       playBehavior: "REPLACE_ALL",
       type: "AudioPlayer.Play",
-    });
+    }]);
   });
 
   it("should render all messages after each transition", async () => {
@@ -411,7 +413,7 @@ describe("VoxaApp", () => {
 
     _.map(statesDefinition, (state: any, name: string) => voxaApp.onState(name, state));
     const reply = await voxaApp.execute(event, new AlexaReply()) as AlexaReply;
-    expect(reply.speech).to.deep.equal("<speak>0 1</speak>");
+    expect(reply.speech).to.deep.equal("<speak>0\n1</speak>");
   });
 
   it("should call onIntentRequest callbacks before the statemachine", async () => {

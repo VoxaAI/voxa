@@ -58,8 +58,8 @@ describe("BotFrameworkReply", () => {
     expect(reply.speak).to.equal("<speak>Some text</speak>");
 
     reply.addStatement("Some more text");
-    expect(reply.speech).to.equal("<speak>Some text Some more text</speak>");
-    expect(reply.speak).to.equal("<speak>Some text Some more text</speak>");
+    expect(reply.speech).to.equal("<speak>Some text\nSome more text</speak>");
+    expect(reply.speak).to.equal("<speak>Some text\nSome more text</speak>");
   });
 
   it("should remove all directives and speech statements", () => {

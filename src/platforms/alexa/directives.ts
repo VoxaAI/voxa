@@ -1,4 +1,4 @@
-import { Card, Response, Template } from "alexa-sdk";
+import { interfaces, Response, ui } from "ask-sdk-model";
 import * as _ from "lodash";
 import { IDirective } from "../../directives";
 import { ITransition } from "../../StateMachine";
@@ -7,7 +7,7 @@ import { IVoxaReply } from "../../VoxaReply";
 import { AlexaEvent } from "./AlexaEvent";
 import { AlexaReply } from "./AlexaReply";
 
-function isCard(card: any): card is Card {
+function isCard(card: any): card is ui.Card {
   if (!("type" in card)) {
     return false;
   }
@@ -19,14 +19,14 @@ export class HomeCard implements IDirective {
   public static platform: string = "alexa";
   public static key: string = "alexaCard";
 
-  constructor(public viewPath: string|Card) { }
+  constructor(public viewPath: string|ui.Card) { }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     if (reply.hasDirective("card")) {
        throw new Error("At most one card can be specified in a response");
     }
 
-    let card: Card;
+    let card: ui.Card;
     if (_.isString(this.viewPath)) {
       card = await event.renderer.renderPath(this.viewPath, event);
       if (!isCard(card)) {
@@ -59,14 +59,15 @@ export class Hint implements IDirective {
     }
 
     const text = await event.renderer.renderPath(this.viewPath, event);
-
-    (reply as AlexaReply).response.directives.push( {
+    response.directives.push({
       hint: {
         text,
         type: "PlainText",
       },
       type: "Hint",
     });
+
+    (reply as AlexaReply).response = response;
   }
 }
 
@@ -123,9 +124,9 @@ export class RenderTemplate implements IDirective {
 
   public viewPath?: string;
   public token?: string;
-  public template?: Template;
+  public template?: interfaces.display.RenderTemplateDirective;
 
-  constructor(viewPath: string|Template, token?: string) {
+  constructor(viewPath: string|interfaces.display.RenderTemplateDirective, token?: string) {
     if (_.isString(viewPath)) {
       this.viewPath = viewPath;
     } else {
@@ -163,7 +164,9 @@ export class RenderTemplate implements IDirective {
       response.directives = [];
     }
 
-    (reply as AlexaReply).response.directives.push(template);
+    response.directives.push(template);
+
+    (reply as AlexaReply).response = response;
   }
 }
 
@@ -176,7 +179,7 @@ export class AccountLinkingCard implements IDirective {
       throw new Error("At most one card can be specified in a response");
     }
 
-    const card: Card =  { type: "LinkAccount" };
+    const card: ui.Card =  { type: "LinkAccount" };
     (reply as AlexaReply).response.card = card;
   }
 }
@@ -189,7 +192,8 @@ export class PlayAudio implements IDirective {
     public url: string,
     public token: string,
     public offsetInMilliseconds: number,
-    public behavior: string = "REPLACE",
+    public behavior: interfaces.audioplayer.PlayBehavior = "REPLACE_ALL",
+    public metadata: interfaces.audioplayer.AudioItemMetadata = {},
   ) { }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
@@ -203,11 +207,20 @@ export class PlayAudio implements IDirective {
       response.directives = [];
     }
 
-    (reply as AlexaReply).response.directives.push({
-      audioItem: { stream: { token: this.token, url: this.url, offsetInMilliseconds: this.offsetInMilliseconds }},
+    response.directives.push({
+      audioItem: {
+        metadata: this.metadata,
+        stream: {
+          offsetInMilliseconds: this.offsetInMilliseconds,
+          token: this.token,
+          url: this.url,
+        },
+      },
       playBehavior: this.behavior,
       type: "AudioPlayer.Play",
     });
+
+    (reply as AlexaReply).response = response;
   }
 }
 
@@ -222,8 +235,10 @@ export class StopAudio implements IDirective {
       response.directives = [];
     }
 
-    (reply as AlexaReply).response.directives.push({
+    response.directives.push({
       type: "AudioPlayer.Stop",
     });
+
+    (reply as AlexaReply).response = response;
   }
 }

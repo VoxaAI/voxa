@@ -1,34 +1,27 @@
-import * as alexa from "alexa-sdk";
-import { IntentRequest, SlotValue } from "alexa-sdk";
+import {
+  IntentRequest,
+  LaunchRequest,
+  RequestEnvelope,
+  SessionEndedRequest,
+  Slot,
+} from "ask-sdk-model";
 import { i18n, TranslationFunction } from "i18next";
 import * as _ from "lodash";
 import { Model } from "../../Model";
-import { IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
+import { IVoxaEvent, IVoxaIntent, IVoxaSession } from "../../VoxaEvent";
 import { AlexaIntent } from "./AlexaIntent";
-
-export interface IAlexaRequest extends alexa.RequestBody<alexa.Request> {
-  context: any;
-}
-
-export interface ILaunchRequest extends alexa.RequestBody<alexa.LaunchRequest> {
-  context: any;
-}
-
-export interface ISessionEndedRequest extends alexa.RequestBody<alexa.SessionEndedRequest> {
-  context: any;
-}
 
 export class AlexaEvent extends IVoxaEvent {
   public intent!: IVoxaIntent;
 
   public requestToIntent: any = {
-    "AlexaSkillEvent.SkillEnabled": "AlexaSkillEvent.SkillEnabled",
     "AlexaSkillEvent.SkillDisabled": "AlexaSkillEvent.SkillDisabled",
-    "AudioPlayer.PlaybackStarted": "AudioPlayer.PlaybackStarted",
-    "AudioPlayer.PlaybackFinished": "AudioPlayer.PlaybackFinished",
-    "AudioPlayer.PlaybackStopped": "AudioPlayer.PlaybackStopped",
+    "AlexaSkillEvent.SkillEnabled": "AlexaSkillEvent.SkillEnabled",
     "AudioPlayer.PlaybackFailed": "AudioPlayer.PlaybackFailed",
+    "AudioPlayer.PlaybackFinished": "AudioPlayer.PlaybackFinished",
     "AudioPlayer.PlaybackNearlyFinished": "AudioPlayer.PlaybackNearlyFinished",
+    "AudioPlayer.PlaybackStarted": "AudioPlayer.PlaybackStarted",
+    "AudioPlayer.PlaybackStopped": "AudioPlayer.PlaybackStopped",
     "Display.ElementSelected": "Display.ElementSelected",
     "LaunchRequest": "LaunchIntent",
     "PlaybackController.NextCommandIssued": "PlaybackController.NextCommandIssued",
@@ -37,9 +30,9 @@ export class AlexaEvent extends IVoxaEvent {
     "PlaybackController.PreviousCommandIssued": "PlaybackController.PreviousCommandIssued",
   };
 
-  constructor(event: IAlexaRequest , context?: any) {
+  constructor(event: RequestEnvelope , context?: any) {
     super(event, context);
-    this.session = _.cloneDeep(event.session);
+    this.session = _.cloneDeep(event.session) as IVoxaSession;
     this.request = _.cloneDeep(event.request);
     this.context = _.cloneDeep(event.context);
     this.executionContext = context;
