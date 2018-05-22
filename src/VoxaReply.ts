@@ -56,7 +56,7 @@ export function addToSSML(ssml: string, statement: string): string {
     return `<speak>${statement}</speak>`;
   }
 
-  return `<speak>${base} ${statement}</speak>`;
+  return `<speak>${base}\n${statement}</speak>`;
 }
 
 export function addToText(text: string, statement: string): string {
