@@ -56,22 +56,25 @@ describe("BotFrameworkPlatform", () => {
     });
   });
 
-  // describe('partialReply', () => {
-    // it('should send multiple partial replies', () => {
-      // app.onIntent('LaunchIntent', (request) => {
-        // request.model.count = (request.model.count || 0) + 1;
-        // if (request.model.count > 2) {
-          // return { reply: 'Count.Tell' };
-        // }
+  describe("lambdaHTTP", () => {
+    it("should return CORS and other headers", async () => {
+      /* tslint:disable */
+      const ALLOWED_HEADERS = "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,x-ms-client-session-id,x-ms-client-request-id,x-ms-effective-locale";
+      /* tslint:enable */
 
-        // return { reply: 'Count.Say', to: 'entry' };
-      // });
+      const event = {
+        httpMethod: "GET",
+      };
 
-      // return platform.execute(rawEvent)
-        // .then(() => {
-          // expect(platform.botApiRequest.calls.length).to.equal(3);
-          // expect(platform.botApiRequest.lastCall.args[2].text).to.equal('3');
-        // });
-    // });
-  // });
+      const callback = (err: Error|null, result?: any) => {
+        if (err) {
+          throw err;
+        }
+
+        expect(result.headers["Access-Control-Allow-Headers"]).to.equal(ALLOWED_HEADERS);
+      };
+
+      await platform.lambdaHTTP()(event, {}, callback);
+    });
+  });
 });
