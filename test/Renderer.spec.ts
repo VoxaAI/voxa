@@ -49,14 +49,14 @@ describe("Renderer", () => {
       number: "ein",
       question: "wie spät ist es?",
       random: ["zufällig1", "zufällig2", "zufällig3", "zufällig4", "zufällig5"],
-      say: "sagen wie spät ist es?",
+      say: "sagen\nwie spät ist es?",
       site: "Ok für weitere Infos besuchen example.com Website",
     },
     "en-US": {
       number: "one",
       question: "What time is it?",
       random: ["Random 1", "Random 2", "Random 3", "Random 4"],
-      say: "say What time is it?",
+      say: "say\nWhat time is it?",
       site: "Ok. For more info visit example.com site.",
     },
   };
