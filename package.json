@@ -31,7 +31,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@types/actions-on-google": "^1.6.0",
     "@types/bluebird": "^3.5.18",
     "@types/debug": "^0.0.30",
     "@types/i18next": "^8.4.2",
@@ -41,7 +40,7 @@
     "@types/tedious": "^1.8.32",
     "@types/url-join": "^0.8.2",
     "@types/uuid": "^3.4.3",
-    "actions-on-google": "^1.9.0",
+    "actions-on-google": "2",
     "ask-sdk": "^2.0.3",
     "ask-sdk-core": "^2.0.3",
     "ask-sdk-model": "^1.2.0",

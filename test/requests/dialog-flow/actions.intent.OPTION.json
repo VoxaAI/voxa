@@ -1,0 +1,87 @@
+{
+  "responseId": "e2b09a9c-8687-4f62-a41f-5ec40a9cab63",
+  "queryResult": {
+    "queryText": "actions_intent_OPTION",
+    "parameters": {},
+    "allRequiredParamsPresent": true,
+    "fulfillmentMessages": [
+      {
+        "text": {
+          "text": [
+            ""
+          ]
+        }
+      }
+    ],
+    "intent": {
+      "name": "projects/headspacelocal/agent/intents/71a7cc31-e4c8-43b9-a76e-448cb05adde6",
+      "displayName": "actions.intent.OPTION"
+    },
+    "intentDetectionConfidence": 1,
+    "diagnosticInfo": {},
+    "languageCode": "en-us"
+  },
+  "originalDetectIntentRequest": {
+    "source": "google",
+    "version": "2",
+    "payload": {
+      "isInSandbox": true,
+      "surface": {
+        "capabilities": [
+          {
+            "name": "actions.capability.SCREEN_OUTPUT"
+          },
+          {
+            "name": "actions.capability.MEDIA_RESPONSE_AUDIO"
+          },
+          {
+            "name": "actions.capability.WEB_BROWSER"
+          },
+          {
+            "name": "actions.capability.AUDIO_OUTPUT"
+          }
+        ]
+      },
+      "inputs": [
+        {
+          "rawInputs": [
+            {
+              "query": "Today's meditation",
+              "inputType": "TOUCH"
+            }
+          ],
+          "arguments": [
+            {
+              "textValue": "today",
+              "name": "OPTION"
+            }
+          ],
+          "intent": "actions.intent.OPTION"
+        }
+      ],
+      "user": {
+        "lastSeen": "2018-05-10T19:46:32Z",
+        "locale": "en-US",
+        "userId": "ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y"
+      },
+      "conversation": {
+        "conversationId": "1525981645131",
+        "type": "ACTIVE",
+        "conversationToken": "[]"
+      },
+      "availableSurfaces": [
+        {
+          "capabilities": [
+            {
+              "name": "actions.capability.SCREEN_OUTPUT"
+            },
+            {
+              "name": "actions.capability.AUDIO_OUTPUT"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "session": "projects/headspacelocal/agent/sessions/1525981645131"
+}

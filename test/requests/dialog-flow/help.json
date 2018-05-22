@@ -1,118 +1,98 @@
 {
-  "originalRequest": {
-    "source": "google",
-    "version": "2",
-    "data": {
-      "isInSandbox": true,
-      "surface": {
-        "capabilities": [
-          {
-            "name": "actions.capability.SCREEN_OUTPUT"
-          },
-          {
-            "name": "actions.capability.AUDIO_OUTPUT"
-          },
-          {
-            "name": "actions.capability.WEB_BROWSER"
-          }
-        ]
-      },
-      "inputs": [
-        {
-          "rawInputs": [
+    "responseId": "0f9fd8c7-82ce-4540-81a0-71c5ca83e7b1",
+    "queryResult": {
+        "queryText": "help",
+        "action": "HelpIntent",
+        "parameters": {},
+        "allRequiredParamsPresent": true,
+        "outputContexts": [
             {
-              "query": "help",
-              "inputType": "KEYBOARD"
-            }
-          ],
-          "arguments": [
-            {
-              "rawText": "help",
-              "textValue": "help",
-              "name": "text"
-            }
-          ],
-          "intent": "actions.intent.TEXT"
-        }
-      ],
-      "user": {
-        "lastSeen": "2018-03-02T21:19:50Z",
-        "locale": "en-US",
-        "userId": "ABwppHGRtwhGm_o0ybaeE5Ux4DgVpJ6NzkjHyxI7UDHBqyb0gPjpH5vx8OT4_e5rawpVQElMBaZNPT2_PVOFMznjLuUU"
-      },
-      "conversation": {
-        "conversationId": "1520028463301",
-        "type": "ACTIVE",
-        "conversationToken": "[]"
-      },
-      "availableSurfaces": [
-        {
-          "capabilities": [
-            {
-              "name": "actions.capability.AUDIO_OUTPUT"
+                "name": "projects/headspacelocal/agent/sessions/1525984578419/contexts/actions_capability_screen_output"
             },
             {
-              "name": "actions.capability.SCREEN_OUTPUT"
+                "name": "projects/headspacelocal/agent/sessions/1525984578419/contexts/actions_capability_audio_output"
+            },
+            {
+                "name": "projects/headspacelocal/agent/sessions/1525984578419/contexts/google_assistant_input_type_keyboard"
+            },
+            {
+                "name": "projects/headspacelocal/agent/sessions/1525984578419/contexts/actions_capability_web_browser"
+            },
+            {
+                "name": "projects/headspacelocal/agent/sessions/1525984578419/contexts/actions_capability_media_response_audio"
             }
-          ]
-        }
-      ]
-    }
-  },
-  "id": "8999755e-c1f4-45b6-b04d-9d19eaa42b56",
-  "timestamp": "2018-03-02T22:07:52.142Z",
-  "lang": "en-us",
-  "result": {
-    "source": "agent",
-    "resolvedQuery": "help",
-    "speech": "",
-    "action": "",
-    "actionIncomplete": false,
-    "parameters": {},
-    "contexts": [
-      {
-        "name": "actions_capability_screen_output",
-        "parameters": {},
-        "lifespan": 0
-      },
-      {
-        "name": "actions_capability_audio_output",
-        "parameters": {},
-        "lifespan": 0
-      },
-      {
-        "name": "google_assistant_input_type_keyboard",
-        "parameters": {},
-        "lifespan": 0
-      },
-      {
-        "name": "actions_capability_web_browser",
-        "parameters": {},
-        "lifespan": 0
-      }
-    ],
-    "metadata": {
-      "intentId": "52facfe5-42e1-4a9c-a26c-c1cb425826a4",
-      "webhookUsed": "true",
-      "webhookForSlotFillingUsed": "false",
-      "nluResponseTime": 21,
-      "intentName": "HelpIntent"
+        ],
+        "intent": {
+            "name": "projects/headspacelocal/agent/intents/37bd0692-2f14-4f4e-8a5a-7e5fe9d8484b",
+            "displayName": "HelpIntent"
+        },
+        "intentDetectionConfidence": 1,
+        "diagnosticInfo": {},
+        "languageCode": "en-us"
     },
-    "fulfillment": {
-      "speech": "",
-      "messages": [
-        {
-          "type": 0,
-          "speech": ""
+    "originalDetectIntentRequest": {
+        "source": "google",
+        "version": "2",
+        "payload": {
+            "isInSandbox": true,
+            "surface": {
+                "capabilities": [
+                    {
+                        "name": "actions.capability.SCREEN_OUTPUT"
+                    },
+                    {
+                        "name": "actions.capability.AUDIO_OUTPUT"
+                    },
+                    {
+                        "name": "actions.capability.WEB_BROWSER"
+                    },
+                    {
+                        "name": "actions.capability.MEDIA_RESPONSE_AUDIO"
+                    }
+                ]
+            },
+            "inputs": [
+                {
+                    "rawInputs": [
+                        {
+                            "query": "help",
+                            "inputType": "KEYBOARD"
+                        }
+                    ],
+                    "arguments": [
+                        {
+                            "rawText": "help",
+                            "textValue": "help",
+                            "name": "text"
+                        }
+                    ],
+                    "intent": "actions.intent.TEXT"
+                }
+            ],
+            "user": {
+                "lastSeen": "2018-05-10T20:36:10Z",
+                "locale": "en-US",
+                "userId": "ABwppHFqeHbQJ7DPkpUM1Rc053u5No_wpxXPqzQAU4ZqmKTYWZG5Q-K7FcOdTizCATA1iKGjae3p--VdDk4"
+            },
+            "conversation": {
+                "conversationId": "1525984578419",
+                "type": "ACTIVE",
+                "conversationToken": "[\"model\"]"
+            },
+            "availableSurfaces": [
+                {
+                    "capabilities": [
+                        {
+                            "name": "actions.capability.SCREEN_OUTPUT"
+                        },
+                        {
+                            "name": "actions.capability.AUDIO_OUTPUT"
+                        }
+                    ]
+                }
+            ]
         }
-      ]
     },
-    "score": 1
-  },
-  "status": {
-    "code": 200,
-    "errorType": "success",
-    "webhookTimedOut": false
-  },
-  "sessionId": "1520028463301"
+    "session": "projects/headspacelocal/agent/sessions/1525984578419"
 }
+
