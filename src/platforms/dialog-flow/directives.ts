@@ -180,7 +180,7 @@ export class MediaResponse implements IDirective {
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     const dialogFlowEvent = event as DialogFlowEvent;
-    if (!_.includes(dialogFlowEvent.capabilities, "actions.capability.AUDIO_OUTPUT")) {
+    if (!_.includes(dialogFlowEvent.supportedInterfaces, "actions.capability.AUDIO_OUTPUT")) {
       return;
     }
 

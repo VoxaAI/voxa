@@ -21,4 +21,13 @@ describe("DialogFlowEvent", () => {
     expect(event.user.userId).to.equal("ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y");
   });
 
+  it("should return supported capabilities", () => {
+    const event = new DialogFlowEvent(launchIntent, {});
+    expect(event.supportedInterfaces).to.deep.equal([
+      "actions.capability.AUDIO_OUTPUT",
+      "actions.capability.SCREEN_OUTPUT",
+      "actions.capability.MEDIA_RESPONSE_AUDIO",
+      "actions.capability.WEB_BROWSER",
+    ]);
+  });
 });

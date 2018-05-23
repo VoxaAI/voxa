@@ -1,5 +1,6 @@
 import {
   Context,
+  interfaces,
   RequestEnvelope,
   Session,
   SessionEndedReason,
@@ -108,6 +109,22 @@ export class AlexaRequestBuilder {
       session: this.getSessionData(),
       version: this.version,
     };
+  }
 
+  public getPlaybackStoppedRequest(token?: string): RequestEnvelope {
+    const request: interfaces.audioplayer.PlaybackStoppedRequest =  {
+      locale: "en-US",
+      requestId: "EdwRequestId." + v1(),
+      timestamp: new Date().toISOString(),
+      token,
+      type: "AudioPlayer.PlaybackStopped",
+    };
+
+    return {
+      context: this.getContextData(),
+      request,
+      session: this.getSessionData(),
+      version: this.version,
+    };
   }
 }
