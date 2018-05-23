@@ -38,7 +38,7 @@ export class DialogFlowEvent extends IVoxaEvent {
     return userData;
   }
 
-  get capabilities() {
+  get supportedInterfaces() {
     return _.map(_.get(this, "originalDetectIntentRequest.payload.surface.capabilities"), "name");
   }
 }

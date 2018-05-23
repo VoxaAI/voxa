@@ -106,6 +106,7 @@ export class Ask implements IDirective {
     }
 
     transition.flow = "yield";
+    transition.say = this.viewPaths;
   }
 }
 

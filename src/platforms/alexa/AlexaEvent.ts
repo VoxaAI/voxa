@@ -57,4 +57,9 @@ export class AlexaEvent extends IVoxaEvent {
   get token() {
     return _.get(this, "request.token");
   }
+
+  get supportedInterfaces() {
+     const interfaces = _.get(this, "context.System.device.supportedInterfaces", {});
+     return _.keys(interfaces);
+  }
 }
