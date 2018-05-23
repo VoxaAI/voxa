@@ -11,10 +11,10 @@ export class DialogFlowSession implements IVoxaSession {
 
   constructor(rawEvent: any) {
     this.contexts = rawEvent.queryResult.outputContexts;
-    this.new = false;
     this.sessionId = rawEvent.session;
     this.user = this.getUser(rawEvent);
     this.attributes = this.getAttributes(rawEvent);
+    this.new = _.isEmpty(this.attributes);
   }
 
   public getUser(rawEvent: any) {
