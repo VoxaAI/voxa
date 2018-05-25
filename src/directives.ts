@@ -159,5 +159,6 @@ export class Tell implements IDirective {
     reply.addStatement(statement);
     reply.terminate();
     transition.flow = "terminate";
+    transition.say = this.viewPath;
   }
 }
