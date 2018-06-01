@@ -7,23 +7,23 @@
         "allRequiredParamsPresent": true,
         "outputContexts": [
             {
-                "name": "projects/headspacelocal/agent/sessions/1525984578419/contexts/actions_capability_screen_output"
+                "name": "projects/project/agent/sessions/1525984578419/contexts/actions_capability_screen_output"
             },
             {
-                "name": "projects/headspacelocal/agent/sessions/1525984578419/contexts/actions_capability_audio_output"
+                "name": "projects/project/agent/sessions/1525984578419/contexts/actions_capability_audio_output"
             },
             {
-                "name": "projects/headspacelocal/agent/sessions/1525984578419/contexts/google_assistant_input_type_keyboard"
+                "name": "projects/project/agent/sessions/1525984578419/contexts/google_assistant_input_type_keyboard"
             },
             {
-                "name": "projects/headspacelocal/agent/sessions/1525984578419/contexts/actions_capability_web_browser"
+                "name": "projects/project/agent/sessions/1525984578419/contexts/actions_capability_web_browser"
             },
             {
-                "name": "projects/headspacelocal/agent/sessions/1525984578419/contexts/actions_capability_media_response_audio"
+                "name": "projects/project/agent/sessions/1525984578419/contexts/actions_capability_media_response_audio"
             }
         ],
         "intent": {
-            "name": "projects/headspacelocal/agent/intents/37bd0692-2f14-4f4e-8a5a-7e5fe9d8484b",
+            "name": "projects/project/agent/intents/37bd0692-2f14-4f4e-8a5a-7e5fe9d8484b",
             "displayName": "HelpIntent"
         },
         "intentDetectionConfidence": 1,
@@ -93,6 +93,6 @@
             ]
         }
     },
-    "session": "projects/headspacelocal/agent/sessions/1525984578419"
+    "session": "projects/project/agent/sessions/1525984578419"
 }
 

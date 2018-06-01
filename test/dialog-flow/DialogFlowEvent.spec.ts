@@ -7,6 +7,12 @@ const launchIntent = require("../requests/dialog-flow/launchIntent.json");
 /* tslint:disable-next-line:no-var-requires */
 const optionIntent = require("../requests/dialog-flow/actions.intent.OPTION.json");
 
+/* tslint:disable-next-line:no-var-requires */
+const mediaStatusIntent = require("../requests/dialog-flow/actions.intent.MEDIA_STATUS.json");
+
+/* tslint:disable-next-line:no-var-requires */
+const signinIntent = require("../requests/dialog-flow/actions.intent.SIGN_IN.json");
+
 describe("DialogFlowEvent", () => {
   it("should format intent slots", () => {
     const event = new DialogFlowEvent(optionIntent, {});
@@ -30,4 +36,25 @@ describe("DialogFlowEvent", () => {
       "actions.capability.WEB_BROWSER",
     ]);
   });
+
+  it("should return the MEDIA_STATUS information", () => {
+    const event = new DialogFlowEvent(mediaStatusIntent, {});
+    expect(event.intent.params).to.deep.equal({
+      MEDIA_STATUS: {
+        "@type": "type.googleapis.com/google.actions.v2.MediaStatus",
+        "status": "FINISHED",
+      },
+    });
+  });
+
+  it("should return the SIGN_IN information", () => {
+    const event = new DialogFlowEvent(signinIntent, {});
+    expect(event.intent.params).to.deep.equal({
+        SIGN_IN: {
+          "@type": "type.googleapis.com/google.actions.v2.SignInValue",
+          "status": "OK",
+      },
+    });
+  });
+
 });

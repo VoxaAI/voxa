@@ -14,7 +14,7 @@
       }
     ],
     "intent": {
-      "name": "projects/headspacelocal/agent/intents/71a7cc31-e4c8-43b9-a76e-448cb05adde6",
+      "name": "projects/project/agent/intents/71a7cc31-e4c8-43b9-a76e-448cb05adde6",
       "displayName": "actions.intent.OPTION"
     },
     "intentDetectionConfidence": 1,
@@ -83,5 +83,5 @@
       ]
     }
   },
-  "session": "projects/headspacelocal/agent/sessions/1525981645131"
+  "session": "projects/project/agent/sessions/1525981645131"
 }

@@ -74,9 +74,7 @@ function getMediaStatus(intentRequest: GoogleCloudDialogflowV2OriginalDetectInte
   }
 
   return {
-    signin: {
-      status: argument.extension.status,
-    },
+    MEDIA_STATUS: argument.extension,
   };
 
 }
@@ -92,9 +90,7 @@ function getSiginStatus(intentRequest: GoogleCloudDialogflowV2OriginalDetectInte
   }
 
   return {
-    signin: {
-      status: input.arguments[0].extension.status,
-    },
+    SIGN_IN: input.arguments[0].extension,
   };
 }
 
