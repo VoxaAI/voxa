@@ -1,0 +1,115 @@
+{
+  "responseId": "6ad874b4-068e-49f2-9add-50ab06513a31",
+  "queryResult": {
+    "queryText": "actions_intent_SIGN_IN",
+    "parameters": {},
+    "allRequiredParamsPresent": true,
+    "fulfillmentMessages": [
+      {
+        "text": {
+          "text": [
+            ""
+          ]
+        }
+      }
+    ],
+    "outputContexts": [
+      {
+        "name": "projects/project/agent/sessions/1527874181544/contexts/actions_capability_screen_output"
+      },
+      {
+        "name": "projects/project/agent/sessions/1527874181544/contexts/actions_intent_sign_in",
+        "parameters": {
+          "SIGN_IN": {
+            "@type": "type.googleapis.com/google.actions.v2.SignInValue",
+            "status": "OK"
+          }
+        }
+      },
+      {
+        "name": "projects/project/agent/sessions/1527874181544/contexts/actions_capability_audio_output"
+      },
+      {
+        "name": "projects/project/agent/sessions/1527874181544/contexts/actions_capability_media_response_audio"
+      },
+      {
+        "name": "projects/project/agent/sessions/1527874181544/contexts/actions_capability_web_browser"
+      }
+    ],
+    "intent": {
+      "name": "projects/project/agent/intents/1852698a-4cb0-419c-9094-7d4c84911ecf",
+      "displayName": "SIGNIN_STATUS"
+    },
+    "intentDetectionConfidence": 1,
+    "diagnosticInfo": {},
+    "languageCode": "en-us"
+  },
+  "originalDetectIntentRequest": {
+    "source": "google",
+    "version": "2",
+    "payload": {
+      "isInSandbox": true,
+      "surface": {
+        "capabilities": [
+          {
+            "name": "actions.capability.WEB_BROWSER"
+          },
+          {
+            "name": "actions.capability.MEDIA_RESPONSE_AUDIO"
+          },
+          {
+            "name": "actions.capability.SCREEN_OUTPUT"
+          },
+          {
+            "name": "actions.capability.AUDIO_OUTPUT"
+          }
+        ]
+      },
+      "inputs": [
+        {
+          "rawInputs": [
+            {}
+          ],
+          "arguments": [
+            {
+              "extension": {
+                "@type": "type.googleapis.com/google.actions.v2.SignInValue",
+                "status": "OK"
+              },
+              "name": "SIGN_IN"
+            }
+          ],
+          "intent": "actions.intent.SIGN_IN"
+        }
+      ],
+      "user": {
+        "lastSeen": "2018-06-01T17:22:10Z",
+        "accessToken": "*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************",
+        "locale": "en-US",
+        "userId": "1527283153072"
+      },
+      "conversation": {
+        "conversationId": "1527874181544",
+        "type": "ACTIVE",
+        "conversationToken": "[\"model\"]"
+      },
+      "availableSurfaces": [
+        {
+          "capabilities": [
+            {
+              "name": "actions.capability.WEB_BROWSER"
+            },
+            {
+              "name": "actions.capability.SCREEN_OUTPUT"
+            },
+            {
+              "name": "actions.capability.AUDIO_OUTPUT"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "session": "projects/project/agent/sessions/1527874181544"
+}
+
