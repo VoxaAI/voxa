@@ -444,7 +444,7 @@ export class VoxaApp {
       voxaEvent.model.state = transition.to.name;
     }
 
-    response.saveSession(voxaEvent);
+    await response.saveSession(voxaEvent);
   }
 
   public async transformRequest(voxaEvent: IVoxaEvent): Promise <void> {
