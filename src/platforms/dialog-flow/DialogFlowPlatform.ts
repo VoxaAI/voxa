@@ -8,6 +8,8 @@ import {
   AccountLinkingCard,
   BasicCard,
   Carousel,
+  ConfirmationDirective,
+  DateTimeDirective,
   DeepLinkDirective,
   List,
   MediaResponse,
@@ -46,15 +48,17 @@ export class DialogFlowPlatform extends VoxaPlatform {
 
   public getDirectiveHandlers() {
     return [
-      List,
-      Carousel,
-      Suggestions,
-      BasicCard,
       AccountLinkingCard,
+      BasicCard,
+      Carousel,
+      ConfirmationDirective,
+      DateTimeDirective,
+      DeepLinkDirective,
+      List,
       MediaResponse,
       PermissionsDirective,
       PlaceDirective,
-      DeepLinkDirective,
+      Suggestions,
     ];
   }
 }

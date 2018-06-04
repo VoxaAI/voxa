@@ -10,6 +10,27 @@ export const views =  {
         type: "Standard",
       },
       Card2: "{card2}",
+      DialogFlowBasicCard: {
+        buttons: {
+          openUrlAction: "https://example.com",
+          title: "Example.com",
+        },
+        display: "DEFAULT",
+        image:  {
+          url: "https://example.com/image.png",
+        },
+        subtitle: "subtitle",
+        text: "This is the text",
+        title: "title",
+      },
+      DialogFlowCarousel: {
+        items: {
+          LIST_ITEM: {
+            description: "The item description",
+            title: "the list item",
+          },
+        },
+      },
       DialogFlowListSelect: {
         items: [
           {

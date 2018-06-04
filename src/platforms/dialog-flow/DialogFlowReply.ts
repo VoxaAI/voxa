@@ -1,4 +1,4 @@
-import { GoogleCloudDialogflowV2Context, RichResponse } from "actions-on-google";
+import { GoogleCloudDialogflowV2Context,  RichResponse } from "actions-on-google";
 import { Model } from "../../Model";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 
