@@ -34,7 +34,7 @@ export class DialogFlowSession implements IVoxaSession {
     }
 
     const context: GoogleCloudDialogflowV2Context|undefined = _.find(this.contexts, (c) =>
-      c.name === `${this.sessionId}/contexts/model`,
+      c.name === `${rawEvent.session}/contexts/model`,
     );
 
     if (context && context.parameters && context.parameters.model) {
