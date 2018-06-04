@@ -8,8 +8,11 @@ import {
   AccountLinkingCard,
   BasicCard,
   Carousel,
+  DeepLinkDirective,
   List,
   MediaResponse,
+  PermissionsDirective,
+  PlaceDirective,
   Suggestions,
 } from "./directives";
 
@@ -49,6 +52,9 @@ export class DialogFlowPlatform extends VoxaPlatform {
       BasicCard,
       AccountLinkingCard,
       MediaResponse,
+      PermissionsDirective,
+      PlaceDirective,
+      DeepLinkDirective,
     ];
   }
 }

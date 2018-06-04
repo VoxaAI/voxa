@@ -1,0 +1,115 @@
+{
+  "responseId": "8828b64e-0e30-46db-9614-e2c4de3afb47",
+  "queryResult": {
+    "queryText": "actions_intent_PERMISSION",
+    "action": "input.unknown",
+    "parameters": {},
+    "allRequiredParamsPresent": true,
+    "outputContexts": [
+      {
+        "name": "projects/project/agent/sessions/1528140136356/contexts/actions_capability_screen_output"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528140136356/contexts/actions_intent_permission",
+        "parameters": {
+          "PERMISSION": true
+        }
+      },
+      {
+        "name": "projects/project/agent/sessions/1528140136356/contexts/actions_capability_audio_output"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528140136356/contexts/google_assistant_input_type_keyboard"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528140136356/contexts/actions_capability_media_response_audio"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528140136356/contexts/actions_capability_web_browser"
+      }
+    ],
+    "intent": {
+      "name": "projects/project/agent/intents/9b8cf42d-ceb4-56f2-bfdc-58e5f75abf76",
+      "displayName": "DefaultFallbackIntent"
+    },
+    "intentDetectionConfidence": 1,
+    "diagnosticInfo": {},
+    "languageCode": "en-us"
+  },
+  "originalDetectIntentRequest": {
+    "source": "google",
+    "version": "2",
+    "payload": {
+      "isInSandbox": true,
+      "surface": {
+        "capabilities": [
+          {
+            "name": "actions.capability.WEB_BROWSER"
+          },
+          {
+            "name": "actions.capability.MEDIA_RESPONSE_AUDIO"
+          },
+          {
+            "name": "actions.capability.SCREEN_OUTPUT"
+          },
+          {
+            "name": "actions.capability.AUDIO_OUTPUT"
+          }
+        ]
+      },
+      "inputs": [
+        {
+          "rawInputs": [
+            {
+              "query": "yes",
+              "inputType": "KEYBOARD"
+            }
+          ],
+          "arguments": [
+            {
+              "textValue": "true",
+              "name": "PERMISSION",
+              "boolValue": true
+            }
+          ],
+          "intent": "actions.intent.PERMISSION"
+        }
+      ],
+      "user": {
+        "lastSeen": "2018-06-04T19:22:10Z",
+        "permissions": [
+          "NAME"
+        ],
+        "profile": {
+          "displayName": "Andres Reyes Monge",
+          "givenName": "Andres",
+          "familyName": "Reyes Monge"
+        },
+        "locale": "en-US",
+        "userId": "1527283153072"
+      },
+      "conversation": {
+        "conversationId": "1528140136356",
+        "type": "ACTIVE",
+        "conversationToken": "[\"model\"]"
+      },
+      "availableSurfaces": [
+        {
+          "capabilities": [
+            {
+              "name": "actions.capability.WEB_BROWSER"
+            },
+            {
+              "name": "actions.capability.SCREEN_OUTPUT"
+            },
+            {
+              "name": "actions.capability.AUDIO_OUTPUT"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "session": "projects/project/agent/sessions/1528140136356"
+}
+
