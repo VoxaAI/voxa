@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 
 import {
+  IBotStorage,
   IBotStorageData,
   IConversationUpdate,
   IEvent,
@@ -19,7 +20,7 @@ const MicrosoftCortanaIntents: ITypeMap = {
 };
 
 export class BotFrameworkEvent extends IVoxaEvent {
-  public platform: string;
+  public platform: string = "botframework";
   public session: any;
   public context: any;
 
@@ -28,6 +29,8 @@ export class BotFrameworkEvent extends IVoxaEvent {
 
   public executionContext: any;
   public rawEvent!: IEvent;
+
+  public storage: IBotStorage;
 
   public requestToRequest: ITypeMap = {
     endOfConversation: "SessionEndedRequest",
@@ -47,16 +50,15 @@ export class BotFrameworkEvent extends IVoxaEvent {
     "Utilities.Stop": "StopIntent",
   };
 
-  constructor(message: IEvent, context: any, stateData: IBotStorageData, intent?: IVoxaIntent) {
+  constructor(message: IEvent, context: any, stateData: IBotStorageData, storage: IBotStorage, intent?: IVoxaIntent) {
     super(message, context);
-    this.platform = "botframework";
     this.session = {
       attributes: stateData.privateConversationData || {},
       new: _.isEmpty(stateData.privateConversationData),
       sessionId: _.get(message, "address.conversation.id"),
     };
 
-    this.context = {};
+    this.storage = storage;
     this.request = this.getRequest();
     this.mapRequestToRequest();
 

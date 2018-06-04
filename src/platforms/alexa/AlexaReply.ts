@@ -4,6 +4,7 @@ import {
 } from "ask-sdk-model";
 import * as _ from "lodash";
 import { Model } from "../../Model";
+import { IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 
 export class AlexaReply implements IVoxaReply, ResponseEnvelope {
@@ -31,8 +32,8 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
     return !!this.response && !!this.response.shouldEndSession;
   }
 
-  public async setSession(model: Model): Promise<void> {
-    this.sessionAttributes = await model.serialize();
+  public async saveSession(event: IVoxaEvent): Promise<void> {
+    this.sessionAttributes = await event.model.serialize();
   }
 
   public terminate() {

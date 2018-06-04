@@ -444,8 +444,7 @@ export class VoxaApp {
       voxaEvent.model.state = transition.to.name;
     }
 
-    const modelData = await voxaEvent.model.serialize();
-    voxaEvent.session.attributes.model = modelData;
+    response.saveSession(voxaEvent);
   }
 
   public async transformRequest(voxaEvent: IVoxaEvent): Promise <void> {

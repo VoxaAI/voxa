@@ -12,6 +12,7 @@ import * as bluebird from "bluebird";
 import * as debug from "debug";
 
 import { IMessage } from "./renderers/Renderer";
+import { IVoxaEvent } from "./VoxaEvent";
 
 const log: debug.IDebugger = debug("voxa");
 
@@ -48,6 +49,9 @@ export interface IVoxaReply {
       // throw new Error(`Do not know how to use a ${typeof type} to find a directive`);
     // });
   // }
+  //
+
+  saveSession: (event: IVoxaEvent) => void;
 }
 
 export function addToSSML(ssml: string, statement: string): string {

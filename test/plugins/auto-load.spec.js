@@ -75,7 +75,6 @@ describe('AutoLoad plugin', () => {
 
     return platform.execute(event, {})
       .then((reply) => {
-        expect(reply.sessionAttributes).to.be.empty;
         expect(reply.speech).to.equal('<speak>An unrecoverable error occurred.</speak>')
         // expect(reply.error).to.not.be.undefined;
         // expect(reply.error.message).to.equal('Random error');
