@@ -113,7 +113,6 @@ export class Suggestions implements IDirective {
       suggestions = new ActionsOnGoogleSuggestions(this.suggestions || []);
     }
 
-    console.log({ suggestions });
     const richResponse = _.get(reply, "payload.google.richResponse", new RichResponse());
     (reply as DialogFlowReply).payload.google.richResponse = richResponse.addSuggestion(suggestions);
   }
