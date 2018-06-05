@@ -1,5 +1,11 @@
 
 import {
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
+  Callback as AWSLambdaCallback,
+  Context as AWSLambdaContext,
+} from "aws-lambda";
+import {
   IBotStorage,
   IBotStorageContext,
   IBotStorageData,
@@ -68,7 +74,10 @@ export class BotFrameworkPlatform extends VoxaPlatform {
       "x-ms-effective-locale",
     ];
 
-    return async (event: any, context: any, callback: (err: Error|null, result?: any) => void) => {
+    return async (
+      event: APIGatewayProxyEvent,
+      context: AWSLambdaContext,
+      callback: AWSLambdaCallback<APIGatewayProxyResult>) => {
       const response = {
         body: "{}",
         headers: {
@@ -85,7 +94,7 @@ export class BotFrameworkPlatform extends VoxaPlatform {
       }
 
       try {
-        const body = JSON.parse(event.body);
+        const body = JSON.parse(event.body || "");
         const result = await this.execute(body, context);
         response.body = JSON.stringify(result);
 

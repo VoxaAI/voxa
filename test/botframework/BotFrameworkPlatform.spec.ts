@@ -1,3 +1,4 @@
+import { Callback as AWSLambdaCallback } from "aws-lambda";
 import { LuisRecognizer } from "botbuilder";
 import { AzureBotStorage, AzureTableClient } from "botbuilder-azure";
 import { expect } from "chai";
@@ -6,6 +7,7 @@ import * as simple from "simple-mock";
 import { BotFrameworkPlatform } from "../../src/platforms/botframework/BotFrameworkPlatform";
 import { VoxaPlatform } from "../../src/platforms/VoxaPlatform";
 import { VoxaApp } from "../../src/VoxaApp";
+import { getAPIGatewayProxyEvent, getLambdaContext } from "../tools";
 import { variables } from "../variables";
 import { views } from "../views";
 
@@ -62,11 +64,9 @@ describe("BotFrameworkPlatform", () => {
       const ALLOWED_HEADERS = "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,x-ms-client-session-id,x-ms-client-request-id,x-ms-effective-locale";
       /* tslint:enable */
 
-      const event = {
-        httpMethod: "GET",
-      };
+      const event = getAPIGatewayProxyEvent();
 
-      const callback = (err: Error|null, result?: any) => {
+      const callback: AWSLambdaCallback = (err?: Error|null|string, result?: any) => {
         if (err) {
           throw err;
         }
@@ -74,7 +74,9 @@ describe("BotFrameworkPlatform", () => {
         expect(result.headers["Access-Control-Allow-Headers"]).to.equal(ALLOWED_HEADERS);
       };
 
-      await platform.lambdaHTTP()(event, {}, callback);
+      const context = getLambdaContext(callback);
+
+      await platform.lambdaHTTP()(event, context, callback);
     });
   });
 });

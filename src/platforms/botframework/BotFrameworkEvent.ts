@@ -76,7 +76,7 @@ export class BotFrameworkEvent extends IVoxaEvent {
       return;
     }
 
-    const intentEntity: any = _.find(this.rawEvent.entities, { type: "Intent" });
+    const intentEntity: any = _.find(this.rawEvent.entities, (e: any) => e.type ===  "Intent" );
 
     if (!intentEntity) {
       return;
@@ -140,7 +140,7 @@ export class BotFrameworkEvent extends IVoxaEvent {
 
       if (this.rawEvent.entities) {
         const entity: any = _(this.rawEvent.entities)
-          .filter({ type: "clientInfo"})
+          .filter((e: any) => e.type === "clientInfo")
           .filter((e: any) => !!e.locale)
           .first();
 
