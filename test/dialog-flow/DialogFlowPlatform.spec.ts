@@ -20,7 +20,7 @@ describe("DialogFlowPlatform", () => {
     });
 
     it("should not close the session on Help Intent", async () => {
-      const rawEvent = require("../requests/dialog-flow/help.json");
+      const rawEvent = require("../requests/dialog-flow/helpIntent.json");
       const voxaApp = new VoxaApp({ views });
 
       voxaApp.onIntent("HelpIntent", {

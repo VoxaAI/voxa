@@ -191,10 +191,10 @@ describe("Alexa directives", () => {
     });
 
     it("should render faile if variable doesn't return a card like object", async () => {
-      app.onIntent("YesIntent", {
+      app.onIntent("YesIntent", () => ({
         alexaCard: "Card2",
         to: "die",
-      });
+      }));
 
       const reply = await alexaSkill.execute(event, {});
       expect(reply.response.card).to.be.undefined;
@@ -218,6 +218,32 @@ describe("Alexa directives", () => {
       }
 
       expect(_.get(reply.response, "outputSpeech.ssml")).to.equal("<speak>An unrecoverable error occurred.</speak>");
+    });
+
+    it("should accept a HomeCard object", async () => {
+      app.onIntent("YesIntent", () => ({
+        alexaCard: {
+          image: {
+            largeImageUrl: "https://example.com/large.jpg",
+            smallImageUrl: "https://example.com/small.jpg",
+          },
+          title: "Title",
+          type: "Standard",
+        },
+        flow: "yield",
+        to: "entry",
+      }));
+
+      const reply = await alexaSkill.execute(event, {});
+
+      expect(reply.response.card).to.deep.equal({
+        image: {
+          largeImageUrl: "https://example.com/large.jpg",
+          smallImageUrl: "https://example.com/small.jpg",
+        },
+        title: "Title",
+        type: "Standard",
+      });
     });
   });
 });

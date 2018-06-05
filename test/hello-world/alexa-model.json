@@ -1,0 +1,121 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "hello world",
+      "intents": [
+        {
+          "name": "LaunchIntent",
+          "samples": [
+            "launch Hello World"
+          ],
+          "slots": [
+          ]
+        },
+        {
+          "name": "AMAZON.YesIntent",
+          "samples": [],
+          "slots": []
+        },
+        {
+          "name": "AMAZON.NoIntent",
+          "samples": [],
+          "slots": []
+        },
+        {
+          "name": "AMAZON.PauseIntent",
+          "samples": [],
+          "slots": []
+        },
+        {
+          "name": "AMAZON.ResumeIntent",
+          "samples": [],
+          "slots": []
+        },
+        {
+          "name": "AMAZON.RepeatIntent",
+          "samples": [],
+          "slots": []
+        },
+        {
+          "name": "AMAZON.StartOverIntent",
+          "samples": [],
+          "slots": []
+        },
+        {
+          "name": "AMAZON.PreviousIntent",
+          "samples": [],
+          "slots": []
+        },
+        {
+          "name": "AMAZON.NextIntent",
+          "samples": [],
+          "slots": []
+        },
+        {
+          "name": "AMAZON.ScrollUpIntent",
+          "samples": [],
+          "slots": []
+        },
+        {
+          "name": "AMAZON.ScrollLeftIntent",
+          "samples": [],
+          "slots": []
+        },
+        {
+          "name": "AMAZON.ScrollDownIntent",
+          "samples": [],
+          "slots": []
+        },
+        {
+          "name": "AMAZON.ScrollRightIntent",
+          "samples": [],
+          "slots": []
+        },
+        {
+          "name": "AMAZON.PageUpIntent",
+          "samples": [],
+          "slots": []
+        },
+        {
+          "name": "AMAZON.PageDownIntent",
+          "samples": [],
+          "slots": []
+        },
+        {
+          "name": "AMAZON.MoreIntent",
+          "samples": [],
+          "slots": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": [],
+          "slots": []
+        },
+        {
+          "name": "AMAZON.NavigateSettingsIntent",
+          "samples": [],
+          "slots": []
+        },
+        {
+          "name": "AMAZON.LoopOffIntent",
+          "slots": []
+        },
+        {
+          "name": "AMAZON.LoopOnIntent",
+          "slots": []
+        },
+        {
+          "name": "AMAZON.ShuffleOffIntent",
+          "slots": []
+        },
+        {
+          "name": "AMAZON.ShuffleOnIntent",
+          "slots": []
+        }
+      ],
+      "types": [
+      ]
+    }
+  }
+}
+

@@ -1,24 +1,31 @@
-import { GoogleCloudDialogflowV2Context } from "actions-on-google";
+import {
+  GoogleActionsV2AppRequest,
+  GoogleActionsV2Conversation,
+  GoogleCloudDialogflowV2Context,
+  GoogleCloudDialogflowV2WebhookRequest,
+} from "actions-on-google";
 import * as _ from "lodash";
 import { IVoxaSession } from "../../VoxaEvent";
 
 export class DialogFlowSession implements IVoxaSession {
   public attributes: any;
-  public contexts: GoogleCloudDialogflowV2Context[];
   public new: boolean;
   public sessionId: string;
   public user: any;
+  public contexts: GoogleCloudDialogflowV2Context[];
 
-  constructor(rawEvent: any) {
-    this.contexts = rawEvent.queryResult.outputContexts;
-    this.sessionId = rawEvent.session;
-    this.user = this.getUser(rawEvent);
+  constructor(rawEvent: GoogleCloudDialogflowV2WebhookRequest) {
+    const payload: GoogleActionsV2AppRequest = _.get(rawEvent, "originalDetectIntentRequest.payload");
+    if (!payload.conversation) {
+      throw new Error("Conversation is missing from request payload");
+    }
+
+    const conversation: GoogleActionsV2Conversation =  payload.conversation;
+    this.contexts = _.get(rawEvent, "queryResult.outputContexts", []);
+    this.sessionId = conversation.conversationId || "";
+    this.user = payload.user;
+    this.new = conversation.type === "NEW";
     this.attributes = this.getAttributes(rawEvent);
-    this.new = _.isEmpty(this.attributes);
-  }
-
-  public getUser(rawEvent: any) {
-    return _.get(rawEvent, "originalDetectIntentRequest.data.user", {});
   }
 
   public getAttributes(rawEvent: any) {
@@ -26,14 +33,15 @@ export class DialogFlowSession implements IVoxaSession {
       return {};
     }
 
-    const context: GoogleCloudDialogflowV2Context|undefined = _.find(this.contexts, {
-      name: `${this.sessionId}/contexts/model`,
-    });
+    const context: GoogleCloudDialogflowV2Context|undefined = _.find(this.contexts, (c) =>
+      c.name === `${rawEvent.session}/contexts/model`,
+    );
 
     if (context && context.parameters && context.parameters.model) {
       return JSON.parse(context.parameters.model);
     }
 
-    return  {};
+    return {};
+
   }
 }
