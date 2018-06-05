@@ -13,6 +13,9 @@ const mediaStatusIntent = require("../requests/dialog-flow/actions.intent.MEDIA_
 /* tslint:disable-next-line:no-var-requires */
 const signinIntent = require("../requests/dialog-flow/actions.intent.SIGN_IN.json");
 
+/* tslint:disable-next-line:no-var-requires */
+const helpIntent = require("../requests/dialog-flow/helpIntent.json");
+
 describe("DialogFlowEvent", () => {
   it("should format intent slots", () => {
     const event = new DialogFlowEvent(optionIntent, {});
@@ -54,6 +57,18 @@ describe("DialogFlowEvent", () => {
           "@type": "type.googleapis.com/google.actions.v2.SignInValue",
           "status": "OK",
       },
+    });
+  });
+
+  it("should return the correct intent", () => {
+    const event = new DialogFlowEvent(helpIntent, {});
+    expect(event.intent.name).to.equal("HelpIntent");
+  });
+
+  it("should extract the session attributes from the context", () => {
+    const event = new DialogFlowEvent(helpIntent, {});
+    expect(event.session.attributes).to.deep.equal({
+        key: "value",
     });
   });
 

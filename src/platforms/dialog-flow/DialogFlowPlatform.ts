@@ -1,4 +1,7 @@
-import { GoogleCloudDialogflowV2Context  } from "actions-on-google";
+import {
+  GoogleCloudDialogflowV2Context,
+  GoogleCloudDialogflowV2WebhookRequest,
+} from "actions-on-google";
 import * as _ from "lodash";
 import { Model } from "../../Model";
 import { VoxaPlatform } from "../VoxaPlatform";
@@ -19,31 +22,12 @@ import {
 } from "./directives";
 
 export class DialogFlowPlatform extends VoxaPlatform {
-  public async execute(rawEvent: any, context: any): Promise<DialogFlowReply> {
+  public async execute(rawEvent: GoogleCloudDialogflowV2WebhookRequest, context: any): Promise<DialogFlowReply> {
     const event = new DialogFlowEvent(rawEvent, context);
-    const voxaReply = await this.app.execute(event, new DialogFlowReply()) as DialogFlowReply;
-    voxaReply.outputContexts =     await this.modelToSessionContext(event);
-
+    const dialogFlowReply = new DialogFlowReply();
+    dialogFlowReply.outputContexts =  event.session.contexts;
+    const voxaReply = await this.app.execute(event, dialogFlowReply) as DialogFlowReply;
     return voxaReply;
-  }
-
-  public async modelToSessionContext(event: DialogFlowEvent): Promise<GoogleCloudDialogflowV2Context[]> {
-    const modelContext: GoogleCloudDialogflowV2Context = {
-      lifespanCount: 100000,
-      name: `${event.session.sessionId}/contexts/model`,
-      parameters: {},
-    };
-
-    modelContext.parameters = {
-      model: JSON.stringify(await event.model.serialize()),
-    };
-
-    const currentContexts = event.rawEvent.queryResult.outputContexts || [];
-    const outputContexts = _.filter(currentContexts, (context) => context.name !== modelContext.name);
-
-    outputContexts.push(modelContext);
-
-    return outputContexts;
   }
 
   public getDirectiveHandlers() {

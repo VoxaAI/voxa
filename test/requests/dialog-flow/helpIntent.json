@@ -1,0 +1,100 @@
+{
+  "responseId": "e6cfd306-8f10-4108-9aca-cb37f3447894",
+  "queryResult": {
+    "queryText": "help",
+    "action": "HelpIntent",
+    "parameters": {},
+    "allRequiredParamsPresent": true,
+    "outputContexts": [
+      {
+        "name": "projects/project/agent/sessions/1528150043739/contexts/actions_capability_screen_output"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528150043739/contexts/actions_capability_audio_output"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528150043739/contexts/model",
+        "lifespanCount": 99999,
+        "parameters": {
+          "model": "{\"key\":\"value\"}"
+        }
+      },
+      {
+        "name": "projects/project/agent/sessions/1528150043739/contexts/google_assistant_input_type_keyboard"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528150043739/contexts/actions_capability_web_browser"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528150043739/contexts/actions_capability_media_response_audio"
+      }
+    ],
+    "intent": {
+      "name": "projects/project/agent/intents/bc21ce69-9877-569c-b271-da5e92526858",
+      "displayName": "HelpIntent"
+    },
+    "intentDetectionConfidence": 1,
+    "diagnosticInfo": {},
+    "languageCode": "en-us"
+  },
+  "originalDetectIntentRequest": {
+    "source": "google",
+    "version": "2",
+    "payload": {
+      "isInSandbox": true,
+      "surface": {
+        "capabilities": [
+          {
+            "name": "actions.capability.AUDIO_OUTPUT"
+          },
+          {
+            "name": "actions.capability.WEB_BROWSER"
+          },
+          {
+            "name": "actions.capability.MEDIA_RESPONSE_AUDIO"
+          },
+          {
+            "name": "actions.capability.SCREEN_OUTPUT"
+          }
+        ]
+      },
+      "inputs": [
+        {
+          "rawInputs": [
+            {
+              "query": "help",
+              "inputType": "KEYBOARD"
+            }
+          ],
+          "intent": "actions.intent.TEXT"
+        }
+      ],
+      "user": {
+        "lastSeen": "2018-06-04T22:05:25Z",
+        "locale": "en-US",
+        "userId": "1527283153072"
+      },
+      "conversation": {
+        "conversationId": "1528150043739",
+        "type": "ACTIVE",
+        "conversationToken": "[\"model\"]"
+      },
+      "availableSurfaces": [
+        {
+          "capabilities": [
+            {
+              "name": "actions.capability.AUDIO_OUTPUT"
+            },
+            {
+              "name": "actions.capability.WEB_BROWSER"
+            },
+            {
+              "name": "actions.capability.SCREEN_OUTPUT"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "session": "projects/project/agent/sessions/1528150043739"
+}

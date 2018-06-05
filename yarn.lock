@@ -2,17 +2,9 @@
 # yarn lockfile v1
 
 
-"@sheerun/botbuilder-azure@3.0.5":
-  version "3.0.5"
-  resolved "https://registry.yarnpkg.com/@sheerun/botbuilder-azure/-/botbuilder-azure-3.0.5.tgz#35f016f08d8b6d9cb7c3c3102dae21e21da2713a"
-  dependencies:
-    "@types/tedious" "^1.8.32"
-    async "^2.1.2"
-    azure-storage "^2.6.0"
-    botbuilder "^3.11.0"
-    documentdb "^1.13.0"
-    promise "^7.1.1"
-    tedious "^2.0.0"
+"@types/async@^2.0.48":
+  version "2.0.49"
+  resolved "https://registry.yarnpkg.com/@types/async/-/async-2.0.49.tgz#92e33d13f74c895cb9a7f38ba97db8431ed14bc0"
 
 "@types/aws-lambda@^0.0.33":
   version "0.0.33"
@@ -60,7 +52,7 @@
     "@types/express-serve-static-core" "*"
     "@types/serve-static" "*"
 
-"@types/form-data@*":
+"@types/form-data@*", "@types/form-data@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@types/form-data/-/form-data-2.2.1.tgz#ee2b3b8eaa11c0938289953606b745b738c54b1e"
   dependencies:
@@ -69,6 +61,12 @@
 "@types/i18next@^8.4.2":
   version "8.4.3"
   resolved "https://registry.yarnpkg.com/@types/i18next/-/i18next-8.4.3.tgz#9136a9551bf5bf7169aa9f3125c1743f1f8dd6de"
+
+"@types/jsonwebtoken@^7.2.6":
+  version "7.2.7"
+  resolved "https://registry.yarnpkg.com/@types/jsonwebtoken/-/jsonwebtoken-7.2.7.tgz#5dd62e0c0a0c6f211c3c1d13d322360894625b47"
+  dependencies:
+    "@types/node" "*"
 
 "@types/lodash@^4.14.88":
   version "4.14.108"
@@ -94,6 +92,10 @@
   version "9.6.18"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-9.6.18.tgz#092e13ef64c47e986802c9c45a61c1454813b31d"
 
+"@types/node@^9.6.1":
+  version "9.6.20"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-9.6.20.tgz#b59a1bd357ae2df7d44d5ac98e9b64eb96ea1fef"
+
 "@types/request-promise@^4.1.39":
   version "4.1.41"
   resolved "https://registry.yarnpkg.com/@types/request-promise/-/request-promise-4.1.41.tgz#1e254d51362d7edcb714b60cde303bcbe0ab1ee0"
@@ -101,7 +103,7 @@
     "@types/bluebird" "*"
     "@types/request" "*"
 
-"@types/request@*":
+"@types/request@*", "@types/request@^2.47.0":
   version "2.47.0"
   resolved "https://registry.yarnpkg.com/@types/request/-/request-2.47.0.tgz#76a666cee4cb85dcffea6cd4645227926d9e114e"
   dependencies:
@@ -121,6 +123,10 @@
   version "0.0.27"
   resolved "https://registry.yarnpkg.com/@types/simple-mock/-/simple-mock-0.0.27.tgz#a9f58db60b5c09c66156467346ff069f8d66352a"
 
+"@types/sprintf-js@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@types/sprintf-js/-/sprintf-js-1.1.0.tgz#6850a98382b517c4a4d0401c63f2b0be76cee092"
+
 "@types/strip-bom@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/strip-bom/-/strip-bom-3.0.0.tgz#14a8ec3956c2e81edb7520790aecf21c290aebd2"
@@ -128,6 +134,13 @@
 "@types/strip-json-comments@0.0.30":
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/strip-json-comments/-/strip-json-comments-0.0.30.tgz#9aa30c04db212a9a0649d6ae6fd50accc40748a1"
+
+"@types/tedious@^1.8.31":
+  version "1.8.33"
+  resolved "https://registry.yarnpkg.com/@types/tedious/-/tedious-1.8.33.tgz#eb53a6815c1887fe720668d733698ec5ec2749e8"
+  dependencies:
+    "@types/events" "*"
+    "@types/node" "*"
 
 "@types/tedious@^1.8.32":
   version "1.8.32"
@@ -140,7 +153,7 @@
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/@types/tough-cookie/-/tough-cookie-2.3.2.tgz#e0d481d8bb282ad8a8c9e100ceb72c995fb5e709"
 
-"@types/url-join@^0.8.2":
+"@types/url-join@^0.8.1", "@types/url-join@^0.8.2":
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/@types/url-join/-/url-join-0.8.2.tgz#1181ecbe1d97b7034e0ea1e35e62e86cc26b422d"
 
@@ -294,10 +307,10 @@ async@^1.4.0, async@^1.5.2:
   resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
 
 async@^2.1.2:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/async/-/async-2.6.0.tgz#61a29abb6fcc026fea77e56d1c6ec53a795951f4"
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/async/-/async-2.6.1.tgz#b245a23ca71930044ec53fa46aa00a3e87c6a610"
   dependencies:
-    lodash "^4.14.0"
+    lodash "^4.17.10"
 
 asynckit@^0.4.0:
   version "0.4.0"
@@ -322,6 +335,20 @@ aws-sdk@^2.163.0:
     xml2js "0.4.17"
     xmlbuilder "4.2.1"
 
+aws-sdk@^2.238.1:
+  version "2.251.1"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.251.1.tgz#0f7e44b45c227ab7d5c63188c42c6ac913f25bf3"
+  dependencies:
+    buffer "4.9.1"
+    events "1.1.1"
+    ieee754 "1.1.8"
+    jmespath "0.15.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    uuid "3.1.0"
+    xml2js "0.4.17"
+
 aws-sign2@~0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/aws-sign2/-/aws-sign2-0.7.0.tgz#b46e890934a9591f2d2f6f86d7e6a9f1b3fe76a8"
@@ -338,15 +365,15 @@ axios@^0.18.0:
     is-buffer "^1.1.5"
 
 azure-storage@^2.6.0:
-  version "2.8.1"
-  resolved "https://registry.yarnpkg.com/azure-storage/-/azure-storage-2.8.1.tgz#ecb9d050ef1395e79ffbb652c02fe643687bec63"
+  version "2.8.3"
+  resolved "https://registry.yarnpkg.com/azure-storage/-/azure-storage-2.8.3.tgz#6ee1539188ee42b91c62dad691b39ac5452e142b"
   dependencies:
     browserify-mime "~1.2.9"
     extend "~1.2.1"
     json-edm-parser "0.1.2"
     md5.js "1.3.4"
     readable-stream "~2.0.0"
-    request "~2.83.0"
+    request "^2.86.0"
     underscore "~1.8.3"
     uuid "^3.0.0"
     validator "~9.4.1"
@@ -455,8 +482,8 @@ bcrypt-pbkdf@^1.0.0:
     tweetnacl "^0.14.3"
 
 big-integer@^1.6.25:
-  version "1.6.27"
-  resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.27.tgz#8e56c6f8b2dd6c4fe8d32102b83d4f25868e4b3a"
+  version "1.6.30"
+  resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.30.tgz#7796f04acdd6ba56345f19049c8fffd427f09d16"
 
 big-number@0.3.1:
   version "0.3.1"
@@ -489,7 +516,41 @@ boom@5.x.x:
   dependencies:
     hoek "4.x.x"
 
-botbuilder@^3.11.0, botbuilder@^3.13.1:
+botbuilder-azure@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/botbuilder-azure/-/botbuilder-azure-3.1.0.tgz#bc777986443626065f6cae203d7ec79c176ca601"
+  dependencies:
+    "@types/tedious" "^1.8.31"
+    async "^2.1.2"
+    azure-storage "^2.6.0"
+    botbuilder "^3.11.0"
+    documentdb "^1.13.0"
+    promise "^7.1.1"
+    tedious "^2.0.0"
+
+botbuilder@^3.11.0:
+  version "3.15.0"
+  resolved "https://registry.yarnpkg.com/botbuilder/-/botbuilder-3.15.0.tgz#394e7abd35a0781c0365df62ee953fcedfa6d50c"
+  dependencies:
+    "@types/async" "^2.0.48"
+    "@types/express" "^4.11.1"
+    "@types/form-data" "^2.2.1"
+    "@types/jsonwebtoken" "^7.2.6"
+    "@types/node" "^9.6.1"
+    "@types/request" "^2.47.0"
+    "@types/sprintf-js" "^1.1.0"
+    "@types/url-join" "^0.8.1"
+    async "^1.5.2"
+    base64url "^2.0.0"
+    chrono-node "^1.1.3"
+    jsonwebtoken "^7.0.1"
+    promise "^7.1.1"
+    request "^2.69.0"
+    rsa-pem-from-mod-exp "^0.8.4"
+    sprintf-js "^1.0.3"
+    url-join "^1.1.0"
+
+botbuilder@^3.13.1:
   version "3.14.1"
   resolved "https://registry.yarnpkg.com/botbuilder/-/botbuilder-3.14.1.tgz#c623b444d28de6ab667875672baa84887ef0a966"
   dependencies:
@@ -802,6 +863,10 @@ deep-eql@^3.0.0:
   dependencies:
     type-detect "^4.0.0"
 
+deep-equal@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-1.0.1.tgz#f5d260292b660e084eff4cdbc9f08ad3247448b5"
+
 default-require-extensions@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/default-require-extensions/-/default-require-extensions-1.0.0.tgz#f37ea15d3e13ffd9b437d33e1a75b5fb97874cb8"
@@ -858,8 +923,8 @@ diff@^3.1.0, diff@^3.2.0:
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.5.0.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"
 
 documentdb@^1.13.0:
-  version "1.14.2"
-  resolved "https://registry.yarnpkg.com/documentdb/-/documentdb-1.14.2.tgz#26928fd03cd695f3111f32fe8323aa27e10cf5c7"
+  version "1.14.4"
+  resolved "https://registry.yarnpkg.com/documentdb/-/documentdb-1.14.4.tgz#c96650ef07738fc72d0b841cf572cda64ac4a4c8"
   dependencies:
     big-integer "^1.6.25"
     binary-search-bounds "2.0.3"
@@ -1326,8 +1391,10 @@ i18next@^9.0.1:
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-9.1.0.tgz#408005fe262a990c8d93946a6de0c77bba11667b"
 
 iconv-lite@^0.4.11:
-  version "0.4.19"
-  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.19.tgz#f7468f60135f5e5dad3399c0a81be9a1603a082b"
+  version "0.4.23"
+  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.23.tgz#297871f63be507adcfbfca715d0cd0eed84e9a63"
+  dependencies:
+    safer-buffer ">= 2.1.2 < 3"
 
 ieee754@1.1.8:
   version "1.1.8"
@@ -1637,7 +1704,7 @@ json-schema@0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/json-schema/-/json-schema-0.2.3.tgz#b480c892e59a2f05954ce727bd3f2a4e882f9e13"
 
-json-stringify-safe@~5.0.1:
+json-stringify-safe@^5.0.1, json-stringify-safe@~5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
 
@@ -1787,13 +1854,9 @@ lodash.once@^4.0.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/lodash.once/-/lodash.once-4.1.1.tgz#0dd3971213c7c56df880977d504c88fb471a97ac"
 
-lodash@^4.0.0, lodash@^4.13.1, lodash@^4.17.4:
+lodash@^4.0.0, lodash@^4.13.1, lodash@^4.17.10, lodash@^4.17.4, lodash@^4.17.5:
   version "4.17.10"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
-
-lodash@^4.14.0:
-  version "4.17.5"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.5.tgz#99a92d65c0272debe8c96b6057bc8fbfa3bed511"
 
 longest@^1.0.1:
   version "1.0.1"
@@ -2009,6 +2072,20 @@ nanomatch@^1.2.9:
     regex-not "^1.0.0"
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
+
+nock@^9.2.5:
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/nock/-/nock-9.3.0.tgz#4dcfdd37bd249836754d05bbac5a1f05e12e0f16"
+  dependencies:
+    chai "^4.1.2"
+    debug "^3.1.0"
+    deep-equal "^1.0.0"
+    json-stringify-safe "^5.0.1"
+    lodash "^4.17.5"
+    mkdirp "^0.5.0"
+    propagate "^1.0.0"
+    qs "^6.5.1"
+    semver "^5.5.0"
 
 node-forge@^0.7.4:
   version "0.7.5"
@@ -2270,6 +2347,10 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
+propagate@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/propagate/-/propagate-1.0.0.tgz#00c2daeedda20e87e3782b344adba1cddd6ad709"
+
 pseudomap@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/pseudomap/-/pseudomap-1.0.2.tgz#f052a28da70e618917ef0a8ac34c1ae5a68286b3"
@@ -2281,6 +2362,10 @@ punycode@1.3.2:
 punycode@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
+
+punycode@^2.1.0:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
 
 qs@^6.5.1:
   version "6.5.2"
@@ -2416,9 +2501,9 @@ request@^2.69.0, request@^2.83.0:
     tunnel-agent "^0.6.0"
     uuid "^3.1.0"
 
-request@~2.83.0:
-  version "2.83.0"
-  resolved "https://registry.yarnpkg.com/request/-/request-2.83.0.tgz#ca0b65da02ed62935887808e6f510381034e3356"
+request@^2.86.0:
+  version "2.87.0"
+  resolved "https://registry.yarnpkg.com/request/-/request-2.87.0.tgz#32f00235cd08d482b4d0d68db93a829c0ed5756e"
   dependencies:
     aws-sign2 "~0.7.0"
     aws4 "^1.6.0"
@@ -2428,7 +2513,6 @@ request@~2.83.0:
     forever-agent "~0.6.1"
     form-data "~2.3.1"
     har-validator "~5.0.3"
-    hawk "~6.0.2"
     http-signature "~1.2.0"
     is-typedarray "~1.0.0"
     isstream "~0.1.2"
@@ -2438,7 +2522,6 @@ request@~2.83.0:
     performance-now "^2.1.0"
     qs "~6.5.1"
     safe-buffer "^5.1.1"
-    stringstream "~0.0.5"
     tough-cookie "~2.3.3"
     tunnel-agent "^0.6.0"
     uuid "^3.1.0"
@@ -2489,15 +2572,23 @@ rsa-pem-from-mod-exp@^0.8.4:
   version "0.8.4"
   resolved "https://registry.yarnpkg.com/rsa-pem-from-mod-exp/-/rsa-pem-from-mod-exp-0.8.4.tgz#362a42c6d304056d493b3f12bceabb2c6576a6d4"
 
-safe-buffer@^5.0.1, safe-buffer@^5.1.1, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
+safe-buffer@^5.0.1, safe-buffer@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.1.tgz#893312af69b2123def71f57889001671eeb2c853"
+
+safe-buffer@~5.1.0, safe-buffer@~5.1.1:
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
 
 safe-regex@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/safe-regex/-/safe-regex-1.1.0.tgz#40a3669f3b077d1e943d44629e157dd48023bf2e"
   dependencies:
     ret "~0.1.10"
+
+"safer-buffer@>= 2.1.2 < 3":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
 
 sax@0.5.x:
   version "0.5.8"
@@ -2515,7 +2606,7 @@ semaphore@1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/semaphore/-/semaphore-1.0.5.tgz#b492576e66af193db95d65e25ec53f5f19798d60"
 
-"semver@2 || 3 || 4 || 5", semver@^5.3.0:
+"semver@2 || 3 || 4 || 5", semver@^5.3.0, semver@^5.5.0:
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.5.0.tgz#dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab"
 
@@ -2676,17 +2767,13 @@ split-string@^3.0.1, split-string@^3.0.2:
   dependencies:
     extend-shallow "^3.0.0"
 
-sprintf-js@^1.0.3:
+sprintf-js@^1.0.3, sprintf-js@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.1.1.tgz#36be78320afe5801f6cea3ee78b6e5aab940ea0c"
 
 sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
-
-sprintf@0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/sprintf/-/sprintf-0.1.5.tgz#8f83e39a9317c1a502cb7db8050e51c679f6edcf"
 
 sshpk@^1.7.0:
   version "1.14.1"
@@ -2809,16 +2896,17 @@ supports-color@^5.3.0:
     has-flag "^3.0.0"
 
 tedious@^2.0.0:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/tedious/-/tedious-2.3.1.tgz#56e5008ab32a6245b5040e7d6fbb09d4fc0df664"
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/tedious/-/tedious-2.6.1.tgz#e9f610ba5eacee6da4fd77a09f4a463d6db7b772"
   dependencies:
     babel-runtime "^6.26.0"
     big-number "0.3.1"
     bl "^1.2.0"
     depd "^1.1.2"
     iconv-lite "^0.4.11"
+    punycode "^2.1.0"
     readable-stream "^2.2.6"
-    sprintf "0.1.5"
+    sprintf-js "^1.1.1"
 
 test-exclude@^4.2.0:
   version "4.2.1"
@@ -3051,6 +3139,23 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
+
+virtual-alexa@^0.6.2:
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/virtual-alexa/-/virtual-alexa-0.6.2.tgz#18c71dd85e0df2b9d378afedf414ed508511c32f"
+  dependencies:
+    aws-sdk "^2.238.1"
+    lodash "^4.17.4"
+    nock "^9.2.5"
+    uuid "^3.1.0"
+    virtual-core "0.0.12-0"
+
+virtual-core@0.0.12-0:
+  version "0.0.12-0"
+  resolved "https://registry.yarnpkg.com/virtual-core/-/virtual-core-0.0.12-0.tgz#9d0aff1dc0e2ac25df06d78a51b5746ccac69b52"
+  dependencies:
+    "@types/uuid" "^3.4.3"
+    uuid "^3.2.1"
 
 which-module@^2.0.0:
   version "2.0.0"

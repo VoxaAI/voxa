@@ -1,5 +1,7 @@
 import {
   IAttachment,
+  IBotStorageContext,
+  IBotStorageData,
   ICardAction,
   IChatConnectorAddress,
   IEvent,
@@ -18,7 +20,7 @@ import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 import { BotFrameworkEvent } from "./BotFrameworkEvent";
 import { IAuthorizationResponse } from "./BotFrameworkInterfaces";
 
-const cortanalog: debug.IDebugger = debug("voxa:botframework");
+const botframeworklog: debug.IDebugger = debug("voxa:botframework");
 
 export class BotFrameworkReply implements IVoxaReply {
   // IMessage
@@ -116,8 +118,8 @@ export class BotFrameworkReply implements IVoxaReply {
   }
 
   public async send(event: BotFrameworkEvent) {
-    cortanalog("partialReply");
-    cortanalog({
+    botframeworklog("partialReply");
+    botframeworklog({
       hasDirectives: this.hasDirectives,
       hasMessages: this.hasMessages,
       sendingPartialReply: !(!this.hasMessages && !this.hasDirectives),
@@ -147,8 +149,8 @@ export class BotFrameworkReply implements IVoxaReply {
         uri,
       };
 
-      cortanalog("botApiRequest");
-      cortanalog(JSON.stringify(requestOptions, null, 2));
+      botframeworklog("botApiRequest");
+      botframeworklog(JSON.stringify(requestOptions, null, 2));
       return rp(requestOptions);
     } catch (reason) {
       if (reason instanceof StatusCodeError && attempts < 2) {
@@ -192,10 +194,46 @@ export class BotFrameworkReply implements IVoxaReply {
       method: "POST",
       url: "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token",
     };
-    cortanalog("getAuthorization");
-    cortanalog(requestOptions);
+    botframeworklog("getAuthorization");
+    botframeworklog(requestOptions);
 
     return await rp(requestOptions) as IAuthorizationResponse;
+  }
+
+  public async saveSession(event: IVoxaEvent): Promise<void> {
+    const conversationId = event.session.sessionId;
+    const userId = event.rawEvent.address.bot.id;
+    const context: IBotStorageContext = {
+      conversationId,
+      persistConversationData: false,
+      persistUserData: false,
+      userId,
+    };
+
+    const storage = (event as BotFrameworkEvent).storage;
+
+    if (!event.model) {
+      return;
+    }
+
+    const data: IBotStorageData = {
+      conversationData: {},
+      // we're only gonna handle private conversation data, this keeps the code small
+      // and more importantly it makes it so the programming model is the same between
+      // the different platforms
+      privateConversationData: await event.model.serialize(),
+      userData: {},
+    };
+
+    await new Promise((resolve, reject) => {
+      storage.saveData(context, data, (error: Error) => {
+        if (error) { return reject(error); }
+
+        botframeworklog("savedStateData");
+        botframeworklog(data, context);
+        return resolve();
+      });
+    });
   }
 
 }
