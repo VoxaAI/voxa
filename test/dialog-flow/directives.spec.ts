@@ -103,6 +103,10 @@ describe("DialogFlow Directives", () => {
           LIST_ITEM: {
             description: "The item description",
             title: "the list item",
+            synonyms: ["item"],
+            image: {
+              url: "http://example.com/image.png",
+            },
           },
         },
       };
@@ -114,30 +118,26 @@ describe("DialogFlow Directives", () => {
 
       const reply = await dialogFlowAgent.execute(event, {});
       expect(reply.payload.google.systemIntent).to.deep.equal({
-        data: {
-          "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
-          "carouselSelect": {
-            inputValueData: {
-              "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
-              "carouselSelect": {
-                imageDisplayOptions: undefined,
-                items: [
-                  {
-                    description: "The item description",
-                    image: undefined,
-                    optionInfo: {
-                      key: "LIST_ITEM",
-                      synonyms: undefined,
-                    },
-                    title: "the list item",
-                  },
-                ],
+      data: {
+        "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
+        "carouselSelect": {
+          imageDisplayOptions: undefined,
+          items: [
+            {
+              description: "The item description",
+              image: {
+                url: "http://example.com/image.png",
               },
+              optionInfo: {
+                key: "LIST_ITEM",
+                synonyms: ["item"],
+              },
+              title: "the list item",
             },
-            intent: "actions.intent.OPTION",
-          },
+          ],
         },
-        intent: "actions.intent.OPTION",
+      },
+      intent: "actions.intent.OPTION",
       });
     });
 
@@ -152,24 +152,18 @@ describe("DialogFlow Directives", () => {
         data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
           "carouselSelect": {
-            inputValueData: {
-              "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
-              "carouselSelect": {
-                imageDisplayOptions: undefined,
-                items: [
-                  {
-                    description: "The item description",
-                    image: undefined,
-                    optionInfo: {
-                      key: "LIST_ITEM",
-                      synonyms: undefined,
-                    },
-                    title: "the list item",
-                  },
-                ],
+            imageDisplayOptions: undefined,
+            items: [
+              {
+                description: "The item description",
+                image: undefined,
+                optionInfo: {
+                  key: "LIST_ITEM",
+                  synonyms: undefined,
+                },
+                title: "the list item",
               },
-            },
-            intent: "actions.intent.OPTION",
+            ],
           },
         },
         intent: "actions.intent.OPTION",
@@ -205,7 +199,7 @@ describe("DialogFlow Directives", () => {
     });
 
     it("should add a list from a Responses.List to the reply", async () => {
-      const list = new List({
+      const list = {
         items: {
           LIST_ITEM: {
             description: "The item description",
@@ -217,7 +211,7 @@ describe("DialogFlow Directives", () => {
           },
         },
         title: "The list select",
-      });
+      };
 
       app.onIntent("LaunchIntent", {
         dialogFlowList: list,
@@ -226,33 +220,27 @@ describe("DialogFlow Directives", () => {
 
       const reply = await dialogFlowAgent.execute(event, {});
       expect(reply.payload.google.systemIntent).to.deep.equal({
-        data: {
-          "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
-          "listSelect": {
-            inputValueData: {
-              "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
-              "listSelect": {
-                items: [
-                  {
-                    description: "The item description",
-                    image: {
-                      accessibilityText: "The image",
-                      url: "http://example.com/image.jpg",
-                    },
-                    optionInfo: {
-                      key: "LIST_ITEM",
-                      synonyms: undefined,
-                    },
-                    title: "The list item",
-                  },
-                ],
-                title: "The list select",
+      data: {
+        "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
+        "listSelect": {
+          items: [
+            {
+              description: "The item description",
+              image: {
+                accessibilityText: "The image",
+                url: "http://example.com/image.jpg",
               },
+              optionInfo: {
+                key: "LIST_ITEM",
+                synonyms: undefined,
+              },
+              title: "The list item",
             },
-            intent: "actions.intent.OPTION",
-          },
+          ],
+          title: "The list select",
         },
-        intent: "actions.intent.OPTION",
+      },
+      intent: "actions.intent.OPTION",
       });
     });
   });
@@ -501,7 +489,7 @@ describe("DialogFlow Directives", () => {
 
       const reply = await dialogFlowAgent.execute(event, {});
       expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
-        inputValueData: {
+        data: {
           "@type": "type.googleapis.com/google.actions.v2.SignInValueSpec",
           "optContext": "To check your account balance",
         },

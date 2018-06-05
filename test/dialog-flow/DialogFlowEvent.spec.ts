@@ -16,6 +16,9 @@ const signinIntent = require("../requests/dialog-flow/actions.intent.SIGN_IN.jso
 /* tslint:disable-next-line:no-var-requires */
 const helpIntent = require("../requests/dialog-flow/helpIntent.json");
 
+/* tslint:disable-next-line:no-var-requires */
+const permissionIntent = require("../requests/dialog-flow/actions.intent.PERMISSION.json");
+
 describe("DialogFlowEvent", () => {
   it("should format intent slots", () => {
     const event = new DialogFlowEvent(optionIntent, {});
@@ -69,6 +72,12 @@ describe("DialogFlowEvent", () => {
     const event = new DialogFlowEvent(helpIntent, {});
     expect(event.session.attributes).to.deep.equal({
         key: "value",
+    });
+  });
+
+  it("should extract the correct parameters from a permissionIntent", () => {
+    const event = new DialogFlowEvent(permissionIntent, {});
+    expect(event.intent.params).to.deep.equal({
     });
   });
 
