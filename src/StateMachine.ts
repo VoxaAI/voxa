@@ -38,9 +38,6 @@ export interface IStateMachineConfig {
 export interface ITransition {
   [propname: string]: any;
   to?: string|IState|ITransition; // default to 'entry'
-  reply?: string|IVoxaReply;
-  directives?: any[];
-  message?: any;
 }
 
 export interface IState {
@@ -148,7 +145,7 @@ export class StateMachine {
       throw new Error("this.currentState is not a state");
     }
 
-    log(`${this.currentState.name} transition resulted in %j`, transition);
+    log(`${this.currentState.name} transition resulted in`, transition);
     log("Running onAfterStateChangeCallbacks");
     await bluebird.mapSeries(this.onAfterStateChangeCallbacks, (fn) => {
       return fn(voxaEvent, reply, transition);
@@ -172,6 +169,7 @@ export class StateMachine {
 
       return fn(voxaEvent, reply, this.currentState);
     });
+
     let transition: ITransition = await this.runCurrentState(voxaEvent, reply);
 
     if (!!transition && !_.isObject(transition)) {
@@ -185,6 +183,7 @@ export class StateMachine {
     let to;
 
     if (_.isObject(transition) && !_.isEmpty(transition) && !transition.flow) {
+      transition = _.merge({}, transition, {flow: "continue"});
       transition.flow = "continue";
     }
 
@@ -193,10 +192,10 @@ export class StateMachine {
         throw new UnknownState(transition.to);
       }
       to = _.get(this.states, [voxaEvent.platform, transition.to]) || this.states.core[transition.to];
-      transition.to = to;
+      transition = _.merge({}, transition, { to });
     } else {
       to = { name: "die" };
-      transition.flow = "terminate";
+      transition = _.merge({}, transition, { flow: "terminate" });
     }
 
     if (transition.flow === "terminate" ) {
@@ -210,7 +209,7 @@ export class StateMachine {
     }
 
     if (transition.flow !== "continue" || !transition.to || isState(transition.to) && transition.to.isTerminal) {
-      return _.merge(transition, to);
+      return _.merge({}, transition, to);
     }
 
     return this.runTransition(to.name, voxaEvent, reply);
