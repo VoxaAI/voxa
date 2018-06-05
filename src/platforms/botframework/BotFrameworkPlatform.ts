@@ -126,7 +126,7 @@ export class BotFrameworkPlatform extends VoxaPlatform {
     const stateData: IBotStorageData|undefined = await this.getStateData(msg);
     const intent = await this.recognize(msg);
 
-    const event = new BotFrameworkEvent(msg, context, stateData, intent);
+    const event = new BotFrameworkEvent(msg, context, stateData, this.storage, intent);
     event.applicationId = this.applicationId;
     event.applicationPassword = this.applicationPassword;
 
@@ -135,12 +135,7 @@ export class BotFrameworkPlatform extends VoxaPlatform {
     }
 
     const reply = await this.app.execute(event, new BotFrameworkReply(event)) as BotFrameworkReply;
-
-    await Promise.all([
-      reply.send(event),
-      this.saveStateData(event, reply),
-    ]);
-
+    await reply.send(event);
     return {};
   }
 
@@ -203,39 +198,6 @@ export class BotFrameworkPlatform extends VoxaPlatform {
     });
   }
 
-  public async saveStateData(event: BotFrameworkEvent, reply: BotFrameworkReply): Promise<void> {
-    const conversationId = event.session.sessionId;
-    const userId = event.rawEvent.address.bot.id;
-    const context: IBotStorageContext = {
-      conversationId,
-      persistConversationData: false,
-      persistUserData: false,
-      userId,
-    };
-
-    if (!event.model) {
-      return;
-    }
-
-    const data: IBotStorageData = {
-      conversationData: {},
-      // we're only gonna handle private conversation data, this keeps the code small
-      // and more importantly it makes it so the programming model is the same between
-      // the different platforms
-      privateConversationData: await event.model.serialize(),
-      userData: {},
-    };
-
-    await new Promise((resolve, reject) => {
-      this.storage.saveData(context, data, (error: Error) => {
-        if (error) { return reject(error); }
-
-        botframeworklog("savedStateData");
-        botframeworklog(data, context);
-        return resolve();
-      });
-    });
-  }
 }
 
 export function moveFieldsTo(frm: any, to: any, fields: { [id: string]: string; }): void {

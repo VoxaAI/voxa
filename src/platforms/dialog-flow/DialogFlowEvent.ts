@@ -1,3 +1,4 @@
+import { GoogleCloudDialogflowV2WebhookRequest  } from "actions-on-google";
 import { TranslationFunction } from "i18next";
 import * as _ from "lodash";
 import { Model } from "../../Model";
@@ -15,11 +16,11 @@ export class DialogFlowEvent extends IVoxaEvent {
   public context: any;
   public intent: DialogFlowIntent;
 
-  constructor(event: any, context: any) {
+  constructor(event: GoogleCloudDialogflowV2WebhookRequest, context: any) {
     super(event, context);
     _.merge(this, {
       request: {
-        locale: event.queryResult.languageCode,
+        locale: _.get(event.queryResult, "languageCode"),
         type: "IntentRequest",
       },
     }, event);

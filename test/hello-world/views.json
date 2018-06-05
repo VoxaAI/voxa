@@ -1,0 +1,9 @@
+{
+  "en": {
+    "translation": {
+      "doesLikeVoxa": "Great! We're always working on improving Voxa and we're vey happy you found it useful",
+      "doesNotLikeVoxa": "Too bad! How can we make it better?",
+      "launch": "Welcome to this voxa app, are you enjoying voxa so far?"
+    }
+  }
+}

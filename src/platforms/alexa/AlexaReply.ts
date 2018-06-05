@@ -4,6 +4,7 @@ import {
 } from "ask-sdk-model";
 import * as _ from "lodash";
 import { Model } from "../../Model";
+import { IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 
 export class AlexaReply implements IVoxaReply, ResponseEnvelope {
@@ -31,8 +32,8 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
     return !!this.response && !!this.response.shouldEndSession;
   }
 
-  public async setSession(model: Model): Promise<void> {
-    this.sessionAttributes = await model.serialize();
+  public async saveSession(event: IVoxaEvent): Promise<void> {
+    this.sessionAttributes = await event.model.serialize();
   }
 
   public terminate() {
@@ -56,44 +57,24 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
       this.response.shouldEndSession = false;
     }
 
-    if (isPlain) {
-      let text: string = _.get(this.response, "outputSpeech.text", "");
-      text = addToText(text, statement);
-      this.response.outputSpeech = {
-        text,
-        type: "PlainText",
-      };
-    } else {
-      let ssml: string = _.get(this.response, "outputSpeech.ssml", "<speak></speak>");
-      ssml = addToSSML(ssml, statement);
-      this.response.outputSpeech = {
-        ssml,
-        type: "SSML",
-      };
-    }
+    let ssml: string = _.get(this.response, "outputSpeech.ssml", "<speak></speak>");
+    ssml = addToSSML(ssml, statement);
+    this.response.outputSpeech = {
+      ssml,
+      type: "SSML",
+    };
   }
 
   public addReprompt(statement: string, isPlain: boolean = false) {
-    const type = isPlain ? "PlainText" : "SSML";
-    if (isPlain) {
-      let text: string = _.get(this.response.reprompt, "outputSpeech.text", "");
-      text = addToText(text, statement);
-      this.response.reprompt = {
-        outputSpeech : {
-          text,
-          type: "PlainText",
-        },
-      };
-    } else {
-      let ssml: string = _.get(this.response.reprompt, "outputSpeech.ssml", "<speak></speak>");
-      ssml = addToSSML(ssml, statement);
-      this.response.reprompt = {
-        outputSpeech : {
-          ssml,
-          type: "SSML",
-        },
-      };
-    }
+    const type =  "SSML";
+    let ssml: string = _.get(this.response.reprompt, "outputSpeech.ssml", "<speak></speak>");
+    ssml = addToSSML(ssml, statement);
+    this.response.reprompt = {
+      outputSpeech : {
+        ssml,
+        type: "SSML",
+      },
+    };
 
   }
 

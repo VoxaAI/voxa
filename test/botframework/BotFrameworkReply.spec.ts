@@ -1,10 +1,10 @@
-import { AzureBotStorage, AzureTableClient } from "@sheerun/botbuilder-azure";
-import { LuisRecognizer } from "botbuilder";
 import {
   AudioCard,
   ICardMediaUrl,
   SuggestedActions,
 } from "botbuilder";
+import { LuisRecognizer } from "botbuilder";
+import { AzureBotStorage, AzureTableClient } from "botbuilder-azure";
 import { expect } from "chai";
 import * as _ from "lodash";
 import * as simple from "simple-mock";
@@ -20,15 +20,25 @@ describe("BotFrameworkReply", () => {
   let event: BotFrameworkEvent;
   let audioCard: AudioCard;
 
+  afterEach(() => {
+    simple.restore();
+  });
+
   beforeEach(() => {
     audioCard = new AudioCard();
     const cardMedia: ICardMediaUrl = { url: "http://example.com/audio.mp3", profile: "" };
     audioCard.media([cardMedia]);
 
+    const azureTableClient = new AzureTableClient("", "", "");
+    const storage = new AzureBotStorage({ gzipData: false }, azureTableClient);
+
     const rawEvent = prepIncomingMessage(_.cloneDeep(require("../requests/botframework/conversationUpdate.json")));
-    event = new BotFrameworkEvent(rawEvent, {}, {});
+    event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
 
     reply = new BotFrameworkReply(event);
+
+    simple.mock(storage, "saveData")
+      .callbackWith(null, {});
   });
 
   it("should correctly format the reply activity", () => {

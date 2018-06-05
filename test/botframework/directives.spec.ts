@@ -1,7 +1,7 @@
 import "mocha";
 
-import { AzureBotStorage, AzureTableClient } from "@sheerun/botbuilder-azure";
 import { LuisRecognizer } from "botbuilder";
+import { AzureBotStorage, AzureTableClient } from "botbuilder-azure";
 import { expect, use } from "chai";
 import * as i18n from "i18next";
 import * as _ from "lodash";
