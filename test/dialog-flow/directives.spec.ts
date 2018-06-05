@@ -117,24 +117,24 @@ describe("DialogFlow Directives", () => {
         data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
           "carouselSelect": {
-            intent: "actions.intent.OPTION",
             inputValueData: {
               "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
               "carouselSelect": {
                 imageDisplayOptions: undefined,
                 items: [
                   {
+                    description: "The item description",
+                    image: undefined,
                     optionInfo: {
                       key: "LIST_ITEM",
                       synonyms: undefined,
                     },
-                    description: "The item description",
-                    image: undefined,
                     title: "the list item",
                   },
                 ],
               },
             },
+            intent: "actions.intent.OPTION",
           },
         },
         intent: "actions.intent.OPTION",
@@ -190,32 +190,31 @@ describe("DialogFlow Directives", () => {
       });
 
       const reply = await dialogFlowAgent.execute(event, {});
-      console.log(JSON.stringify(reply.payload.google.systemIntent, null, 2));
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
           "listSelect": {
-            intent: "actions.intent.OPTION",
             inputValueData: {
               "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
               "listSelect": {
-                title: "The list select",
                 items: [
                   {
-                    optionInfo: {
-                      key: "LIST_ITEM",
-                      synonyms: undefined,
-                    },
                     description: "The item description",
                     image: {
                       accessibilityText: "The image",
                       url: "http://example.com/image.jpg",
                     },
+                    optionInfo: {
+                      key: "LIST_ITEM",
+                      synonyms: undefined,
+                    },
                     title: "The list item",
                   },
                 ],
+                title: "The list select",
               },
             },
+            intent: "actions.intent.OPTION",
           },
         },
         intent: "actions.intent.OPTION",
