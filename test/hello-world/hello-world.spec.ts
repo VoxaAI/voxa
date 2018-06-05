@@ -6,12 +6,16 @@ const views = require("./views.json");
 
 describe("Hello World", () => {
   describe("Alexa", () => {
-    it("Runs the alexa skill and like\'s voxa", async () => {
-      const alexa = VirtualAlexa.Builder()
+    let alexa: VirtualAlexa;
+
+    beforeEach(() => {
+      alexa = VirtualAlexa.Builder()
         .handler("test/hello-world/hello-world.alexaHandler") // Lambda function file and name
         .interactionModelFile("./test/hello-world/alexa-model.json")
         .create();
+    });
 
+    it("Runs the alexa skill and like\'s voxa", async () => {
       let reply: any = await alexa.launch();
       expect(reply.response.outputSpeech.ssml).to.include("Welcome to this voxa app, are you enjoying voxa so far?");
 
@@ -20,10 +24,6 @@ describe("Hello World", () => {
     });
 
     it("Runs the alexa skill and does not like voxa", async () => {
-      const alexa = VirtualAlexa.Builder()
-        .handler("test/hello-world/hello-world.alexaHandler") // Lambda function file and name
-        .interactionModelFile("./test/hello-world/alexa-model.json")
-        .create();
 
       let reply: any = await alexa.launch();
       expect(reply.response.outputSpeech.ssml).to.include("Welcome to this voxa app, are you enjoying voxa so far?");

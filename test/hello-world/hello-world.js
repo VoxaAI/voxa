@@ -4,10 +4,10 @@ const { DialogFlowPlatform } = require('../../src/platforms/dialog-flow/DialogFl
 const views = require('./views.json')
 
 const app = new VoxaApp({ views });
-app.onIntent("LaunchIntent", () => ({
+app.onIntent("LaunchIntent", {
   ask: "launch",
   to: "likesVoxa?",
-}));
+});
 
 app.onState("likesVoxa?", (request) => {
   if (!request.intent) {

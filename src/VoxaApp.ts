@@ -149,8 +149,7 @@ export class VoxaApp {
 
   // Call the specific request handlers for each request type
   public async execute(voxaEvent: IVoxaEvent, reply: IVoxaReply): Promise<IVoxaReply> {
-    log("Received new event");
-    log(JSON.stringify(voxaEvent.rawEvent, null, 2));
+    log("Received new event", JSON.stringify(voxaEvent.rawEvent, null, 2));
     try {
       // Validate that this AlexaRequest originated from authorized source.
       if (this.config.appIds) {
