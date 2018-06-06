@@ -259,7 +259,7 @@ export class Place implements IDirective {
     const google: any = (reply as DialogFlowReply).payload.google;
     const place = new ActionsOnGooglePlace(this.placeOptions);
 
-    google.systemIntent =           {
+    google.systemIntent = {
       data: place.inputValueData,
       intent: place.intent,
     };
@@ -275,7 +275,7 @@ export class TransactionDecision implements IDirective {
     const google: any = (reply as DialogFlowReply).payload.google;
     const transactionDecision = new ActionsOnGoogleTransactionDecision(this.transactionDecisionOptions);
 
-    google.systemIntent =           {
+    google.systemIntent = {
       data: transactionDecision.inputValueData,
       intent: transactionDecision.intent,
     };
@@ -289,9 +289,9 @@ export class TransactionRequirements implements IDirective {
   constructor(public transactionRequirementsOptions: GoogleActionsV2TransactionRequirementsCheckSpec) {}
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     const google: any = (reply as DialogFlowReply).payload.google;
-    const transactionRequirements =  new ActionsOnGoogleTransactionRequirements(this.transactionRequirementsOptions);
+    const transactionRequirements = new ActionsOnGoogleTransactionRequirements(this.transactionRequirementsOptions);
 
-    google.systemIntent =           {
+    google.systemIntent = {
       data: transactionRequirements.inputValueData,
       intent: transactionRequirements.intent,
     };
