@@ -9,7 +9,7 @@
     "prepublish": "npm run clean && tsc",
     "compile": "tsc",
     "lint": "tslint -c tslint.json src/**/*.ts",
-    "report": "nyc report",
+    "report": "nyc report --reporter=json && nyc report --reporter html && nyc report --reporter=lcov && nyc report --reporter=cobertura",
     "test": "mocha test/*.spec.* test/**/*.spec.*",
     "test-ci": "nyc mocha --colors --reporter mocha-jenkins-reporter test test/*.spec.* test/**/*.spec.*"
   },

@@ -32,12 +32,17 @@ describe("DialogFlow Directives", () => {
   });
 
   describe("MediaResponse", () => {
-    it("should add a MediaResponse", async () => {
-      const mediaObject = new MediaObject({
+    let mediaObject: MediaObject;
+    beforeEach(() => {
+      mediaObject = new MediaObject({
         description: "Title",
         url: "https://example.com/example.mp3",
       });
+    });
 
+    it("should not add a MediaResponse to a device with no audio support",  async () => {
+      event = _.cloneDeep(event);
+      event.originalDetectIntentRequest.payload.surface.capabilities = {};
       app.onIntent("LaunchIntent", {
         dialogFlowMediaResponse: mediaObject,
         sayp: "Hello!",
@@ -47,27 +52,47 @@ describe("DialogFlow Directives", () => {
       const reply = await dialogFlowAgent.execute(event, {});
 
       expect(reply.payload.google.richResponse).to.deep.equal({
-      items: [
-        {
-          simpleResponse: {
-            textToSpeech: "<speak>Hello!</speak>",
+        items: [
+          {
+            simpleResponse: {
+              textToSpeech: "<speak>Hello!</speak>",
+            },
           },
-        },
-        {
-          mediaResponse: {
-            mediaObjects: [
-              {
-                contentUrl: "https://example.com/example.mp3",
-                description: "Title",
-                icon: undefined,
-                largeImage: undefined,
-                name: undefined,
-              },
-            ],
-            mediaType: "AUDIO",
+        ],
+      });
+    });
+
+    it("should add a MediaResponse", async () => {
+      app.onIntent("LaunchIntent", {
+        dialogFlowMediaResponse: mediaObject,
+        sayp: "Hello!",
+        to: "die",
+      });
+
+      const reply = await dialogFlowAgent.execute(event, {});
+
+      expect(reply.payload.google.richResponse).to.deep.equal({
+        items: [
+          {
+            simpleResponse: {
+              textToSpeech: "<speak>Hello!</speak>",
+            },
           },
-        },
-      ],
+          {
+            mediaResponse: {
+              mediaObjects: [
+                {
+                  contentUrl: "https://example.com/example.mp3",
+                  description: "Title",
+                  icon: undefined,
+                  largeImage: undefined,
+                  name: undefined,
+                },
+              ],
+              mediaType: "AUDIO",
+            },
+          },
+        ],
       });
     });
 
@@ -118,26 +143,26 @@ describe("DialogFlow Directives", () => {
 
       const reply = await dialogFlowAgent.execute(event, {});
       expect(reply.payload.google.systemIntent).to.deep.equal({
-      data: {
-        "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
-        "carouselSelect": {
-          imageDisplayOptions: undefined,
-          items: [
-            {
-              description: "The item description",
-              image: {
-                url: "http://example.com/image.png",
+        data: {
+          "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
+          "carouselSelect": {
+            imageDisplayOptions: undefined,
+            items: [
+              {
+                description: "The item description",
+                image: {
+                  url: "http://example.com/image.png",
+                },
+                optionInfo: {
+                  key: "LIST_ITEM",
+                  synonyms: ["item"],
+                },
+                title: "the list item",
               },
-              optionInfo: {
-                key: "LIST_ITEM",
-                synonyms: ["item"],
-              },
-              title: "the list item",
-            },
-          ],
+            ],
+          },
         },
-      },
-      intent: "actions.intent.OPTION",
+        intent: "actions.intent.OPTION",
       });
     });
 
@@ -220,27 +245,27 @@ describe("DialogFlow Directives", () => {
 
       const reply = await dialogFlowAgent.execute(event, {});
       expect(reply.payload.google.systemIntent).to.deep.equal({
-      data: {
-        "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
-        "listSelect": {
-          items: [
-            {
-              description: "The item description",
-              image: {
-                accessibilityText: "The image",
-                url: "http://example.com/image.jpg",
+        data: {
+          "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
+          "listSelect": {
+            items: [
+              {
+                description: "The item description",
+                image: {
+                  accessibilityText: "The image",
+                  url: "http://example.com/image.jpg",
+                },
+                optionInfo: {
+                  key: "LIST_ITEM",
+                  synonyms: undefined,
+                },
+                title: "The list item",
               },
-              optionInfo: {
-                key: "LIST_ITEM",
-                synonyms: undefined,
-              },
-              title: "The list item",
-            },
-          ],
-          title: "The list select",
+            ],
+            title: "The list select",
+          },
         },
-      },
-      intent: "actions.intent.OPTION",
+        intent: "actions.intent.OPTION",
       });
     });
   });
@@ -495,6 +520,80 @@ describe("DialogFlow Directives", () => {
         },
         intent: "actions.intent.SIGN_IN",
       });
+    });
+  });
+
+  describe("TransactionDecision Directive", () => {
+    it("should add a TransactionDecision response", async () => {
+      const order = require("./order.json");
+      const transactionDecisionOptions = {
+        orderOptions: {
+          requestDeliveryAddress: false,
+        },
+        paymentOptions: {
+          googleProvidedOptions: {
+            prepaidCardDisallowed: false,
+            supportedCardNetworks: ["VISA", "AMEX"],
+            // These will be provided by payment processor,
+            // like Stripe, Braintree, or Vantiv.
+            tokenizationParameters: {
+              "gateway": "stripe",
+              "stripe:publishableKey": "pk_test_key",
+              "stripe:version": "2017-04-06",
+            },
+          },
+        },
+        proposedOrder: order,
+      };
+
+      app.onIntent("LaunchIntent", {
+        dialogFlowTransactionDecision: transactionDecisionOptions,
+        flow: "yield",
+        sayp: "Hello!",
+        to: "entry",
+      });
+
+      const reply = await dialogFlowAgent.execute(event, {});
+      expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
+        data: _.merge({
+          "@type": "type.googleapis.com/google.actions.v2.TransactionDecisionValueSpec",
+        }, transactionDecisionOptions),
+        intent: "actions.intent.TRANSACTION_DECISION",
+      });
+    });
+  });
+
+  describe("TransactionRequirements Directive", () => {
+    it("should add a TransactionRequirements response", async () => {
+      const transactionRequirementsOptions = {
+        orderOptions: {
+          requestDeliveryAddress: false,
+        },
+        paymentOptions: {
+          googleProvidedOptions: {
+            prepaidCardDisallowed: false,
+            supportedCardNetworks: ["VISA", "AMEX"],
+            // These will be provided by payment processor,
+            // like Stripe, Braintree, or Vantiv.
+            tokenizationParameters: {},
+          },
+        },
+      };
+      app.onIntent("LaunchIntent", {
+        dialogFlowTransactionRequirements: transactionRequirementsOptions,
+        flow: "yield",
+        sayp: "Hello!",
+        to: "entry",
+      });
+
+      const reply = await dialogFlowAgent.execute(event, {});
+      expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
+        data: _.merge({
+          "@type": "type.googleapis.com/google.actions.v2.TransactionRequirementsCheckSpec",
+        }, transactionRequirementsOptions),
+        intent: "actions.intent.TRANSACTION_REQUIREMENTS_CHECK",
+      });
+
     });
   });
 });
