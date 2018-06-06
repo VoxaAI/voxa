@@ -20,7 +20,7 @@ export interface IDialogFlowPayload {
 export class DialogFlowReply implements IVoxaReply {
   public outputContexts: GoogleCloudDialogflowV2Context[] = [];
   public fulfillmentText: string = "";
-  public source: string = "Voxa";
+  public source: string = "google";
   public payload: IDialogFlowPayload;
 
   constructor() {

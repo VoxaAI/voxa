@@ -3,21 +3,29 @@ import {
   BasicCardOptions,
   Carousel as ActionsOnGoogleCarousel,
   CarouselOptions,
-  Confirmation,
-  DateTime,
+  Confirmation as ActionsOnGoogleConfirmation,
+  DateTime as ActionsOnGoogleDateTime,
   DateTimeOptions,
-  DeepLink,
+  DeepLink as ActionsOnGoogleDeepLink,
   DeepLinkOptions,
+  DeliveryAddress as ActionsOnGoogleDeliveryAddress,
+  GoogleActionsV2DeliveryAddressValueSpec,
   GoogleActionsV2PermissionValueSpecPermissions,
+  GoogleActionsV2TransactionDecisionValueSpec,
+  GoogleActionsV2TransactionRequirementsCheckSpec,
   GoogleCloudDialogflowV2IntentMessageListSelect,
+  List as ActionsOnGoogleList,
+  ListOptions,
   MediaObject,
   MediaResponse as ActionsOnGoogleMediaResponse,
-  Permission,
+  Permission as ActionsOnGooglePermission,
   PermissionOptions,
-  Place,
+  Place as ActionsOnGooglePlace,
   RichResponse,
-  SignIn,
+  SignIn as ActionsOnGoogleSignIn,
   Suggestions as ActionsOnGoogleSuggestions,
+  TransactionDecision as ActionsOnGoogleTransactionDecision,
+  TransactionRequirements as ActionsOnGoogleTransactionRequirements,
 } from "actions-on-google";
 import * as _ from "lodash";
 
@@ -33,35 +41,22 @@ export class List implements IDirective {
   public static platform: string = "dialogFlow";
   public static key: string = "dialogFlowList";
 
-  public viewPath?: string;
-  public list?: GoogleCloudDialogflowV2IntentMessageListSelect;
-
-  constructor(viewPath: string|GoogleCloudDialogflowV2IntentMessageListSelect) {
-
-    if (_.isString(viewPath)) {
-      this.viewPath = viewPath;
-    } else {
-      this.list = viewPath;
-    }
-  }
+  constructor(public listOptions: string|ListOptions) { }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     let listSelect;
-    if (this.viewPath) {
-      listSelect = await event.renderer.renderPath(this.viewPath, event);
+    if (_.isString(this.listOptions)) {
+      listSelect = new ActionsOnGoogleList(await event.renderer.renderPath(this.listOptions, event));
     } else {
-      listSelect = this.list;
+      listSelect = new ActionsOnGoogleList(this.listOptions);
     }
 
-    const systemIntent = {
-      data: {
-        "@type": InputValueDataTypes.OPTION,
-        listSelect,
-      },
-      intent: "actions.intent.OPTION",
+    const google: any = (reply as DialogFlowReply).payload.google;
+    google.systemIntent = {
+      data: listSelect.inputValueData,
+      intent: listSelect.intent,
     };
 
-    (reply as DialogFlowReply).payload.google.systemIntent =  systemIntent;
   }
 }
 
@@ -79,15 +74,11 @@ export class Carousel implements IDirective {
       carouselSelect = new ActionsOnGoogleCarousel(this.carouselOptions);
     }
 
-    const systemIntent = {
-      data: {
-        "@type": InputValueDataTypes.OPTION,
-        carouselSelect,
-      },
-      intent: "actions.intent.OPTION",
+    const google: any = (reply as DialogFlowReply).payload.google;
+    google.systemIntent = {
+      data: carouselSelect.inputValueData,
+      intent: carouselSelect.intent,
     };
-
-    (reply as DialogFlowReply).payload.google.systemIntent =  systemIntent;
   }
 }
 
@@ -141,11 +132,11 @@ export class AccountLinkingCard implements IDirective {
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     (reply as DialogFlowReply).fulfillmentText = "login";
-    const signIn = new SignIn(this.context);
+    const signIn = new ActionsOnGoogleSignIn(this.context);
 
     const google: any = (reply as DialogFlowReply).payload.google;
     google.systemIntent = {
-      inputValueData: signIn.inputValueData,
+      data: signIn.inputValueData,
       intent: signIn.intent,
     };
 }
@@ -174,7 +165,7 @@ export class MediaResponse implements IDirective {
   }
 }
 
-export class PermissionsDirective implements IDirective {
+export class Permission implements IDirective {
   public static platform: string = "dialogFlow";
   public static key: string = "dialogFlowPermission";
 
@@ -182,7 +173,7 @@ export class PermissionsDirective implements IDirective {
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     (reply as DialogFlowReply).fulfillmentText = "login";
-    const permission: Permission = new Permission(this.permissionOptions);
+    const permission = new ActionsOnGooglePermission(this.permissionOptions);
 
     const google: any = (reply as DialogFlowReply).payload.google;
     google.systemIntent = {
@@ -192,7 +183,7 @@ export class PermissionsDirective implements IDirective {
   }
 }
 
-export class DateTimeDirective implements IDirective {
+export class DateTime implements IDirective {
   public static platform: string = "dialogFlow";
   public static key: string = "dialogFlowDateTime";
 
@@ -200,7 +191,7 @@ export class DateTimeDirective implements IDirective {
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     const google: any = (reply as DialogFlowReply).payload.google;
-    const dateTime = new DateTime(this.dateTimeOptions);
+    const dateTime = new ActionsOnGoogleDateTime(this.dateTimeOptions);
     google.systemIntent = {
       data: dateTime.inputValueData,
       intent: dateTime.intent,
@@ -209,14 +200,14 @@ export class DateTimeDirective implements IDirective {
   }
 }
 
-export class ConfirmationDirective implements IDirective {
+export class Confirmation implements IDirective {
   public static platform: string = "dialogFlow";
   public static key: string = "dialogFlowConfirmation";
 
   constructor(public prompt: string) {}
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     const google: any = (reply as DialogFlowReply).payload.google;
-    const confirmation = new Confirmation(this.prompt);
+    const confirmation = new ActionsOnGoogleConfirmation(this.prompt);
 
     google.systemIntent = {
       data: confirmation.inputValueData,
@@ -226,14 +217,14 @@ export class ConfirmationDirective implements IDirective {
   }
 }
 
-export class DeepLinkDirective implements IDirective {
+export class DeepLink implements IDirective {
   public static platform: string = "dialogFlow";
   public static key: string = "dialogFlowDeepLink";
 
   constructor(public deepLinkOptions: DeepLinkOptions) {}
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     const google: any = (reply as DialogFlowReply).payload.google;
-    const deepLink = new DeepLink(this.deepLinkOptions);
+    const deepLink = new ActionsOnGoogleDeepLink(this.deepLinkOptions);
 
     google.systemIntent = {
       data: deepLink.inputValueData,
@@ -259,19 +250,50 @@ export interface IPlaceOptions {
   context: string;
 }
 
-export class PlaceDirective implements IDirective {
+export class Place implements IDirective {
   public static platform: string = "dialogFlow";
   public static key: string = "dialogFlowPlace";
 
   constructor(public placeOptions: IPlaceOptions) {}
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     const google: any = (reply as DialogFlowReply).payload.google;
-    const place = new Place(this.placeOptions);
+    const place = new ActionsOnGooglePlace(this.placeOptions);
 
-    google.systemIntent =           {
+    google.systemIntent = {
       data: place.inputValueData,
       intent: place.intent,
     };
+  }
+}
 
+export class TransactionDecision implements IDirective {
+  public static platform: string = "dialogFlow";
+  public static key: string = "dialogFlowTransactionDecision";
+
+  constructor(public transactionDecisionOptions: GoogleActionsV2TransactionDecisionValueSpec) {}
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    const google: any = (reply as DialogFlowReply).payload.google;
+    const transactionDecision = new ActionsOnGoogleTransactionDecision(this.transactionDecisionOptions);
+
+    google.systemIntent = {
+      data: transactionDecision.inputValueData,
+      intent: transactionDecision.intent,
+    };
+  }
+}
+
+export class TransactionRequirements implements IDirective {
+  public static platform: string = "dialogFlow";
+  public static key: string = "dialogFlowTransactionRequirements";
+
+  constructor(public transactionRequirementsOptions: GoogleActionsV2TransactionRequirementsCheckSpec) {}
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    const google: any = (reply as DialogFlowReply).payload.google;
+    const transactionRequirements = new ActionsOnGoogleTransactionRequirements(this.transactionRequirementsOptions);
+
+    google.systemIntent = {
+      data: transactionRequirements.inputValueData,
+      intent: transactionRequirements.intent,
+    };
   }
 }
