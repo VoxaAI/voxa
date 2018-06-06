@@ -1,4 +1,4 @@
-import { Carousel, List, MediaObject } from "actions-on-google";
+import { Button, Carousel, Image, List, MediaObject } from "actions-on-google";
 import { expect } from "chai";
 import * as i18n from "i18next";
 import * as _ from "lodash";
@@ -418,7 +418,7 @@ describe("DialogFlow Directives", () => {
   describe("BasicCard Directive", () => {
     it("should add a BasicCard from a view", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowCard: "DialogFlowBasicCard",
+        dialogFlowBasicCard: "DialogFlowBasicCard",
         flow: "yield",
         sayp: "Hello!",
         to: "entry",
@@ -446,7 +446,7 @@ describe("DialogFlow Directives", () => {
 
     it("should add a BasicCard Response", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowCard: {
+        dialogFlowBasicCard: {
           buttons: {
             openUrlAction: "https://example.com",
             title: "Example.com",
@@ -593,7 +593,209 @@ describe("DialogFlow Directives", () => {
         }, transactionRequirementsOptions),
         intent: "actions.intent.TRANSACTION_REQUIREMENTS_CHECK",
       });
+    });
+  });
 
+  describe("RegisterUpdate Directive", () => {
+    it("should add a RegisterUpdate response", async () => {
+      const registerUpdateOptions = {
+        frequency: "ROUTINES",
+        intent: "tell.tip",
+      };
+
+      app.onIntent("LaunchIntent", {
+        dialogFlowRegisterUpdate: registerUpdateOptions,
+        flow: "yield",
+        sayp: "Hello!",
+        to: "entry",
+      });
+
+      const reply = await dialogFlowAgent.execute(event, {});
+      expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
+        data: {
+          "@type": "type.googleapis.com/google.actions.v2.RegisterUpdateValueSpec",
+          "arguments": undefined,
+          "intent": "tell.tip",
+          "triggerContext": {
+            timeContext: {
+              frequency: "ROUTINES",
+            },
+          },
+        },
+        intent: "actions.intent.REGISTER_UPDATE",
+      });
+
+    });
+  });
+
+  describe("UpdatePermission Directive", () => {
+    it("should add an UpdatePermission response", async () => {
+      const updatePermissionOptions = {
+        arguments: [{
+          name: "image_to_show",
+          textValue: "image_type_1",
+        }],
+        intent: "show.image",
+      };
+
+      app.onIntent("LaunchIntent", {
+        dialogFlowUpdatePermission: updatePermissionOptions,
+        flow: "yield",
+        sayp: "Hello!",
+        to: "entry",
+      });
+
+      const reply = await dialogFlowAgent.execute(event, {});
+      expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
+        data: {
+          "@type": "type.googleapis.com/google.actions.v2.PermissionValueSpec",
+          "optContext": undefined,
+          "permissions": [
+            "UPDATE",
+          ],
+          "updatePermissionValueSpec": {
+            arguments: [
+              {
+                name: "image_to_show",
+                textValue: "image_type_1",
+              },
+            ],
+            intent: "show.image",
+          },
+        },
+        intent: "actions.intent.PERMISSION",
+      });
+
+    });
+  });
+
+  describe("Table Directive", () => {
+    it("should add a Table Response", async () => {
+      const table = {
+        title: "Table Title",
+        subtitle: "Table Subtitle",
+        image: new Image({
+          url: "https://avatars0.githubusercontent.com/u/23533486",
+          alt: "Actions on Google",
+        }),
+        columns: [
+          {
+            header: "header 1",
+            align: "CENTER",
+          },
+          {
+            header: "header 2",
+            align: "LEADING",
+          },
+          {
+            header: "header 3",
+            align: "TRAILING",
+          },
+        ],
+        rows: [
+          {
+            cells: ["row 1 item 1", "row 1 item 2", "row 1 item 3"],
+            dividerAfter: false,
+          },
+          {
+            cells: ["row 2 item 1", "row 2 item 2", "row 2 item 3"],
+            dividerAfter: true,
+          },
+          {
+            cells: ["row 3 item 1", "row 3 item 2", "row 3 item 3"],
+          },
+        ],
+        buttons: new Button({
+          title: "Button Title",
+          url: "https://github.com/actions-on-google",
+        }),
+      };
+      app.onIntent("LaunchIntent", {
+        dialogFlowTable: table,
+        flow: "yield",
+        sayp: "Hello!",
+        to: "entry",
+      });
+
+      const reply = await dialogFlowAgent.execute(event, {});
+      expect(_.get(reply, "payload.google.richResponse.items[1]")).to.deep.equal({
+        tableCard: {
+          buttons: [
+            {
+              openUrlAction: {
+                url: "https://github.com/actions-on-google",
+              },
+              title: "Button Title",
+            },
+          ],
+          columnProperties: [
+            {
+              header: "header 1",
+              horizontalAlignment: "CENTER",
+            },
+            {
+              header: "header 2",
+              horizontalAlignment: "LEADING",
+            },
+            {
+              header: "header 3",
+              horizontalAlignment: "TRAILING",
+            },
+          ],
+          image: {
+            accessibilityText: "Actions on Google",
+            height: undefined,
+            url: "https://avatars0.githubusercontent.com/u/23533486",
+            width: undefined,
+          },
+          rows: [
+            {
+              cells: [
+                {
+                  text: "row 1 item 1",
+                },
+                {
+                  text: "row 1 item 2",
+                },
+                {
+                  text: "row 1 item 3",
+                },
+              ],
+              dividerAfter: false,
+            },
+            {
+              cells: [
+                {
+                  text: "row 2 item 1",
+                },
+                {
+                  text: "row 2 item 2",
+                },
+                {
+                  text: "row 2 item 3",
+                },
+              ],
+              dividerAfter: true,
+            },
+            {
+              cells: [
+                {
+                  text: "row 3 item 1",
+                },
+                {
+                  text: "row 3 item 2",
+                },
+                {
+                  text: "row 3 item 3",
+                },
+              ],
+              dividerAfter: undefined,
+            },
+          ],
+          subtitle: "Table Subtitle",
+          title: "Table Title",
+        },
+      });
     });
   });
 });
