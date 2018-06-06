@@ -52,7 +52,7 @@ Voxa
     });
 
     skill.onState('launch', (voxaEvent) => {
-      return { reply: 'LaunchIntent.OpenResponse', to: 'die' };
+      return { tell: 'LaunchIntent.OpenResponse', to: 'die' };
     });
 
 .. js:function:: Voxa.onIntent(intentName, handler)
@@ -66,7 +66,7 @@ Voxa
   .. code-block:: javascript
 
     skill.onIntent('HelpIntent', (voxaEvent) => {
-      return { reply: 'HelpIntent.HelpAboutSkill' };
+      return { tell: 'HelpIntent.HelpAboutSkill' };
     });
 
 .. js:function:: Voxa.onIntentRequest(callback, [atLast])

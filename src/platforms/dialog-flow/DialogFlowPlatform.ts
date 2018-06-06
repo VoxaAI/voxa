@@ -18,9 +18,12 @@ import {
   MediaResponse,
   Permission,
   Place,
+  RegisterUpdate,
   Suggestions,
+  Table,
   TransactionDecision,
   TransactionRequirements,
+  UpdatePermission,
 } from "./directives";
 
 export class DialogFlowPlatform extends VoxaPlatform {
@@ -44,9 +47,12 @@ export class DialogFlowPlatform extends VoxaPlatform {
       MediaResponse,
       Permission,
       Place,
+      RegisterUpdate,
       Suggestions,
+      Table,
       TransactionDecision,
       TransactionRequirements,
+      UpdatePermission,
     ];
   }
 }

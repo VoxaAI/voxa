@@ -21,11 +21,17 @@ import {
   Permission as ActionsOnGooglePermission,
   PermissionOptions,
   Place as ActionsOnGooglePlace,
+  RegisterUpdate as ActionsOnGoogleRegisterUpdate,
+  RegisterUpdateOptions,
   RichResponse,
   SignIn as ActionsOnGoogleSignIn,
   Suggestions as ActionsOnGoogleSuggestions,
+  Table as ActionsOnGoogleTable,
+  TableOptions,
   TransactionDecision as ActionsOnGoogleTransactionDecision,
   TransactionRequirements as ActionsOnGoogleTransactionRequirements,
+  UpdatePermission as ActionsOnGoogleUpdatePermission,
+  UpdatePermissionOptions,
 } from "actions-on-google";
 import * as _ from "lodash";
 
@@ -97,7 +103,7 @@ export class Suggestions implements IDirective {
 
 export class BasicCard implements IDirective {
   public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowCard";
+  public static key: string = "dialogFlowBasicCard";
 
   public viewPath?: string;
   public basicCardOptions?: BasicCardOptions;
@@ -295,5 +301,50 @@ export class TransactionRequirements implements IDirective {
       data: transactionRequirements.inputValueData,
       intent: transactionRequirements.intent,
     };
+  }
+}
+
+export class RegisterUpdate implements IDirective {
+  public static platform: string = "dialogFlow";
+  public static key: string = "dialogFlowRegisterUpdate";
+
+  constructor(public registerUpdateOptions: RegisterUpdateOptions) {}
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    const google: any = (reply as DialogFlowReply).payload.google;
+    const registerUpdate = new ActionsOnGoogleRegisterUpdate(this.registerUpdateOptions);
+
+    google.systemIntent = {
+      data: registerUpdate.inputValueData,
+      intent: registerUpdate.intent,
+    };
+  }
+}
+
+export class UpdatePermission implements IDirective {
+  public static platform: string = "dialogFlow";
+  public static key: string = "dialogFlowUpdatePermission";
+
+  constructor(public updatePermissionOptions: UpdatePermissionOptions) {}
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    const google: any = (reply as DialogFlowReply).payload.google;
+    const updatePermission = new ActionsOnGoogleUpdatePermission(this.updatePermissionOptions);
+
+    google.systemIntent = {
+      data: updatePermission.inputValueData,
+      intent: updatePermission.intent,
+    };
+  }
+}
+
+export class Table implements IDirective {
+  public static platform: string = "dialogFlow";
+  public static key: string = "dialogFlowTable";
+
+  constructor(public tableOptions: TableOptions) {}
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    const google: any = (reply as DialogFlowReply).payload.google;
+    const table = new ActionsOnGoogleTable(this.tableOptions);
+    const richResponse = _.get(reply, "payload.google.richResponse", new RichResponse());
+    (reply as DialogFlowReply).payload.google.richResponse = richResponse.add(table);
   }
 }
