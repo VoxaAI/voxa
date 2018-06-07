@@ -1,0 +1,133 @@
+{
+  "responseId": "4d4e91b2-1753-4904-9625-54dddea130ce",
+  "queryResult": {
+    "queryText": "actions_intent_PLACE",
+    "action": "input.unknown",
+    "parameters": {},
+    "allRequiredParamsPresent": true,
+    "outputContexts": [
+      {
+        "name": "projects/project/agent/sessions/1528400265215/contexts/actions_capability_screen_output"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528400265215/contexts/actions_capability_audio_output"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528400265215/contexts/google_assistant_input_type_keyboard"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528400265215/contexts/actions_capability_media_response_audio"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528400265215/contexts/actions_capability_web_browser"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528400265215/contexts/actions_intent_place",
+        "parameters": {
+          "PLACE": {
+            "formattedAddress": "Digital Drive, Morgan Hill, CA 95037, USA",
+            "coordinates": {
+              "latitude": 37.1390728,
+              "longitude": -121.6572152
+            },
+            "name": "Digital Drive",
+            "placeId": "ChIJF_RbBuogjoAR0BmGuyTKHCY"
+          }
+        }
+      }
+    ],
+    "intent": {
+      "name": "projects/project/agent/intents/9b8cf42d-ceb4-56f2-bfdc-58e5f75abf76",
+      "displayName": "DefaultFallbackIntent"
+    },
+    "intentDetectionConfidence": 1,
+    "diagnosticInfo": {},
+    "languageCode": "en-us"
+  },
+  "originalDetectIntentRequest": {
+    "source": "google",
+    "version": "2",
+    "payload": {
+      "isInSandbox": true,
+      "surface": {
+        "capabilities": [
+          {
+            "name": "actions.capability.WEB_BROWSER"
+          },
+          {
+            "name": "actions.capability.MEDIA_RESPONSE_AUDIO"
+          },
+          {
+            "name": "actions.capability.SCREEN_OUTPUT"
+          },
+          {
+            "name": "actions.capability.AUDIO_OUTPUT"
+          }
+        ]
+      },
+      "inputs": [
+        {
+          "rawInputs": [
+            {
+              "query": "Query handled by Actions on Google",
+              "inputType": "KEYBOARD"
+            }
+          ],
+          "arguments": [
+            {
+              "placeValue": {
+                "formattedAddress": "Digital Drive, Morgan Hill, CA 95037, USA",
+                "coordinates": {
+                  "latitude": 37.1390728,
+                  "longitude": -121.6572152
+                },
+                "name": "Digital Drive",
+                "placeId": "ChIJF_RbBuogjoAR0BmGuyTKHCY"
+              },
+              "name": "PLACE"
+            }
+          ],
+          "intent": "actions.intent.PLACE"
+        }
+      ],
+      "user": {
+        "lastSeen": "2018-06-07T19:36:00Z",
+        "permissions": [
+          "DEVICE_PRECISE_LOCATION"
+        ],
+        "locale": "en-US",
+        "userId": "1527283153072"
+      },
+      "device": {
+        "location": {
+          "coordinates": {
+            "latitude": 37.4219806,
+            "longitude": -122.0841979
+          }
+        }
+      },
+      "conversation": {
+        "conversationId": "1528400265215",
+        "type": "ACTIVE",
+        "conversationToken": "[\"model\"]"
+      },
+      "availableSurfaces": [
+        {
+          "capabilities": [
+            {
+              "name": "actions.capability.WEB_BROWSER"
+            },
+            {
+              "name": "actions.capability.SCREEN_OUTPUT"
+            },
+            {
+              "name": "actions.capability.AUDIO_OUTPUT"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "session": "projects/project/agent/sessions/1528400265215"
+}
+

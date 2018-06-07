@@ -41,27 +41,41 @@ Voxa is distributed via ``npm``
 Initial Configuration
 ---------------------
 
-Instantiating a StateMachineSkill requires a configuration specifying your :ref:`views-and-variables`.
+Instantiating a Voxa Application requires a configuration specifying your :ref:`views-and-variables`.
 
 .. code-block:: javascript
 
-    'use strict';
-    const Voxa = require('voxa');
+    const voxa = require('voxa');
     const views = require('./views'):
     const variables = require('./variables');
 
-    const skill = new Voxa({ variables, views });
+    const app = new voxa.VoxaApp({ variables, views });
 
-Responding to alexa events
------------------------------
+Platforms
+-------------
 
-Once you have your skill configured responding to events is as simple as calling the :js:func:`skill.lambda <Voxa.lambda>` method
+Once you have instantiated a platform it's time to create a plaform application. There are platform handlers for Alexa, DialogFlow and Botframework (Cortana);
 
 .. code-block:: javascript
 
-  const skill = require('./MainStateMachine');
+    const alexaSkill = new voxa.AlexaPlatform(app);
+    const dialogFlowAction = new voxa.DialogFlowPlatform(app);
 
-  exports.handler = skill.lambda();
+    // botframework requires some extra configuration like the Azure Table Storage to use and the Luis.ai endpoint
+    const storageName = config.cortana.storageName;
+    const tableName = config.cortana.tableName;
+    const storageKey = config.cortana.storageKey; // Obtain from Azure Portal
+    const azureTableClient = new azure.AzureTableClient(tableName, storageName, storageKey);
+    const tableStorage = new azure.AzureBotStorage({ gzipData: false }, azureTableClient);
+    const botframeworkSkill = new voxa.BotFrameworkPlatform(app, {
+      storage: tableStorage,
+      recognizerURI: config.cortana.recognizerURI,
+      applicationId: config.cortana.applicationId,
+      applicationPassword: config.cortana.applicationPassword,
+      defaultLocale: 'en',
+    });
+
+
 
 Using the development server
 -----------------------------
@@ -71,7 +85,7 @@ The framework provides a simple builtin server that's configured to serve all PO
 .. code-block:: javascript
 
   // this will start an http server listening on port 3000
-  skill.startServer(3000);
+  alexaSkill.startServer(3000);
 
 
 Responding to an intent event
@@ -79,13 +93,22 @@ Responding to an intent event
 
 .. code-block:: javascript
 
-  skill.onIntent('HelpIntent', (voxaEvent) => {
+  app.onIntent('HelpIntent', (voxaEvent) => {
     return { tell: 'HelpIntent.HelpAboutSkill' };
   });
 
-  skill.onIntent('ExitIntent', (voxaEvent) => {
+  app.onIntent('ExitIntent', (voxaEvent) => {
     return { tell: 'ExitIntent.Farewell' };
   });
+
+Responding to lambda requests
+-----------------------------
+
+Once you have your skill configured creating a lambda handler is as simple using the :js:func:`alexaSkill.lambda <VoxaPlatform.lambda>` method
+
+.. code-block:: javascript
+
+  exports.handler = alexaSkill.lambda();
 
 
 Links
@@ -97,14 +120,13 @@ Links
   :maxdepth: 2
   :caption: Contents:
 
-  glossary
-  new-user
+  new-alexa-user
   mvc-description
   models
   views-and-variables
   controllers
   transition
-  alexa-event
+  voxa-event
   dialogflow-directives
   reply
   statemachine-skill
@@ -112,6 +134,3 @@ Links
   i18n
   plugins
   debugging
-  starter-kit
-  my-first-podcast
-  account-linking
