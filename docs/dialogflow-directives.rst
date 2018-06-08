@@ -265,11 +265,44 @@ You can obtain the following user information with this helper:
   });
 
 
-DateTime
+Date and Time
 ---------
+
+`Actions on Google Documentation <https://developers.google.com/actions/assistant/helpers#date_and_time>`
+
+You can obtain a date and time from users by requesting fulfillment of the actions.intent.DATETIME intent.
+
+.. code-block:: javascript
+
+  skill.onState('someState', () => {
+    return {
+      dialogFlowDateTime: {
+        prompts: {
+          initial: 'When do you want to come in?',
+          date: 'Which date works best for you?',
+          time: 'What time of day works best for you?',
+        }
+      }
+    };
+  });
+
 
 Confirmation
 -------------
+
+`Actions on Google Documentation <https://developers.google.com/actions/assistant/helpers#confirmation>`
+
+You can ask a generic confirmation from the user (yes/no question) and get the resulting answer. The grammar for "yes" and "no" naturally expands to things like "Yea" or "Nope", making it usable in many situations.
+
+.. code-block:: javascript
+
+  skill.onState('someState', () => {
+    return {
+      dialogFlowConfirmation: 'Can you confirm?',
+    };
+  });
+
+
 
 Android Link
 ----------------
@@ -295,8 +328,27 @@ You can ask the user to continue an interaction via your Android app. This helpe
   });
 
 
-Place
--------
+Place and Location
+------------------
+
+`Actions on Google Documentation <https://developers.google.com/actions/assistant/helpers#place_and_location>`_
+
+You can obtain a location from users by requesting fulfillment of the actions.intent.PLACE intent. This helper is used to prompt the user for addresses and other locations, including any home/work/contact locations that they've saved with Google.
+
+Saved locations will only return the address, not the associated mapping (e.g. "123 Main St" as opposed to "HOME = 123 Main St").
+
+.. code-block:: javascript
+
+  skill.onState('someState', () => {
+    return {
+      dialogFlowPlace: {
+        context: 'To find a place to pick you up',
+        prompt: 'Where would you like to be picked up?',
+      }
+    };
+  });
+
+
 
 TransactionDecision
 --------------------
