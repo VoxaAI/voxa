@@ -94,7 +94,7 @@ export class VoxaApp {
     this.onIntentRequest(this.runStateMachine, true);
 
     this.onAfterStateChanged(this.renderDirectives);
-    this.onBeforeReplySent(this.serializeModel);
+    this.onBeforeReplySent(this.serializeModel, true);
 
     this.directiveHandlers = [  Say, SayP, Ask, Reprompt, Tell ];
   }
