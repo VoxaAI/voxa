@@ -11,6 +11,14 @@ export { BotFrameworkPlatform } from "./platforms/botframework/BotFrameworkPlatf
 export { DialogFlowPlatform } from "./platforms/dialog-flow/DialogFlowPlatform";
 export { Renderer } from "./renderers/Renderer";
 export { VoxaApp } from "./VoxaApp";
+export {
+  TimeoutError,
+  OnSessionEndedError,
+  UnhandledState,
+  UnknownState,
+  UnknownRequestType,
+  NotImplementedError,
+} from "./errors";
 
 import {
   AccountLinkingCard as AlexaAccountLinkingCard,

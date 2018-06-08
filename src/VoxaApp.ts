@@ -3,8 +3,9 @@ import * as debug from "debug";
 import * as i18n from "i18next";
 import * as _ from "lodash";
 
+import { Context as AWSLambdaContext } from "aws-lambda";
 import { Ask, IDirective, IDirectiveClass, Reprompt, Say, SayP, Tell } from "./directives";
-import { OnSessionEndedError, UnknownRequestType } from "./errors";
+import { OnSessionEndedError, TimeoutError, UnknownRequestType } from "./errors";
 import { IModel, Model } from "./Model";
 import { IMessage, IRenderer, IRendererConfig, Renderer } from "./renderers/Renderer";
 import { isState, IState, IStateMachineConfig, isTransition, ITransition, StateMachine } from "./StateMachine";
@@ -171,29 +172,41 @@ export class VoxaApp {
       }
 
       const requestHandler = this.requestHandlers[voxaEvent.request.type];
+      const executeHandlers = async () => {
+        switch (voxaEvent.request.type) {
+          case "IntentRequest":
+          case "SessionEndedRequest": {
+            // call all onRequestStarted callbacks serially.
+            const result = await bluebird.mapSeries(this.getOnRequestStartedHandlers(voxaEvent.platform), (fn: IEventHandler) => {
+              return fn(voxaEvent, reply);
+            });
 
-      switch (voxaEvent.request.type) {
-        case "IntentRequest":
-        case "SessionEndedRequest": {
-          // call all onRequestStarted callbacks serially.
-          const result = await bluebird.mapSeries(this.getOnRequestStartedHandlers(voxaEvent.platform), (fn: IEventHandler) => {
-            return fn(voxaEvent, reply);
-          });
+            if (voxaEvent.request.type === "SessionEndedRequest" && _.get(voxaEvent, "request.reason") === "ERROR") {
+              throw new OnSessionEndedError(_.get(voxaEvent, "request.error"));
+            }
 
-          if (voxaEvent.request.type === "SessionEndedRequest" && _.get(voxaEvent, "request.reason") === "ERROR") {
-            throw new OnSessionEndedError(_.get(voxaEvent, "request.error"));
+            // call all onSessionStarted callbacks serially.
+            await bluebird.mapSeries(this.getOnSessionStartedHandlers(voxaEvent.platform), (fn: IEventHandler) => fn(voxaEvent, reply));
+            // Route the request to the proper handler which may have been overriden.
+            return await requestHandler(voxaEvent, reply);
           }
 
-          // call all onSessionStarted callbacks serially.
-          await bluebird.mapSeries(this.getOnSessionStartedHandlers(voxaEvent.platform), (fn: IEventHandler) => fn(voxaEvent, reply));
-          // Route the request to the proper handler which may have been overriden.
-          return await requestHandler(voxaEvent, reply);
+          default: {
+            return await requestHandler(voxaEvent, reply);
+          }
         }
+      };
 
-        default: {
-          return await requestHandler(voxaEvent, reply);
-        }
+      const promises = [];
+      const context = voxaEvent.executionContext;
+      if (isLambdaContext(context)) {
+        promises.push(timeout(context));
       }
+
+      promises.push(executeHandlers());
+
+      return await bluebird.race(promises);
+
     } catch (error) {
       return await this.handleErrors(voxaEvent, error, reply);
     }
@@ -460,4 +473,22 @@ export class VoxaApp {
     voxaEvent.t = this.i18n.getFixedT(voxaEvent.request.locale);
     voxaEvent.renderer = this.renderer;
   }
+}
+
+export async function timeout(context: AWSLambdaContext): Promise<void> {
+  const timeRemaining = context.getRemainingTimeInMillis();
+
+  return new Promise<void>((resolve, reject) => {
+    setTimeout( () => {
+      reject(new TimeoutError());
+    }, Math.max(timeRemaining - 500, 0));
+  });
+}
+
+function isLambdaContext(context: any): context is AWSLambdaContext {
+  if (!context) {
+    return false;
+  }
+
+  return (context as AWSLambdaContext).getRemainingTimeInMillis !== undefined;
 }
