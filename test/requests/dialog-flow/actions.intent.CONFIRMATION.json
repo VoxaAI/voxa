@@ -1,0 +1,106 @@
+{
+  "responseId": "d98543ed-d90a-40d2-ade0-1aa8d1fe5b39",
+  "queryResult": {
+    "queryText": "actions_intent_CONFIRMATION",
+    "action": "input.unknown",
+    "parameters": {},
+    "allRequiredParamsPresent": true,
+    "outputContexts": [
+      {
+        "name": "projects/project/agent/sessions/1528399867833/contexts/actions_capability_screen_output"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528399867833/contexts/actions_intent_confirmation",
+        "parameters": {
+          "CONFIRMATION": true
+        }
+      },
+      {
+        "name": "projects/project/agent/sessions/1528399867833/contexts/actions_capability_audio_output"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528399867833/contexts/google_assistant_input_type_keyboard"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528399867833/contexts/actions_capability_web_browser"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528399867833/contexts/actions_capability_media_response_audio"
+      }
+    ],
+    "intent": {
+      "name": "projects/project/agent/intents/9b8cf42d-ceb4-56f2-bfdc-58e5f75abf76",
+      "displayName": "DefaultFallbackIntent"
+    },
+    "intentDetectionConfidence": 1,
+    "diagnosticInfo": {},
+    "languageCode": "en-us"
+  },
+  "originalDetectIntentRequest": {
+    "source": "google",
+    "version": "2",
+    "payload": {
+      "isInSandbox": true,
+      "surface": {
+        "capabilities": [
+          {
+            "name": "actions.capability.AUDIO_OUTPUT"
+          },
+          {
+            "name": "actions.capability.WEB_BROWSER"
+          },
+          {
+            "name": "actions.capability.MEDIA_RESPONSE_AUDIO"
+          },
+          {
+            "name": "actions.capability.SCREEN_OUTPUT"
+          }
+        ]
+      },
+      "inputs": [
+        {
+          "rawInputs": [
+            {
+              "query": "yes",
+              "inputType": "KEYBOARD"
+            }
+          ],
+          "arguments": [
+            {
+              "name": "CONFIRMATION",
+              "boolValue": true
+            }
+          ],
+          "intent": "actions.intent.CONFIRMATION"
+        }
+      ],
+      "user": {
+        "lastSeen": "2018-06-07T17:42:39Z",
+        "locale": "en-US",
+        "userId": "1527283153072"
+      },
+      "conversation": {
+        "conversationId": "1528399867833",
+        "type": "ACTIVE",
+        "conversationToken": "[\"model\"]"
+      },
+      "availableSurfaces": [
+        {
+          "capabilities": [
+            {
+              "name": "actions.capability.AUDIO_OUTPUT"
+            },
+            {
+              "name": "actions.capability.WEB_BROWSER"
+            },
+            {
+              "name": "actions.capability.SCREEN_OUTPUT"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "session": "projects/project/agent/sessions/1528399867833"
+}
+

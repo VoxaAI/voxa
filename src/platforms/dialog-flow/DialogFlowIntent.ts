@@ -41,19 +41,31 @@ export class DialogFlowIntent implements IVoxaIntent {
       throw new Error("queryResult is missing");
     }
 
+    const params = _.cloneDeep(this.rawIntent.queryResult.parameters) || {};
+    const inputs: any[] = _.get(this.rawIntent, "originalDetectIntentRequest.payload.inputs") || [];
+    const args = _(inputs)
+      .map("arguments")
+      .flatten()
+      .filter()
+      .map((rawArg: GoogleActionsV2Argument) => {
+        const arg: any = {};
+        if (!rawArg.name) {
+          return;
+        }
+
+        arg[rawArg.name] = rawArg.extension ? rawArg.extension : rawArg;
+        return arg;
+      })
+      .merge({})
+      .value();
+
+    _.forEach(args, (arg) => _.merge(params, arg));
+
     if (this.rawIntent.queryResult.queryText === "actions_intent_OPTION") {
-      return getOptionsValue(this.rawIntent.originalDetectIntentRequest);
+      _.merge(params, getOptionsValue(this.rawIntent.originalDetectIntentRequest));
     }
 
-    if (this.rawIntent.queryResult.queryText === "actions_intent_SIGN_IN") {
-      return getSiginStatus(this.rawIntent.originalDetectIntentRequest);
-    }
-
-    if (this.rawIntent.queryResult.queryText === "actions_intent_MEDIA_STATUS") {
-      return getMediaStatus(this.rawIntent.originalDetectIntentRequest);
-    }
-
-    return this.rawIntent.queryResult.parameters;
+    return params;
   }
 }
 

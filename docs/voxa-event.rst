@@ -1,4 +1,4 @@
-.. _alexa-event:
+.. _voxa-event:
 
 The ``voxaEvent`` Object
 ===========================
@@ -13,8 +13,8 @@ The ``voxaEvent`` Object
 
   .. js:attribute:: AlexaEvent.intent.params
 
-    The voxaEvent object makes ``intent.slots`` available through ``intent.params`` after aplying a simple transformation so ``{ slots: [{ name: 'Dish', value: 'Fried Chicken' }] }`` becomes ``{ Dish: 'Fried Chicken' }``
+    In Alexa the voxaEvent object makes ``intent.slots`` available through ``intent.params`` after aplying a simple transformation so ``{ slots: [{ name: 'Dish', value: 'Fried Chicken' }] }`` becomes ``{ Dish: 'Fried Chicken' }``, in other platforms it does it best to make the intent params for each platform also available on ``intent.params``
 
   .. js:attribute:: AlexaEvent.user
 
-    A convenience getter to obtain the user from ``sesssion.user`` or ``context.System.user``
+    A convenience getter to obtain the user from ``sesssion.user`` or ``context.System.user`` in alexa. In other platforms it's also available, you can always count on the ``voxaEvent.user.userId`` being available. If there's an ``accessToken`` it will also be available through ``voxaEvent.user.accessToken``

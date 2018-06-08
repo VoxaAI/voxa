@@ -15,15 +15,15 @@ States come in one of two ways, they can be an object of mappings from intent na
   });
 
 
-Or they can be a function that gets a :ref:`voxaEvent <alexa-event>` object.
+Or they can be a function that gets a :ref:`voxaEvent <voxa-event>` object.
 
 .. code-block:: javascript
 
   skill.onState('launch', (voxaEvent) => {
-    return { reply: 'LaunchIntent.OpenResponse', to: 'die' };
+    return { tell: 'LaunchIntent.OpenResponse' };
   });
 
-Your state should respond with a :ref:`transition <transition>`. The transition is a plain object that can take  ``directives``, ``to`` and ``reply`` keys.
+Your state should respond with a :ref:`transition <transition>`. The transition is a plain object that can take  ``directives``, ``to`` and ``flow`` keys.
 
 The ``entry`` controller
 --------------------------
@@ -37,10 +37,10 @@ For example in the next snipped there's a ``waiting`` state that expects an ``AM
   skill.onState('waiting', (voxaEvent) => {
     if (voxaEvent.intent.name === 'AMAZON.NextIntent') {
       voxaEvent.model.index += 1;
-      return { reply: 'Ingredients.Describe', to: 'waiting' }
+      return { ask: 'Ingredients.Describe', to: 'waiting' }
     } else if (voxaEvent.intent.name === 'AMAZON.PreviousIntent') {
       voxaEvent.model.index -= 1;
-      return { reply: 'Ingredients.Describe', to: 'waiting' }
+      return { ask: 'Ingredients.Describe', to: 'waiting' }
     }
   });
 
@@ -53,17 +53,16 @@ For the simple pattern of having a controller respond to an specific intent the 
 .. code-block:: javascript
 
   skill.onIntent('LaunchIntent', (voxaEvent) => {
-    return { reply: 'LaunchIntent.OpenResponse', to: 'die' };
+    return { tell: 'LaunchIntent.OpenResponse' };
   });
 
 If you receive a Display.ElementSelected type request, you could use the same approach for intents and state. Voxa receives this type of request and turns it into ``DisplayElementSelected`` Intent
 
 .. code-block:: javascript
 
-  skill.onIntent('DisplayElementSelected', (alexaEvent) => {
-    return { reply: 'DisplayElementSelected.OpenResponse', to: 'die' };
+  skill.onIntent('DisplayElementSelected', (voxaEvent) => {
+    return { tell: 'DisplayElementSelected.OpenResponse' };
   });
-
 
 
 Under the hood this creates a new key in the ``entry`` controller and a new state

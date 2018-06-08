@@ -3,7 +3,7 @@
 Debugging
 ===========
 
-Voxa uses the `debug <http://npmjs.com/package/debug>`_ module internally to log a number of different internal events, if you want have a look at those events you have to declare the following environment variable 
+Voxa uses the `debug <http://npmjs.com/package/debug>`_ module internally to log a number of different internal events, if you want have a look at those events you have to declare the following environment variable
 
 ``DEBUG=voxa``
 
@@ -20,3 +20,12 @@ This is an example of the log output
   voxa Running launch enter function +1ms
   voxa Running onAfterStateChangeCallbacks +0ms
   voxa launch transition resulted in {"reply":"Intent.Launch","to":"entry","message":{"tell":"Welcome mail@example.com!"},"session":{"data":{},"reply":null}} +7ms
+
+
+You can also get more per platform debugging information with
+
+``DEBUG=voxa:alexa``
+
+``DEBUG=voxa:botframework``
+
+``DEBUG=voxa:dialogFlow``

@@ -12,99 +12,40 @@ There are 5 responses in the following snippet: ``LaunchIntent.OpenResponse``, `
 
 Also, there's a special type of view which can contain arrays of options, when Voxa finds one of those like the ``LaunchIntent.OpenResponse`` it will select a random sample and use it as the response.
 
+I18N
+-----
+
+Internationalization support is done using the `i18next <http://i18next.com/>`_ library, the same the Amazon Alexa Node SDK uses.
+
+The framework takes care of selecting the correct locale on every voxa event by looking at the ``voxaEvent.request.locale`` property.
+
 
 .. code-block:: javascript
 
   const views = {
-    LaunchIntent: {
-      OpenResponse: {
-        tell: [
-          'Hello! <break time="3s"/> Good  {time}. Is there anything i can do to help you today?',
-          'Hi there! <break time="3s"/> Good  {time}. How may i be of service?',
-          'Good  {time}, Welcome!. How can i help you?',
-        ]
-      },
-    },
-    ExitIntent: {
-      Farewell: { tell: 'Ok. For more info visit {site} site.' },
-    },
-    HelpIntent: {
-      HelpAboutSkill: {
-        tell: 'For more help visit example dot com'
-        card: {
-          type: 'Standard',
-          text: 'Help is available at is http://example.com',
+    en: {
+      translaction: {
+        LaunchIntent: {
+          OpenResponse: [
+            'Hello! <break time="3s"/> Good  {time}. Is there anything i can do to help you today?',
+            'Hi there! <break time="3s"/> Good  {time}. How may i be of service?',
+            'Good  {time}, Welcome!. How can i help you?',
+          ]
         },
-      },
-    },
-    Count: {
-      Say: { say: '{count}' },
-      Tell: { tell: '{count}' },
-    },
+        ExitIntent: {
+          Farewell: 'Ok. For more info visit {site} site.',
+        },
+        HelpIntent: {
+          HelpAboutSkill: 'For more help visit example dot com'
+        },
+        Count: {
+          Say: '{count}',
+          Tell: '{count}',
+        },
+      }
+    }
   };
 
-They come in 3 forms: ``say``, ``ask`` and ``tell``.
-
-tell
-****
-
-Tell views send a response to alexa and close the session inmediately. They're used when the skill is done interacting with the user. The ``ExitIntent.Farewell`` is an example of this.
-
-ask
-****
-
-Ask views are used to prompt the user for information, they send a response to alexa but keep the session open so the user can respond. The ``LaunchIntent.OpenResponse`` is an ask view.
-
-say
-***
-
-While the ``tell`` and ``ask`` view types are an exact representation of the base alexa programming model, the say views are different. They're an abstraction created by voxa to make it simpler to compose your responses over many state transitions. They don't send a respond to alexa but instead make a state transition internally and continue executing your skill code until there's a ``tell`` or ``ask`` response.
-
-
-Directives
------------
-
-Now you can include directives in your views file. Hint directive can be easily specify with a simple object containing a hint key.
-
-.. code-block:: javascript
-
-  const views = {
-    LaunchIntent: {
-      OpenResponse: {
-        tell: [
-          'Hello! <break time="3s"/> Good  {time}. Is there anything i can do to help you today?',
-          'Hi there! <break time="3s"/> Good  {time}. How may i be of service?',
-          'Good  {time}, Welcome!. How can i help you?',
-        ],
-
-        directives: [
-          {
-            hint: 'hint',
-          },
-          {
-            type: 'Display.RenderTemplate',
-            template: {
-              type: "BodyTemplate1",
-              textContent: {
-                primaryText: {
-                    text: "See my favorite car",
-                    type: "PlainText"
-                },
-                secondaryText: {
-                    text: "Custom-painted",
-                    type: "PlainText"
-                },
-                tertiaryText: {
-                    text: "By me!",
-                    type: "PlainText"
-                  }
-              },
-              backButton: "VISIBLE"
-            }
-          }
-      ],
-    },
-  };
 
 Variables
 -----------
@@ -115,22 +56,21 @@ A variable signature is:
 
 .. js:function:: variable(model, voxaEvent)
 
-  :param model: The instance of your :ref:`model <models>` for the current alexa event.
-  :param AlexaEvent: The current :ref:`alexa event <alexa-event>`.
+  :param voxaEvent: The current :ref:`voxa event <voxa-event>`.
   :returns: The value to be rendered or a promise resolving to a value to be rendered in the view.
 
 .. code-block:: javascript
 
     const variables = {
-      site: function site(model) {
+      site: function site(voxaEvent) {
         return Promise.resolve('example.com');
       },
 
-      count: function count(model) {
-        return model.count;
+      count: function count(voxaEvent) {
+        return voxaEvent.model.count;
       },
 
-      locale: function locale(model, voxaEvent) {
+      locale: function locale(voxaEvent) {
         return voxaEvent.locale;
       }
     };
