@@ -24,6 +24,8 @@ export class DialogFlowIntent implements IVoxaIntent {
       this.name = "actions.intent.OPTION";
     } else if (rawEvent.queryResult.queryText === "actions_intent_MEDIA_STATUS") {
       this.name = "actions.intent.MEDIA_STATUS";
+    } else if (rawEvent.queryResult.queryText === "actions_intent_COMPLETE_PURCHASE") {
+      this.name = "actions.intent.COMPLETE_PURCHASE";
     } else {
       if (!rawEvent.queryResult.intent || !rawEvent.queryResult.intent.displayName) {
         throw new Error("Missing rawEvent.queryResult.intent.displayName");

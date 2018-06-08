@@ -28,8 +28,6 @@ export class DialogFlowReply implements IVoxaReply {
       google : {
         expectUserResponse: true,
         isSsml: true,
-        noInputPrompts: [],
-        richResponse: new RichResponse(),
       },
     };
   }
@@ -71,7 +69,7 @@ export class DialogFlowReply implements IVoxaReply {
   }
 
   public clear() {
-    this.payload.google.richResponse = new RichResponse();
+    delete this.payload.google.richResponse;
     this.payload.google.noInputPrompts = [];
     this.fulfillmentText = "";
   }

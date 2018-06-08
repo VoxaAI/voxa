@@ -34,7 +34,7 @@ describe("DialogFlowReply", () => {
       reply.clear();
 
       expect(reply.speech).to.equal("");
-      expect(_.get(reply, "payload.google.richResponse.items")).to.be.empty;
+      expect(_.get(reply, "payload.google.richResponse")).to.be.undefined;
       expect(reply.payload.google.noInputPrompts).to.be.empty;
     });
   });
