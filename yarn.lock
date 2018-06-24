@@ -11,8 +11,8 @@
   resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-0.0.33.tgz#17083d9c569048792f4f33ef6cd6aaf54d5b22d3"
 
 "@types/aws-lambda@^8.10.6":
-  version "8.10.6"
-  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.6.tgz#5c01fac0c7736e7e43ca7b6652781862e702a199"
+  version "8.10.7"
+  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.7.tgz#1dfd0e1918205f74169658ad8aa8f9c06f161909"
 
 "@types/bluebird@*", "@types/bluebird@^3.5.18":
   version "3.5.20"
@@ -30,8 +30,8 @@
   resolved "https://registry.yarnpkg.com/@types/caseless/-/caseless-0.12.1.tgz#9794c69c8385d0192acc471a540d1f8e0d16218a"
 
 "@types/chai@^4.0.10":
-  version "4.1.3"
-  resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.1.3.tgz#b8a74352977a23b604c01aa784f5b793443fb7dc"
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.1.4.tgz#5ca073b330d90b4066d6ce18f60d57f2084ce8ca"
 
 "@types/connect@*":
   version "3.4.32"
@@ -48,15 +48,16 @@
   resolved "https://registry.yarnpkg.com/@types/events/-/events-1.2.0.tgz#81a6731ce4df43619e5c8c945383b3e62a89ea86"
 
 "@types/express-serve-static-core@*":
-  version "4.11.2"
-  resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.11.2.tgz#b3c4bd7d45f765dbb782842fa80200967ae14eba"
+  version "4.16.0"
+  resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.16.0.tgz#fdfe777594ddc1fe8eb8eccce52e261b496e43e7"
   dependencies:
     "@types/events" "*"
     "@types/node" "*"
+    "@types/range-parser" "*"
 
 "@types/express@^4.11.1":
-  version "4.11.1"
-  resolved "https://registry.yarnpkg.com/@types/express/-/express-4.11.1.tgz#f99663b3ab32d04cb11db612ef5dd7933f75465b"
+  version "4.16.0"
+  resolved "https://registry.yarnpkg.com/@types/express/-/express-4.16.0.tgz#6d8bc42ccaa6f35cf29a2b7c3333cb47b5a32a19"
   dependencies:
     "@types/body-parser" "*"
     "@types/express-serve-static-core" "*"
@@ -105,8 +106,8 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.104.tgz#53ee2357fa2e6e68379341d92eb2ecea4b11bb80"
 
 "@types/lodash@^4.14.88":
-  version "4.14.109"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.109.tgz#b1c4442239730bf35cabaf493c772b18c045886d"
+  version "4.14.110"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.110.tgz#fb07498f84152947f30ea09d89207ca07123461e"
 
 "@types/marked@0.3.0":
   version "0.3.0"
@@ -125,16 +126,24 @@
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-2.2.48.tgz#3523b126a0b049482e1c3c11877460f76622ffab"
 
 "@types/node@*":
-  version "10.3.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.3.0.tgz#078516315a84d56216b5d4fed8f75d59d3b16cac"
+  version "10.3.5"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.3.5.tgz#8423cdf6e6fb83433e489900d7600d3b61c8260c"
 
 "@types/node@^8.0.58":
-  version "8.10.18"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.18.tgz#eb9ad8b0723d13fa9bc8b42543e3661ed805f2bb"
+  version "8.10.20"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.20.tgz#fe674ea52e13950ab10954433a7824438aabbcac"
 
-"@types/node@^9.4.6", "@types/node@^9.6.1":
+"@types/node@^9.4.6":
+  version "9.6.22"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-9.6.22.tgz#05b55093faaadedea7a4b3f76e9a61346a6dd209"
+
+"@types/node@^9.6.1":
   version "9.6.20"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-9.6.20.tgz#b59a1bd357ae2df7d44d5ac98e9b64eb96ea1fef"
+
+"@types/range-parser@*":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.2.tgz#fa8e1ad1d474688a757140c91de6dace6f4abc8d"
 
 "@types/request-promise@^4.1.39":
   version "4.1.41"
@@ -204,8 +213,8 @@
     "@types/node" "*"
 
 actions-on-google@2:
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/actions-on-google/-/actions-on-google-2.1.3.tgz#b973b7c039d24dfddeee20ce2a9b46c62b1ae6e6"
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/actions-on-google/-/actions-on-google-2.2.0.tgz#73a1b0ba9c2d8f3f4f25400a2c8e1fbde71b92d5"
   dependencies:
     "@types/aws-lambda" "^0.0.33"
     "@types/debug" "^0.0.30"
@@ -294,26 +303,26 @@ asap@~2.0.3:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
 
-ask-sdk-core@^2.0.3, ask-sdk-core@^2.0.5:
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/ask-sdk-core/-/ask-sdk-core-2.0.5.tgz#4162bf3d6e1c1278c485600478e0d6f9b80eafb3"
+ask-sdk-core@^2.0.3, ask-sdk-core@^2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/ask-sdk-core/-/ask-sdk-core-2.0.7.tgz#0f2300aa99a5bd92c0bd700d1ed92ff8da1f83b9"
 
-ask-sdk-dynamodb-persistence-adapter@^2.0.5:
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/ask-sdk-dynamodb-persistence-adapter/-/ask-sdk-dynamodb-persistence-adapter-2.0.5.tgz#5ae22ea53c2010141d549903f90c52397d01d465"
+ask-sdk-dynamodb-persistence-adapter@^2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/ask-sdk-dynamodb-persistence-adapter/-/ask-sdk-dynamodb-persistence-adapter-2.0.7.tgz#c00c88579cd32cf91b1b3d843615ff29cadc5234"
   dependencies:
     aws-sdk "^2.163.0"
 
 ask-sdk-model@^1.0.0, ask-sdk-model@^1.2.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/ask-sdk-model/-/ask-sdk-model-1.3.0.tgz#eba25611f464e2713a83df6d7323d2b9dea564e2"
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/ask-sdk-model/-/ask-sdk-model-1.3.1.tgz#a583809e4e9d3fb5308306249907808fab37fd4f"
 
 ask-sdk@^2.0.3:
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/ask-sdk/-/ask-sdk-2.0.5.tgz#f8f66f992173c1c225e30c305a623df754c5d598"
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/ask-sdk/-/ask-sdk-2.0.7.tgz#1157fb90399b50bb1deab55a866255fba4317d72"
   dependencies:
-    ask-sdk-core "^2.0.5"
-    ask-sdk-dynamodb-persistence-adapter "^2.0.5"
+    ask-sdk-core "^2.0.7"
+    ask-sdk-dynamodb-persistence-adapter "^2.0.7"
     ask-sdk-model "^1.0.0"
 
 asn1@~0.2.3:
@@ -350,23 +359,9 @@ atob@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.1.tgz#ae2d5a729477f289d60dd7f96a6314a22dd6c22a"
 
-aws-sdk@^2.163.0:
-  version "2.250.1"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.250.1.tgz#0cc04edfc41fa0a6a5eccbc56888832f59270141"
-  dependencies:
-    buffer "4.9.1"
-    events "1.1.1"
-    ieee754 "1.1.8"
-    jmespath "0.15.0"
-    querystring "0.2.0"
-    sax "1.2.1"
-    url "0.10.3"
-    uuid "3.1.0"
-    xml2js "0.4.17"
-
-aws-sdk@^2.238.1:
-  version "2.251.1"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.251.1.tgz#0f7e44b45c227ab7d5c63188c42c6ac913f25bf3"
+aws-sdk@^2.163.0, aws-sdk@^2.246.1:
+  version "2.263.1"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.263.1.tgz#217e2459ebff3702cc72260bcafca0bf16edc4cd"
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
@@ -1169,15 +1164,15 @@ globals@^9.18.0:
   resolved "https://registry.yarnpkg.com/globals/-/globals-9.18.0.tgz#aa3896b3e69b487f17e31ed2143d69a8e30c2d8a"
 
 google-auth-library@^1.3.1, google-auth-library@^1.3.2:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/google-auth-library/-/google-auth-library-1.5.0.tgz#d9068f8bad9017224a4c41abcdcb6cf6a704e83b"
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/google-auth-library/-/google-auth-library-1.6.1.tgz#9c73d831ad720c0c3048ab89d0ffdec714d07dd2"
   dependencies:
     axios "^0.18.0"
     gcp-metadata "^0.6.3"
     gtoken "^2.3.0"
-    jws "^3.1.4"
+    jws "^3.1.5"
     lodash.isstring "^4.0.1"
-    lru-cache "^4.1.2"
+    lru-cache "^4.1.3"
     retry-axios "^0.3.2"
 
 google-p12-pem@^1.0.0:
@@ -1341,8 +1336,8 @@ ieee754@1.1.8:
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.8.tgz#be33d40ac10ef1926701f6f08a2d86fbfd1ad3e4"
 
 ieee754@^1.1.4:
-  version "1.1.11"
-  resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.11.tgz#c16384ffe00f5b7835824e67b6f2bd44a5229455"
+  version "1.1.12"
+  resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.12.tgz#50bf24e5b9c8bb98af4964c941cdb0918da7b60b"
 
 imurmurhash@^0.1.4:
   version "0.1.4"
@@ -1659,7 +1654,7 @@ jwa@^1.1.5:
     ecdsa-sig-formatter "1.0.10"
     safe-buffer "^5.0.1"
 
-jws@^3.1.4:
+jws@^3.1.4, jws@^3.1.5:
   version "3.1.5"
   resolved "https://registry.yarnpkg.com/jws/-/jws-3.1.5.tgz#80d12d05b293d1e841e7cb8b4e69e561adcf834f"
   dependencies:
@@ -1782,7 +1777,7 @@ loose-envify@^1.0.0:
   dependencies:
     js-tokens "^3.0.0"
 
-lru-cache@^4.0.1, lru-cache@^4.1.2:
+lru-cache@^4.0.1, lru-cache@^4.1.3:
   version "4.1.3"
   resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-4.1.3.tgz#a1175cf3496dfc8436c156c334b4955992bce69c"
   dependencies:
@@ -1973,9 +1968,9 @@ nanomatch@^1.2.9:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
-nock@^9.2.5:
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/nock/-/nock-9.3.0.tgz#4dcfdd37bd249836754d05bbac5a1f05e12e0f16"
+nock@^9.2.6:
+  version "9.3.3"
+  resolved "https://registry.yarnpkg.com/nock/-/nock-9.3.3.tgz#d9f4cd3c011afeadaf5ccf1b243f6e353781cda0"
   dependencies:
     chai "^4.1.2"
     debug "^3.1.0"
@@ -2408,13 +2403,13 @@ rsa-pem-from-mod-exp@^0.8.4:
   version "0.8.4"
   resolved "https://registry.yarnpkg.com/rsa-pem-from-mod-exp/-/rsa-pem-from-mod-exp-0.8.4.tgz#362a42c6d304056d493b3f12bceabb2c6576a6d4"
 
-safe-buffer@^5.0.1, safe-buffer@^5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.1.tgz#893312af69b2123def71f57889001671eeb2c853"
-
-safe-buffer@~5.1.0, safe-buffer@~5.1.1:
+safe-buffer@^5.0.1, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
+
+safe-buffer@^5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.1.tgz#893312af69b2123def71f57889001671eeb2c853"
 
 safe-regex@^1.1.0:
   version "1.1.0"
@@ -2906,8 +2901,8 @@ typescript@2.7.2:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.7.2.tgz#2d615a1ef4aee4f574425cdff7026edf81919836"
 
 typescript@^2.6.2:
-  version "2.9.1"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.1.tgz#fdb19d2c67a15d11995fd15640e373e09ab09961"
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.2.tgz#1cbf61d05d6b96269244eb6a3bce4bd914e0f00c"
 
 uglify-js@^2.6:
   version "2.8.29"
@@ -3009,18 +3004,18 @@ verror@1.10.0:
     extsprintf "^1.2.0"
 
 virtual-alexa@^0.6.2:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/virtual-alexa/-/virtual-alexa-0.6.2.tgz#18c71dd85e0df2b9d378afedf414ed508511c32f"
+  version "0.6.6"
+  resolved "https://registry.yarnpkg.com/virtual-alexa/-/virtual-alexa-0.6.6.tgz#240c36f7074fde22cf1dde674fff8f82b0f815f4"
   dependencies:
-    aws-sdk "^2.238.1"
-    lodash "^4.17.4"
-    nock "^9.2.5"
-    uuid "^3.1.0"
-    virtual-core "0.0.12-0"
+    aws-sdk "^2.246.1"
+    lodash "^4.17.10"
+    nock "^9.2.6"
+    uuid "^3.2.1"
+    virtual-core "0.0.12"
 
-virtual-core@0.0.12-0:
-  version "0.0.12-0"
-  resolved "https://registry.yarnpkg.com/virtual-core/-/virtual-core-0.0.12-0.tgz#9d0aff1dc0e2ac25df06d78a51b5746ccac69b52"
+virtual-core@0.0.12:
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/virtual-core/-/virtual-core-0.0.12.tgz#631ade1c7f168992b8e23532581e90167faa19d4"
   dependencies:
     "@types/uuid" "^3.4.3"
     uuid "^3.2.1"

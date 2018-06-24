@@ -42,7 +42,7 @@ describe("DialogFlow Directives", () => {
 
     it("should not add a MediaResponse to a device with no audio support",  async () => {
       event = _.cloneDeep(event);
-      event.originalDetectIntentRequest.payload.surface.capabilities = {};
+      event.originalDetectIntentRequest.payload.surface.capabilities = [];
       app.onIntent("LaunchIntent", {
         dialogFlowMediaResponse: mediaObject,
         sayp: "Hello!",
@@ -99,10 +99,6 @@ describe("DialogFlow Directives", () => {
     it("should throw an error if trying to add a MediaResponse without a simpleResponse first", async () => {
       const reply = new DialogFlowReply();
       const dialogFlowEvent = new DialogFlowEvent(event, {});
-      const mediaObject = new MediaObject({
-        description: "Title",
-        url: "https://example.com/example.mp3",
-      });
       const mediaResponse = new MediaResponse(mediaObject);
 
       let error: Error|null = null;
@@ -127,11 +123,11 @@ describe("DialogFlow Directives", () => {
         items: {
           LIST_ITEM: {
             description: "The item description",
-            title: "the list item",
-            synonyms: ["item"],
             image: {
               url: "http://example.com/image.png",
             },
+            synonyms: ["item"],
+            title: "the list item",
           },
         },
       };

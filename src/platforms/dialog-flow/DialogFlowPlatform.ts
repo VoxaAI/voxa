@@ -30,7 +30,6 @@ export class DialogFlowPlatform extends VoxaPlatform {
   public async execute(rawEvent: GoogleCloudDialogflowV2WebhookRequest, context: any): Promise<DialogFlowReply> {
     const event = new DialogFlowEvent(rawEvent, context);
     const dialogFlowReply = new DialogFlowReply();
-    dialogFlowReply.outputContexts =  event.session.contexts;
     const voxaReply = await this.app.execute(event, dialogFlowReply) as DialogFlowReply;
     return voxaReply;
   }

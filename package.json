@@ -1,6 +1,6 @@
 {
   "name": "voxa",
-  "version": "3.0.0-alpha25",
+  "version": "3.0.0-alpha26",
   "description": "A fsm (state machine) framework for Alexa apps using Node.js",
   "main": "./lib/src/main.js",
   "types": "./lib/src/main.d.ts",

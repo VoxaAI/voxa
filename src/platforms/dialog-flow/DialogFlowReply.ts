@@ -1,8 +1,14 @@
-import { GoogleActionsV2AppResponse, GoogleCloudDialogflowV2Context, RichResponse } from "actions-on-google";
+import {
+  GoogleActionsV2AppResponse,
+  GoogleCloudDialogflowV2Context,
+  OutputContexts,
+  RichResponse,
+} from "actions-on-google";
 import * as _ from "lodash";
 import { Model } from "../../Model";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
+import { DialogFlowEvent } from "./DialogFlowEvent";
 
 export interface IDialogFlowPayload {
   google: {
@@ -33,23 +39,11 @@ export class DialogFlowReply implements IVoxaReply {
   }
 
   public async saveSession(event: IVoxaEvent): Promise<void> {
+    const dialogFlowEvent = event as DialogFlowEvent;
     const serializedData = JSON.stringify(await event.model.serialize());
-    const modelContext: GoogleCloudDialogflowV2Context = {
-      lifespanCount: 100000,
-      name: `${event.rawEvent.session}/contexts/model`,
-      parameters: {},
-    };
+    dialogFlowEvent.conv.contexts.set("model", 10000, { model: serializedData });
 
-    modelContext.parameters = {
-      model: JSON.stringify(await event.model.serialize()),
-    };
-
-    const currentContexts = event.rawEvent.queryResult.outputContexts || [];
-    const outputContexts = _.filter(currentContexts, (context) => context.name !== modelContext.name);
-
-    outputContexts.push(modelContext);
-
-    this.outputContexts = outputContexts;
+    this.outputContexts = dialogFlowEvent.conv.contexts._serialize();
   }
 
   public get speech() {

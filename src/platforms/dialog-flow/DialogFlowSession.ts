@@ -1,8 +1,12 @@
 import {
+  Context,
+  Contexts,
+  DialogflowConversation,
   GoogleActionsV2AppRequest,
   GoogleActionsV2Conversation,
   GoogleCloudDialogflowV2Context,
   GoogleCloudDialogflowV2WebhookRequest,
+  Parameters,
 } from "actions-on-google";
 import * as _ from "lodash";
 import { IVoxaSession } from "../../VoxaEvent";
@@ -11,37 +15,33 @@ export class DialogFlowSession implements IVoxaSession {
   public attributes: any;
   public new: boolean;
   public sessionId: string;
-  public user: any;
-  public contexts: GoogleCloudDialogflowV2Context[];
+  public contexts: Contexts;
 
-  constructor(rawEvent: GoogleCloudDialogflowV2WebhookRequest) {
-    const payload: GoogleActionsV2AppRequest = _.get(rawEvent, "originalDetectIntentRequest.payload");
-    if (!payload.conversation) {
-      throw new Error("Conversation is missing from request payload");
-    }
-
-    const conversation: GoogleActionsV2Conversation =  payload.conversation;
-    this.contexts = _.get(rawEvent, "queryResult.outputContexts", []);
-    this.sessionId = conversation.conversationId || "";
-    this.user = payload.user;
-    this.new = conversation.type === "NEW";
-    this.attributes = this.getAttributes(rawEvent);
+  constructor(conv: DialogflowConversation) {
+    this.contexts = conv.contexts.input;
+    this.sessionId = conv.id;
+    this.new = conv.type === "NEW";
+    this.attributes = this.getAttributes(conv);
   }
 
-  public getAttributes(rawEvent: any) {
+  public getAttributes(conv: DialogflowConversation) {
     if (!this.contexts) {
       return {};
     }
 
-    const context: GoogleCloudDialogflowV2Context|undefined = _.find(this.contexts, (c) =>
-      c.name === `${rawEvent.session}/contexts/model`,
-    );
+    const context: Context<Parameters>|undefined = this.contexts.model;
+    if (!context) {
+      return {};
+    }
 
-    if (context && context.parameters && context.parameters.model) {
+    if (_.isString(context.parameters.model)) {
       return JSON.parse(context.parameters.model);
     }
 
-    return {};
+    if (_.isObject(context.parameters.model)) {
+      return context.parameters.model;
+    }
 
+    return context.parameters.model;
   }
 }

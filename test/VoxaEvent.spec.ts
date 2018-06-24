@@ -5,6 +5,10 @@ import { expect } from "chai";
 import { IVoxaEvent } from "../src/VoxaEvent";
 
 class Event extends IVoxaEvent {
+  public get supportedInterfaces() {
+    return [];
+  }
+
   public requestToIntent = {
     LaunchRequest: "LaunchIntent",
   };
