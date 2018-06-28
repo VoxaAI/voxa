@@ -55,11 +55,12 @@ export abstract class VoxaPlatform {
 
   public lambda() {
     return async (event: any, context: AWSLambdaContext, callback: AWSLambdaCallback<any>) => {
+      context.callbackWaitsForEmptyEventLoop = false;
       try {
         const result = await this.execute(event, context);
-        callback(null, result);
+        return callback(null, result);
       } catch (error) {
-        callback(error);
+        return callback(error);
       }
     };
   }
@@ -69,7 +70,8 @@ export abstract class VoxaPlatform {
       event: APIGatewayProxyEvent,
       context: AWSLambdaContext,
       callback: AWSLambdaCallback<APIGatewayProxyResult>) => {
-      try {
+        context.callbackWaitsForEmptyEventLoop = false;
+        try {
         const body = JSON.parse(event.body || "");
         const result = await this.execute(body, context);
         const response: APIGatewayProxyResult = {
@@ -80,7 +82,7 @@ export abstract class VoxaPlatform {
           statusCode: 200,
         };
 
-        callback(null, response);
+        return callback(null, response);
       } catch (error) {
         callback(error);
       }

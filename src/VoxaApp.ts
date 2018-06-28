@@ -177,7 +177,8 @@ export class VoxaApp {
           case "IntentRequest":
           case "SessionEndedRequest": {
             // call all onRequestStarted callbacks serially.
-            const result = await bluebird.mapSeries(this.getOnRequestStartedHandlers(voxaEvent.platform), (fn: IEventHandler) => {
+            const result = await bluebird.mapSeries(this.getOnRequestStartedHandlers(voxaEvent.platform),
+              (fn: IEventHandler) => {
               return fn(voxaEvent, reply);
             });
 
@@ -186,7 +187,8 @@ export class VoxaApp {
             }
 
             // call all onSessionStarted callbacks serially.
-            await bluebird.mapSeries(this.getOnSessionStartedHandlers(voxaEvent.platform), (fn: IEventHandler) => fn(voxaEvent, reply));
+            await bluebird.mapSeries(this.getOnSessionStartedHandlers(voxaEvent.platform),
+              (fn: IEventHandler) => fn(voxaEvent, reply));
             // Route the request to the proper handler which may have been overriden.
             return await requestHandler(voxaEvent, reply);
           }
@@ -316,7 +318,11 @@ export class VoxaApp {
     }
   }
 
-  public onState(stateName: string, handler: IStateHandler | ITransition, intents: string[] | string = [], platform: string = "core"): void {
+  public onState(
+    stateName: string,
+    handler: IStateHandler | ITransition,
+    intents: string[] | string = [],
+    platform: string = "core"): void {
     const state = _.get(this.states[platform], stateName, { name: stateName });
     const stateEnter = _.get(state, "enter", {});
 
@@ -375,7 +381,10 @@ export class VoxaApp {
     return response;
   }
 
-  public async renderDirectives(voxaEvent: IVoxaEvent, response: IVoxaReply, transition: ITransition): Promise<ITransition> {
+  public async renderDirectives(
+    voxaEvent: IVoxaEvent,
+    response: IVoxaReply,
+    transition: ITransition): Promise<ITransition> {
     const directives = _.concat(
       _.filter(this.directiveHandlers, { platform: "core" }),
       _.filter(this.directiveHandlers, { platform: voxaEvent.platform }),

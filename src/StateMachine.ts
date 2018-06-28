@@ -87,7 +87,10 @@ export class StateMachine {
     }
   }
 
-  public async checkOnUnhandledState(voxaEvent: IVoxaEvent, voxaReply: IVoxaReply, transition: ITransition): Promise<ITransition> {
+  public async checkOnUnhandledState(
+    voxaEvent: IVoxaEvent,
+    voxaReply: IVoxaReply,
+    transition: ITransition): Promise<ITransition> {
     if (!isState(this.currentState)) {
       throw new Error("this.currentState is not a state");
     }
@@ -116,7 +119,10 @@ export class StateMachine {
     return transition;
   }
 
-  public async checkForEntryFallback(voxaEvent: IVoxaEvent, reply: IVoxaReply, transition: ITransition): Promise<ITransition> {
+  public async checkForEntryFallback(
+    voxaEvent: IVoxaEvent,
+    reply: IVoxaReply,
+    transition: ITransition): Promise<ITransition> {
     log("Checking entry fallback");
     if (!isState(this.currentState)) {
       throw new Error("this.currentState is not a state");
@@ -136,7 +142,10 @@ export class StateMachine {
     return transition;
   }
 
-  public async onAfterStateChanged(voxaEvent: IVoxaEvent, reply: IVoxaReply, transition: ITransition): Promise<ITransition> {
+  public async onAfterStateChanged(
+    voxaEvent: IVoxaEvent,
+    reply: IVoxaReply,
+    transition: ITransition): Promise<ITransition> {
     if (transition && !transition.to) {
       _.merge(transition, { to: "die" });
     }

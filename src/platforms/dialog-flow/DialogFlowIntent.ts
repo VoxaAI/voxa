@@ -7,7 +7,6 @@ import {
 } from "actions-on-google";
 import * as _ from "lodash";
 import { IVoxaIntent } from "../../VoxaEvent";
-import { StandardIntents } from "./interfaces";
 
 export class DialogFlowIntent implements IVoxaIntent {
   public name: string;

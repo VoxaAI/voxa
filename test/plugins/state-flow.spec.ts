@@ -30,11 +30,11 @@ describe("StateFlow plugin", () => {
 
     states = {
       entry: { SomeIntent: "intent" },
+      fourthState: () => undefined,
       initState: () => ({ tell: "ExitIntent.Farewell", to: "die" }),
+      intent: () => ({ tell: "ExitIntent.Farewell", to: "die" }),
       secondState: () => ({ to: "initState" }),
       thirdState: () => Promise.resolve({ to: "die" }),
-      fourthState: () => undefined,
-      intent: () => ({ tell: "ExitIntent.Farewell", to: "die" }),
     };
   });
 

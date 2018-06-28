@@ -668,26 +668,28 @@ describe("DialogFlow Directives", () => {
   describe("Table Directive", () => {
     it("should add a Table Response", async () => {
       const table = {
-        title: "Table Title",
-        subtitle: "Table Subtitle",
-        image: new Image({
-          url: "https://avatars0.githubusercontent.com/u/23533486",
-          alt: "Actions on Google",
+        buttons: new Button({
+          title: "Button Title",
+          url: "https://github.com/actions-on-google",
         }),
         columns: [
           {
-            header: "header 1",
             align: "CENTER",
+            header: "header 1",
           },
           {
-            header: "header 2",
             align: "LEADING",
+            header: "header 2",
           },
           {
-            header: "header 3",
             align: "TRAILING",
+            header: "header 3",
           },
         ],
+        image: new Image({
+          alt: "Actions on Google",
+          url: "https://avatars0.githubusercontent.com/u/23533486",
+        }),
         rows: [
           {
             cells: ["row 1 item 1", "row 1 item 2", "row 1 item 3"],
@@ -701,10 +703,8 @@ describe("DialogFlow Directives", () => {
             cells: ["row 3 item 1", "row 3 item 2", "row 3 item 3"],
           },
         ],
-        buttons: new Button({
-          title: "Button Title",
-          url: "https://github.com/actions-on-google",
-        }),
+        subtitle: "Table Subtitle",
+        title: "Table Title",
       };
       app.onIntent("LaunchIntent", {
         dialogFlowTable: table,

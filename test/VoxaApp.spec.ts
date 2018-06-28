@@ -41,11 +41,11 @@ describe("VoxaApp", () => {
       const voxaApp = new VoxaApp({ variables, views });
       event = new AlexaEvent(rb.getIntentRequest("LaunchIntent"));
       voxaApp.onState("entry", {
+        Exit: { tell: "ExitIntent.Farewell" },
         LaunchIntent: "One",
         One: "Two",
-        Two: "Three",
         Three: "Exit",
-        Exit: { tell: "ExitIntent.Farewell" },
+        Two: "Three",
       });
 
       const reply = await voxaApp.execute(event, new AlexaReply());
@@ -206,13 +206,6 @@ describe("VoxaApp", () => {
     expect(statesDefinition.entry.called).to.be.true;
   });
 
-  // it("should throw an error if required properties missing from config", () => {
-    // expect(() => new VoxaApp({ Model: { } })).to.throw(Error, "Model should have a fromEvent method");
-    // expect(() => new VoxaApp({ Model: { fromEvent: () => {} } })).to.throw(Error, "Model should have a serialize method");
-    // expect(() => new VoxaApp({ Model })).to.throw(Error, "DefaultRenderer config should include views");
-    // expect(() => new VoxaApp({ Model, views })).to.not.throw(Error);
-  // });
-
   it("should set properties on request and have those available in the state callbacks", async () => {
     const voxaApp = new VoxaApp({ views, variables });
     statesDefinition.entry = simple.spy((request) => {
@@ -320,7 +313,8 @@ describe("VoxaApp", () => {
   });
 
   describe("onUnhandledState", () => {
-    it("should call onUnhandledState callbacks when the state machine transition throws a UnhandledState error", async () => {
+    it("should call onUnhandledState callbacks when the state" +
+      " machine transition throws a UnhandledState error", async () => {
       const voxaApp = new VoxaApp({ Model, views, variables });
       const onUnhandledState = simple.stub().resolveWith({
         tell: "ExitIntent.Farewell",

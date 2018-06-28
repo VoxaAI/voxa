@@ -43,7 +43,6 @@ import { IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, IVoxaReply } from "../../VoxaReply";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 import { DialogFlowReply } from "./DialogFlowReply";
-import { InputValueDataTypes, StandardIntents } from "./interfaces";
 
 export class List implements IDirective {
   public static platform: string = "dialogFlow";
