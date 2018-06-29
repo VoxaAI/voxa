@@ -7,7 +7,7 @@ yarn run lint
 
 npx typedoc --out typedoc --name Voxa --readme ./README.md --target ES5 ./src
 
-docker pull "lambci/lambda:nodejs$NODE_VERSION"
+docker pull "lambci/lambda:nodejs$TRAVIS_NODE_VERSION"
 (
   cd hello-world
   yarn
