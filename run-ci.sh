@@ -7,12 +7,13 @@ yarn run lint
 
 npx typedoc --out typedoc --name Voxa --readme ./README.md --target ES5 ./src
 
-if [ "${CI}" = "true" ]; then
-  (
+docker pull "lambci/lambda:nodejs$NODE_VERSION"
+(
   cd hello-world
   yarn
   yarn mocha hello-world.spec.js
-  )
+)
 
-  #cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+if [ "${CI}" = "true" ]; then
+  cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 fi
