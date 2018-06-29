@@ -1,6 +1,8 @@
 import {
   BasicCard as ActionsOnGoogleBasicCard,
   BasicCardOptions,
+  BrowseCarousel as ActionsOnGoogleBrowseCarousel,
+  BrowseCarouselOptions,
   Carousel as ActionsOnGoogleCarousel,
   CarouselOptions,
   Confirmation as ActionsOnGoogleConfirmation,
@@ -41,7 +43,6 @@ import { IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, IVoxaReply } from "../../VoxaReply";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 import { DialogFlowReply } from "./DialogFlowReply";
-import { InputValueDataTypes, StandardIntents } from "./interfaces";
 
 export class List implements IDirective {
   public static platform: string = "dialogFlow";
@@ -50,6 +51,10 @@ export class List implements IDirective {
   constructor(public listOptions: string|ListOptions) { }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    if (!_.includes(event.supportedInterfaces, "actions.capability.SCREEN_OUTPUT")) {
+      return;
+    }
+
     let listSelect;
     if (_.isString(this.listOptions)) {
       listSelect = new ActionsOnGoogleList(await event.renderer.renderPath(this.listOptions, event));
@@ -73,6 +78,10 @@ export class Carousel implements IDirective {
   constructor(public carouselOptions: string|CarouselOptions) { }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    if (!_.includes(event.supportedInterfaces, "actions.capability.SCREEN_OUTPUT")) {
+      return;
+    }
+
     let carouselSelect;
     if (_.isString(this.carouselOptions)) {
       carouselSelect = new ActionsOnGoogleCarousel(await event.renderer.renderPath(this.carouselOptions, event));
@@ -109,7 +118,6 @@ export class BasicCard implements IDirective {
   public basicCardOptions?: BasicCardOptions;
 
   constructor(viewPath: string|BasicCardOptions) {
-
     if (_.isString(viewPath)) {
       this.viewPath = viewPath;
     } else {
@@ -118,6 +126,10 @@ export class BasicCard implements IDirective {
   }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    if (!_.includes(event.supportedInterfaces, "actions.capability.SCREEN_OUTPUT")) {
+      return;
+    }
+
     let basicCard;
     if (this.viewPath) {
       basicCard = new ActionsOnGoogleBasicCard(await event.renderer.renderPath(this.viewPath, event));
@@ -342,9 +354,30 @@ export class Table implements IDirective {
 
   constructor(public tableOptions: TableOptions) {}
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    if (!_.includes(event.supportedInterfaces, "actions.capability.SCREEN_OUTPUT")) {
+      return;
+    }
+
     const google: any = (reply as DialogFlowReply).payload.google;
     const table = new ActionsOnGoogleTable(this.tableOptions);
     const richResponse = _.get(reply, "payload.google.richResponse", new RichResponse());
     (reply as DialogFlowReply).payload.google.richResponse = richResponse.add(table);
+  }
+}
+
+export class BrowseCarousel implements IDirective {
+  public static platform: string = "dialogFlow";
+  public static key: string = "dialogFlowBrowseCarousel";
+
+  constructor(public browseCarouselOptions: BrowseCarouselOptions) {}
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    if (!_.includes(event.supportedInterfaces, "actions.capability.SCREEN_OUTPUT")) {
+      return;
+    }
+
+    const google: any = (reply as DialogFlowReply).payload.google;
+    const browseCarousel = new ActionsOnGoogleBrowseCarousel(this.browseCarouselOptions);
+    const richResponse = _.get(reply, "payload.google.richResponse", new RichResponse());
+    (reply as DialogFlowReply).payload.google.richResponse = richResponse.add(browseCarousel);
   }
 }

@@ -42,7 +42,7 @@ describe("DialogFlow Directives", () => {
 
     it("should not add a MediaResponse to a device with no audio support",  async () => {
       event = _.cloneDeep(event);
-      event.originalDetectIntentRequest.payload.surface.capabilities = {};
+      event.originalDetectIntentRequest.payload.surface.capabilities = [];
       app.onIntent("LaunchIntent", {
         dialogFlowMediaResponse: mediaObject,
         sayp: "Hello!",
@@ -99,10 +99,6 @@ describe("DialogFlow Directives", () => {
     it("should throw an error if trying to add a MediaResponse without a simpleResponse first", async () => {
       const reply = new DialogFlowReply();
       const dialogFlowEvent = new DialogFlowEvent(event, {});
-      const mediaObject = new MediaObject({
-        description: "Title",
-        url: "https://example.com/example.mp3",
-      });
       const mediaResponse = new MediaResponse(mediaObject);
 
       let error: Error|null = null;
@@ -127,11 +123,11 @@ describe("DialogFlow Directives", () => {
         items: {
           LIST_ITEM: {
             description: "The item description",
-            title: "the list item",
-            synonyms: ["item"],
             image: {
               url: "http://example.com/image.png",
             },
+            synonyms: ["item"],
+            title: "the list item",
           },
         },
       };
@@ -672,26 +668,28 @@ describe("DialogFlow Directives", () => {
   describe("Table Directive", () => {
     it("should add a Table Response", async () => {
       const table = {
-        title: "Table Title",
-        subtitle: "Table Subtitle",
-        image: new Image({
-          url: "https://avatars0.githubusercontent.com/u/23533486",
-          alt: "Actions on Google",
+        buttons: new Button({
+          title: "Button Title",
+          url: "https://github.com/actions-on-google",
         }),
         columns: [
           {
-            header: "header 1",
             align: "CENTER",
+            header: "header 1",
           },
           {
-            header: "header 2",
             align: "LEADING",
+            header: "header 2",
           },
           {
-            header: "header 3",
             align: "TRAILING",
+            header: "header 3",
           },
         ],
+        image: new Image({
+          alt: "Actions on Google",
+          url: "https://avatars0.githubusercontent.com/u/23533486",
+        }),
         rows: [
           {
             cells: ["row 1 item 1", "row 1 item 2", "row 1 item 3"],
@@ -705,10 +703,8 @@ describe("DialogFlow Directives", () => {
             cells: ["row 3 item 1", "row 3 item 2", "row 3 item 3"],
           },
         ],
-        buttons: new Button({
-          title: "Button Title",
-          url: "https://github.com/actions-on-google",
-        }),
+        subtitle: "Table Subtitle",
+        title: "Table Title",
       };
       app.onIntent("LaunchIntent", {
         dialogFlowTable: table,

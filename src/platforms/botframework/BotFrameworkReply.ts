@@ -135,7 +135,12 @@ export class BotFrameworkReply implements IVoxaReply {
     this.clear();
   }
 
-  public async botApiRequest(method: string, uri: string, reply: BotFrameworkReply, event: BotFrameworkEvent, attempts: number = 0): Promise<any> {
+  public async botApiRequest(
+    method: string,
+    uri: string,
+    reply: BotFrameworkReply,
+    event: BotFrameworkEvent,
+    attempts: number = 0): Promise<any> {
     let authorization: IAuthorizationResponse;
     try {
       authorization = await this.getAuthorization(event.applicationId, event.applicationPassword);

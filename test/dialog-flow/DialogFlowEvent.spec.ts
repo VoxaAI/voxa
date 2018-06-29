@@ -1,3 +1,4 @@
+import { DialogflowConversation, DialogflowConversationOptions } from "actions-on-google";
 import { expect } from "chai";
 import { DialogFlowEvent } from "../../src/platforms/dialog-flow/DialogFlowEvent";
 
@@ -28,11 +29,30 @@ const placeIntent = require("../requests/dialog-flow/actions.intent.PLACE.json")
 /* tslint:disable-next-line:no-var-requires */
 const confirmationIntent = require("../requests/dialog-flow/actions.intent.CONFIRMATION.json");
 
+/* tslint:disable-next-line:no-var-requires */
+const slotsIntent = require("../requests/dialog-flow/slots.json");
+
 describe("DialogFlowEvent", () => {
-  it("should format intent slots", () => {
+  it("should format option values", () => {
     const event = new DialogFlowEvent(optionIntent, {});
+    expect(event.intent.name).to.equal("actions.intent.OPTION");
     expect(event.intent.params).to.deep.equal({
       OPTION: "today",
+      TOUCH: "Today's meditation",
+    });
+  });
+
+  it("should format dialogflow parms", () => {
+    const event = new DialogFlowEvent(slotsIntent, {});
+    expect(event.intent.name).to.equal("SleepSingleIntent");
+    expect(event.intent.params).to.deep.equal({
+      VOICE: "10 minutes sleep exercise",
+      length: {
+        amount: 10,
+        unit: "min",
+      },
+        requestPhrase: "",
+      text: "10 minutes sleep exercise",
     });
   });
 
@@ -52,8 +72,18 @@ describe("DialogFlowEvent", () => {
     ]);
   });
 
+  it("should return inputs", () => {
+    const event = new DialogFlowEvent(launchIntent, {});
+    expect(event.intent.name).to.equal("LaunchIntent");
+    expect(event.intent.params).to.deep.equal({
+      KEYBOARD: "Talk to my test app",
+       requestPhrase: "",
+    });
+  });
+
   it("should return the MEDIA_STATUS information", () => {
     const event = new DialogFlowEvent(mediaStatusIntent, {});
+    expect(event.intent.name).to.equal("MEDIA_STATUS");
     expect(event.intent.params).to.deep.equal({
       MEDIA_STATUS: {
         "@type": "type.googleapis.com/google.actions.v2.MediaStatus",
@@ -87,11 +117,8 @@ describe("DialogFlowEvent", () => {
   it("should extract the correct parameters from a permissionIntent", () => {
     const event = new DialogFlowEvent(permissionIntent, {});
     expect(event.intent.params).to.deep.equal({
-      PERMISSION: {
-        boolValue: true,
-        name: "PERMISSION",
-        textValue: "true",
-      },
+      KEYBOARD: "yes",
+      PERMISSION: true,
     });
 
     expect(event.user.permissions).to.deep.equal(["NAME"]);
@@ -101,7 +128,6 @@ describe("DialogFlowEvent", () => {
     const event = new DialogFlowEvent(datetimeIntent, {});
     expect(event.intent.params).to.deep.equal({
       DATETIME: {
-        datetimeValue: {
           date: {
             day: 8,
             month: 6,
@@ -110,18 +136,16 @@ describe("DialogFlowEvent", () => {
           time: {
             hours: 12,
           },
-        },
-        name: "DATETIME",
       },
+      KEYBOARD: "noon",
     });
   });
 
   it("should extract the correct parameters from a confirmationIntent", () => {
     const event = new DialogFlowEvent(placeIntent, {});
     expect(event.intent.params).to.deep.equal({
+        KEYBOARD: "Query handled by Actions on Google",
       PLACE: {
-        name: "PLACE",
-        placeValue: {
           coordinates: {
             latitude: 37.1390728,
             longitude: -121.6572152,
@@ -129,9 +153,7 @@ describe("DialogFlowEvent", () => {
           formattedAddress: "Digital Drive, Morgan Hill, CA 95037, USA",
           name: "Digital Drive",
           placeId: "ChIJF_RbBuogjoAR0BmGuyTKHCY",
-        },
       },
     });
   });
-
 });

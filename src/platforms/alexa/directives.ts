@@ -198,7 +198,8 @@ export class PlayAudio implements IDirective {
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     if (reply.hasDirective("VideoApp.Launch")) {
-      throw new Error("Do not include both an AudioPlayer.Play directive and a VideoApp.Launch directive in the same response");
+      throw new Error("Do not include both an AudioPlayer.Play" +
+        " directive and a VideoApp.Launch directive in the same response");
     }
 
     const response = (reply as AlexaReply).response;

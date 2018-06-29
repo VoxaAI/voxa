@@ -1,0 +1,122 @@
+{
+  "responseId": "37f066e3-8372-4d14-ae17-12e47676ffc0",
+  "queryResult": {
+    "queryText": "10 minutes sleep exercise",
+    "action": "SleepSingleIntent",
+    "parameters": {
+      "requestPhrase": "",
+      "length": {
+        "amount": 10,
+        "unit": "min"
+      }
+    },
+    "allRequiredParamsPresent": true,
+    "outputContexts": [
+      {
+        "name": "projects/project/agent/sessions/1529854969663/contexts/actions_capability_audio_output",
+        "parameters": {
+          "length.original": "10 minutes",
+          "requestPhrase.original": "",
+          "requestPhrase": "",
+          "length": {
+            "amount": 10,
+            "unit": "min"
+          }
+        }
+      },
+      {
+        "name": "projects/project/agent/sessions/1529854969663/contexts/google_assistant_input_type_voice",
+        "parameters": {
+          "length.original": "10 minutes",
+          "requestPhrase.original": "",
+          "requestPhrase": "",
+          "length": {
+            "amount": 10,
+            "unit": "min"
+          }
+        }
+      },
+      {
+        "name": "projects/project/agent/sessions/1529854969663/contexts/actions_capability_media_response_audio",
+        "parameters": {
+          "length.original": "10 minutes",
+          "requestPhrase.original": "",
+          "requestPhrase": "",
+          "length": {
+            "amount": 10,
+            "unit": "min"
+          }
+        }
+      }
+    ],
+    "intent": {
+      "name": "projects/project/agent/intents/2e679867-480f-5df6-a6c0-d34e59264940",
+      "displayName": "SleepSingleIntent"
+    },
+    "intentDetectionConfidence": 1,
+    "diagnosticInfo": {},
+    "languageCode": "en-us"
+  },
+  "originalDetectIntentRequest": {
+    "source": "google",
+    "version": "2",
+    "payload": {
+      "isInSandbox": true,
+      "surface": {
+        "capabilities": [
+          {
+            "name": "actions.capability.MEDIA_RESPONSE_AUDIO"
+          },
+          {
+            "name": "actions.capability.AUDIO_OUTPUT"
+          }
+        ]
+      },
+      "inputs": [
+        {
+          "rawInputs": [
+            {
+              "query": "10 minutes sleep exercise",
+              "inputType": "VOICE"
+            }
+          ],
+          "arguments": [
+            {
+              "rawText": "10 minutes sleep exercise",
+              "textValue": "10 minutes sleep exercise",
+              "name": "text"
+            }
+          ],
+          "intent": "actions.intent.TEXT"
+        }
+      ],
+      "user": {
+        "lastSeen": "2018-06-24T15:42:32Z",
+        "locale": "en-US",
+        "userId": "1527283153072"
+      },
+      "conversation": {
+        "conversationId": "1529854969663",
+        "type": "ACTIVE",
+        "conversationToken": "[\"model\"]"
+      },
+      "availableSurfaces": [
+        {
+          "capabilities": [
+            {
+              "name": "actions.capability.SCREEN_OUTPUT"
+            },
+            {
+              "name": "actions.capability.AUDIO_OUTPUT"
+            },
+            {
+              "name": "actions.capability.WEB_BROWSER"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "session": "projects/project/agent/sessions/1529854969663"
+}
+

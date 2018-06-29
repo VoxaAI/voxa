@@ -30,6 +30,8 @@ export abstract class IVoxaEvent {
     this.executionContext = context;
   }
 
+  public abstract get supportedInterfaces(): string[];
+
   public mapRequestToIntent(): void {
     const requestType = this.request.type;
     const intentName = this.requestToIntent[requestType];
@@ -60,7 +62,8 @@ export abstract class IVoxaEvent {
 
 export interface IVoxaUser {
   id: string;
-  name?: string;
+  accessToken?: string;
+  [key: string]: any;
 }
 
 export interface IVoxaIntent {

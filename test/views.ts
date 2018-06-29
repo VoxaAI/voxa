@@ -1,6 +1,37 @@
 export const views =  {
+  "de-DE": {
+    translation: {
+      ExitIntent: {
+        Farewell: "Ok für weitere Infos besuchen {site} Website" ,
+      },
+      LaunchIntent: {
+        OpenResponse: "Hallo! guten {time}",
+      },
+      Number: {
+        One:  "{numberOne}" ,
+      },
+      Question: {
+        Ask:  "wie spät ist es?" ,
+      },
+      RandomResponse: [
+        "zufällig1",
+        "zufällig2",
+        "zufällig3",
+        "zufällig4",
+        "zufällig5",
+      ],
+      Say: {
+        Say: "sagen" ,
+      },
+    },
+  },
   "en-US": {
     translation: {
+      BadInput: {
+        RepeatLastAskReprompt: {
+          say: "I'm sorry. I didn't understand.",
+        },
+      },
       Card: {
         image: {
           largeImageUrl: "https://example.com/large.jpg",
@@ -10,6 +41,10 @@ export const views =  {
         type: "Standard",
       },
       Card2: "{card2}",
+      Count: {
+        Say:  "{count}",
+        Tell: "{count}" ,
+      },
       DialogFlowBasicCard: {
         buttons: {
           openUrlAction: "https://example.com",
@@ -44,8 +79,41 @@ export const views =  {
         ],
         title: "The list select",
       },
+      ExitIntent: {
+        Farewell: "Ok. For more info visit {site} site.",
+      },
       Help: "This is the help",
+      HelpIntent: {
+        HelpAboutSkill: "For more help visit www.rain.agency" ,
+      },
       Hint: "string",
+      LaunchIntent: {
+        OpenResponse: {
+          alexa: "Hello! Good {time}",
+          dialogFlow: "Hello from DialogFlow",
+        },
+      },
+      Number: {
+        One: "{numberOne}" ,
+      },
+      Playing: {
+        SayStop: {
+          ask: "Say stop if you want to finish the playback",
+        },
+      },
+      Question: {
+        Ask: {
+          ask: "What time is it?",
+          reprompt: "What time is it?",
+        },
+
+      },
+      RandomResponse: [
+        "Random 1",
+        "Random 2",
+        "Random 3",
+        "Random 4",
+      ],
       RenderTemplate: {
         template: {
           backButton: "VISIBLE",
@@ -70,58 +138,7 @@ export const views =  {
         },
         type: "Display.RenderTemplate",
       },
-      LaunchIntent: {
-        OpenResponse: {
-          alexa: "Hello! Good {time}",
-          dialogFlow: "Hello from DialogFlow",
-        },
-      },
-      RandomResponse: [
-        "Random 1",
-        "Random 2",
-        "Random 3",
-        "Random 4",
-      ],
-      Question: {
-        Ask: {
-          ask: "What time is it?",
-          reprompt: "What time is it?",
-        },
-
-      },
-      ExitIntent: {
-        Farewell: "Ok. For more info visit {site} site.",
-      },
-      Number: {
-        One: "{numberOne}" ,
-      },
-      Say: {
-        Say: "say" ,
-      },
-      HelpIntent: {
-        HelpAboutSkill: "For more help visit www.rain.agency" ,
-      },
-      Count: {
-        Say:  "{count}",
-        Tell: "{count}" ,
-      },
-      Playing: {
-        SayStop: {
-          ask: "Say stop if you want to finish the playback",
-        },
-      },
-      BadInput: {
-        RepeatLastAskReprompt: {
-          say: "I'm sorry. I didn't understand.",
-        },
-      },
       Reply: {
-        Directives: {
-          directives: ["{hintDirective}"],
-        },
-        Tell: {
-          tell: "this is a tell",
-        },
         Ask: {
           ask: "this is an ask",
           reprompt: "this is a reprompt",
@@ -131,32 +148,15 @@ export const views =  {
           directives: ["{hintDirective}"],
           reprompt: "this is a reprompt",
         },
-      },
-    },
-  },
-  "de-DE": {
-    translation: {
-      LaunchIntent: {
-        OpenResponse: "Hallo! guten {time}",
-      },
-      RandomResponse: [
-        "zufällig1",
-        "zufällig2",
-        "zufällig3",
-        "zufällig4",
-        "zufällig5",
-      ],
-      Question: {
-        Ask:  "wie spät ist es?" ,
-      },
-      ExitIntent: {
-        Farewell: "Ok für weitere Infos besuchen {site} Website" ,
-      },
-      Number: {
-        One:  "{numberOne}" ,
+        Directives: {
+          directives: ["{hintDirective}"],
+        },
+        Tell: {
+          tell: "this is a tell",
+        },
       },
       Say: {
-        Say: "sagen" ,
+        Say: "say" ,
       },
     },
   },

@@ -71,6 +71,10 @@ export class BotFrameworkEvent extends IVoxaEvent {
     }
   }
 
+  public get supportedInterfaces() {
+    return [];
+  }
+
   public getIntentFromEntity(): void {
     if (!isIMessage(this.rawEvent)) {
       return;
