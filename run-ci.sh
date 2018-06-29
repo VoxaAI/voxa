@@ -14,5 +14,5 @@ if [ "${CI}" = "true" ]; then
   yarn mocha hello-world.spec.js
   )
 
-  cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+  #cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 fi
