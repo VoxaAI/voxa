@@ -40,6 +40,7 @@ describe("Hello World", () => {
 
   describe('Lambda', () => {
     it("runs the lambda call", () => {
+      this.timeout(10000);
       const lambdaCallbackResult = dockerLambda({
         dockerImage: `lambci/lambda:nodejs${NODE_VERSION}`,
         event: launchIntent,
@@ -59,6 +60,7 @@ describe("Hello World", () => {
     });
 
     it("runs the apiGateway call", () => {
+      this.timeout(10000);
       const lambdaCallbackResult = dockerLambda({
         dockerImage: `lambci/lambda:nodejs${NODE_VERSION}`,
         event: lambdaProxyLaunchIntent,
