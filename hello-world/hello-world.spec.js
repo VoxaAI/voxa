@@ -39,7 +39,7 @@ describe("Hello World", () => {
   });
 
   describe('Lambda', () => {
-    it("runs the lambda call", () => {
+    it("runs the lambda call", function() {
       this.timeout(10000);
       const lambdaCallbackResult = dockerLambda({
         dockerImage: `lambci/lambda:nodejs${NODE_VERSION}`,
@@ -59,7 +59,7 @@ describe("Hello World", () => {
 
     });
 
-    it("runs the apiGateway call", () => {
+    it("runs the apiGateway call", function() {
       this.timeout(10000);
       const lambdaCallbackResult = dockerLambda({
         dockerImage: `lambci/lambda:nodejs${NODE_VERSION}`,

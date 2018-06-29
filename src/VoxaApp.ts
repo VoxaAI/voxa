@@ -52,7 +52,9 @@ export class VoxaApp {
     this.onError((voxaEvent: IVoxaEvent, error: Error, reply: IVoxaReply): IVoxaReply => {
       console.error("onError");
       console.error(error.message ? error.message : error);
-      console.trace();
+      if (error.stack) {
+        console.error(error.stack);
+      }
 
       log(error);
 
