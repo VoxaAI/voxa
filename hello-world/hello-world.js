@@ -1,6 +1,4 @@
-const { AlexaPlatform } = require("../../src/platforms/alexa/AlexaPlatform");
-const { VoxaApp } = require("../../src/VoxaApp");
-const { DialogFlowPlatform } = require('../../src/platforms/dialog-flow/DialogFlowPlatform')
+const { VoxaApp, DialogFlowPlatform, AlexaPlatform } = require("voxa");
 const views = require('./views.json')
 
 const app = new VoxaApp({ views });
