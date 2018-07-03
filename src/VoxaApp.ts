@@ -52,7 +52,9 @@ export class VoxaApp {
     this.onError((voxaEvent: IVoxaEvent, error: Error, reply: IVoxaReply): IVoxaReply => {
       console.error("onError");
       console.error(error.message ? error.message : error);
-      console.trace();
+      if (error.stack) {
+        console.error(error.stack);
+      }
 
       log(error);
 
@@ -199,16 +201,24 @@ export class VoxaApp {
         }
       };
 
-      const promises = [];
+      let response: IVoxaReply;
       const context = voxaEvent.executionContext;
+
       if (isLambdaContext(context)) {
-        promises.push(timeout(context));
+        const promises = [];
+        const { timer, timerPromise } = timeout(context);
+        promises.push(timerPromise);
+        promises.push(executeHandlers());
+
+        response =  await bluebird.race(promises);
+        if (timer) {
+          clearTimeout(timer);
+        }
+      } else {
+        response = await executeHandlers();
       }
 
-      promises.push(executeHandlers());
-
-      return await bluebird.race(promises);
-
+      return response;
     } catch (error) {
       return await this.handleErrors(voxaEvent, error, reply);
     }
@@ -484,14 +494,17 @@ export class VoxaApp {
   }
 }
 
-export async function timeout(context: AWSLambdaContext): Promise<void> {
+export function timeout(context: AWSLambdaContext): { timerPromise: Promise<void>, timer: NodeJS.Timer|undefined } {
   const timeRemaining = context.getRemainingTimeInMillis();
 
-  return new Promise<void>((resolve, reject) => {
-    setTimeout( () => {
+  let timer: NodeJS.Timer|undefined;
+  const timerPromise =  new Promise<void>((resolve, reject) => {
+    timer = setTimeout( () => {
       reject(new TimeoutError());
     }, Math.max(timeRemaining - 500, 0));
   });
+
+  return { timer, timerPromise };
 }
 
 function isLambdaContext(context: any): context is AWSLambdaContext {

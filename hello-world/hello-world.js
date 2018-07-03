@@ -1,12 +1,12 @@
-const { AlexaPlatform } = require("../../src/platforms/alexa/AlexaPlatform");
-const { VoxaApp } = require("../../src/VoxaApp");
-const { DialogFlowPlatform } = require('../../src/platforms/dialog-flow/DialogFlowPlatform')
+const { VoxaApp, DialogFlowPlatform, AlexaPlatform } = require("voxa");
 const views = require('./views.json')
 
 const app = new VoxaApp({ views });
-app.onIntent("LaunchIntent", {
-  ask: "launch",
-  to: "likesVoxa?",
+app.onIntent("LaunchIntent", (request) => {
+  return {
+    ask: "launch",
+    to: "likesVoxa?",
+  };
 });
 
 app.onState("likesVoxa?", (request) => {
@@ -25,6 +25,8 @@ app.onState("likesVoxa?", (request) => {
 
 const alexaSkill = new AlexaPlatform(app);
 exports.alexaHandler = alexaSkill.lambda();
+exports.alexaHTTPHandler = alexaSkill.lambdaHTTP();
 
 const dialogFlowAction = new DialogFlowPlatform(app);
 exports.dialogFlowHandler = dialogFlowAction.lambda();
+exports.dialogFlowHTTPHandler = dialogFlowAction.lambdaHTTP();
