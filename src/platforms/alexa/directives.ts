@@ -143,13 +143,7 @@ export class RenderTemplate implements IDirective {
       throw new Error("At most one Display.RenderTemplate directive can be specified in a response");
     }
 
-    const context = (event.rawEvent as AlexaEvent).context;
-
-    if (!context) {
-      return;
-    }
-
-    if (! context.System.device.supportedInterfaces.Display) {
+    if (!_.includes(event.supportedInterfaces, "Display")) {
       return;
     }
 
@@ -191,7 +185,7 @@ export class PlayAudio implements IDirective {
   constructor(
     public url: string,
     public token: string,
-    public offsetInMilliseconds: number,
+    public offsetInMilliseconds: number = 0,
     public behavior: interfaces.audioplayer.PlayBehavior = "REPLACE_ALL",
     public metadata: interfaces.audioplayer.AudioItemMetadata = {},
   ) { }
