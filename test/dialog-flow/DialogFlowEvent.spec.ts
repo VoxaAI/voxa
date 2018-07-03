@@ -32,6 +32,9 @@ const confirmationIntent = require("../requests/dialog-flow/actions.intent.CONFI
 /* tslint:disable-next-line:no-var-requires */
 const slotsIntent = require("../requests/dialog-flow/slots.json");
 
+/* tslint:disable-next-line:no-var-requires */
+const newSurfaceIntent = require("../requests/dialog-flow/actions.intent.NEW_SURFACE.json");
+
 describe("DialogFlowEvent", () => {
   it("should format option values", () => {
     const event = new DialogFlowEvent(optionIntent, {});
@@ -153,6 +156,16 @@ describe("DialogFlowEvent", () => {
           formattedAddress: "Digital Drive, Morgan Hill, CA 95037, USA",
           name: "Digital Drive",
           placeId: "ChIJF_RbBuogjoAR0BmGuyTKHCY",
+      },
+    });
+  });
+
+  it("should extract the NEW_SURFACE confirmationIntent", () => {
+    const event = new DialogFlowEvent(newSurfaceIntent, {});
+    expect(event.intent.params).to.deep.equal({
+      NEW_SURFACE: {
+        "@type": "type.googleapis.com/google.actions.v2.NewSurfaceValue",
+        "status": "OK",
       },
     });
   });
