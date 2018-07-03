@@ -15,11 +15,6 @@ export class DialogFlowIntent implements IVoxaIntent {
 
   constructor(conv: DialogflowConversation) {
     this.rawIntent = conv;
-    console.log({
-      action: conv.action,
-      intent: conv.intent,
-      query: conv.query,
-    });
     this.name = conv.action;
 
     if (!this.name || this.name === "input.unknown") {

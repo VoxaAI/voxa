@@ -794,4 +794,34 @@ describe("DialogFlow Directives", () => {
       });
     });
   });
+
+  describe("NewSurface", () => {
+    it("should include a new surface directive", async () => {
+      const capability = "actions.capability.SCREEN_OUTPUT";
+      app.onIntent("LaunchIntent", {
+        dialogFlowNewSurface: {
+          capabilities: capability,
+          context: "To show you an image",
+          notification: "Check out this image",
+        },
+        flow: "yield",
+        sayp: "Hello!",
+        to: "entry",
+      });
+
+      const reply = await dialogFlowAgent.execute(event, {});
+      expect(reply.payload.google.systemIntent).to.deep.equal({
+        data: {
+          "@type": "type.googleapis.com/google.actions.v2.NewSurfaceValueSpec",
+          "capabilities": [
+            "actions.capability.SCREEN_OUTPUT",
+          ],
+          "context": "To show you an image",
+          "notificationTitle": "Check out this image",
+        },
+        intent: "actions.intent.NEW_SURFACE",
+      });
+    });
+  });
+
 });

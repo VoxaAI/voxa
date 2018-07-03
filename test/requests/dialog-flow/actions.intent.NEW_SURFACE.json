@@ -1,0 +1,105 @@
+{
+  "responseId": "8f2b3f9d-1603-425a-887c-5fd6559a420a",
+  "queryResult": {
+    "queryText": "actions_intent_NEW_SURFACE",
+    "action": "input.unknown",
+    "parameters": {},
+    "allRequiredParamsPresent": true,
+    "outputContexts": [
+      {
+        "name": "projects/project/agent/sessions/1530642864468/contexts/actions_capability_screen_output"
+      },
+      {
+        "name": "projects/project/agent/sessions/1530642864468/contexts/actions_capability_audio_output"
+      },
+      {
+        "name": "projects/project/agent/sessions/1530642864468/contexts/actions_capability_media_response_audio"
+      },
+      {
+        "name": "projects/project/agent/sessions/1530642864468/contexts/actions_capability_web_browser"
+      },
+      {
+        "name": "projects/project/agent/sessions/1530642864468/contexts/actions_intent_new_surface",
+        "parameters": {
+          "NEW_SURFACE": {
+            "@type": "type.googleapis.com/google.actions.v2.NewSurfaceValue",
+            "status": "OK"
+          }
+        }
+      }
+    ],
+    "intent": {
+      "name": "projects/project/agent/intents/9b8cf42d-ceb4-56f2-bfdc-58e5f75abf76",
+      "displayName": "DefaultFallbackIntent"
+    },
+    "intentDetectionConfidence": 1,
+    "languageCode": "en-us"
+  },
+  "originalDetectIntentRequest": {
+    "source": "google",
+    "version": "2",
+    "payload": {
+      "isInSandbox": true,
+      "surface": {
+        "capabilities": [
+          {
+            "name": "actions.capability.SCREEN_OUTPUT"
+          },
+          {
+            "name": "actions.capability.AUDIO_OUTPUT"
+          },
+          {
+            "name": "actions.capability.WEB_BROWSER"
+          },
+          {
+            "name": "actions.capability.MEDIA_RESPONSE_AUDIO"
+          }
+        ]
+      },
+      "inputs": [
+        {
+          "rawInputs": [
+            {}
+          ],
+          "arguments": [
+            {
+              "extension": {
+                "@type": "type.googleapis.com/google.actions.v2.NewSurfaceValue",
+                "status": "OK"
+              },
+              "name": "NEW_SURFACE"
+            }
+          ],
+          "intent": "actions.intent.NEW_SURFACE"
+        }
+      ],
+      "user": {
+        "lastSeen": "2018-07-03T18:33:40Z",
+        "locale": "en-US",
+        "userId": "1527283153072"
+      },
+      "conversation": {
+        "conversationId": "1530642864468",
+        "type": "ACTIVE",
+        "conversationToken": "[\"model\"]"
+      },
+      "availableSurfaces": [
+        {
+          "capabilities": [
+            {
+              "name": "actions.capability.SCREEN_OUTPUT"
+            },
+            {
+              "name": "actions.capability.AUDIO_OUTPUT"
+            },
+            {
+              "name": "actions.capability.WEB_BROWSER"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "session": "projects/project/agent/sessions/1530642864468"
+}
+

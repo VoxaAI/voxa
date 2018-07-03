@@ -393,3 +393,46 @@ Your app can send push notifications to users whenever relevant, such as sending
     };
   });
 
+
+
+Multi-surface conversations
+---------------------------
+
+`Actions on Google Documentation <https://developers.google.com/actions/assistant/surface-capabilities#multi-surface_conversations>`_
+
+At any point during your app's flow, you can check if the user has any other surfaces with a specific capability. If another surface with the requested capability is available, you can then transfer the current conversation over to that new surface.
+
+
+.. code-block:: javascript
+
+  skill.onIntent('someState', async (voxaEvent) => {
+    const screen = 'actions.capability.SCREEN_OUTPUT';
+    if (!_.includes(voxaEvent.supportedInterfaces, screen)) {
+      const screenAvailable = voxaEvent.conv.available.surfaces.capabilities.has(screen);
+
+      const context = 'Sure, I have some sample images for you.';
+      const notification = 'Sample Images';
+      const capabilities = ['actions.capability.SCREEN_OUTPUT'];
+
+      if (screenAvailable) {
+        return {
+          sayp: 'Hello',
+          to: 'entry',
+          flow: 'yield',
+          dialogFlowNewSurface: {
+            context, notification, capabilities,
+          },
+        };
+      }
+
+      return {
+        sayp: 'Does not have a screen',
+        flow: 'terminate',
+      };
+    }
+
+    return {
+      sayp: 'Already has a screen',
+      flow: 'terminate',
+    };
+  });

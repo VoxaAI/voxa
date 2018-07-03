@@ -20,6 +20,8 @@ import {
   ListOptions,
   MediaObject,
   MediaResponse as ActionsOnGoogleMediaResponse,
+  NewSurface as ActionsOnGoogleNewSurface,
+  NewSurfaceOptions,
   Permission as ActionsOnGooglePermission,
   PermissionOptions,
   Place as ActionsOnGooglePlace,
@@ -379,5 +381,21 @@ export class BrowseCarousel implements IDirective {
     const browseCarousel = new ActionsOnGoogleBrowseCarousel(this.browseCarouselOptions);
     const richResponse = _.get(reply, "payload.google.richResponse", new RichResponse());
     (reply as DialogFlowReply).payload.google.richResponse = richResponse.add(browseCarousel);
+  }
+}
+
+export class NewSurface implements IDirective {
+  public static platform: string = "dialogFlow";
+  public static key: string = "dialogFlowNewSurface";
+
+  constructor(public newSurfaceOptions: NewSurfaceOptions) {}
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    const google: any = (reply as DialogFlowReply).payload.google;
+    const newSurface = new ActionsOnGoogleNewSurface(this.newSurfaceOptions);
+
+    google.systemIntent = {
+      data: newSurface.inputValueData,
+      intent: newSurface.intent,
+    };
   }
 }
