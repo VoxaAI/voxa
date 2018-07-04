@@ -263,7 +263,7 @@ describe('StateMachineSkill', () => {
       });
   });
 
-  it('should let  model.fromRequest to return a Promise', () => {
+  it('should let model.fromRequest to return a Promise', () => {
     class PromisyModel extends Model {
       static fromEvent() {
         return Promise.resolve(new PromisyModel());
@@ -320,6 +320,193 @@ describe('StateMachineSkill', () => {
     return stateMachineSkill.execute(event)
       .then(() => {
         expect(statesDefinition.entry.called).to.be.true;
+      });
+  });
+
+  it('should fulfill request', () => {
+    const canFulfillIntent = {
+      canFulfill: 'YES',
+      slots: {
+        slot1: {
+          canUnderstand: 'YES',
+          canFulfill: 'YES',
+        },
+      },
+    };
+
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    stateMachineSkill.onIntent('NameIntent', (alexaEvent) => {
+      if (alexaEvent.request.isCanFulfillIntentRequest) {
+        return { canFulfillIntent };
+      }
+
+      return { message: { ask: 'This is my message' } };
+    });
+
+    const fulfillEvent = _.cloneDeep(event);
+    fulfillEvent.request.type = 'CanFulfillIntentRequest';
+    fulfillEvent.request.intent = {
+      name: 'NameIntent',
+      slots: {
+        slot1: {
+          name: 'slot1',
+          value: 'something',
+        },
+      },
+    };
+
+    return stateMachineSkill.execute(fulfillEvent)
+      .then((reply) => {
+        expect(reply.canFulfillIntent).to.deep.equal(canFulfillIntent);
+        expect(reply.msg.statements[0]).to.deep.equal('This is my message');
+        expect(reply.toJSON().response.canFulfillIntent).to.deep.equal(canFulfillIntent);
+      });
+  });
+
+  it('should return MAYBE fulfill response to CanFulfillIntentRequest', () => {
+    const canFulfillIntent = {
+      canFulfill: 'MAYBE',
+      slots: {
+        slot1: {
+          canUnderstand: 'YES',
+          canFulfill: 'YES',
+        },
+      },
+    };
+
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    stateMachineSkill.onIntent('NameIntent', (alexaEvent) => {
+      if (alexaEvent.request.isCanFulfillIntentRequest) {
+        return { canFulfillIntent };
+      }
+
+      return { message: { ask: 'This is my message' } };
+    });
+
+    const fulfillEvent = _.cloneDeep(event);
+    fulfillEvent.request.type = 'CanFulfillIntentRequest';
+    fulfillEvent.request.intent = {
+      name: 'NameIntent',
+      slots: {
+        slot1: {
+          name: 'slot1',
+          value: 'something',
+        },
+      },
+    };
+
+    return stateMachineSkill.execute(fulfillEvent)
+      .then((reply) => {
+        expect(reply.canFulfillIntent).to.deep.equal(canFulfillIntent);
+        expect(reply.msg.statements[0]).to.deep.equal('This is my message');
+        expect(reply.toJSON().response.canFulfillIntent).to.deep.equal(canFulfillIntent);
+      });
+  });
+
+  it('should not fulfill request', () => {
+    const canFulfillIntent = {
+      canFulfill: 'NO',
+    };
+
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    stateMachineSkill.onIntent('NameIntent', () => ({ canFulfillIntent }));
+
+    const fulfillEvent = _.cloneDeep(event);
+    fulfillEvent.request.type = 'CanFulfillIntentRequest';
+    fulfillEvent.request.intent = {
+      name: 'NameIntent',
+      slots: {
+        slot1: {
+          name: 'slot1',
+          value: 'something',
+        },
+      },
+    };
+
+    return stateMachineSkill.execute(fulfillEvent)
+      .then((reply) => {
+        expect(reply.canFulfillIntent).to.deep.equal(canFulfillIntent);
+        expect(reply.toJSON().response.canFulfillIntent).to.deep.equal(canFulfillIntent);
+      });
+  });
+
+  it('should not fulfill request when wrong values are sent', () => {
+    const canFulfillIntent = {
+      canFulfill: 'yes',
+      slots: {
+        slot1: {
+          canUnderstand: 'yes',
+          canFulfill: 'yes',
+        },
+      },
+    };
+
+    const cannotFulfillIntent = {
+      canFulfill: 'NO',
+      slots: {
+        slot1: {
+          canUnderstand: 'NO',
+          canFulfill: 'NO',
+        },
+      },
+    };
+
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    stateMachineSkill.onIntent('NameIntent', () => ({ canFulfillIntent }));
+
+    const fulfillEvent = _.cloneDeep(event);
+    fulfillEvent.request.type = 'CanFulfillIntentRequest';
+    fulfillEvent.request.intent = {
+      name: 'NameIntent',
+      slots: {
+        slot1: {
+          name: 'slot1',
+          value: 'something',
+        },
+      },
+    };
+
+    return stateMachineSkill.execute(fulfillEvent)
+      .then((reply) => {
+        expect(reply.canFulfillIntent).to.deep.equal(canFulfillIntent);
+        expect(reply.toJSON().response.canFulfillIntent).to.deep.equal(cannotFulfillIntent);
+      });
+  });
+
+  it('should not fulfill request when missing values are sent', () => {
+    const canFulfillIntent = {
+      canFulfill: 'YES',
+      slots: {
+        slot1: {
+          canUnderstand: 'YES',
+          canFulfill: 'YES',
+        },
+      },
+    };
+
+    const cannotFulfillIntent = {
+      canFulfill: 'NO',
+    };
+
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
+    stateMachineSkill.onIntent('NameIntent', () => ({ canFullfillIntent: canFulfillIntent }));
+
+    const fulfillEvent = _.cloneDeep(event);
+    fulfillEvent.request.type = 'CanFulfillIntentRequest';
+    fulfillEvent.request.intent = {
+      name: 'NameIntent',
+      slots: {
+        slot1: {
+          name: 'slot1',
+          value: 'something',
+        },
+      },
+    };
+
+    return stateMachineSkill.execute(fulfillEvent)
+      .then((reply) => {
+        expect(reply.canFulfillIntent).to.be.undefined;
+        expect(reply.toJSON().response.canFulfillIntent).to.deep.equal(cannotFulfillIntent);
       });
   });
 
