@@ -335,13 +335,44 @@ describe('StateMachineSkill', () => {
     };
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('NameIntent', (alexaEvent) => {
-      if (alexaEvent.request.isCanFulfillIntentRequest) {
-        return { canFulfillIntent };
-      }
-
-      return { message: { ask: 'This is my message' } };
+    stateMachineSkill.onCanFulfillIntentRequest((alexaEvent, reply) => {
+      reply.canFulfillIntent = canFulfillIntent;
+      return reply;
     });
+
+    const fulfillEvent = _.cloneDeep(event);
+    fulfillEvent.request.type = 'CanFulfillIntentRequest';
+    fulfillEvent.request.intent = {
+      name: 'NameIntent',
+      slots: {
+        slot1: {
+          name: 'slot1',
+          value: 'something',
+        },
+      },
+    };
+
+    return stateMachineSkill.execute(fulfillEvent)
+      .then((reply) => {
+        expect(reply.canFulfillIntent).to.deep.equal(canFulfillIntent);
+        expect(reply.msg.statements[0]).to.be.undefined;
+        expect(reply.toJSON().response.canFulfillIntent).to.deep.equal(canFulfillIntent);
+      });
+  });
+
+  it('should fulfill request with default intents', () => {
+    const canFulfillIntent = {
+      canFulfill: 'YES',
+      slots: {
+        slot1: {
+          canUnderstand: 'YES',
+          canFulfill: 'YES',
+        },
+      },
+    };
+
+    const defaultFulfillIntents = ['NameIntent'];
+    const stateMachineSkill = new StateMachineSkill({ variables, views, defaultFulfillIntents });
 
     const fulfillEvent = _.cloneDeep(event);
     fulfillEvent.request.type = 'CanFulfillIntentRequest';
@@ -375,12 +406,9 @@ describe('StateMachineSkill', () => {
     };
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('NameIntent', (alexaEvent) => {
-      if (alexaEvent.request.isCanFulfillIntentRequest) {
-        return { canFulfillIntent };
-      }
-
-      return { message: { ask: 'This is my message' } };
+    stateMachineSkill.onCanFulfillIntentRequest((alexaEvent, reply) => {
+      reply.canFulfillIntent = canFulfillIntent;
+      return reply;
     });
 
     const fulfillEvent = _.cloneDeep(event);
@@ -409,7 +437,10 @@ describe('StateMachineSkill', () => {
     };
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('NameIntent', () => ({ canFulfillIntent }));
+    stateMachineSkill.onCanFulfillIntentRequest((alexaEvent, reply) => {
+      reply.canFulfillIntent = canFulfillIntent;
+      return reply;
+    });
 
     const fulfillEvent = _.cloneDeep(event);
     fulfillEvent.request.type = 'CanFulfillIntentRequest';
@@ -452,7 +483,10 @@ describe('StateMachineSkill', () => {
     };
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('NameIntent', () => ({ canFulfillIntent }));
+    stateMachineSkill.onCanFulfillIntentRequest((alexaEvent, reply) => {
+      reply.canFulfillIntent = canFulfillIntent;
+      return reply;
+    });
 
     const fulfillEvent = _.cloneDeep(event);
     fulfillEvent.request.type = 'CanFulfillIntentRequest';
@@ -489,7 +523,10 @@ describe('StateMachineSkill', () => {
     };
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('NameIntent', () => ({ canFullfillIntent: canFulfillIntent }));
+    stateMachineSkill.onCanFulfillIntentRequest((alexaEvent, reply) => {
+      reply.canFullfillIntent = canFulfillIntent;
+      return reply;
+    });
 
     const fulfillEvent = _.cloneDeep(event);
     fulfillEvent.request.type = 'CanFulfillIntentRequest';

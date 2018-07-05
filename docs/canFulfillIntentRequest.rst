@@ -13,28 +13,39 @@ In Voxa, you can take advantage of this feature by following this example:
 
 .. code-block:: javascript
 
-  skill.onIntent('NameIntent', (alexaEvent) => {
-    if (alexaEvent.request.isCanFulfillIntentRequest) {
-      const canFulfillIntent = {
+  skill.onCanFulfillIntentRequest((alexaEvent, reply) => {
+    if (alexaEvent.intent.name === 'InfluencerIntent') {
+      reply.canFulfillIntent = {
         canFulfill: 'YES',
         slots: {},
       };
 
       _.each(alexaEvent.intent.params, (value, slotName) => {
-        canFulfillIntent.slots[slotName] = {
+        reply.canFulfillIntent.slots[slotName] = {
           canUnderstand: 'YES',
           canFulfill: 'YES',
         };
       });
-
-      return { canFulfillIntent };
     }
 
-    return { to: 'nextState' };
+    return reply;
   });
 
 
-Voxa adds the property `isCanFulfillIntentRequest`_ to the request object when it identifies a `CanFulfillIntentRequest`_ request comes in the body request. Then, it automatically transforms it to an `IntentRequest` request to redirect the flow to the intent coming in the request. Then you should verify if this variable exists to respond to the Alexa service wether you're going to fulfill the request or not.
+Voxa offers the function `onCanFulfillIntentRequest`_ so you can implement it in your code to validate wether you're going to fulfill the request or not.
+
+Additionally, if you have several intents that you want to automatically fulfill, regardless of the slot values in the request, you can simply add an array of intents to the property: `defaultFulfillIntents`_ of the Voxa config file:
+
+.. code-block:: javascript
+
+  const defaulFulfillIntents = [
+    'NameIntent',
+    'PhoneIntent',
+  ];
+
+  const skill = new StateMachineSkill({ variables, views, defaultFulfillIntents });
+
+If Alexa sends an intent that you didn't register with this function, then you should implement the `onCanFulfillIntentRequest`_ method to handle it. Important: If you implement this method in your skill, you should always return the `reply`_ object.
 
 If a skill has implemented canFulfillIntent according to the interface specification, the skill should be aware that the skill is not yet being asked to take action on behalf of the customer, and should not modify any state outside its scope, or have any observable interaction with its own calling functions or the outside world besides returning a value. Thus, the skill should not, at this point, perform any actions such as playing sound, turning lights on or off, providing feedback to the customer, committing a transaction, or making a state change.
 
