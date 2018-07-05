@@ -38,15 +38,15 @@ Voxa adds the property `isCanFulfillIntentRequest`_ to the request object when i
 
 If a skill has implemented canFulfillIntent according to the interface specification, the skill should be aware that the skill is not yet being asked to take action on behalf of the customer, and should not modify any state outside its scope, or have any observable interaction with its own calling functions or the outside world besides returning a value. Thus, the skill should not, at this point, perform any actions such as playing sound, turning lights on or off, providing feedback to the customer, committing a transaction, or making a state change.
 
-Therefore, if you have defined a custom `onSessionStarted`_ method, you should validate if a `CanFulfillIntentRequest`_ request comes in to not run the code the first time. If you accept to fulfill the intent, the second time this function is triggered you'll be able to run your code. You can validate it following this code snippet:
 
-.. code-block:: javascript
+Testing using ASK-CLI
+=====================
 
-  skill.onSessionStarted((alexaEvent) => {
-    if (!alexaEvent.request.isCanFulfillIntentRequest) {
-      const x = 1;
-      // MORE CODE...
-    }
-  });
+There are 2 options to test this feature manually. The first one is using the `Manual JSON` section of the `Test` tab in the developer portal. And the other one, is to use the `ASK CLI <https://developer.amazon.com/docs/custom-skills/implement-canfulfillintentrequest-for-name-free-interaction.html#test-the-skill-using-ask-cli>`_ from Amazon.
 
+You can just trigger this command in the console, and you'll get the result in your terminal:
+
+.. code-block:: bash
+
+  $ ask api invoke-skill --skill-id amzn1.ask.skill.[unique-value-here] --file /path/to/input/json --endpoint-region [endpoint-region-here]
 

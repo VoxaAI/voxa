@@ -162,9 +162,6 @@ describe('Reply', () => {
 
       expect(replyCanFulfill.toJSON()).to.deep.equal({
         response: {
-          card: undefined,
-          outputSpeech: undefined,
-          shouldEndSession: true,
           canFulfillIntent: {
             canFulfill: 'YES',
             slots: {

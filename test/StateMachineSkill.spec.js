@@ -358,7 +358,7 @@ describe('StateMachineSkill', () => {
     return stateMachineSkill.execute(fulfillEvent)
       .then((reply) => {
         expect(reply.canFulfillIntent).to.deep.equal(canFulfillIntent);
-        expect(reply.msg.statements[0]).to.deep.equal('This is my message');
+        expect(reply.msg.statements[0]).to.be.undefined;
         expect(reply.toJSON().response.canFulfillIntent).to.deep.equal(canFulfillIntent);
       });
   });
@@ -398,7 +398,7 @@ describe('StateMachineSkill', () => {
     return stateMachineSkill.execute(fulfillEvent)
       .then((reply) => {
         expect(reply.canFulfillIntent).to.deep.equal(canFulfillIntent);
-        expect(reply.msg.statements[0]).to.deep.equal('This is my message');
+        expect(reply.msg.statements[0]).to.be.undefined;
         expect(reply.toJSON().response.canFulfillIntent).to.deep.equal(canFulfillIntent);
       });
   });
