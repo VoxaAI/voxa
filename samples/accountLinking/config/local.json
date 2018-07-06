@@ -17,7 +17,7 @@
   },
   "dynamoDB": {
     "tables": {
-      "users": ""
+      "users": "accountLinkingExample"
     }
   },
   "aws": {

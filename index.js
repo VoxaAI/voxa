@@ -20,7 +20,6 @@ const I18NRenderer = require('./lib/renderers/I18NRenderer');
 /**
  * Plugins
  */
-const badResponseReprompt = require('./lib/plugins/reprompt-on-bad-response');
 const replaceIntent = require('./lib/plugins/replace-intent');
 const stateFlow = require('./lib/plugins/state-flow');
 const cloudWatch = require('./lib/plugins/cloud-watch');
@@ -37,7 +36,6 @@ module.exports.I18NRenderer = I18NRenderer;
 module.exports.DefaultRenderer = DefaultRenderer;
 
 module.exports.plugins = {
-  badResponseReprompt,
   replaceIntent,
   stateFlow,
   cloudWatch,

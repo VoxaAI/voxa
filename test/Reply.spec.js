@@ -21,8 +21,28 @@ describe('Reply', () => {
     expect(sessionReply.session).to.deep.equal(request.session);
   });
 
-  it('should set yield to true on end', () => {
-    reply.end();
+  it('should determine if it has directive', () => {
+    const message = { directives: [{ type: 'a' }] };
+    reply.append(message);
+
+    expect(reply.hasDirective('a')).to.be.true;
+    expect(reply.hasDirective(/^a/)).to.be.true;
+    expect(reply.hasDirective(directive => directive.type === 'a')).to.be.true;
+
+    expect(reply.hasDirective('b')).to.be.false;
+    expect(reply.hasDirective(/^b/)).to.be.false;
+    expect(reply.hasDirective(directive => directive.type === 'b')).to.be.false;
+  });
+
+  it('should throw error on unknown comparison for has directive', () => {
+    const message = { directives: [{ type: 'a' }] };
+    reply.append(message);
+
+    expect(() => reply.hasDirective({})).to.throw(Error);
+  });
+
+  it('should set yield to true on yield', () => {
+    reply.yield();
     expect(reply.msg.yield).to.be.true;
   });
 
@@ -111,6 +131,51 @@ describe('Reply', () => {
         version: '1.0',
       });
     });
+
+    it('should not include the attribute shouldEndSession if it has VideoApp.Launch directive', () => {
+      reply.append({ tell: 'tell', directives: [{ type: 'VideoApp.Launch' }] });
+      expect(reply.toJSON()).to.deep.equal({
+        response: {
+          card: undefined,
+          outputSpeech: {
+            ssml: '<speak>tell</speak>',
+            type: 'SSML',
+          },
+          directives: [{ type: 'VideoApp.Launch' }],
+        },
+        sessionAttributes: {},
+        version: '1.0',
+      });
+    });
+
+    it('should generate a correct alexa response for a CanFulfillIntentRequest', () => {
+      const replyCanFulfill = _.cloneDeep(reply);
+      replyCanFulfill.canFulfillIntent = {
+        canFulfill: 'YES',
+        slots: {
+          slot1: {
+            canUnderstand: 'YES',
+            canFulfill: 'YES',
+          },
+        },
+      };
+
+      expect(replyCanFulfill.toJSON()).to.deep.equal({
+        response: {
+          canFulfillIntent: {
+            canFulfill: 'YES',
+            slots: {
+              slot1: {
+                canUnderstand: 'YES',
+                canFulfill: 'YES',
+              },
+            },
+          },
+        },
+        sessionAttributes: {},
+        version: '1.0',
+      });
+    });
   });
 
   describe('append', () => {
@@ -151,22 +216,34 @@ describe('Reply', () => {
       });
     });
 
-    it('should not yield if message is ask', () => {
+    it('should yield if message is ask', () => {
       const message = { ask: 'ask' };
       reply.append(message);
       expect(reply.isYielding()).to.be.true;
     });
 
-    it('should not yield if message is tell', () => {
+    it('should yield if message is tell', () => {
       const message = { tell: 'tell' };
       reply.append(message);
       expect(reply.isYielding()).to.be.true;
     });
 
-    it('should yield if message is say', () => {
+    it('should not yield if message is say', () => {
       const message = { say: 'say' };
       reply.append(message);
       expect(reply.isYielding()).to.be.false;
+    });
+
+    it('should yield if has a dialog directive', () => {
+      const message = { directives: { type: 'Dialog.Delegate' } };
+      reply.append(message);
+      expect(reply.isYielding()).to.be.true;
+    });
+
+    it('should not end session if it has a dialog directive', () => {
+      const message = { directives: { type: 'Dialog.Delegate' } };
+      reply.append(message);
+      expect(reply.toJSON().response.shouldEndSession).to.be.false;
     });
 
     it('should add cards to reply.msg', () => {
@@ -260,11 +337,6 @@ describe('Reply', () => {
       expect(reply.msg.directives[0].audioItem.stream.url).to.equal('url');
     });
 
-    it('should set hasAnAsk to true if message is ask', () => {
-      reply.append({ ask: 'ask' });
-      expect(reply.msg.hasAnAsk).to.be.true;
-    });
-
     describe('a Reply', () => {
       let appendedReply;
       beforeEach(() => {
@@ -279,34 +351,33 @@ describe('Reply', () => {
         expect(reply.msg.statements[0]).to.equal('appended say');
       });
 
-      it('should set hasAnAsk to true if reply has an ask', () => {
-        appendedReply.append({ ask: 'ask' });
-        reply.append(appendedReply);
-
-        expect(reply.msg.hasAnAsk).to.be.true;
-      });
-
-      it('should not yield if reply has an ask', () => {
+      it('should yield if reply has an ask', () => {
         appendedReply.append({ ask: 'ask' });
         reply.append(appendedReply);
         expect(reply.isYielding()).to.be.true;
       });
 
-      it('should not yield if reply has a tell', () => {
+      it('should yield if reply has a tell', () => {
         appendedReply.append({ tell: 'tell' });
         reply.append(appendedReply);
         expect(reply.isYielding()).to.be.true;
       });
 
-      it('should yield if reply is say', () => {
+      it('should not yield if reply is say', () => {
         appendedReply.append({ say: 'say' });
         reply.append(appendedReply);
         expect(reply.isYielding()).to.be.false;
       });
 
-      it('should not yield on tell after say', () => {
+      it('should yield on tell after say', () => {
         appendedReply.append({ say: 'say' });
         appendedReply.append({ tell: 'tell' });
+        reply.append(appendedReply);
+        expect(reply.isYielding()).to.be.true;
+      });
+
+      it('should yield on delegate directive', () => {
+        appendedReply.append({ directives: { type: 'Dialog.Delegate' } });
         reply.append(appendedReply);
         expect(reply.isYielding()).to.be.true;
       });
