@@ -1,0 +1,37 @@
+import { IAttachment, ICardAction, IEvent, IIdentity } from "botbuilder";
+import { IVoxaEvent } from "../../VoxaEvent";
+import { IVoxaReply } from "../../VoxaReply";
+import { BotFrameworkEvent } from "./BotFrameworkEvent";
+import { IAuthorizationResponse } from "./BotFrameworkInterfaces";
+export declare class BotFrameworkReply implements IVoxaReply {
+    channelId: string;
+    conversation: IIdentity;
+    from: IIdentity;
+    id?: string;
+    inputHint: string;
+    locale: string;
+    recipient: IIdentity;
+    replyToId?: string;
+    speak: string;
+    text: string;
+    textFormat: string;
+    timestamp: string;
+    type: string;
+    attachments?: IAttachment[];
+    suggestedActions?: ICardAction[];
+    constructor(event: IVoxaEvent);
+    readonly hasMessages: boolean;
+    readonly hasDirectives: boolean;
+    readonly hasTerminated: boolean;
+    clear(): void;
+    terminate(): void;
+    readonly speech: string;
+    addStatement(statement: string, isPlain?: boolean): void;
+    hasDirective(type: string | RegExp): boolean;
+    addReprompt(reprompt: string): void;
+    send(event: BotFrameworkEvent): Promise<void>;
+    botApiRequest(method: string, uri: string, reply: BotFrameworkReply, event: BotFrameworkEvent, attempts?: number): Promise<any>;
+    getReplyUri(event: IEvent): string;
+    getAuthorization(applicationId: string, applicationPassword: string): Promise<IAuthorizationResponse>;
+    saveSession(event: IVoxaEvent): Promise<void>;
+}
