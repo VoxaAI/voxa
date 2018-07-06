@@ -147,6 +147,35 @@ describe('Reply', () => {
         version: '1.0',
       });
     });
+
+    it('should generate a correct alexa response for a CanFulfillIntentRequest', () => {
+      const replyCanFulfill = _.cloneDeep(reply);
+      replyCanFulfill.canFulfillIntent = {
+        canFulfill: 'YES',
+        slots: {
+          slot1: {
+            canUnderstand: 'YES',
+            canFulfill: 'YES',
+          },
+        },
+      };
+
+      expect(replyCanFulfill.toJSON()).to.deep.equal({
+        response: {
+          canFulfillIntent: {
+            canFulfill: 'YES',
+            slots: {
+              slot1: {
+                canUnderstand: 'YES',
+                canFulfill: 'YES',
+              },
+            },
+          },
+        },
+        sessionAttributes: {},
+        version: '1.0',
+      });
+    });
   });
 
   describe('append', () => {

@@ -1,13 +1,14 @@
 {
   "name": "voxa",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "A fsm (state machine) framework for Alexa apps using Node.js",
   "main": "index.js",
   "scripts": {
     "test": "istanbul cover _mocha -- --recursive test",
     "test-ci": "JUNIT_REPORT_PATH=junit.xml istanbul cover _mocha -- --recursive --colors --reporter mocha-jenkins-reporter test",
     "cobertura": "istanbul report cobertura --root coverage",
-    "lint": "eslint lib test"
+    "lint": "eslint lib test",
+    "lint-fix": "eslint --fix lib test"
   },
   "repository": {
     "type": "git",
