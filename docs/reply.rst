@@ -15,7 +15,7 @@ The ``reply`` Object
 
     Adds statements to the ``Reply``
 
-    :param message: An object with keys ``ask``, ``tell``, ``say``, ``reprompt``, ``card``, ``canFulfillIntent`` or ``directives`` keys. Or another ``reply`` object
+    :param message: An object with keys ``ask``, ``tell``, ``say``, ``reprompt``, ``card``, or ``directives`` keys. Or another ``reply`` object
     :returns: the ``Reply`` object
 
   .. js:function:: Reply.toJSON()
