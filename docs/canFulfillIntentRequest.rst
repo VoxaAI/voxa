@@ -15,16 +15,10 @@ In Voxa, you can take advantage of this feature by following this example:
 
   skill.onCanFulfillIntentRequest((alexaEvent, reply) => {
     if (alexaEvent.intent.name === 'InfluencerIntent') {
-      reply.canFulfillIntent = {
-        canFulfill: 'YES',
-        slots: {},
-      };
+      reply.fulfillIntent('YES');
 
       _.each(alexaEvent.intent.params, (value, slotName) => {
-        reply.canFulfillIntent.slots[slotName] = {
-          canUnderstand: 'YES',
-          canFulfill: 'YES',
-        };
+        reply.fulfillSlot(slotName, 'YES', 'YES');
       });
     }
 
