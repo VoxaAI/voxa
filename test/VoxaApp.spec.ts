@@ -327,9 +327,9 @@ describe("VoxaApp", () => {
     const voxaApp = new VoxaApp({ views, variables });
     const alexaSkill = new AlexaPlatform(voxaApp);
     voxaApp.onCanFulfillIntentRequest((alexaEvent: AlexaEvent, alexaReply: AlexaReply) => {
-      reply.fulfillIntent("YES");
-      reply.fulfillSlot("slot1", "YES", "YES");
-      return reply;
+      alexaReply.fulfillIntent("YES");
+      alexaReply.fulfillSlot("slot1", "YES", "YES");
+      return alexaReply;
     });
 
     const fulfillEvent = _.cloneDeep(event);
@@ -346,6 +346,8 @@ describe("VoxaApp", () => {
 
     const reply = await alexaSkill.execute(fulfillEvent, new AlexaReply()) as AlexaReply;
 
+    expect(reply.response.card).to.be.undefined;
+    expect(reply.response.reprompt).to.be.undefined;
     expect(reply.response.outputSpeech).to.be.undefined;
     expect(reply.response.canFulfillIntent).to.deep.equal(canFulfillIntent);
   });
@@ -379,6 +381,8 @@ describe("VoxaApp", () => {
 
     const reply = await alexaSkill.execute(fulfillEvent, new AlexaReply()) as AlexaReply;
 
+    expect(reply.response.card).to.be.undefined;
+    expect(reply.response.reprompt).to.be.undefined;
     expect(reply.response.outputSpeech).to.be.undefined;
     expect(reply.response.canFulfillIntent).to.deep.equal(canFulfillIntent);
   });
@@ -397,9 +401,9 @@ describe("VoxaApp", () => {
     const voxaApp = new VoxaApp({ views, variables });
     const alexaSkill = new AlexaPlatform(voxaApp);
     voxaApp.onCanFulfillIntentRequest((alexaEvent: AlexaEvent, alexaReply: AlexaReply) => {
-      reply.fulfillIntent("MAYBE");
-      reply.fulfillSlot("slot1", "YES", "YES");
-      return reply;
+      alexaReply.fulfillIntent("MAYBE");
+      alexaReply.fulfillSlot("slot1", "YES", "YES");
+      return alexaReply;
     });
 
     const fulfillEvent = _.cloneDeep(event);
@@ -416,6 +420,8 @@ describe("VoxaApp", () => {
 
     const reply = await alexaSkill.execute(fulfillEvent, new AlexaReply()) as AlexaReply;
 
+    expect(reply.response.card).to.be.undefined;
+    expect(reply.response.reprompt).to.be.undefined;
     expect(reply.response.outputSpeech).to.be.undefined;
     expect(reply.response.canFulfillIntent).to.deep.equal(canFulfillIntent);
   });
@@ -428,8 +434,8 @@ describe("VoxaApp", () => {
     const voxaApp = new VoxaApp({ views, variables });
     const alexaSkill = new AlexaPlatform(voxaApp);
     voxaApp.onCanFulfillIntentRequest((alexaEvent: AlexaEvent, alexaReply: AlexaReply) => {
-      reply.fulfillIntent("NO");
-      return reply;
+      alexaReply.fulfillIntent("NO");
+      return alexaReply;
     });
 
     const fulfillEvent = _.cloneDeep(event);
@@ -446,6 +452,8 @@ describe("VoxaApp", () => {
 
     const reply = await alexaSkill.execute(fulfillEvent, new AlexaReply()) as AlexaReply;
 
+    expect(reply.response.card).to.be.undefined;
+    expect(reply.response.reprompt).to.be.undefined;
     expect(reply.response.outputSpeech).to.be.undefined;
     expect(reply.response.canFulfillIntent).to.deep.equal(canFulfillIntent);
   });

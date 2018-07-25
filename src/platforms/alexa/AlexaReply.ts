@@ -79,6 +79,10 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
   }
 
   public fulfillIntent(canFulfill: canfulfill.CanFulfillIntentValues) {
+    this.response.card = undefined;
+    this.response.reprompt = undefined;
+    this.response.outputSpeech = undefined;
+
     if (!_.includes(["YES", "NO", "MAYBE"], canFulfill)) {
       this.response.canFulfillIntent = { canFulfill: "NO" };
     } else {
