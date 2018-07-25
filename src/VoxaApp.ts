@@ -16,6 +16,7 @@ const log: debug.IDebugger = debug("voxa");
 
 export interface IVoxaAppConfig extends IRendererConfig {
   appIds?: string[]|string;
+  defaultFulfillIntents?: string[];
   Model?: IModel;
   RenderClass?: IRenderer;
   views: any;

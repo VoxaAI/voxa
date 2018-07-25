@@ -21,3 +21,13 @@ The ``reply`` Object
   .. js:function:: Reply.toJSON()
 
     :returns: An object with the proper format to send back to Alexa, with statements wrapped in SSML tags, cards, reprompts and directives
+
+  .. js:function:: Reply.fulfillIntent(canFulfill)
+
+    :param canFulfill: A string with possible values: YES | NO | MAYBE to fulfill request
+
+  .. js:function:: Reply.fulfillSlot(slotName, canUnderstand, canFulfill)
+
+    :param slotName: A string with the slot to fulfill
+    :param canUnderstand: A string with possible values: YES | NO | MAYBE that indicates slot understanding
+    :param canFulfill: A string with possible values: YES | NO that indicates slot fulfillment

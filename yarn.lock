@@ -309,7 +309,7 @@ asap@~2.0.3:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
 
-ask-sdk-core@^2.0.3, ask-sdk-core@^2.0.7:
+ask-sdk-core@^2.0.7:
   version "2.0.7"
   resolved "https://registry.yarnpkg.com/ask-sdk-core/-/ask-sdk-core-2.0.7.tgz#0f2300aa99a5bd92c0bd700d1ed92ff8da1f83b9"
 
@@ -319,11 +319,15 @@ ask-sdk-dynamodb-persistence-adapter@^2.0.7:
   dependencies:
     aws-sdk "^2.163.0"
 
-ask-sdk-model@^1.0.0, ask-sdk-model@^1.2.0:
+ask-sdk-model@^1.0.0:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/ask-sdk-model/-/ask-sdk-model-1.3.1.tgz#a583809e4e9d3fb5308306249907808fab37fd4f"
 
-ask-sdk@^2.0.3:
+ask-sdk-model@^1.4.0-beta.1:
+  version "1.4.0-beta.1"
+  resolved "https://registry.yarnpkg.com/ask-sdk-model/-/ask-sdk-model-1.4.0-beta.1.tgz#d45a3758f95f4de7f2643a2db6002fb01ca58a71"
+
+ask-sdk@^2.0.7:
   version "2.0.7"
   resolved "https://registry.yarnpkg.com/ask-sdk/-/ask-sdk-2.0.7.tgz#1157fb90399b50bb1deab55a866255fba4317d72"
   dependencies:

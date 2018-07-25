@@ -31,10 +31,27 @@ const AlexaRequests = [
   "AlexaHouseholdListEvent.ItemsUpdated",
   "AlexaHouseholdListEvent.ItemsDeleted",
   "Display.ElementSelected",
+  "CanFulfillIntentRequest",
 ];
 
 export class AlexaPlatform extends VoxaPlatform {
   public platform: string = "alexa";
+
+  constructor(voxaApp: VoxaApp, config: any= {}) {
+    super(voxaApp, config);
+
+    this.app.onCanFulfillIntentRequest((event: AlexaEvent, reply: AlexaReply) => {
+      if (_.includes(this.app.config.defaultFulfillIntents, event.intent.name)) {
+        reply.fulfillIntent('YES');
+
+        _.each(event.intent.params, (value, slotName) => {
+          reply.fulfillSlot(slotName, 'YES', 'YES');
+        });
+      }
+
+      return reply;
+    });
+  }
 
   public getDirectiveHandlers() {
     return [

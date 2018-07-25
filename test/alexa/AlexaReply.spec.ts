@@ -118,6 +118,30 @@ describe("AlexaReply", () => {
   // });
   // });
 
+  it('should generate a correct alexa response for a CanFulfillIntentRequest', () => {
+    const canUnderstand = 'YES';
+    const canFulfill = 'YES';
+
+    reply = new AlexaReply();
+    reply.fulfillIntent('YES');
+    reply.fulfillSlot('slot1', canUnderstand, canFulfill);
+
+    expect(JSON.parse(JSON.stringify(reply))).to.deep.equal({
+      response: {
+        canFulfillIntent: {
+          canFulfill: 'YES',
+          slots: {
+            slot1: {
+              canUnderstand: 'YES',
+              canFulfill: 'YES',
+            },
+          },
+        },
+      },
+      version: '1.0',
+    });
+  });
+
   it("should generate a correct alexa response persisting session attributes", () => {
     reply = new AlexaReply();
     reply.addStatement("tell");
