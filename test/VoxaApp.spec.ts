@@ -1,9 +1,9 @@
 import "mocha";
 
+import { canfulfill } from "ask-sdk-model";
 import { expect, use } from "chai";
 import * as  _ from "lodash";
 import * as simple from "simple-mock";
-import { canfulfill } from "ask-sdk-model";
 
 import { Model } from "../src/Model";
 import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
@@ -313,33 +313,33 @@ describe("VoxaApp", () => {
     expect(statesDefinition.entry.called).to.be.true;
   });
 
-  it('should fulfill request', async () => {
+  it("should fulfill request", async () => {
     const canFulfillIntent: canfulfill.CanFulfillIntent = {
-      canFulfill: 'YES',
+      canFulfill: "YES",
       slots: {
         slot1: {
-          canUnderstand: 'YES',
-          canFulfill: 'YES',
+          canFulfill: "YES",
+          canUnderstand: "YES",
         },
       },
     };
 
     const voxaApp = new VoxaApp({ views, variables });
     const alexaSkill = new AlexaPlatform(voxaApp);
-    voxaApp.onCanFulfillIntentRequest((event: AlexaEvent, reply: AlexaReply) => {
-      reply.fulfillIntent('YES');
-      reply.fulfillSlot('slot1', 'YES', 'YES');
+    voxaApp.onCanFulfillIntentRequest((alexaEvent: AlexaEvent, alexaReply: AlexaReply) => {
+      reply.fulfillIntent("YES");
+      reply.fulfillSlot("slot1", "YES", "YES");
       return reply;
     });
 
     const fulfillEvent = _.cloneDeep(event);
-    fulfillEvent.request.type = 'CanFulfillIntentRequest';
+    fulfillEvent.request.type = "CanFulfillIntentRequest";
     fulfillEvent.request.intent = {
-      name: 'NameIntent',
+      name: "NameIntent",
       slots: {
         slot1: {
-          name: 'slot1',
-          value: 'something',
+          name: "slot1",
+          value: "something",
         },
       },
     };
@@ -350,29 +350,29 @@ describe("VoxaApp", () => {
     expect(reply.response.canFulfillIntent).to.deep.equal(canFulfillIntent);
   });
 
-  it('should fulfill request with default intents', async () => {
+  it("should fulfill request with default intents", async () => {
     const canFulfillIntent = {
-      canFulfill: 'YES',
+      canFulfill: "YES",
       slots: {
         slot1: {
-          canUnderstand: 'YES',
-          canFulfill: 'YES',
+          canFulfill: "YES",
+          canUnderstand: "YES",
         },
       },
     };
 
-    const defaultFulfillIntents = ['NameIntent'];
+    const defaultFulfillIntents = ["NameIntent"];
     const voxaApp = new VoxaApp({ views, variables, defaultFulfillIntents });
     const alexaSkill = new AlexaPlatform(voxaApp);
 
     const fulfillEvent = _.cloneDeep(event);
-    fulfillEvent.request.type = 'CanFulfillIntentRequest';
+    fulfillEvent.request.type = "CanFulfillIntentRequest";
     fulfillEvent.request.intent = {
-      name: 'NameIntent',
+      name: "NameIntent",
       slots: {
         slot1: {
-          name: 'slot1',
-          value: 'something',
+          name: "slot1",
+          value: "something",
         },
       },
     };
@@ -383,33 +383,33 @@ describe("VoxaApp", () => {
     expect(reply.response.canFulfillIntent).to.deep.equal(canFulfillIntent);
   });
 
-  it('should return MAYBE fulfill response to CanFulfillIntentRequest', async () => {
+  it("should return MAYBE fulfill response to CanFulfillIntentRequest", async () => {
     const canFulfillIntent: canfulfill.CanFulfillIntent = {
-      canFulfill: 'MAYBE',
+      canFulfill: "MAYBE",
       slots: {
         slot1: {
-          canUnderstand: 'YES',
-          canFulfill: 'YES',
+          canFulfill: "YES",
+          canUnderstand: "YES",
         },
       },
     };
 
     const voxaApp = new VoxaApp({ views, variables });
     const alexaSkill = new AlexaPlatform(voxaApp);
-    voxaApp.onCanFulfillIntentRequest((event: AlexaEvent, reply: AlexaReply) => {
-      reply.fulfillIntent('MAYBE');
-      reply.fulfillSlot('slot1', 'YES', 'YES');
+    voxaApp.onCanFulfillIntentRequest((alexaEvent: AlexaEvent, alexaReply: AlexaReply) => {
+      reply.fulfillIntent("MAYBE");
+      reply.fulfillSlot("slot1", "YES", "YES");
       return reply;
     });
 
     const fulfillEvent = _.cloneDeep(event);
-    fulfillEvent.request.type = 'CanFulfillIntentRequest';
+    fulfillEvent.request.type = "CanFulfillIntentRequest";
     fulfillEvent.request.intent = {
-      name: 'NameIntent',
+      name: "NameIntent",
       slots: {
         slot1: {
-          name: 'slot1',
-          value: 'something',
+          name: "slot1",
+          value: "something",
         },
       },
     };
@@ -420,26 +420,26 @@ describe("VoxaApp", () => {
     expect(reply.response.canFulfillIntent).to.deep.equal(canFulfillIntent);
   });
 
-  it('should not fulfill request', async () => {
+  it("should not fulfill request", async () => {
     const canFulfillIntent: canfulfill.CanFulfillIntent = {
-      canFulfill: 'NO',
+      canFulfill: "NO",
     };
 
     const voxaApp = new VoxaApp({ views, variables });
     const alexaSkill = new AlexaPlatform(voxaApp);
-    voxaApp.onCanFulfillIntentRequest((event: AlexaEvent, reply: AlexaReply) => {
-      reply.fulfillIntent('NO');
+    voxaApp.onCanFulfillIntentRequest((alexaEvent: AlexaEvent, alexaReply: AlexaReply) => {
+      reply.fulfillIntent("NO");
       return reply;
     });
 
     const fulfillEvent = _.cloneDeep(event);
-    fulfillEvent.request.type = 'CanFulfillIntentRequest';
+    fulfillEvent.request.type = "CanFulfillIntentRequest";
     fulfillEvent.request.intent = {
-      name: 'NameIntent',
+      name: "NameIntent",
       slots: {
         slot1: {
-          name: 'slot1',
-          value: 'something',
+          name: "slot1",
+          value: "something",
         },
       },
     };

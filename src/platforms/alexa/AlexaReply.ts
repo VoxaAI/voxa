@@ -79,23 +79,26 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
   }
 
   public fulfillIntent(canFulfill: canfulfill.CanFulfillIntentValues) {
-    if (!_.includes(['YES', 'NO', 'MAYBE'], canFulfill)) {
-      this.response.canFulfillIntent = { canFulfill: 'NO' };
+    if (!_.includes(["YES", "NO", "MAYBE"], canFulfill)) {
+      this.response.canFulfillIntent = { canFulfill: "NO" };
     } else {
       this.response.canFulfillIntent = { canFulfill };
     }
   }
 
-  public fulfillSlot(slotName: string, canUnderstand: canfulfill.CanUnderstandSlotValues, canFulfill: canfulfill.CanFulfillSlotValues) {
-    if (!_.includes(['YES', 'NO', 'MAYBE'], canUnderstand)) {
-      canUnderstand = 'NO';
+  public fulfillSlot(
+    slotName: string,
+    canUnderstand: canfulfill.CanUnderstandSlotValues,
+    canFulfill: canfulfill.CanFulfillSlotValues) {
+    if (!_.includes(["YES", "NO", "MAYBE"], canUnderstand)) {
+      canUnderstand = "NO";
     }
 
-    if (!_.includes(['YES', 'NO'], canFulfill)) {
-      canFulfill = 'NO';
+    if (!_.includes(["YES", "NO"], canFulfill)) {
+      canFulfill = "NO";
     }
 
-    this.response.canFulfillIntent = this.response.canFulfillIntent || { canFulfill: 'NO' };
+    this.response.canFulfillIntent = this.response.canFulfillIntent || { canFulfill: "NO" };
     this.response.canFulfillIntent.slots = this.response.canFulfillIntent.slots || {};
 
     this.response.canFulfillIntent.slots[slotName] = { canUnderstand, canFulfill };
