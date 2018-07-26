@@ -78,7 +78,7 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
     };
   }
 
-  public fulfillIntent(canFulfill: canfulfill.CanFulfillIntentValues) {
+  public fulfillIntent(canFulfill: any) {
     this.response.card = undefined;
     this.response.reprompt = undefined;
     this.response.outputSpeech = undefined;
@@ -92,8 +92,8 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
 
   public fulfillSlot(
     slotName: string,
-    canUnderstand: canfulfill.CanUnderstandSlotValues,
-    canFulfill: canfulfill.CanFulfillSlotValues) {
+    canUnderstand: any,
+    canFulfill: any) {
     if (!_.includes(["YES", "NO", "MAYBE"], canUnderstand)) {
       canUnderstand = "NO";
     }

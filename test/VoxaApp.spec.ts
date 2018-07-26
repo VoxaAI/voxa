@@ -414,6 +414,34 @@ describe("VoxaApp", () => {
     expect(reply.response.canFulfillIntent).to.deep.equal(canFulfillIntent);
   });
 
+  it("should not fulfill request with wrong values", async () => {
+    const canFulfillIntent: canfulfill.CanFulfillIntent = {
+      canFulfill: "NO",
+      slots: {
+        slot1: {
+          canFulfill: "NO",
+          canUnderstand: "NO",
+        },
+      },
+    };
+
+    const voxaApp = new VoxaApp({ views, variables });
+    const alexaSkill = new AlexaPlatform(voxaApp);
+    voxaApp.onCanFulfillIntentRequest((alexaEvent: AlexaEvent, alexaReply: AlexaReply) => {
+      alexaReply.fulfillIntent("yes");
+      alexaReply.fulfillSlot("slot1", "yes", "yes");
+      return alexaReply;
+    });
+
+    event = new AlexaEvent(rb.getCanFulfillIntentRequestRequest("NameIntent", { slot1: "something" }));
+    const reply = await alexaSkill.execute(event, new AlexaReply()) as AlexaReply;
+
+    expect(reply.response.card).to.be.undefined;
+    expect(reply.response.reprompt).to.be.undefined;
+    expect(reply.response.outputSpeech).to.be.undefined;
+    expect(reply.response.canFulfillIntent).to.deep.equal(canFulfillIntent);
+  });
+
   describe("onUnhandledState", () => {
     it("should call onUnhandledState callbacks when the state" +
       " machine transition throws a UnhandledState error", async () => {
