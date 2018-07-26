@@ -203,11 +203,11 @@ Handle events from the `AudioPlayer interface <https://developer.amazon.com/publ
 
 .. js:function:: audioPlayerCallback(voxaEvent, reply)
 
-  All audio player middleware callbacks get a :ref:`alexa event <alexa-event>` and a :ref:`reply <reply>` object
+  All audio player middleware callbacks get a :ref:`alexa event <alexa-event>` and a :ref:`reply <alexa-reply>` object
 
   :param AlexaEvent voxaEvent: The :ref:`alexa event <alexa-event>` sent by Alexa
   :param object reply: A reply to be sent as a response
-  :returns object write: Your alexa event handler should return an appropriate response according to the event type, this generally means appending to the :ref:`reply <reply>` object
+  :returns object write: Your alexa event handler should return an appropriate response according to the event type, this generally means appending to the :ref:`reply <alexa-reply>` object
 
   In the following example the alexa event handler returns a ``REPLACE_ENQUEUED`` directive to a :js:func:`~VoxaApp.onAudioPlayer.PlaybackNearlyFinished` event.
 
@@ -251,11 +251,11 @@ Handle request for the `Alexa Skill Events <https://developer.amazon.com/public/
 
 .. js:function:: alexaSkillEventCallback(alexaEvent)
 
-  All the alexa skill event callbacks get a :ref:`alexa event <alexa-event>` and a :ref:`reply <reply>` object
+  All the alexa skill event callbacks get a :ref:`alexa event <alexa-event>` and a :ref:`reply <alexa-reply>` object
 
   :param AlexaEvent alexaEvent: The :ref:`alexa event <alexa-event>` sent by Alexa
   :param object reply: A reply to be sent as the response
-  :returns object reply: Alexa only needs an acknowledgement that you received and processed the event so it doesn't need to resend the event. Just returning the :ref:`reply <reply>` object is enough
+  :returns object reply: Alexa only needs an acknowledgement that you received and processed the event so it doesn't need to resend the event. Just returning the :ref:`reply <alexa-reply>` object is enough
 
   This is an example on how your skill can process a :js:func:`~VoxaApp.onAlexaSkillEvent.SkillEnabled` event.
 
@@ -285,11 +285,11 @@ Handle request for the `Alexa List Events <https://developer.amazon.com/public/s
 
 .. js:function:: alexaListEventCallback(alexaEvent)
 
-  All the alexa list event callbacks get a :ref:`alexa event <alexa-event>` and a :ref:`reply <reply>` object
+  All the alexa list event callbacks get a :ref:`alexa event <alexa-event>` and a :ref:`reply <alexa-reply>` object
 
   :param AlexaEvent alexaEvent: The :ref:`alexa event <alexa-event>` sent by Alexa
   :param object reply: A reply to be sent as the response
-  :returns object reply: Alexa only needs an acknowledgement that you received and processed the event so it doesn't need to resend the event. Just returning the :ref:`reply <reply>` object is enough
+  :returns object reply: Alexa only needs an acknowledgement that you received and processed the event so it doesn't need to resend the event. Just returning the :ref:`reply <alexa-reply>` object is enough
 
   This is an example on how your skill can process a :js:func:`~VoxaApp.onAlexaHouseholdListEvent.ItemsCreated` event.
 

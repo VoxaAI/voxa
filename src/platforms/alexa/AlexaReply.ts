@@ -1,4 +1,5 @@
 import {
+  canfulfill,
   Response,
   ResponseEnvelope,
 } from "ask-sdk-model";
@@ -75,7 +76,36 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
         type: "SSML",
       },
     };
+  }
 
+  public fulfillIntent(canFulfill: any) {
+    this.response.card = undefined;
+    this.response.reprompt = undefined;
+    this.response.outputSpeech = undefined;
+
+    if (!_.includes(["YES", "NO", "MAYBE"], canFulfill)) {
+      this.response.canFulfillIntent = { canFulfill: "NO" };
+    } else {
+      this.response.canFulfillIntent = { canFulfill };
+    }
+  }
+
+  public fulfillSlot(
+    slotName: string,
+    canUnderstand: any,
+    canFulfill: any) {
+    if (!_.includes(["YES", "NO", "MAYBE"], canUnderstand)) {
+      canUnderstand = "NO";
+    }
+
+    if (!_.includes(["YES", "NO"], canFulfill)) {
+      canFulfill = "NO";
+    }
+
+    this.response.canFulfillIntent = this.response.canFulfillIntent || { canFulfill: "NO" };
+    this.response.canFulfillIntent.slots = this.response.canFulfillIntent.slots || {};
+
+    this.response.canFulfillIntent.slots[slotName] = { canUnderstand, canFulfill };
   }
 
   public clear() {

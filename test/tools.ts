@@ -40,6 +40,32 @@ export class AlexaRequestBuilder {
     };
   }
 
+  public getCanFulfillIntentRequestRequest(intentName: string, slots?: any): RequestEnvelope {
+    if (!slots) {
+      slots = {};
+    } else {
+      slots = _(slots)
+        .keys()
+        .map((key) => [key, { name: key, value: slots[key] }])
+        .fromPairs()
+        .value();
+    }
+
+    return {
+      context: this.getContextData(),
+      request: {
+        dialogState: "STARTED",
+        intent: { name: intentName, slots, confirmationStatus: "NONE" },
+        locale: "en-US",
+        requestId: `EdwRequestId.${v1()}`,
+        timestamp: new Date().toISOString(),
+        type: "CanFulfillIntentRequest",
+      },
+      session: this.getSessionData(),
+      version: this.version,
+    };
+  }
+
   public getIntentRequest(intentName: string, slots?: any): RequestEnvelope {
     if (!slots) {
       slots = {};

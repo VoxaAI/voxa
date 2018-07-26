@@ -39,7 +39,7 @@ Directives are used passed directly to the alexa response, the format is describ
 ``reply``
 ---------
 
-The ``reply`` key can take 2 forms, a simple string pointing to one of your views or a :ref:`Reply <reply>` object.
+The ``reply`` key can take 2 forms, a simple string pointing to one of your views or a :ref:`Reply <voxa-reply>` object.
 
 .. code-block:: javascript
 
