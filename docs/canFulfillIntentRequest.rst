@@ -37,8 +37,8 @@ Additionally, if you have several intents that you want to automatically fulfill
     'PhoneIntent',
   ];
 
-  const voxaApp = new VoxaApp({ views, variables, defaultFulfillIntents });
-  const alexaSkill = new AlexaPlatform(voxaApp);
+  const voxaApp = new VoxaApp({ views, variables });
+  const alexaSkill = new AlexaPlatform(voxaApp, { defaultFulfillIntents });
 
 If Alexa sends an intent that you didn't register with this function, then you should implement the `onCanFulfillIntentRequest`_ method to handle it. Important: If you implement this method in your skill, you should always return the `reply`_ object.
 

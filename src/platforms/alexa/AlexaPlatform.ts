@@ -36,12 +36,15 @@ const AlexaRequests = [
 
 export class AlexaPlatform extends VoxaPlatform {
   public platform: string = "alexa";
+  public defaultFulfillIntents: string[] = [];
 
   constructor(voxaApp: VoxaApp, config: any= {}) {
     super(voxaApp, config);
 
+    this.defaultFulfillIntents = config.defaultFulfillIntents;
+
     this.app.onCanFulfillIntentRequest((event: AlexaEvent, reply: AlexaReply) => {
-      if (_.includes(this.app.config.defaultFulfillIntents, event.intent.name)) {
+      if (_.includes(this.defaultFulfillIntents, event.intent.name)) {
         reply.fulfillIntent("YES");
 
         _.each(event.intent.params, (value, slotName) => {

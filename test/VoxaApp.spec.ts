@@ -353,8 +353,8 @@ describe("VoxaApp", () => {
     };
 
     const defaultFulfillIntents = ["NameIntent"];
-    const voxaApp = new VoxaApp({ views, variables, defaultFulfillIntents });
-    const alexaSkill = new AlexaPlatform(voxaApp);
+    const voxaApp = new VoxaApp({ views, variables });
+    const alexaSkill = new AlexaPlatform(voxaApp, { defaultFulfillIntents });
 
     event = new AlexaEvent(rb.getCanFulfillIntentRequestRequest("NameIntent", { slot1: "something" }));
     const reply = await alexaSkill.execute(event, new AlexaReply()) as AlexaReply;
