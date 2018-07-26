@@ -332,19 +332,8 @@ describe("VoxaApp", () => {
       return alexaReply;
     });
 
-    const fulfillEvent = _.cloneDeep(event);
-    fulfillEvent.request.type = "CanFulfillIntentRequest";
-    fulfillEvent.request.intent = {
-      name: "NameIntent",
-      slots: {
-        slot1: {
-          name: "slot1",
-          value: "something",
-        },
-      },
-    };
-
-    const reply = await alexaSkill.execute(fulfillEvent, new AlexaReply()) as AlexaReply;
+    event = new AlexaEvent(rb.getCanFulfillIntentRequestRequest("NameIntent", { slot1: "something" }));
+    const reply = await alexaSkill.execute(event, new AlexaReply()) as AlexaReply;
 
     expect(reply.response.card).to.be.undefined;
     expect(reply.response.reprompt).to.be.undefined;
@@ -367,19 +356,8 @@ describe("VoxaApp", () => {
     const voxaApp = new VoxaApp({ views, variables, defaultFulfillIntents });
     const alexaSkill = new AlexaPlatform(voxaApp);
 
-    const fulfillEvent = _.cloneDeep(event);
-    fulfillEvent.request.type = "CanFulfillIntentRequest";
-    fulfillEvent.request.intent = {
-      name: "NameIntent",
-      slots: {
-        slot1: {
-          name: "slot1",
-          value: "something",
-        },
-      },
-    };
-
-    const reply = await alexaSkill.execute(fulfillEvent, new AlexaReply()) as AlexaReply;
+    event = new AlexaEvent(rb.getCanFulfillIntentRequestRequest("NameIntent", { slot1: "something" }));
+    const reply = await alexaSkill.execute(event, new AlexaReply()) as AlexaReply;
 
     expect(reply.response.card).to.be.undefined;
     expect(reply.response.reprompt).to.be.undefined;
@@ -406,19 +384,8 @@ describe("VoxaApp", () => {
       return alexaReply;
     });
 
-    const fulfillEvent = _.cloneDeep(event);
-    fulfillEvent.request.type = "CanFulfillIntentRequest";
-    fulfillEvent.request.intent = {
-      name: "NameIntent",
-      slots: {
-        slot1: {
-          name: "slot1",
-          value: "something",
-        },
-      },
-    };
-
-    const reply = await alexaSkill.execute(fulfillEvent, new AlexaReply()) as AlexaReply;
+    event = new AlexaEvent(rb.getCanFulfillIntentRequestRequest("NameIntent", { slot1: "something" }));
+    const reply = await alexaSkill.execute(event, new AlexaReply()) as AlexaReply;
 
     expect(reply.response.card).to.be.undefined;
     expect(reply.response.reprompt).to.be.undefined;
@@ -438,19 +405,8 @@ describe("VoxaApp", () => {
       return alexaReply;
     });
 
-    const fulfillEvent = _.cloneDeep(event);
-    fulfillEvent.request.type = "CanFulfillIntentRequest";
-    fulfillEvent.request.intent = {
-      name: "NameIntent",
-      slots: {
-        slot1: {
-          name: "slot1",
-          value: "something",
-        },
-      },
-    };
-
-    const reply = await alexaSkill.execute(fulfillEvent, new AlexaReply()) as AlexaReply;
+    event = new AlexaEvent(rb.getCanFulfillIntentRequestRequest("NameIntent", { slot1: "something" }));
+    const reply = await alexaSkill.execute(event, new AlexaReply()) as AlexaReply;
 
     expect(reply.response.card).to.be.undefined;
     expect(reply.response.reprompt).to.be.undefined;
