@@ -185,7 +185,7 @@ describe('StateMachineSkill', () => {
           expect(item.type).to.equal('GadgetController.SetLight');
           expect(item.version).to.equal(1);
           expect(item.parameters.triggerEventTimeMs).to.equal(0);
-          expect(item.parameters.animations).to.have.lengthOf(1);
+          expect(item.parameters.animations).to.have.lengthOf(3);
         });
 
         expect(reply.msg.directives[4].events.sample_event).to.be.ok;
