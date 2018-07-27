@@ -7,7 +7,7 @@ Name-free interaction enables customers to interact with Alexa without invoking 
 
 When Alexa receives a request from a customer without a skill name, such as "Alexa, play relaxing sounds with crickets," Alexa looks for skills that might fulfill the request. Alexa determines the best choice among eligible skills and hands the request to the skill.
 
-To make your skill more discoverable for name-free interaction, you can implement the the `CanFulfillIntentRequest <https://developer.amazon.com/docs/custom-skills/quick-start-canfulfill-intent-request.html>`_ interface in your skill.
+To make your skill more discoverable for name-free interaction, you can implement the `CanFulfillIntentRequest <https://developer.amazon.com/docs/custom-skills/quick-start-canfulfill-intent-request.html>`_ interface in your skill.
 
 In Voxa, you can take advantage of this feature by following this example:
 

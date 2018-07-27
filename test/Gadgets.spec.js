@@ -204,7 +204,7 @@ describe('StateMachineSkill', () => {
       });
   });
 
-  it('should send GameEngine.StartInputHandler directive', () => {
+  it('should send GameEngine.StopInputHandler directive', () => {
     const event = {
       request: {
         type: 'IntentRequest',
