@@ -129,7 +129,7 @@ describe('StateMachineSkill', () => {
           voxaEvent.model.buttons.push(id);
 
           const triggerEventTimeMs = 0;
-          const GadgetController = voxaEvent.model.gadgetController;
+          const GadgetController = voxaEvent.gadgetController;
           const gadgetController = new GadgetController();
           const animationBuilder = GadgetController.getAnimationsBuilder();
           const sequenceBuilder = GadgetController.getSequenceBuilder();
@@ -225,7 +225,7 @@ describe('StateMachineSkill', () => {
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
     stateMachineSkill.onIntent('ExitIntent', (voxaEvent) => {
-      const GameEngine = voxaEvent.model.gameEngine;
+      const GameEngine = voxaEvent.gameEngine;
       const directives = [GameEngine.stopInputHandler(voxaEvent.model.originatingRequestId)];
 
       return { reply: 'ButtonsBye', directives };
@@ -245,7 +245,7 @@ describe('StateMachineSkill', () => {
 
 function rollCall(voxaEvent, shouldAddOtherBuilders) {
   const gameEngineTimeout = 15000;
-  const GameEngine = voxaEvent.model.gameEngine;
+  const GameEngine = voxaEvent.gameEngine;
   const gameEngine = new GameEngine();
   const eventBuilder = GameEngine.getEventsBuilder('sample_event');
   const timeoutEventBuilder = GameEngine.getEventsBuilder('timeout');
