@@ -15,6 +15,9 @@ const views = (function views() {
     Question: {
       Ask: { ask: 'What time is it?' },
     },
+    Buttons: { tell: 'Press 2 or up to 4 buttons to wake them up.' },
+    ButtonsBye: { tell: 'Thanks for playing with echo buttons.' },
+    ButtonsNext: { tell: 'Guess the next pattern.' },
     ExitIntent: {
       Farewell: {
         tell: 'Ok. For more info visit {site} site.',

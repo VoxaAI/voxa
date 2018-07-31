@@ -127,6 +127,8 @@ Links
   statemachine-skill
   request-flow
   i18n
+  gadgetController
+  gameEngine
   plugins
   debugging
   starter-kit
