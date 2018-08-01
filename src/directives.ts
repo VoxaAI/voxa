@@ -82,7 +82,6 @@ export class Reprompt implements IDirective {
     reply.addReprompt(statement);
   }
 }
-
 export class Ask implements IDirective {
   public static key: string = "ask";
   public static platform: string = "core";
@@ -110,6 +109,7 @@ export class Ask implements IDirective {
   }
 }
 
+// Default directive. Says the rendered statement, then continues flowing to the next state.
 export class Say implements IDirective {
   public static key: string = "say";
   public static platform: string = "core";
@@ -129,6 +129,7 @@ export class Say implements IDirective {
   }
 }
 
+// Default directive. Says the statement (unrendered), then continues flowing to the next state.
 export class SayP implements IDirective {
   public static key: string = "sayp";
   public static platform: string = "core";
@@ -145,6 +146,7 @@ export class SayP implements IDirective {
   }
 }
 
+// Default directive. Says the rendered statement, then ends the conversation
 export class Tell implements IDirective {
   public static key: string = "tell";
   public static platform: string = "core";

@@ -43,7 +43,7 @@ export class AlexaEvent extends IVoxaEvent {
 
     this.mapRequestToIntent();
 
-    if (!this.intent) {
+    if (this.request.intent) {
       this.intent = new AlexaIntent(this.request.intent);
     }
 
