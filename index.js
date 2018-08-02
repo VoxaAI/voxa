@@ -13,6 +13,8 @@
 
 const packageInfo = require('./package.json');
 const StateMachineSkill = require('./lib/StateMachineSkill');
+const GadgetController = require('./lib/GadgetController');
+const GameEngine = require('./lib/GameEngine');
 const Reply = require('./lib/Reply');
 const DefaultRenderer = require('./lib/renderers/DefaultRenderer');
 const I18NRenderer = require('./lib/renderers/I18NRenderer');
@@ -28,6 +30,8 @@ const autoLoad = require('./lib/plugins/auto-load');
 
 module.exports = StateMachineSkill;
 module.exports.version = packageInfo.version;
+module.exports.GadgetController = GadgetController;
+module.exports.GameEngine = GameEngine;
 module.exports.Reply = Reply;
 module.exports.replyWith = (reply, to) => ({ reply, to });
 module.exports.replyWithAudioDirectives = (reply, to, request, data, directives) => ({ reply, to, directives });

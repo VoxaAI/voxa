@@ -11,6 +11,7 @@ With Voxa, you can implement this interface like this:
 
 .. code-block:: javascript
 
+  const GameEngine = require('voxa').GameEngine;
   const skill = new Voxa({ variables, views });
   skill.onIntent('LaunchIntent', (voxaEvent) => {
     const directives = [rollCall(voxaEvent)];
@@ -20,7 +21,6 @@ With Voxa, you can implement this interface like this:
 
   function rollCall(voxaEvent) {
     const gameEngineTimeout = 15000;
-    const GameEngine = voxaEvent.model.gameEngine;
     const gameEngine = new GameEngine();
     const eventBuilder = GameEngine.getEventsBuilder('sample_event');
     const timeoutEventBuilder = GameEngine.getEventsBuilder('timeout');
@@ -99,7 +99,6 @@ The field `originatingRequestId`_ provides the requestId of the request to which
   const skill = new Voxa({ variables, views });
   skill.onIntent('ExitIntent', (voxaEvent) => {
     const originatingRequestId = voxaEvent.model.originatingRequestId;
-    const GameEngine = voxaEvent.model.gameEngine;
     const directives = [GameEngine.stopInputHandler(originatingRequestId)];
 
     return { reply: 'ButtonsBye', directives };

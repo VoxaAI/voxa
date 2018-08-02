@@ -4,6 +4,8 @@ const _ = require('lodash');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
+const GadgetController = require('../lib/GadgetController');
+const GameEngine = require('../lib/GameEngine');
 const StateMachineSkill = require('../lib/StateMachineSkill.js');
 const views = require('./views');
 const variables = require('./variables');
@@ -47,8 +49,8 @@ describe('StateMachineSkill', () => {
     };
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('LaunchIntent', (voxaEvent) => {
-      const directives = [rollCall(voxaEvent)];
+    stateMachineSkill.onIntent('LaunchIntent', () => {
+      const directives = [rollCall()];
 
       return { reply: 'Buttons', directives };
     });
@@ -129,7 +131,6 @@ describe('StateMachineSkill', () => {
           voxaEvent.model.buttons.push(id);
 
           const triggerEventTimeMs = 0;
-          const GadgetController = voxaEvent.gadgetController;
           const gadgetController = new GadgetController();
           const animationBuilder = GadgetController.getAnimationsBuilder();
           const sequenceBuilder = GadgetController.getSequenceBuilder();
@@ -170,7 +171,7 @@ describe('StateMachineSkill', () => {
         }
       });
 
-      directives.push(rollCall(voxaEvent, true));
+      directives.push(rollCall(true));
 
       return { reply: 'ButtonsNext', directives };
     });
@@ -225,7 +226,6 @@ describe('StateMachineSkill', () => {
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
     stateMachineSkill.onIntent('ExitIntent', (voxaEvent) => {
-      const GameEngine = voxaEvent.gameEngine;
       const directives = [GameEngine.stopInputHandler(voxaEvent.model.originatingRequestId)];
 
       return { reply: 'ButtonsBye', directives };
@@ -243,9 +243,8 @@ describe('StateMachineSkill', () => {
   });
 });
 
-function rollCall(voxaEvent, shouldAddOtherBuilders) {
+function rollCall(shouldAddOtherBuilders) {
   const gameEngineTimeout = 15000;
-  const GameEngine = voxaEvent.gameEngine;
   const gameEngine = new GameEngine();
   const eventBuilder = GameEngine.getEventsBuilder('sample_event');
   const timeoutEventBuilder = GameEngine.getEventsBuilder('timeout');
