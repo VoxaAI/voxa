@@ -9,6 +9,7 @@ With Voxa, you can implement this interface like this:
 
 .. code-block:: javascript
 
+  const GadgetController = require('voxa').GadgetController;
   const skill = new Voxa({ variables, views });
   skill.onIntent('GameEngineInputHandlerEvent', (voxaEvent) => {
     // REMEMBER TO SAVE THE VALUE originatingRequestId in your model
@@ -37,7 +38,6 @@ With Voxa, you can implement this interface like this:
         voxaEvent.model.buttons.push(id);
 
         const triggerEventTimeMs = 0;
-        const GadgetController = voxaEvent.model.gadgetController;
         const gadgetController = new GadgetController();
         const animationBuilder = GadgetController.getAnimationsBuilder();
         const sequenceBuilder = GadgetController.getSequenceBuilder();
