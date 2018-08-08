@@ -85,7 +85,7 @@ describe("Gadgets", () => {
   it("should recognize 2 buttons, send a SetLight directive and ask to recognize buttons again", async () => {
     event = rb.getGameEngineInputHandlerEventRequest(2);
 
-    app.onIntent("GameEngineInputHandlerEvent", (voxaEvent) => {
+    app.onIntent("GameEngine.InputHandlerEvent", (voxaEvent) => {
       voxaEvent.model.originatingRequestId = voxaEvent.request.originatingRequestId;
       const gameEvents = voxaEvent.request.events[0] || [];
       const inputEvents = _(gameEvents.inputEvents)
@@ -195,10 +195,12 @@ describe("Gadgets", () => {
     event.session.attributes.originatingRequestId = "originatingRequestId";
 
     app.onIntent("ExitIntent", (voxaEvent) => {
-      let template = GameEngine.stopInputHandler(voxaEvent.model.originatingRequestId);
-      template = new GameEngineStopInputHandler(template);
+      const { originatingRequestId } = voxaEvent.model;
 
-      return { tell: "Buttons.Bye", directives: [template] };
+      return {
+        alexaGameEngineStopInputHandler: originatingRequestId,
+        tell: "Buttons.Bye",
+      };
     });
 
     const reply = await alexaSkill.execute(event, {});

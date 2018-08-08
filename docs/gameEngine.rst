@@ -100,10 +100,12 @@ The field `originatingRequestId`_ provides the requestId of the request to which
   const { GameEngine } = voxa.alexa;
 
   skill.onIntent('ExitIntent', (voxaEvent) => {
-    const originatingRequestId = voxaEvent.model.originatingRequestId;
-    const directives = [GameEngine.stopInputHandler(originatingRequestId)];
+    const { originatingRequestId } = voxaEvent.model;
 
-    return { tell: 'Buttons.Bye', directives };
+    return {
+      alexaGameEngineStopInputHandler: originatingRequestId,
+      tell: 'Buttons.Bye',
+    };
   });
 
 This will stop Echo Button events to be sent to your skill.
