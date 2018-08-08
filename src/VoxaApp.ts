@@ -176,6 +176,7 @@ export class VoxaApp {
       const requestHandler = this.requestHandlers[voxaEvent.request.type];
       const executeHandlers = async () => {
         switch (voxaEvent.request.type) {
+          case "GameEngine.InputHandlerEvent":
           case "IntentRequest":
           case "SessionEndedRequest": {
             // call all onRequestStarted callbacks serially.
@@ -447,7 +448,7 @@ export class VoxaApp {
       );
 
       for (const handler of transition.directives) {
-        return await handler.writeToReply(response, voxaEvent, transition);
+        await handler.writeToReply(response, voxaEvent, transition);
       }
     }
 
@@ -485,6 +486,10 @@ export class VoxaApp {
       model = await this.config.Model.fromEvent(voxaEvent);
     } else {
       model = await Model.fromEvent(voxaEvent);
+    }
+
+    if (voxaEvent.session.attributes.state === "die") {
+      voxaEvent.session.attributes.state = "entry";
     }
 
     voxaEvent.model = model;

@@ -23,6 +23,7 @@ export class AlexaEvent extends IVoxaEvent {
     "AudioPlayer.PlaybackStarted": "AudioPlayer.PlaybackStarted",
     "AudioPlayer.PlaybackStopped": "AudioPlayer.PlaybackStopped",
     "Display.ElementSelected": "Display.ElementSelected",
+    "GameEngine.InputHandlerEvent": "GameEngineInputHandlerEvent",
     "LaunchRequest": "LaunchIntent",
     "PlaybackController.NextCommandIssued": "PlaybackController.NextCommandIssued",
     "PlaybackController.PauseCommandIssued": "PlaybackController.PauseCommandIssued",

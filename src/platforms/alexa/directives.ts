@@ -237,3 +237,76 @@ export class StopAudio implements IDirective {
     (reply as AlexaReply).response = response;
   }
 }
+
+export class GameEngineStartInputHandler implements IDirective {
+  public static key: string = "alexaGameEngineStartInputHandler";
+  public static platform: string = "alexa";
+
+  public template: interfaces.gameEngine.StartInputHandlerDirective;
+
+  constructor(template: interfaces.gameEngine.StartInputHandlerDirective) {
+    this.template = template;
+  }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    const response = (reply as AlexaReply).response;
+
+    if (!response.directives) {
+      response.directives = [];
+    }
+
+    response.directives.push(this.template);
+    response.shouldEndSession = undefined;
+
+    (reply as AlexaReply).response = response;
+  }
+}
+
+export class GameEngineStopInputHandler implements IDirective {
+  public static key: string = "alexaGameEngineStopInputHandler";
+  public static platform: string = "alexa";
+
+  public originatingRequestId?: string;
+
+  constructor(originatingRequestId?: string) {
+    this.originatingRequestId = originatingRequestId;
+  }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    const response = (reply as AlexaReply).response;
+
+    if (!response.directives) {
+      response.directives = [];
+    }
+
+    response.directives.push({
+      originatingRequestId: this.originatingRequestId,
+      type: "GameEngine.StopInputHandler",
+    });
+
+    (reply as AlexaReply).response = response;
+  }
+}
+
+export class LightDirective implements IDirective {
+  public static key: string = "alexaSetLightDirective";
+  public static platform: string = "alexa";
+
+  public lightDirective: interfaces.gadgetController.SetLightDirective;
+
+  constructor(lightDirective: interfaces.gadgetController.SetLightDirective) {
+    this.lightDirective = lightDirective;
+  }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    const response = (reply as AlexaReply).response;
+
+    if (!response.directives) {
+      response.directives = [];
+    }
+
+    response.directives.push(this.lightDirective);
+
+    (reply as AlexaReply).response = response;
+  }
+}

@@ -2,6 +2,7 @@ import {
   Context,
   interfaces,
   RequestEnvelope,
+  services,
   Session,
   SessionEndedReason,
 } from "ask-sdk-model";
@@ -112,12 +113,12 @@ export class AlexaRequestBuilder {
       },
     };
   }
-  public getSessionData(): Session {
+  public getSessionData(newSession: boolean = true): Session {
     return {
       // randomized for every session and set before calling the handler
       application: { applicationId: this.applicationId },
       attributes: {},
-      new: true,
+      new: newSession,
       sessionId: `SessionId.${v1()}`,
       user: {
         permissions: {
@@ -155,6 +156,47 @@ export class AlexaRequestBuilder {
       context: this.getContextData(),
       request,
       session: this.getSessionData(),
+      version: this.version,
+    };
+  }
+
+  public getGameEngineInputHandlerEventRequest(buttonsRecognized: number = 1): RequestEnvelope {
+    const request: interfaces.gameEngine.InputHandlerEventRequest =  {
+      events: [],
+      locale: "en-US",
+      requestId: `amzn1.echo-api.request.${v1()}`,
+      timestamp: new Date().toISOString(),
+      type: "GameEngine.InputHandlerEvent",
+    };
+
+    const eventArray: any[] = [];
+    eventArray.push({
+      inputEvents: [],
+      name: "sample_event",
+    });
+
+    let id = 1;
+
+    _.times(buttonsRecognized, () => {
+      const event: any = {
+        action: "down",
+        color: "000000",
+        feature: "press",
+        gadgetId: `id${id}`,
+        timestamp: "timestamp",
+      };
+
+      id += 1;
+
+      eventArray[0].inputEvents.push(event);
+    });
+
+    request.events = eventArray;
+
+    return {
+      context: this.getContextData(),
+      request,
+      session: this.getSessionData(false),
       version: this.version,
     };
   }
