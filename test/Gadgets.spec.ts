@@ -5,11 +5,6 @@ import * as  _ from "lodash";
 import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
 import { AlexaPlatform } from "../src/platforms/alexa/AlexaPlatform";
 import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
-import {
-  GameEngineStartInputHandler,
-  GameEngineStopInputHandler,
-  LightDirective,
-} from "../src/platforms/alexa/directives";
 import { GadgetController, TRIGGER_EVENT_ENUM } from "../src/platforms/alexa/GadgetController";
 import { ANCHOR_ENUM, EVENT_REPORT_ENUM, GameEngine } from "../src/platforms/alexa/GameEngine";
 import { VoxaApp } from "../src/VoxaApp";
@@ -61,9 +56,12 @@ describe("Gadgets", () => {
     event = rb.getLaunchRequest();
 
     app.onIntent("LaunchIntent", () => {
-      const template = new GameEngineStartInputHandler(rollCall());
+      const alexaGameEngineStartInputHandler = rollCall();
 
-      return { tell: "Buttons.Discover", directives: [template] };
+      return {
+        alexaGameEngineStartInputHandler,
+        tell: "Buttons.Discover",
+      };
     });
 
     const reply = await alexaSkill.execute(event, {});
@@ -125,10 +123,10 @@ describe("Gadgets", () => {
             .targetLights(["1"])
             .sequence([sequenceBuilder]);
 
-          lightDirective = new LightDirective(gadgetController
+          lightDirective = gadgetController
             .setAnimations(animationBuilder)
             .setTriggerEvent(TRIGGER_EVENT_ENUM.NONE)
-            .setLight(targetGadgets, triggerEventTimeMs));
+            .setLight(targetGadgets, triggerEventTimeMs);
 
           directives.push(lightDirective);
 
@@ -145,20 +143,22 @@ describe("Gadgets", () => {
             .targetLights(["1"])
             .sequence([otherSequenceBuilder.build()]);
 
-          lightDirective = new LightDirective(gadgetController
+          lightDirective = gadgetController
             .setAnimations(otherAnimationBuilder.build())
             .setTriggerEvent(TRIGGER_EVENT_ENUM.BUTTON_DOWN)
-            .setLight(targetGadgets, triggerEventTimeMs));
+            .setLight(targetGadgets, triggerEventTimeMs);
 
           directives.push(lightDirective);
         }
       });
 
-      const template = new GameEngineStartInputHandler(rollCall(true));
+      const alexaGameEngineStartInputHandler = rollCall(true);
 
-      directives.push(template);
-
-      return { tell: "Buttons.Next", directives };
+      return {
+        alexaGadgetControllerLightDirective: directives,
+        alexaGameEngineStartInputHandler,
+        tell: "Buttons.Next",
+      };
     });
 
     const reply = await alexaSkill.execute(event, {});

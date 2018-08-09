@@ -238,6 +238,33 @@ export class StopAudio implements IDirective {
   }
 }
 
+export class GadgetControllerLightDirective implements IDirective {
+  public static key: string = "alexaGadgetControllerLightDirective";
+  public static platform: string = "alexa";
+
+  public lightDirective: any;
+
+  constructor(lightDirective: any) {
+    this.lightDirective = lightDirective;
+  }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    const response = (reply as AlexaReply).response;
+
+    if (!response.directives) {
+      response.directives = [];
+    }
+
+    if (_.isArray(this.lightDirective)) {
+      response.directives = _.concat(response.directives, this.lightDirective);
+    } else {
+      response.directives.push(this.lightDirective);
+    }
+
+    (reply as AlexaReply).response = response;
+  }
+}
+
 export class GameEngineStartInputHandler implements IDirective {
   public static key: string = "alexaGameEngineStartInputHandler";
   public static platform: string = "alexa";
@@ -256,7 +283,7 @@ export class GameEngineStartInputHandler implements IDirective {
     }
 
     response.directives.push(this.template);
-    response.shouldEndSession = undefined;
+    delete response.shouldEndSession;
 
     (reply as AlexaReply).response = response;
   }
@@ -283,29 +310,6 @@ export class GameEngineStopInputHandler implements IDirective {
       originatingRequestId: this.originatingRequestId,
       type: "GameEngine.StopInputHandler",
     });
-
-    (reply as AlexaReply).response = response;
-  }
-}
-
-export class LightDirective implements IDirective {
-  public static key: string = "alexaSetLightDirective";
-  public static platform: string = "alexa";
-
-  public lightDirective: interfaces.gadgetController.SetLightDirective;
-
-  constructor(lightDirective: interfaces.gadgetController.SetLightDirective) {
-    this.lightDirective = lightDirective;
-  }
-
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    const response = (reply as AlexaReply).response;
-
-    if (!response.directives) {
-      response.directives = [];
-    }
-
-    response.directives.push(this.lightDirective);
 
     (reply as AlexaReply).response = response;
   }

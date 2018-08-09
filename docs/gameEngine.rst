@@ -17,7 +17,10 @@ With Voxa, you can implement this interface like this:
   skill.onIntent('LaunchIntent', (voxaEvent) => {
     const directives = [rollCall(voxaEvent)];
 
-    return { tell: 'Buttons.Discover', directives };
+    return {
+      alexaGameEngineStartInputHandler: directives,
+      tell: 'Buttons.Discover',
+    };
   });
 
   function rollCall(voxaEvent) {
@@ -97,7 +100,6 @@ The field `originatingRequestId`_ provides the requestId of the request to which
 .. code-block:: javascript
 
   const voxa = require('voxa');
-  const { GameEngine } = voxa.alexa;
 
   skill.onIntent('ExitIntent', (voxaEvent) => {
     const { originatingRequestId } = voxaEvent.model;

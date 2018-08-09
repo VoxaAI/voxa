@@ -23,10 +23,10 @@ export {
 import {
   AccountLinkingCard as AlexaAccountLinkingCard,
   DialogDelegate,
+  GadgetControllerLightDirective,
   GameEngineStartInputHandler,
   GameEngineStopInputHandler,
   HomeCard,
-  LightDirective,
   PlayAudio,
   RenderTemplate,
   StopAudio,

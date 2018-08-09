@@ -78,7 +78,11 @@ With Voxa, you can implement this interface like this:
       }
     });
 
-    return { tell: 'Buttons.Next', directives, to: 'entry' };
+    return {
+      alexaGadgetControllerLightDirective: directives,
+      tell: 'Buttons.Next',
+      to: 'entry',
+    };
   });
 
 If there's an error when you send this directive, Alexa will return a `System ExceptionEncountered <https://developer.amazon.com/docs/gadget-skills/gadgetcontroller-interface-reference.html#system-exceptionencountered>`_ request.
