@@ -18,7 +18,8 @@ describe("VoxaReply", () => {
       expect(addToSSML("<speak>Howdy</speak>", "there")).to.equal("<speak>Howdy\nthere</speak>");
     });
     it("handles SSML that contains newlines", () => {
-      expect(addToSSML("<speak>Howdy\n and a good day to you</speak>", "there")).to.equal("<speak>Howdy\n and a good day to you\nthere</speak>");
+      expect(addToSSML("<speak>Howdy\n and a good day to you</speak>", "there"))
+        .to.equal("<speak>Howdy\n and a good day to you\nthere</speak>");
     });
   });
 });

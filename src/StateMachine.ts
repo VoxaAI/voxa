@@ -62,20 +62,20 @@ export function isState(object: any): object is IState {
 class SystemTransition implements ITransition {
 
   [propname: string]: any;
-  to?: string|IState|ITransition; // default to 'entry'
-  flow?: string;
+  public to?: string|IState|ITransition; // default to 'entry'
+  public flow?: string;
 
   constructor(transition: ITransition) {
     Object.assign(this, transition);
     this.flow = this.flow || "continue";
   }
 
-  get shouldTerminate() : boolean {
-    return this.flow === 'terminate' || ( isState(this.to) && this.to.isTerminal);
+  get shouldTerminate(): boolean {
+    return this.flow === "terminate" || ( isState(this.to) && this.to.isTerminal);
   }
 
-  get shouldContinue() : boolean {
-    return this.flow == "continue" && this.to && isState(this.to) && !this.to.isTerminal
+  get shouldContinue(): boolean {
+    return this.flow === "continue" && this.to && isState(this.to) && !this.to.isTerminal;
   }
 }
 
@@ -213,7 +213,7 @@ export class StateMachine {
     transition = await this.checkForEntryFallback(voxaEvent, reply, transition);
     transition = await this.checkOnUnhandledState(voxaEvent, reply, transition);
     transition = await this.onAfterStateChanged(voxaEvent, reply, transition);
-    let sysTransition = new SystemTransition(transition)
+    const sysTransition = new SystemTransition(transition);
     let to;
 
     if (sysTransition.to && _.isString(sysTransition.to)) {
