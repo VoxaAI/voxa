@@ -55,7 +55,7 @@ export interface IVoxaReply {
 }
 
 export function addToSSML(ssml: string, statement: string): string {
-  const base = ssml.replace(/^<speak>(.*)<\/speak>$/g,  "$1");
+  const base = ssml.replace(/^<speak>([\s\S]*)<\/speak>$/g,  "$1");
   if (!base) {
     return `<speak>${statement}</speak>`;
   }
