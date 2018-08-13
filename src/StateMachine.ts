@@ -75,7 +75,7 @@ class SystemTransition implements ITransition {
   }
 
   get shouldContinue(): boolean {
-    return this.flow === "continue" && this.to && isState(this.to) && !this.to.isTerminal;
+    return !!(this.flow === "continue" && this.to && isState(this.to) && !this.to.isTerminal);
   }
 }
 
