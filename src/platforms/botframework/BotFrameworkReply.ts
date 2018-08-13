@@ -205,7 +205,7 @@ export class BotFrameworkReply implements IVoxaReply {
     return await rp(requestOptions) as IAuthorizationResponse;
   }
 
-  public async saveSession(event: IVoxaEvent): Promise<void> {
+  public async saveSession(attributes: object, event: IVoxaEvent): Promise<void> {
     const conversationId = event.session.sessionId;
     const userId = event.rawEvent.address.bot.id;
     const context: IBotStorageContext = {
@@ -217,16 +217,12 @@ export class BotFrameworkReply implements IVoxaReply {
 
     const storage = (event as BotFrameworkEvent).storage;
 
-    if (!event.model) {
-      return;
-    }
-
     const data: IBotStorageData = {
       conversationData: {},
       // we're only gonna handle private conversation data, this keeps the code small
       // and more importantly it makes it so the programming model is the same between
       // the different platforms
-      privateConversationData: await event.model.serialize(),
+      privateConversationData: attributes,
       userData: {},
     };
 

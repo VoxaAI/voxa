@@ -13,6 +13,7 @@ import { IVoxaSession } from "../../VoxaEvent";
 
 export class DialogFlowSession implements IVoxaSession {
   public attributes: any;
+  public outputAttributes: object = {};
   public new: boolean;
   public sessionId: string;
   public contexts: Contexts;
@@ -29,19 +30,19 @@ export class DialogFlowSession implements IVoxaSession {
       return {};
     }
 
-    const context: Context<Parameters>|undefined = this.contexts.model;
+    const context: Context<Parameters>|undefined = this.contexts.attributes;
     if (!context) {
       return {};
     }
 
-    if (_.isString(context.parameters.model)) {
-      return JSON.parse(context.parameters.model);
+    if (_.isString(context.parameters.attributes)) {
+      return JSON.parse(context.parameters.attributes);
     }
 
-    if (_.isObject(context.parameters.model)) {
-      return context.parameters.model;
+    if (_.isObject(context.parameters.attributes)) {
+      return context.parameters.attributes;
     }
 
-    return context.parameters.model;
+    return context.parameters.attributes;
   }
 }

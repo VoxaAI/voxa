@@ -32,7 +32,8 @@ export class AlexaEvent extends IVoxaEvent {
 
   constructor(event: RequestEnvelope , context?: any) {
     super(event, context);
-    this.session = _.cloneDeep(event.session) as IVoxaSession;
+    this.session = (_.cloneDeep(event.session) || {}) as IVoxaSession;
+    this.session.outputAttributes = {};
     this.request = _.cloneDeep(event.request);
     this.context = _.cloneDeep(event.context);
     this.executionContext = context;

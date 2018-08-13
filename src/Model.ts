@@ -4,8 +4,8 @@ import { IVoxaEvent } from "./VoxaEvent";
 export class Model {
   [key: string]: any
 
-  public static fromEvent(voxaEvent: IVoxaEvent): Promise<Model>|Model {
-    return new this(voxaEvent.session.attributes);
+  public static deserialize(data: object, voxaEvent: IVoxaEvent): Promise<Model>|Model {
+    return new this(data);
   }
 
   public state?: string;
@@ -21,5 +21,5 @@ export class Model {
 
 export interface IModel {
   new (data?: any): Model;
-  fromEvent(data?: any): Model|Promise<Model>;
+  deserialize(data: object, event: IVoxaEvent): Model|Promise<Model>;
 }

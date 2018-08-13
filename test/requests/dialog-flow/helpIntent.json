@@ -13,10 +13,10 @@
         "name": "projects/project/agent/sessions/1528150043739/contexts/actions_capability_audio_output"
       },
       {
-        "name": "projects/project/agent/sessions/1528150043739/contexts/model",
+        "name": "projects/project/agent/sessions/1528150043739/contexts/attributes",
         "lifespanCount": 99999,
         "parameters": {
-          "model": "{\"key\":\"value\"}"
+          "attributes": "{\"key\":\"value\"}"
         }
       },
       {

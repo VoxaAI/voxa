@@ -55,6 +55,7 @@ export class BotFrameworkEvent extends IVoxaEvent {
     this.session = {
       attributes: stateData.privateConversationData || {},
       new: _.isEmpty(stateData.privateConversationData),
+      outputAttributes: {},
       sessionId: _.get(message, "address.conversation.id"),
     };
 

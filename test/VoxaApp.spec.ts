@@ -106,7 +106,7 @@ describe("VoxaApp", () => {
     });
   });
 
-  it("should include the state in the session response", async () => {
+  it("should include the state in the session attributes", async () => {
     const voxaApp = new VoxaApp({ variables, views });
     voxaApp.onIntent("LaunchIntent", () => {
       return { to: "secondState", sayp: "This is my message", flow: "yield" };
@@ -116,9 +116,21 @@ describe("VoxaApp", () => {
 
     event = new AlexaEvent(rb.getIntentRequest("LaunchIntent"));
     const reply = await voxaApp.execute(event, new AlexaReply()) as AlexaReply;
-    // expect(reply.error).to.be.undefined;
-    expect(event.model.state).to.equal("secondState");
+    expect(reply.sessionAttributes.state).to.equal("secondState");
     expect(reply.response.shouldEndSession).to.be.false;
+  });
+
+  it("should include outputAttributes in the session attributes", async () => {
+    const voxaApp = new VoxaApp({ variables, views });
+    voxaApp.onIntent("LaunchIntent", (request) => {
+      request.session.outputAttributes.foo = "bar";
+      return { to: "secondState", sayp: "This is my message", flow: "yield" };
+    });
+    voxaApp.onState("secondState", () => ({}));
+
+    event = new AlexaEvent(rb.getIntentRequest("LaunchIntent"));
+    const reply = await voxaApp.execute(event, new AlexaReply()) as AlexaReply;
+    expect(reply.sessionAttributes.foo).to.equal("bar");
   });
 
   it("should add the message key from the transition to the reply", async () => {
@@ -257,13 +269,15 @@ describe("VoxaApp", () => {
     const reply = await  platform.execute(event, {}) as AlexaReply;
     expect(statesDefinition.entry.called).to.be.true;
     expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;
-    expect(reply.sessionAttributes).to.deep.equal({ value: 1 });
+    expect(reply.sessionAttributes).to.deep.equal({ model: { value: 1  }, state: "initState"});
   });
 
-  it("should let model.fromRequest to return a Promise", async () => {
+  it("should let model.deserialize return a Promise", async () => {
     class PromisyModel extends Model {
-      public static async fromEvent(data: any) {
-        return new PromisyModel();
+      public static async deserialize(data: any) {
+        const model = new PromisyModel();
+        model.didDeserialize = "yep";
+        return model;
       }
     }
 
@@ -271,10 +285,12 @@ describe("VoxaApp", () => {
     statesDefinition.entry = simple.spy((request) => {
       expect(request.model).to.not.be.undefined;
       expect(request.model).to.be.an.instanceOf(PromisyModel);
+      expect(request.model.didDeserialize).to.eql("yep");
       return { reply: "ExitIntent.Farewell", to: "die" };
     });
 
     _.map(statesDefinition, (state: any, name: string) => voxaApp.onState(name, state));
+    event.session.attributes = {model: {foo: "bar"}};
     await voxaApp.execute(event, new AlexaReply()) ;
     expect(statesDefinition.entry.called).to.be.true;
     expect(statesDefinition.entry.lastCall.threw).to.be.not.ok;

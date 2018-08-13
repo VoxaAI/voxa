@@ -102,8 +102,8 @@ export class VoxaApp {
   }
 
   public validateConfig() {
-    if (!this.config.Model.fromEvent) {
-      throw new Error("Model should have a fromEvent method");
+    if (!this.config.Model.deserialize) {
+      throw new Error("Model should have a deserialize method");
     }
 
     if (!this.config.Model.serialize && !(this.config.Model.prototype && this.config.Model.prototype.serialize)) {
@@ -468,23 +468,29 @@ export class VoxaApp {
     if (!transition.to) {
       throw new Error("Missing transition");
     }
+    const stateName = typeof transition.to === "string" ? transition.to
+    : isState(transition.to) ? transition.to.name
+    : "";
+    if (!stateName) { throw new Error("Expected transition to transition to something"); }
 
-    if (typeof transition.to === "string"  ) {
-      voxaEvent.model.state = transition.to;
-    } else if (isState(transition.to)) {
-      voxaEvent.model.state = transition.to.name;
-    }
-
-    await response.saveSession(voxaEvent);
+    // We save off the state so that we know where to resume from when the conversation resumes
+    const modelData = await voxaEvent.model.serialize();
+    const attributes = {
+      ...voxaEvent.session.outputAttributes,
+      model: modelData,
+      state: stateName,
+    };
+    await response.saveSession(attributes, voxaEvent);
   }
 
   public async transformRequest(voxaEvent: IVoxaEvent): Promise <void> {
     await this.i18nextPromise;
     let model: Model;
+    const data = voxaEvent.session.attributes.model;
     if (this.config.Model) {
-      model = await this.config.Model.fromEvent(voxaEvent);
+      model = await this.config.Model.deserialize(data, voxaEvent);
     } else {
-      model = await Model.fromEvent(voxaEvent);
+      model = await Model.deserialize(data, voxaEvent);
     }
 
     voxaEvent.model = model;

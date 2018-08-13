@@ -133,12 +133,14 @@ Voxa
 
 .. js:function:: VoxaApp.onRequestStarted(callback, [atLast])
 
-  Adds a callback to be executed whenever there's a ``LaunchRequest``, ``IntentRequest`` or a ``SessionEndedRequest``, this can be used to initialize your analytics or get your account linking user data. Internally it's used to initialize the model based on the event session
+  Adds a callback to be executed whenever there's a ``LaunchRequest``, ``IntentRequest`` or a ``SessionEndedRequest``,
+  this can be used to initialize your analytics or get your account linking user data. Internally it's used to initialize the model based on the event session
 
   .. code-block:: javascript
 
     skill.onRequestStarted((voxaEvent, reply) => {
-      voxaEvent.model = this.config.Model.fromEvent(voxaEvent);
+      let data = ... // deserialized from the platform's session
+      voxaEvent.model = this.config.Model.deserialize(data, voxaEvent);
     });
 
 

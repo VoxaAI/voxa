@@ -54,7 +54,7 @@ describe("AlexaReply", () => {
         },
         shouldEndSession: false,
       },
-      // sessionAttributes: {},
+      sessionAttributes: {},
       version: "1.0",
     });
   });
@@ -69,6 +69,7 @@ describe("AlexaReply", () => {
         },
         shouldEndSession: false,
       },
+      sessionAttributes: {},
       version: "1.0",
     });
   });
@@ -84,6 +85,7 @@ describe("AlexaReply", () => {
         },
         shouldEndSession: true,
       },
+      sessionAttributes: {},
       version: "1.0",
     });
   });
@@ -138,6 +140,7 @@ describe("AlexaReply", () => {
           },
         },
       },
+      sessionAttributes: {},
       version: "1.0",
     });
   });
@@ -186,6 +189,7 @@ describe("AlexaReply", () => {
         },
         shouldEndSession: true,
       },
+      sessionAttributes: {},
       version: "1.0",
     });
   });

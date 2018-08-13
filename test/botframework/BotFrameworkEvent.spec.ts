@@ -72,4 +72,11 @@ describe("BotFrameworkEvent", () => {
       userId: "LTSO852UtAD",
     });
   });
+
+  it("builds the session", () => {
+    const rawEvent = prepIncomingMessage(_.cloneDeep(require("../requests/botframework/StaintIntent.json")));
+    const event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
+    expect(event.session.attributes).to.be.a("object");
+    expect(event.session.outputAttributes).to.be.a("object");
+  });
 });
