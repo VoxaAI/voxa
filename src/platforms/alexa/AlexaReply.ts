@@ -42,7 +42,9 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
       this.response = { };
     }
 
-    this.response.shouldEndSession = true;
+    if (!this.hasDirective("VideoApp.Launch") && !this.hasDirective("GameEngine.StartInputHandler")) {
+      this.response.shouldEndSession = true;
+    }
   }
 
   public get speech(): string {

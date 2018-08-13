@@ -237,3 +237,69 @@ export class StopAudio implements IDirective {
     (reply as AlexaReply).response = response;
   }
 }
+
+export class GadgetControllerLightDirective implements IDirective {
+  public static key: string = "alexaGadgetControllerLightDirective";
+  public static platform: string = "alexa";
+
+  constructor(public lightDirective: interfaces.gadgetController.SetLightDirective
+    |interfaces.gadgetController.SetLightDirective[]) { }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    const response = (reply as AlexaReply).response;
+
+    if (!response.directives) {
+      response.directives = [];
+    }
+
+    if (_.isArray(this.lightDirective)) {
+      response.directives = _.concat(response.directives, this.lightDirective);
+    } else {
+      response.directives.push(this.lightDirective);
+    }
+
+    (reply as AlexaReply).response = response;
+  }
+}
+
+export class GameEngineStartInputHandler implements IDirective {
+  public static key: string = "alexaGameEngineStartInputHandler";
+  public static platform: string = "alexa";
+
+  constructor(public template: interfaces.gameEngine.StartInputHandlerDirective) { }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    const response = (reply as AlexaReply).response;
+
+    if (!response.directives) {
+      response.directives = [];
+    }
+
+    response.directives.push(this.template);
+    delete response.shouldEndSession;
+
+    (reply as AlexaReply).response = response;
+  }
+}
+
+export class GameEngineStopInputHandler implements IDirective {
+  public static key: string = "alexaGameEngineStopInputHandler";
+  public static platform: string = "alexa";
+
+  constructor(public originatingRequestId: string) { }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    const response = (reply as AlexaReply).response;
+
+    if (!response.directives) {
+      response.directives = [];
+    }
+
+    response.directives.push({
+      originatingRequestId: this.originatingRequestId,
+      type: "GameEngine.StopInputHandler",
+    });
+
+    (reply as AlexaReply).response = response;
+  }
+}

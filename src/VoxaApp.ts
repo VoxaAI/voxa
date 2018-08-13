@@ -447,7 +447,7 @@ export class VoxaApp {
       );
 
       for (const handler of transition.directives) {
-        return await handler.writeToReply(response, voxaEvent, transition);
+        await handler.writeToReply(response, voxaEvent, transition);
       }
     }
 
@@ -486,6 +486,8 @@ export class VoxaApp {
     } else {
       model = await Model.fromEvent(voxaEvent);
     }
+
+    model.state = (model.state === "die") ? "entry" : model.state;
 
     voxaEvent.model = model;
     log("Initialized model like %s", JSON.stringify(voxaEvent.model));

@@ -129,9 +129,11 @@ Links
   voxa-event
   alexa-directives
   dialogflow-directives
-  reply
+  voxa-reply
   statemachine-skill
   request-flow
   i18n
+  gadgetController
+  gameEngine
   plugins
   debugging
