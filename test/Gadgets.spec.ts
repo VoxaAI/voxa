@@ -1,4 +1,4 @@
-import { services } from "ask-sdk-model";
+import { interfaces, services } from "ask-sdk-model";
 import { expect, use } from "chai";
 import * as  _ from "lodash";
 
@@ -91,7 +91,7 @@ describe("Gadgets", () => {
         .map((value) => value[0])
         .value();
 
-      const directives: any[] = [];
+      const directives: interfaces.gadgetController.SetLightDirective[] = [];
       let customId = 0;
 
       _.forEach(inputEvents, (gadgetEvent) => {
@@ -101,7 +101,7 @@ describe("Gadgets", () => {
         if (!_.includes(voxaEvent.model.buttons, id)) {
           const buttonIndex = _.size(voxaEvent.model.buttons);
           const targetGadgets = [gadgetEvent.gadgetId];
-          let lightDirective;
+          let lightDirective: interfaces.gadgetController.SetLightDirective;
 
           _.set(voxaEvent.model, `buttonIds.${id}`, gadgetEvent.gadgetId);
 

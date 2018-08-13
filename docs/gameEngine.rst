@@ -15,10 +15,10 @@ With Voxa, you can implement this interface like this:
   const { ANCHOR_ENUM, EVENT_REPORT_ENUM, GameEngine } = voxa.alexa;
 
   skill.onIntent('LaunchIntent', (voxaEvent) => {
-    const directives = [rollCall(voxaEvent)];
+    const alexaGameEngineStartInputHandler = rollCall(voxaEvent);
 
     return {
-      alexaGameEngineStartInputHandler: directives,
+      alexaGameEngineStartInputHandler,
       tell: 'Buttons.Discover',
     };
   });

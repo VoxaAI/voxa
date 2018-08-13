@@ -242,11 +242,8 @@ export class GadgetControllerLightDirective implements IDirective {
   public static key: string = "alexaGadgetControllerLightDirective";
   public static platform: string = "alexa";
 
-  public lightDirective: any;
-
-  constructor(lightDirective: any) {
-    this.lightDirective = lightDirective;
-  }
+  constructor(public lightDirective: interfaces.gadgetController.SetLightDirective
+    |interfaces.gadgetController.SetLightDirective[]) { }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     const response = (reply as AlexaReply).response;
@@ -269,11 +266,7 @@ export class GameEngineStartInputHandler implements IDirective {
   public static key: string = "alexaGameEngineStartInputHandler";
   public static platform: string = "alexa";
 
-  public template: interfaces.gameEngine.StartInputHandlerDirective;
-
-  constructor(template: interfaces.gameEngine.StartInputHandlerDirective) {
-    this.template = template;
-  }
+  constructor(public template: interfaces.gameEngine.StartInputHandlerDirective) { }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     const response = (reply as AlexaReply).response;
