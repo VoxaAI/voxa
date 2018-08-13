@@ -87,3 +87,4 @@ Resources
 * [Documentation](http://voxa.readthedocs.io/en/latest/)
 * [Bug Tracker](https://github.com/mediarain/voxa/issues)
 * [Mail List](https://groups.google.com/d/forum/voxa-framework)
+
