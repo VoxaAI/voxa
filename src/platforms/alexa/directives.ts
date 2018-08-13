@@ -286,11 +286,7 @@ export class GameEngineStopInputHandler implements IDirective {
   public static key: string = "alexaGameEngineStopInputHandler";
   public static platform: string = "alexa";
 
-  public originatingRequestId?: string;
-
-  constructor(originatingRequestId?: string) {
-    this.originatingRequestId = originatingRequestId;
-  }
+  constructor(public originatingRequestId: string) { }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
     const response = (reply as AlexaReply).response;
