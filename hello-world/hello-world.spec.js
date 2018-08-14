@@ -54,7 +54,7 @@ describe("Hello World", () => {
           outputSpeech:
           { ssml: '<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>',
             type: 'SSML' } },
-        sessionAttributes: { state: 'likesVoxa?' }
+        sessionAttributes: { state: 'likesVoxa?', model: {} }
       });
 
     });
@@ -68,7 +68,7 @@ describe("Hello World", () => {
       });
 
       expect(lambdaCallbackResult).to.deep.equal( {
-        "body": "{\"outputContexts\":[{\"name\":\"projects/project/agent/sessions/1525973454075/contexts/model\",\"lifespanCount\":10000,\"parameters\":{\"model\":\"{\\\"state\\\":\\\"likesVoxa?\\\"}\"}}],\"fulfillmentText\":\"<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>\",\"source\":\"google\",\"payload\":{\"google\":{\"expectUserResponse\":true,\"isSsml\":true,\"richResponse\":{\"items\":[{\"simpleResponse\":{\"textToSpeech\":\"<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>\"}}]}}}}",
+        "body": "{\"outputContexts\":[{\"name\":\"projects/project/agent/sessions/1525973454075/contexts/attributes\",\"lifespanCount\":10000,\"parameters\":{\"attributes\":\"{\\\"model\\\":{},\\\"state\\\":\\\"likesVoxa?\\\"}\"}}],\"fulfillmentText\":\"<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>\",\"source\":\"google\",\"payload\":{\"google\":{\"expectUserResponse\":true,\"isSsml\":true,\"richResponse\":{\"items\":[{\"simpleResponse\":{\"textToSpeech\":\"<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>\"}}]}}}}",
         "headers": {
           "Content-Type": "application/json",
         },
