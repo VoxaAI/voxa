@@ -7,7 +7,18 @@ import { VoxaApp } from "../../VoxaApp";
 import { VoxaPlatform } from "../VoxaPlatform";
 import { AlexaEvent } from "./AlexaEvent";
 import { AlexaReply } from "./AlexaReply";
-import { AccountLinkingCard, DialogDelegate, Hint, HomeCard, PlayAudio, RenderTemplate, StopAudio } from "./directives";
+import {
+  AccountLinkingCard,
+  DialogDelegate,
+  GadgetControllerLightDirective,
+  GameEngineStartInputHandler,
+  GameEngineStopInputHandler,
+  Hint,
+  HomeCard,
+  PlayAudio,
+  RenderTemplate,
+  StopAudio,
+} from "./directives";
 
 const alexalog: debug.IDebugger = debug("voxa:alexa");
 
@@ -32,6 +43,7 @@ const AlexaRequests = [
   "AlexaHouseholdListEvent.ItemsDeleted",
   "Display.ElementSelected",
   "CanFulfillIntentRequest",
+  "GameEngine.InputHandlerEvent",
 ];
 
 export class AlexaPlatform extends VoxaPlatform {
@@ -60,6 +72,9 @@ export class AlexaPlatform extends VoxaPlatform {
     return [
       AccountLinkingCard,
       DialogDelegate,
+      GadgetControllerLightDirective,
+      GameEngineStartInputHandler,
+      GameEngineStopInputHandler,
       Hint,
       HomeCard,
       PlayAudio,

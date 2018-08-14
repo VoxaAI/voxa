@@ -32,6 +32,11 @@ export const views =  {
           say: "I'm sorry. I didn't understand.",
         },
       },
+      Buttons: {
+        Bye: "Thanks for playing with echo buttons.",
+        Discover: "Press 2 or up to 4 buttons to wake them up.",
+        Next: "Guess the next pattern.",
+      },
       Card: {
         image: {
           largeImageUrl: "https://example.com/large.jpg",

@@ -23,12 +23,17 @@ export {
 import {
   AccountLinkingCard as AlexaAccountLinkingCard,
   DialogDelegate,
+  GadgetControllerLightDirective,
+  GameEngineStartInputHandler,
+  GameEngineStopInputHandler,
   HomeCard,
   PlayAudio,
   RenderTemplate,
   StopAudio,
 } from "./platforms/alexa/directives";
 import { DisplayTemplate } from "./platforms/alexa/DisplayTemplateBuilder";
+import { GadgetController, TRIGGER_EVENT_ENUM } from "./platforms/alexa/GadgetController";
+import { ANCHOR_ENUM, EVENT_REPORT_ENUM, GameEngine } from "./platforms/alexa/GameEngine";
 
 import {
   AudioCard,
