@@ -38,6 +38,7 @@ export interface IStateMachineConfig {
 export interface ITransition {
   [propname: string]: any;
   to?: string|IState|ITransition; // default to 'entry'
+  flow?: string;
 }
 
 export interface IState {
@@ -53,6 +54,29 @@ export function isTransition(object: any): object is ITransition {
 
 export function isState(object: any): object is IState {
   return object  && "name" in object ;
+}
+
+// A helper class for transitions. Users can return transitions as an object with various command keys.
+// For developer flexibility we allow that transition object to be vague.
+// This object wraps the ITransition and gives defaults helps interpret what the various toggles mean.
+class SystemTransition implements ITransition {
+
+  [propname: string]: any;
+  public to?: string|IState|ITransition; // default to 'entry'
+  public flow?: string;
+
+  constructor(transition: ITransition) {
+    Object.assign(this, transition);
+    this.flow = this.flow || "continue";
+  }
+
+  get shouldTerminate(): boolean {
+    return this.flow === "terminate" || ( isState(this.to) && this.to.isTerminal);
+  }
+
+  get shouldContinue(): boolean {
+    return !!(this.flow === "continue" && this.to && isState(this.to) && !this.to.isTerminal);
+  }
 }
 
 export class StateMachine {
@@ -189,39 +213,28 @@ export class StateMachine {
     transition = await this.checkForEntryFallback(voxaEvent, reply, transition);
     transition = await this.checkOnUnhandledState(voxaEvent, reply, transition);
     transition = await this.onAfterStateChanged(voxaEvent, reply, transition);
+    const sysTransition = new SystemTransition(transition);
     let to;
 
-    if (_.isObject(transition) && !_.isEmpty(transition) && !transition.flow) {
-      transition = _.merge({}, transition, {flow: "continue"});
-      transition.flow = "continue";
-    }
-
-    if (transition.to && _.isString(transition.to)) {
-      if (!this.states.core[transition.to] && !_.get(this.states, [voxaEvent.platform, transition.to])) {
-        throw new UnknownState(transition.to);
+    if (sysTransition.to && _.isString(sysTransition.to)) {
+      if (!this.states.core[sysTransition.to] && !_.get(this.states, [voxaEvent.platform, sysTransition.to])) {
+        throw new UnknownState(sysTransition.to);
       }
-      to = _.get(this.states, [voxaEvent.platform, transition.to]) || this.states.core[transition.to];
-      transition = _.merge({}, transition, { to });
+      to = _.get(this.states, [voxaEvent.platform, sysTransition.to]) || this.states.core[sysTransition.to];
+      Object.assign(sysTransition, {to});
     } else {
       to = { name: "die" };
-      transition = _.merge({}, transition, { flow: "terminate" });
+      sysTransition.flow = "terminate";
     }
 
-    if (transition.flow === "terminate" ) {
+    if (sysTransition.shouldTerminate) {
       reply.terminate();
     }
 
-    if (isState(transition.to)) {
-      if (transition.to.isTerminal) {
-        reply.terminate();
-      }
+    if (sysTransition.shouldContinue) {
+      return this.runTransition(to.name, voxaEvent, reply);
     }
-
-    if (transition.flow !== "continue" || !transition.to || isState(transition.to) && transition.to.isTerminal) {
-      return _.merge({}, transition, to);
-    }
-
-    return this.runTransition(to.name, voxaEvent, reply);
+    return _.merge({}, sysTransition, to);
   }
 
   public async runCurrentState(voxaEvent: IVoxaEvent, reply: IVoxaReply): Promise<ITransition> {
