@@ -15,7 +15,7 @@ import { StatusCodeError } from "request-promise/errors";
 import * as urljoin from "url-join";
 import * as uuid from "uuid";
 import { NotImplementedError } from "../../errors";
-import { IVoxaEvent } from "../../VoxaEvent";
+import { IBag, IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 import { BotFrameworkEvent } from "./BotFrameworkEvent";
 import { IAuthorizationResponse } from "./BotFrameworkInterfaces";
@@ -205,7 +205,7 @@ export class BotFrameworkReply implements IVoxaReply {
     return await rp(requestOptions) as IAuthorizationResponse;
   }
 
-  public async saveSession(attributes: object, event: IVoxaEvent): Promise<void> {
+  public async saveSession(attributes: IBag, event: IVoxaEvent): Promise<void> {
     const conversationId = event.session.sessionId;
     const userId = event.rawEvent.address.bot.id;
     const context: IBotStorageContext = {

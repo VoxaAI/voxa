@@ -33,7 +33,7 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
     return !!this.response && !!this.response.shouldEndSession;
   }
 
-  public async saveSession(attributes: object , event: IVoxaEvent): Promise<void> {
+  public async saveSession(attributes: IBag , event: IVoxaEvent): Promise<void> {
     this.sessionAttributes = attributes;
   }
 

@@ -5,11 +5,11 @@ import * as _ from "lodash";
 
 import { Context as AWSLambdaContext } from "aws-lambda";
 import { Ask, IDirective, IDirectiveClass, Reprompt, Say, SayP, Tell } from "./directives";
-import { OnSessionEndedError, TimeoutError, UnknownRequestType } from "./errors";
+import { InvalidTransitionError, OnSessionEndedError, TimeoutError, UnknownRequestType } from "./errors";
 import { IModel, Model } from "./Model";
 import { IMessage, IRenderer, IRendererConfig, Renderer } from "./renderers/Renderer";
 import { isState, IState, IStateMachineConfig, isTransition, ITransition, StateMachine } from "./StateMachine";
-import { IVoxaEvent } from "./VoxaEvent";
+import { IBag, IVoxaEvent } from "./VoxaEvent";
 import { IVoxaReply } from "./VoxaReply";
 
 const log: debug.IDebugger = debug("voxa");
@@ -466,12 +466,12 @@ export class VoxaApp {
     }
 
     if (!transition.to) {
-      throw new Error("Missing transition");
+      throw new InvalidTransitionError(transition, "Missing transition.to");
     }
     const stateName = typeof transition.to === "string" ? transition.to
     : isState(transition.to) ? transition.to.name
     : "";
-    if (!stateName) { throw new Error("Expected transition to transition to something"); }
+    if (!stateName) { throw new InvalidTransitionError(transition, "Expected transition to transition to something"); }
 
     // We save off the state so that we know where to resume from when the conversation resumes
     const modelData = await voxaEvent.model.serialize();
@@ -486,7 +486,7 @@ export class VoxaApp {
   public async transformRequest(voxaEvent: IVoxaEvent): Promise <void> {
     await this.i18nextPromise;
     let model: Model;
-    const data = voxaEvent.session.attributes.model;
+    const data = voxaEvent.session.attributes.model as IBag;
     if (this.config.Model) {
       model = await this.config.Model.deserialize(data, voxaEvent);
     } else {
