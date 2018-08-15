@@ -1,6 +1,6 @@
 {
   "name": "voxa",
-  "version": "2.4.3",
+  "version": "2.4.4",
   "description": "A fsm (state machine) framework for Alexa apps using Node.js",
   "main": "index.js",
   "scripts": {
@@ -28,11 +28,13 @@
   },
   "license": "MIT",
   "dependencies": {
-    "bluebird": "^3.4.1",
+    "bluebird": "^3.5.1",
     "capitalize": "^1.0.0",
-    "debug": "^2.6.0",
-    "i18next": "^7.0.0",
-    "lodash": "^4.13.1"
+    "debug": "^3.1.0",
+    "i18next": "^11.6.0",
+    "lodash": "^4.17.10",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2"
   },
   "devDependencies": {
     "chai": "^3.5.0",
@@ -43,6 +45,7 @@
     "istanbul": "^0.4.5",
     "mocha": "3.2.0",
     "mocha-jenkins-reporter": "0.3.7",
+    "nock": "^9.6.1",
     "portfinder": "^1.0.13",
     "simple-mock": "^0.7.3"
   },

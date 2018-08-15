@@ -127,6 +127,7 @@ Links
   statemachine-skill
   request-flow
   i18n
+  inSkillPurchases
   gadgetController
   gameEngine
   plugins
