@@ -119,7 +119,7 @@ describe('InSkillPurchase', () => {
     };
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('RefundIntent', async (alexaEvent) => {
+    stateMachineSkill.onIntent('RefundIntent', (alexaEvent) => {
       const { productName } = alexaEvent.intent.params;
       const token = 'startState';
 
@@ -168,7 +168,7 @@ describe('InSkillPurchase', () => {
 
     const upsellMessage = 'Please buy it';
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('BuyIntent', async (alexaEvent) => {
+    stateMachineSkill.onIntent('BuyIntent', (alexaEvent) => {
       const { productName } = alexaEvent.intent.params;
       const token = 'startState';
 
@@ -217,7 +217,7 @@ describe('InSkillPurchase', () => {
     };
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('BuyIntent', async (alexaEvent) => {
+    stateMachineSkill.onIntent('BuyIntent', (alexaEvent) => {
       if (!alexaEvent.isp.isIspAllowed()) {
         return { reply: 'ISP.Invalid', to: 'entry' };
       }
