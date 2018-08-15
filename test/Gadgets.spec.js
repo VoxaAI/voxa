@@ -34,7 +34,7 @@ const COLORS = [
 const proxies = _.map(COLORS, 'name');
 const rollCallPattern = _.map(proxies, color => ({ gadgetIds: [color], action: 'down' }));
 
-describe('StateMachineSkill', () => {
+describe('Gadgets API', () => {
   it('should send GameEngine.StartInputHandler directive', () => {
     const event = {
       request: {
