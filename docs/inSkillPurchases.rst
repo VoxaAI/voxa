@@ -32,12 +32,12 @@ With Voxa, you can implement all ISP features like buying, refunding and upselli
   });
 
 
-You can also check if the ISP feature is allowed in a locale or the account is correctly setup in the markets ISP works just by checking with the `isIspAllowed()` function.
+You can also check if the ISP feature is allowed in a locale or the account is correctly setup in the markets ISP works just by checking with the `isAllowed()` function.
 
 .. code-block:: javascript
 
   skill.onIntent('UpsellIntent', async (alexaEvent) => {
-    if (!alexaEvent.isp.isIspAllowed()) {
+    if (!alexaEvent.isp.isAllowed()) {
       return { reply: 'ISP.Invalid', to: 'entry' };
     }
 

@@ -218,7 +218,7 @@ describe('InSkillPurchase', () => {
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
     stateMachineSkill.onIntent('BuyIntent', (alexaEvent) => {
-      if (!alexaEvent.isp.isIspAllowed()) {
+      if (!alexaEvent.isp.isAllowed()) {
         return { reply: 'ISP.Invalid', to: 'entry' };
       }
 
