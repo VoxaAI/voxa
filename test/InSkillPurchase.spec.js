@@ -71,12 +71,12 @@ describe('InSkillPurchase', () => {
     };
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('BuyIntent', async (alexaEvent) => {
+    stateMachineSkill.onIntent('BuyIntent', (alexaEvent) => {
       const { productName } = alexaEvent.intent.params;
       const token = 'startState';
-      const buyDirective = await alexaEvent.isp.buyByReferenceName(productName, token);
 
-      return { directives: buyDirective };
+      return alexaEvent.isp.buyByReferenceName(productName, token)
+        .then(buyDirective => ({ directives: buyDirective }));
     });
 
     return stateMachineSkill.execute(event)
@@ -122,9 +122,9 @@ describe('InSkillPurchase', () => {
     stateMachineSkill.onIntent('RefundIntent', async (alexaEvent) => {
       const { productName } = alexaEvent.intent.params;
       const token = 'startState';
-      const buyDirective = await alexaEvent.isp.cancelByReferenceName(productName, token);
 
-      return { directives: buyDirective };
+      return alexaEvent.isp.cancelByReferenceName(productName, token)
+        .then(buyDirective => ({ directives: buyDirective }));
     });
 
     return stateMachineSkill.execute(event)
@@ -171,10 +171,9 @@ describe('InSkillPurchase', () => {
     stateMachineSkill.onIntent('BuyIntent', async (alexaEvent) => {
       const { productName } = alexaEvent.intent.params;
       const token = 'startState';
-      const buyDirective = await alexaEvent.isp.upsellByReferenceName(
-        productName, upsellMessage, token);
 
-      return { directives: buyDirective };
+      return alexaEvent.isp.upsellByReferenceName(productName, upsellMessage, token)
+        .then(buyDirective => ({ directives: buyDirective }));
     });
 
     return stateMachineSkill.execute(event)
@@ -269,7 +268,7 @@ describe('InSkillPurchase', () => {
     });
 
     stateMachineSkill.onIntent('ConnectionsResponse', (alexaEvent) => {
-      if (alexaEvent.request.payload.purchaseResult === 'ACCEPTED') {
+      if (alexaEvent.isp.getPayload().purchaseResult === 'ACCEPTED') {
         const to = alexaEvent.request.token;
 
         return { reply: 'ISP.ProductBought', to };
@@ -320,7 +319,7 @@ describe('InSkillPurchase', () => {
     });
 
     stateMachineSkill.onIntent('ConnectionsResponse', (alexaEvent) => {
-      if (alexaEvent.request.payload.purchaseResult === 'ACCEPTED') {
+      if (alexaEvent.isp.getPayload().purchaseResult === 'ACCEPTED') {
         return { reply: 'ISP.ProductBought' };
       }
 
