@@ -268,7 +268,7 @@ describe('InSkillPurchase', () => {
     });
 
     stateMachineSkill.onIntent('ConnectionsResponse', (alexaEvent) => {
-      if (alexaEvent.isp.getPayload().purchaseResult === 'ACCEPTED') {
+      if (alexaEvent.request.payload.purchaseResult === 'ACCEPTED') {
         const to = alexaEvent.request.token;
 
         return { reply: 'ISP.ProductBought', to };
@@ -319,7 +319,7 @@ describe('InSkillPurchase', () => {
     });
 
     stateMachineSkill.onIntent('ConnectionsResponse', (alexaEvent) => {
-      if (alexaEvent.isp.getPayload().purchaseResult === 'ACCEPTED') {
+      if (alexaEvent.request.payload.purchaseResult === 'ACCEPTED') {
         return { reply: 'ISP.ProductBought' };
       }
 
