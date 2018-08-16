@@ -5,11 +5,11 @@ import * as _ from "lodash";
 
 import { Context as AWSLambdaContext } from "aws-lambda";
 import { Ask, IDirective, IDirectiveClass, Reprompt, Say, SayP, Tell } from "./directives";
-import { OnSessionEndedError, TimeoutError, UnknownRequestType } from "./errors";
+import { InvalidTransitionError, OnSessionEndedError, TimeoutError, UnknownRequestType } from "./errors";
 import { IModel, Model } from "./Model";
 import { IMessage, IRenderer, IRendererConfig, Renderer } from "./renderers/Renderer";
 import { isState, IState, IStateMachineConfig, isTransition, ITransition, StateMachine } from "./StateMachine";
-import { IVoxaEvent } from "./VoxaEvent";
+import { IBag, IVoxaEvent } from "./VoxaEvent";
 import { IVoxaReply } from "./VoxaReply";
 
 const log: debug.IDebugger = debug("voxa");
@@ -102,8 +102,8 @@ export class VoxaApp {
   }
 
   public validateConfig() {
-    if (!this.config.Model.fromEvent) {
-      throw new Error("Model should have a fromEvent method");
+    if (!this.config.Model.deserialize) {
+      throw new Error("Model should have a deserialize method");
     }
 
     if (!this.config.Model.serialize && !(this.config.Model.prototype && this.config.Model.prototype.serialize)) {
@@ -466,25 +466,31 @@ export class VoxaApp {
     }
 
     if (!transition.to) {
-      throw new Error("Missing transition");
+      throw new InvalidTransitionError(transition, "Missing transition.to");
     }
+    const stateName = typeof transition.to === "string" ? transition.to
+    : isState(transition.to) ? transition.to.name
+    : "";
+    if (!stateName) { throw new InvalidTransitionError(transition, "Expected transition to transition to something"); }
 
-    if (typeof transition.to === "string"  ) {
-      voxaEvent.model.state = transition.to;
-    } else if (isState(transition.to)) {
-      voxaEvent.model.state = transition.to.name;
-    }
-
-    await response.saveSession(voxaEvent);
+    // We save off the state so that we know where to resume from when the conversation resumes
+    const modelData = await voxaEvent.model.serialize();
+    const attributes = {
+      ...voxaEvent.session.outputAttributes,
+      model: modelData,
+      state: stateName,
+    };
+    await response.saveSession(attributes, voxaEvent);
   }
 
   public async transformRequest(voxaEvent: IVoxaEvent): Promise <void> {
     await this.i18nextPromise;
     let model: Model;
+    const data = voxaEvent.session.attributes.model as IBag;
     if (this.config.Model) {
-      model = await this.config.Model.fromEvent(voxaEvent);
+      model = await this.config.Model.deserialize(data, voxaEvent);
     } else {
-      model = await Model.fromEvent(voxaEvent);
+      model = await Model.deserialize(data, voxaEvent);
     }
 
     model.state = (model.state === "die") ? "entry" : model.state;

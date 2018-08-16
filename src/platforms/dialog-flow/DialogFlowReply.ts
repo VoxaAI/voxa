@@ -6,7 +6,7 @@ import {
 } from "actions-on-google";
 import * as _ from "lodash";
 import { Model } from "../../Model";
-import { IVoxaEvent } from "../../VoxaEvent";
+import { IBag, IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 
@@ -38,10 +38,10 @@ export class DialogFlowReply implements IVoxaReply {
     };
   }
 
-  public async saveSession(event: IVoxaEvent): Promise<void> {
+  public async saveSession(attributes: IBag, event: IVoxaEvent): Promise<void> {
     const dialogFlowEvent = event as DialogFlowEvent;
-    const serializedData = JSON.stringify(await event.model.serialize());
-    dialogFlowEvent.conv.contexts.set("model", 10000, { model: serializedData });
+    const serializedData = JSON.stringify(attributes);
+    dialogFlowEvent.conv.contexts.set("attributes", 10000, { attributes: serializedData });
 
     this.outputContexts = dialogFlowEvent.conv.contexts._serialize();
   }

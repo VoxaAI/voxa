@@ -12,7 +12,7 @@ import * as bluebird from "bluebird";
 import * as debug from "debug";
 
 import { IMessage } from "./renderers/Renderer";
-import { IVoxaEvent } from "./VoxaEvent";
+import { IBag, IVoxaEvent } from "./VoxaEvent";
 
 const log: debug.IDebugger = debug("voxa");
 
@@ -51,7 +51,11 @@ export interface IVoxaReply {
   // }
   //
 
-  saveSession: (event: IVoxaEvent) => void;
+  // saveSession should store the attributes object into a storage that is scoped to the session.
+  // Attributes stored to the session should be made available in the platform's subsequent event
+  // under `event.session.attributes`. In this way, devs can use the session carry data forward
+  // through the conversation.
+  saveSession: (attributes: IBag, event: IVoxaEvent) => void;
 }
 
 export function addToSSML(ssml: string, statement: string): string {

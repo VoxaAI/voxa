@@ -208,7 +208,6 @@ describe("Gadgets", () => {
     expect(_.get(reply, "response.outputSpeech.ssml")).to.include("Thanks for playing with echo buttons.");
     expect(reply.response.reprompt).to.be.undefined;
     expect(_.get(reply, "response.directives[0].type")).to.equal("GameEngine.StopInputHandler");
-    expect(_.get(reply, "sessionAttributes.originatingRequestId")).to.equal("originatingRequestId");
     expect(_.get(reply, "sessionAttributes.state")).to.equal("die");
     expect(reply.response.shouldEndSession).to.equal(true);
   });

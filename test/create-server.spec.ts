@@ -63,6 +63,7 @@ describe("createServer", () => {
         },
         shouldEndSession: true,
       },
+      sessionAttributes: {},
       version: "1.0",
     });
 

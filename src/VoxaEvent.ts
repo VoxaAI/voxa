@@ -72,8 +72,19 @@ export interface IVoxaIntent {
   params: any;
 }
 
+export interface IBag extends Object {
+  [key: string]: any;
+}
+
 export interface IVoxaSession {
-  attributes: any;
+  // Session attributes that are attributes that are  inbound on the event.
+  // These have been set by in the prior event by setting the outputAttributes.
+  attributes: IBag;
+
+  // Attributes that will be carried forward into the next event.
+  outputAttributes: IBag;
+
+  // True if this request is the first in the session.
   new: boolean;
   sessionId: string;
 }

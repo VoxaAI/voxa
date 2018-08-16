@@ -1,11 +1,11 @@
 import * as _ from "lodash";
-import { IVoxaEvent } from "./VoxaEvent";
+import { IBag, IVoxaEvent } from "./VoxaEvent";
 
 export class Model {
   [key: string]: any
 
-  public static fromEvent(voxaEvent: IVoxaEvent): Promise<Model>|Model {
-    return new this(voxaEvent.session.attributes);
+  public static deserialize(data: IBag, voxaEvent: IVoxaEvent): Promise<Model>|Model {
+    return new this(data);
   }
 
   public state?: string;
@@ -21,5 +21,5 @@ export class Model {
 
 export interface IModel {
   new (data?: any): Model;
-  fromEvent(data?: any): Model|Promise<Model>;
+  deserialize(data: IBag, event: IVoxaEvent): Model|Promise<Model>;
 }

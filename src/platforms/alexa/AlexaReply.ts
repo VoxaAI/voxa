@@ -5,13 +5,13 @@ import {
 } from "ask-sdk-model";
 import * as _ from "lodash";
 import { Model } from "../../Model";
-import { IVoxaEvent } from "../../VoxaEvent";
+import { IBag, IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 
 export class AlexaReply implements IVoxaReply, ResponseEnvelope {
   public version = "1.0";
   public response: Response = {};
-  public sessionAttributes: any;
+  public sessionAttributes: IBag = {};
 
   get hasMessages() {
     return !!this.response.outputSpeech;
@@ -33,8 +33,8 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
     return !!this.response && !!this.response.shouldEndSession;
   }
 
-  public async saveSession(event: IVoxaEvent): Promise<void> {
-    this.sessionAttributes = await event.model.serialize();
+  public async saveSession(attributes: IBag , event: IVoxaEvent): Promise<void> {
+    this.sessionAttributes = attributes;
   }
 
   public terminate() {

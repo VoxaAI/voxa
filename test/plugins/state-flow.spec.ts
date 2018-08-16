@@ -26,6 +26,7 @@ describe("StateFlow plugin", () => {
         state: "secondState",
       },
       new: false,
+      outputAttributes: {},
     };
 
     states = {
@@ -46,7 +47,7 @@ describe("StateFlow plugin", () => {
     stateFlow.register(skill);
 
     const result = await skill.execute(event, new AlexaReply());
-    expect(event.model.flow).to.deep.equal(["secondState", "initState", "die"]);
+    expect(event.session.outputAttributes.flow).to.deep.equal(["secondState", "initState", "die"]);
   });
 
   it("should not crash on null transition", async () => {
@@ -60,6 +61,6 @@ describe("StateFlow plugin", () => {
     event.intent.name = "OtherIntent";
 
     const result = await skill.execute(event, new AlexaReply());
-    expect(event.model.flow).to.deep.equal(["fourthState"]);
+    expect(event.session.outputAttributes.flow).to.deep.equal(["fourthState"]);
   });
 });
