@@ -126,7 +126,7 @@ describe('Lists', () => {
     nock.cleanAll();
   });
 
-  it('should create a custom list and create an item', () => {
+  it('should create a custom list and create an item', async () => {
     const reqheaders = {
       'content-type': 'application/json',
       authorization: 'Bearer consentToken',
@@ -146,38 +146,34 @@ describe('Lists', () => {
       .reply(200, JSON.stringify(itemCreatedMock));
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('AddProductToListIntent', (alexaEvent) => {
+    stateMachineSkill.onIntent('AddProductToListIntent', async (alexaEvent) => {
       const { productName } = alexaEvent.intent.params;
 
-      return alexaEvent.lists.getOrCreateList(LIST_NAME)
-        .then((listInfo) => {
-          const listItem = _.find(listInfo.items, { name: productName });
+      const listInfo = await alexaEvent.lists.getOrCreateList(LIST_NAME);
+      let listItem = _.find(listInfo.items, { name: productName });
 
-          if (listItem) {
-            return false;
-          }
+      if (listItem) {
+        return false;
+      }
 
-          return alexaEvent.lists.createItem(listInfo.listId, productName);
-        })
-        .then((listItem) => {
-          if (listItem) {
-            return { reply: 'Lists.ProductCreated' };
-          }
+      listItem = await alexaEvent.lists.createItem(listInfo.listId, productName);
 
-          return { reply: 'Lists.AlreadyCreated' };
-        });
+      if (listItem) {
+        return { reply: 'Lists.ProductCreated' };
+      }
+
+      return { reply: 'Lists.AlreadyCreated' };
     });
 
-    return stateMachineSkill.execute(event)
-      .then((reply) => {
-        expect(reply.msg.statements[0]).to.equal('Product has been successfully created');
-        expect(reply.msg.reprompt).to.be.empty;
-        expect(reply.session.attributes.state).to.equal('die');
-        expect(reply.toJSON().response.shouldEndSession).to.equal(true);
-      });
+    const reply = await stateMachineSkill.execute(event);
+
+    expect(reply.msg.statements[0]).to.equal('Product has been successfully created');
+    expect(reply.msg.reprompt).to.be.empty;
+    expect(reply.session.attributes.state).to.equal('die');
+    expect(reply.toJSON().response.shouldEndSession).to.equal(true);
   });
 
-  it('should modify custom list, and modify an item', () => {
+  it('should modify custom list, and modify an item', async () => {
     const reqheaders = {
       'content-type': 'application/json',
       authorization: 'Bearer consentToken',
@@ -211,29 +207,28 @@ describe('Lists', () => {
     event.request.intent.name = 'ModifyProductInListIntent';
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('ModifyProductInListIntent', (alexaEvent) => {
+    stateMachineSkill.onIntent('ModifyProductInListIntent', async (alexaEvent) => {
       const { productName } = alexaEvent.intent.params;
 
-      return alexaEvent.lists.getOrCreateList(LIST_NAME)
-        .then(listInfo => alexaEvent.lists.updateList(listInfo.listId, newListName, 'active', 1))
-        .then((listInfo) => {
-          const listItem = _.find(listInfo.items, { name: productName });
+      let listInfo = await alexaEvent.lists.getOrCreateList(LIST_NAME);
+      listInfo = await alexaEvent.lists.updateList(listInfo.listId, newListName, 'active', 1);
 
-          return alexaEvent.lists.updateItem(listInfo.listId, listItem.id, value, 'active', 1);
-        })
-        .then(() => ({ reply: 'Lists.ProductModified' }));
+      const listItem = _.find(listInfo.items, { name: productName });
+
+      await alexaEvent.lists.updateItem(listInfo.listId, listItem.id, value, 'active', 1);
+
+      return { reply: 'Lists.ProductModified' };
     });
 
-    return stateMachineSkill.execute(event)
-      .then((reply) => {
-        expect(reply.msg.statements[0]).to.equal('Product has been successfully modified');
-        expect(reply.msg.reprompt).to.be.empty;
-        expect(reply.session.attributes.state).to.equal('die');
-        expect(reply.toJSON().response.shouldEndSession).to.equal(true);
-      });
+    const reply = await stateMachineSkill.execute(event);
+
+    expect(reply.msg.statements[0]).to.equal('Product has been successfully modified');
+    expect(reply.msg.reprompt).to.be.empty;
+    expect(reply.session.attributes.state).to.equal('die');
+    expect(reply.toJSON().response.shouldEndSession).to.equal(true);
   });
 
-  it('should delete item from list, and delete list', () => {
+  it('should delete item from list, and delete list', async () => {
     const reqheaders = {
       'content-type': 'application/json',
       authorization: 'Bearer consentToken',
@@ -261,16 +256,15 @@ describe('Lists', () => {
       .then(() => alexaEvent.lists.deleteList('listId'))
       .then(() => ({ reply: 'Lists.ListDeleted' })));
 
-    return stateMachineSkill.execute(event)
-      .then((reply) => {
-        expect(reply.msg.statements[0]).to.equal('List has been successfully deleted');
-        expect(reply.msg.reprompt).to.be.empty;
-        expect(reply.session.attributes.state).to.equal('die');
-        expect(reply.toJSON().response.shouldEndSession).to.equal(true);
-      });
+    const reply = await stateMachineSkill.execute(event);
+
+    expect(reply.msg.statements[0]).to.equal('List has been successfully deleted');
+    expect(reply.msg.reprompt).to.be.empty;
+    expect(reply.session.attributes.state).to.equal('die');
+    expect(reply.toJSON().response.shouldEndSession).to.equal(true);
   });
 
-  it('should show the lists with at least 1 item', () => {
+  it('should show the lists with at least 1 item', async () => {
     const reqheaders = {
       'content-type': 'application/json',
       authorization: 'Bearer consentToken',
@@ -316,65 +310,57 @@ describe('Lists', () => {
     event.request.intent.name = 'ShowIntent';
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('ShowIntent', (alexaEvent) => {
+    stateMachineSkill.onIntent('ShowIntent', async (alexaEvent) => {
       const listsWithItems = [];
-      let listId;
+      let listInfo = await alexaEvent.lists.getDefaultShoppingList();
+      listInfo = await alexaEvent.lists.getListById(listInfo.listId);
 
-      return alexaEvent.lists.getDefaultShoppingList()
-        .then(listInfo => alexaEvent.lists.getListById(listInfo.listId))
-        .then((listInfo) => {
-          if (!_.isEmpty(listInfo.items)) {
-            listsWithItems.push(listInfo.name);
-          }
+      if (!_.isEmpty(listInfo.items)) {
+        listsWithItems.push(listInfo.name);
+      }
 
-          return alexaEvent.lists.getDefaultToDoList();
-        })
-        .then(listInfo => alexaEvent.lists.getListById(listInfo.listId))
-        .then((listInfo) => {
-          if (!_.isEmpty(listInfo.items)) {
-            listsWithItems.push(listInfo.name);
-          }
+      listInfo = await alexaEvent.lists.getDefaultToDoList();
+      listInfo = await alexaEvent.lists.getListById(listInfo.listId);
 
-          return alexaEvent.lists.getListById('listId');
-        })
-        .then((listInfo) => {
-          if (!_.isEmpty(listInfo.items)) {
-            listsWithItems.push(listInfo.name);
-          }
+      if (!_.isEmpty(listInfo.items)) {
+        listsWithItems.push(listInfo.name);
+      }
 
-          alexaEvent.model.listsWithItems = listsWithItems;
+      listInfo = await alexaEvent.lists.getListById('listId');
 
-          const data = {
-            name: newListName,
-            state: 'active',
-            version: 1,
-          };
+      if (!_.isEmpty(listInfo.items)) {
+        listsWithItems.push(listInfo.name);
+      }
 
-          return alexaEvent.lists.updateList(listInfo.listId, data);
-        })
-        .then((listInfo) => {
-          listId = listInfo.listId;
+      alexaEvent.model.listsWithItems = listsWithItems;
 
-          return alexaEvent.lists.getListItem(listId, 1);
-        })
-        .then((itemInfo) => {
-          const data = {
-            value,
-            status: itemInfo.status,
-            version: 1,
-          };
+      let data = {
+        name: newListName,
+        state: 'active',
+        version: 1,
+      };
 
-          return alexaEvent.lists.updateItem(listId, 1, data);
-        })
-        .then(() => ({ reply: 'Lists.WithItmes' }));
+      listInfo = await alexaEvent.lists.updateList(listInfo.listId, data);
+
+      const listId = listInfo.listId;
+      const itemInfo = await alexaEvent.lists.getListItem(listId, 1);
+
+      data = {
+        value,
+        status: itemInfo.status,
+        version: 1,
+      };
+
+      await alexaEvent.lists.updateItem(listId, 1, data);
+
+      return { reply: 'Lists.WithItmes' };
     });
 
-    return stateMachineSkill.execute(event)
-      .then((reply) => {
-        expect(reply.msg.statements[0]).to.equal(`Lists with items are: Alexa shopping list, Alexa to-do list, and ${LIST_NAME}`);
-        expect(reply.msg.reprompt).to.be.empty;
-        expect(reply.session.attributes.state).to.equal('die');
-        expect(reply.toJSON().response.shouldEndSession).to.equal(true);
-      });
+    const reply = await stateMachineSkill.execute(event);
+
+    expect(reply.msg.statements[0]).to.equal(`Lists with items are: Alexa shopping list, Alexa to-do list, and ${LIST_NAME}`);
+    expect(reply.msg.reprompt).to.be.empty;
+    expect(reply.session.attributes.state).to.equal('die');
+    expect(reply.toJSON().response.shouldEndSession).to.equal(true);
   });
 });
