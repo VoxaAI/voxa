@@ -92,7 +92,7 @@ const itemCreatedMock = {
 describe('Lists', () => {
   let event;
 
-  before(() => {
+  beforeEach(() => {
     event = {
       request: {
         type: 'IntentRequest',
@@ -122,7 +122,7 @@ describe('Lists', () => {
     };
   });
 
-  after(() => {
+  afterEach(() => {
     nock.cleanAll();
   });
 
@@ -149,16 +149,7 @@ describe('Lists', () => {
     stateMachineSkill.onIntent('AddProductToListIntent', (alexaEvent) => {
       const { productName } = alexaEvent.intent.params;
 
-      return alexaEvent.lists.getListMetadata()
-        .then((metadata) => {
-          const listMetadata = _.find(metadata.lists, { name: LIST_NAME });
-
-          if (listMetadata) {
-            return alexaEvent.lists.getListById(listMetadata.listId);
-          }
-
-          return alexaEvent.lists.createList(LIST_NAME);
-        })
+      return alexaEvent.lists.getOrCreateList(LIST_NAME)
         .then((listInfo) => {
           const listItem = _.find(listInfo.items, { name: productName });
 
@@ -197,13 +188,16 @@ describe('Lists', () => {
     const value = 'NEW NAME';
     const newListName = 'NEW LIST';
 
+    const customListMock = _.cloneDeep(listMock);
+    customListMock.lists.push({ listId: 'listId', name: LIST_NAME });
+
     const customItemCreatedMock = _.cloneDeep(itemCreatedMock);
     customItemCreatedMock.name = value;
 
-    const customListByIdMock = _.cloneDeep(listByIdMock);
-    customListByIdMock.name = newListName;
-
     nock('https://api.amazonalexa.com', { reqheaders })
+      .persist()
+      .get('/v2/householdlists/')
+      .reply(200, JSON.stringify(customListMock))
       .persist()
       .get('/v2/householdlists/listId/active')
       .reply(200, JSON.stringify(listByIdMock))
@@ -220,7 +214,7 @@ describe('Lists', () => {
     stateMachineSkill.onIntent('ModifyProductInListIntent', (alexaEvent) => {
       const { productName } = alexaEvent.intent.params;
 
-      return alexaEvent.lists.getListById('listId')
+      return alexaEvent.lists.getOrCreateList(LIST_NAME)
         .then(listInfo => alexaEvent.lists.updateList(listInfo.listId, newListName, 'active', 1))
         .then((listInfo) => {
           const listItem = _.find(listInfo.items, { name: productName });
@@ -300,6 +294,9 @@ describe('Lists', () => {
       .persist()
       .get('/v2/householdlists/')
       .reply(200, JSON.stringify(listMock))
+      .persist()
+      .get('/v2/householdlists/listId/active')
+      .reply(200, JSON.stringify(listByIdMock))
       .persist()
       .get('/v2/householdlists/YW16bjEuYWNjb3VudC5BRkdDNTRFVFI1MkxIS1JMMjZQUkdEM0FYWkdBLVNIT1BQSU5HX0lURU0=/active')
       .reply(200, JSON.stringify(shoppintListMock))
