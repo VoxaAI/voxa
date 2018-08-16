@@ -128,6 +128,7 @@ Links
   request-flow
   i18n
   inSkillPurchases
+  lists
   gadgetController
   gameEngine
   plugins

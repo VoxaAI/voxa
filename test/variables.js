@@ -1,5 +1,7 @@
 'use strict';
 
+const _ = require('lodash');
+
 /**
  * Variables for tests
  *
@@ -59,6 +61,10 @@ const variables = {
     }
 
     return 1;
+  },
+
+  listsWithItems: function listsWithItems(model) {
+    return `${_.join(_.initial(model.listsWithItems), ', ')}, and ${_.last(model.listsWithItems)}`;
   },
 };
 

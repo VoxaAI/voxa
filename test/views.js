@@ -31,6 +31,20 @@ const views = (function views() {
         tell: 'Thanks for your interest',
       },
     },
+    Lists: {
+      ListDeleted: {
+        tell: 'List has been successfully deleted',
+      },
+      ProductCreated: {
+        tell: 'Product has been successfully created',
+      },
+      ProductModified: {
+        tell: 'Product has been successfully modified',
+      },
+      WithItmes: {
+        tell: 'Lists with items are: {listsWithItems}',
+      },
+    },
     ExitIntent: {
       Farewell: {
         tell: 'Ok. For more info visit {site} site.',
