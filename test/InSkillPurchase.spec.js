@@ -44,7 +44,7 @@ describe('InSkillPurchase', () => {
     nock.cleanAll();
   });
 
-  it('should send a buy request', () => {
+  it('should send a buy request', async () => {
     const event = {
       request: {
         type: 'IntentRequest',
@@ -71,28 +71,27 @@ describe('InSkillPurchase', () => {
     };
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('BuyIntent', (alexaEvent) => {
+    stateMachineSkill.onIntent('BuyIntent', async (alexaEvent) => {
       const { productName } = alexaEvent.intent.params;
       const token = 'startState';
 
-      return alexaEvent.isp.buyByReferenceName(productName, token)
-        .then(buyDirective => ({ directives: buyDirective }));
+      const buyDirective = await alexaEvent.isp.buyByReferenceName(productName, token);
+      return { directives: buyDirective };
     });
 
-    return stateMachineSkill.execute(event)
-      .then((reply) => {
-        expect(reply.msg.statements).to.be.empty;
-        expect(reply.msg.reprompt).to.be.empty;
-        expect(reply.msg.directives[0].type).to.equal('Connections.SendRequest');
-        expect(reply.msg.directives[0].name).to.equal('Buy');
-        expect(reply.msg.directives[0].payload.InSkillProduct.productId).to.equal('1');
-        expect(reply.msg.directives[0].token).to.equal('startState');
-        expect(reply.session.attributes.state).to.equal('die');
-        expect(reply.toJSON().response.shouldEndSession).to.equal(true);
-      });
+    const reply = await stateMachineSkill.execute(event);
+
+    expect(reply.msg.statements).to.be.empty;
+    expect(reply.msg.reprompt).to.be.empty;
+    expect(reply.msg.directives[0].type).to.equal('Connections.SendRequest');
+    expect(reply.msg.directives[0].name).to.equal('Buy');
+    expect(reply.msg.directives[0].payload.InSkillProduct.productId).to.equal('1');
+    expect(reply.msg.directives[0].token).to.equal('startState');
+    expect(reply.session.attributes.state).to.equal('die');
+    expect(reply.toJSON().response.shouldEndSession).to.equal(true);
   });
 
-  it('should send a cancel request', () => {
+  it('should send a cancel request', async () => {
     const event = {
       request: {
         type: 'IntentRequest',
@@ -119,28 +118,27 @@ describe('InSkillPurchase', () => {
     };
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('RefundIntent', (alexaEvent) => {
+    stateMachineSkill.onIntent('RefundIntent', async (alexaEvent) => {
       const { productName } = alexaEvent.intent.params;
       const token = 'startState';
 
-      return alexaEvent.isp.cancelByReferenceName(productName, token)
-        .then(buyDirective => ({ directives: buyDirective }));
+      const buyDirective = await alexaEvent.isp.cancelByReferenceName(productName, token);
+      return { directives: buyDirective };
     });
 
-    return stateMachineSkill.execute(event)
-      .then((reply) => {
-        expect(reply.msg.statements).to.be.empty;
-        expect(reply.msg.reprompt).to.be.empty;
-        expect(reply.msg.directives[0].type).to.equal('Connections.SendRequest');
-        expect(reply.msg.directives[0].name).to.equal('Cancel');
-        expect(reply.msg.directives[0].payload.InSkillProduct.productId).to.equal('1');
-        expect(reply.msg.directives[0].token).to.equal('startState');
-        expect(reply.session.attributes.state).to.equal('die');
-        expect(reply.toJSON().response.shouldEndSession).to.equal(true);
-      });
+    const reply = await stateMachineSkill.execute(event);
+
+    expect(reply.msg.statements).to.be.empty;
+    expect(reply.msg.reprompt).to.be.empty;
+    expect(reply.msg.directives[0].type).to.equal('Connections.SendRequest');
+    expect(reply.msg.directives[0].name).to.equal('Cancel');
+    expect(reply.msg.directives[0].payload.InSkillProduct.productId).to.equal('1');
+    expect(reply.msg.directives[0].token).to.equal('startState');
+    expect(reply.session.attributes.state).to.equal('die');
+    expect(reply.toJSON().response.shouldEndSession).to.equal(true);
   });
 
-  it('should send an upsell request', () => {
+  it('should send an upsell request', async () => {
     const event = {
       request: {
         type: 'IntentRequest',
@@ -168,29 +166,31 @@ describe('InSkillPurchase', () => {
 
     const upsellMessage = 'Please buy it';
     const stateMachineSkill = new StateMachineSkill({ variables, views });
-    stateMachineSkill.onIntent('BuyIntent', (alexaEvent) => {
+    stateMachineSkill.onIntent('BuyIntent', async (alexaEvent) => {
       const { productName } = alexaEvent.intent.params;
       const token = 'startState';
 
-      return alexaEvent.isp.upsellByReferenceName(productName, upsellMessage, token)
-        .then(buyDirective => ({ directives: buyDirective }));
+      const buyDirective = await alexaEvent.isp.upsellByReferenceName(
+        productName,
+        upsellMessage,
+        token);
+      return { directives: buyDirective };
     });
 
-    return stateMachineSkill.execute(event)
-      .then((reply) => {
-        expect(reply.msg.statements).to.be.empty;
-        expect(reply.msg.reprompt).to.be.empty;
-        expect(reply.msg.directives[0].type).to.equal('Connections.SendRequest');
-        expect(reply.msg.directives[0].name).to.equal('Upsell');
-        expect(reply.msg.directives[0].payload.InSkillProduct.productId).to.equal('2');
-        expect(reply.msg.directives[0].payload.upsellMessage).to.equal(upsellMessage);
-        expect(reply.msg.directives[0].token).to.equal('startState');
-        expect(reply.session.attributes.state).to.equal('die');
-        expect(reply.toJSON().response.shouldEndSession).to.equal(true);
-      });
+    const reply = await stateMachineSkill.execute(event);
+
+    expect(reply.msg.statements).to.be.empty;
+    expect(reply.msg.reprompt).to.be.empty;
+    expect(reply.msg.directives[0].type).to.equal('Connections.SendRequest');
+    expect(reply.msg.directives[0].name).to.equal('Upsell');
+    expect(reply.msg.directives[0].payload.InSkillProduct.productId).to.equal('2');
+    expect(reply.msg.directives[0].payload.upsellMessage).to.equal(upsellMessage);
+    expect(reply.msg.directives[0].token).to.equal('startState');
+    expect(reply.session.attributes.state).to.equal('die');
+    expect(reply.toJSON().response.shouldEndSession).to.equal(true);
   });
 
-  it('should not send ISP directives on invalid endpoint', () => {
+  it('should not send ISP directives on invalid endpoint', async () => {
     const event = {
       request: {
         type: 'IntentRequest',
@@ -225,17 +225,16 @@ describe('InSkillPurchase', () => {
       return { to: 'entry' };
     });
 
-    return stateMachineSkill.execute(event)
-      .then((reply) => {
-        expect(reply.msg.statements[0]).to.equal('To do In Skill Purchases, you need to link your Amazon account to the US market.');
-        expect(reply.msg.reprompt).to.equal('Can you try again?');
-        expect(reply.msg.directives).to.be.empty;
-        expect(reply.session.attributes.state).to.equal('entry');
-        expect(reply.toJSON().response.shouldEndSession).to.equal(false);
-      });
+    const reply = await stateMachineSkill.execute(event);
+
+    expect(reply.msg.statements[0]).to.equal('To do In Skill Purchases, you need to link your Amazon account to the US market.');
+    expect(reply.msg.reprompt).to.equal('Can you try again?');
+    expect(reply.msg.directives).to.be.empty;
+    expect(reply.session.attributes.state).to.equal('entry');
+    expect(reply.toJSON().response.shouldEndSession).to.equal(false);
   });
 
-  it('should handle ACCEPTED purchase result', () => {
+  it('should handle ACCEPTED purchase result', async () => {
     const event = {
       request: {
         type: 'Connections.Response',
@@ -277,17 +276,16 @@ describe('InSkillPurchase', () => {
       return { reply: 'ISP.ProductNotBought' };
     });
 
-    return stateMachineSkill.execute(event)
-      .then((reply) => {
-        expect(reply.msg.statements[0]).to.equal('Thanks for buying this product, do you want to try it out?');
-        expect(reply.msg.reprompt).to.equal('Do you want to try it out?');
-        expect(reply.session.attributes.modelData.flag).to.equal(1);
-        expect(reply.session.attributes.state).to.equal('firstState');
-        expect(reply.toJSON().response.shouldEndSession).to.equal(false);
-      });
+    const reply = await stateMachineSkill.execute(event);
+
+    expect(reply.msg.statements[0]).to.equal('Thanks for buying this product, do you want to try it out?');
+    expect(reply.msg.reprompt).to.equal('Do you want to try it out?');
+    expect(reply.session.attributes.modelData.flag).to.equal(1);
+    expect(reply.session.attributes.state).to.equal('firstState');
+    expect(reply.toJSON().response.shouldEndSession).to.equal(false);
   });
 
-  it('should handle DECLINED purchase result', () => {
+  it('should handle DECLINED purchase result', async () => {
     const event = {
       request: {
         type: 'Connections.Response',
@@ -326,13 +324,12 @@ describe('InSkillPurchase', () => {
       return { reply: 'ISP.ProductNotBought' };
     });
 
-    return stateMachineSkill.execute(event)
-      .then((reply) => {
-        expect(reply.msg.statements[0]).to.equal('Thanks for your interest');
-        expect(reply.msg.reprompt).to.be.empty;
-        expect(reply.session.attributes.modelData.flag).to.equal(1);
-        expect(reply.session.attributes.state).to.equal('die');
-        expect(reply.toJSON().response.shouldEndSession).to.equal(true);
-      });
+    const reply = await stateMachineSkill.execute(event);
+
+    expect(reply.msg.statements[0]).to.equal('Thanks for your interest');
+    expect(reply.msg.reprompt).to.be.empty;
+    expect(reply.session.attributes.modelData.flag).to.equal(1);
+    expect(reply.session.attributes.state).to.equal('die');
+    expect(reply.toJSON().response.shouldEndSession).to.equal(true);
   });
 });
