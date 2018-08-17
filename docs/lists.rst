@@ -13,22 +13,6 @@ Customers can review and modify their Alexa lists using voice through a device w
 
   :param alexaEvent: Alexa Event object.
 
-.. js:function:: Lists.getOptions(path = '', method = 'GET', body = {})
-
-  Builds the HTTP parameters to be sent to the List API calls
-
-  :param path: Path after the list endpoint.
-  :param method: HTTP method, defaults to GET
-  :param body: POST body, defaults to an empty object
-  :returns Object: A JSON object with the HTTP parameters.
-
-.. js:function:: Lists.getDefaultList(listSuffix)
-
-  Gets info for the Alexa default lists: Shopping, and To-Do lists
-
-  :param listSuffix: identifier for a specific default list
-  :returns Object: A JSON object with the info of the lists
-
 .. js:function:: Lists.getDefaultShoppingList()
 
   Gets info for the Alexa default Shopping list
