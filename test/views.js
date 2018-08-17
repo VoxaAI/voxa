@@ -31,6 +31,14 @@ const views = (function views() {
         tell: 'Thanks for your interest',
       },
     },
+    CustomerContact: {
+      FullInfo: {
+        tell: 'Welcome {customerContactName}, your email address is {customerContactEmail}, and your phone number is {customerContactCountry} {customerContactNumber}',
+      },
+      PermissionNotGranted: {
+        tell: 'To get the user\'s info, go to your Alexa app and grant permission to the skill.',
+      },
+    },
     DeviceAddress: {
       FullAddress: {
         tell: 'Right now your device is in: {deviceInfo}',

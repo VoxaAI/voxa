@@ -128,6 +128,7 @@ Links
   request-flow
   i18n
   canFulfillIntentRequest
+  customerContact
   deviceAddress
   inSkillPurchases
   lists
