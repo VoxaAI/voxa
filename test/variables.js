@@ -67,6 +67,22 @@ const variables = {
     return `${_.join(_.initial(model.listsWithItems), ', ')}, and ${_.last(model.listsWithItems)}`;
   },
 
+  customerContactCountry: function customerContactCountry(model) {
+    return model.info.countryCode;
+  },
+
+  customerContactEmail: function customerContactEmail(model) {
+    return model.info.email;
+  },
+
+  customerContactGivenName: function customerContactGivenName(model) {
+    return model.info.givenName;
+  },
+
+  customerContactNumber: function customerContactNumber(model) {
+    return model.info.phoneNumber;
+  },
+
   deviceInfo: function deviceInfo(model) {
     return model.deviceInfo;
   },

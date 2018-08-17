@@ -66,9 +66,7 @@ describe('DeviceAddress', () => {
       .get('/v1/devices/deviceId/settings/address')
       .reply(200, JSON.stringify(addressMock))
       .get('/v1/devices/deviceId/settings/address/countryAndPostalCode')
-      .reply(200, JSON.stringify(postalCodeMock))
-      .get('/v1/devices/deviceId/settings/address/countryAndPostalCode')
-      .replyWithError('Access to this resource cannot be requested');
+      .reply(200, JSON.stringify(postalCodeMock));
   });
 
   afterEach(() => {
