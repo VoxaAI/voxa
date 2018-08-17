@@ -31,6 +31,17 @@ const views = (function views() {
         tell: 'Thanks for your interest',
       },
     },
+    DeviceAddress: {
+      FullAddress: {
+        tell: 'Right now your device is in: {deviceInfo}',
+      },
+      PermissionNotGranted: {
+        tell: 'To get the device\'s address, go to your Alexa app and grant permission to the skill.',
+      },
+      PostalCode: {
+        tell: 'Your postal code is: {deviceInfo}',
+      },
+    },
     Lists: {
       ListDeleted: {
         tell: 'List has been successfully deleted',

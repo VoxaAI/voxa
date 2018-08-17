@@ -1,6 +1,6 @@
 {
   "name": "voxa",
-  "version": "2.4.5",
+  "version": "2.4.6",
   "description": "A fsm (state machine) framework for Alexa apps using Node.js",
   "main": "index.js",
   "scripts": {

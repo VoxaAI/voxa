@@ -66,6 +66,10 @@ const variables = {
   listsWithItems: function listsWithItems(model) {
     return `${_.join(_.initial(model.listsWithItems), ', ')}, and ${_.last(model.listsWithItems)}`;
   },
+
+  deviceInfo: function deviceInfo(model) {
+    return model.deviceInfo;
+  },
 };
 
 module.exports = variables;
