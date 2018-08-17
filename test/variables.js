@@ -75,8 +75,8 @@ const variables = {
     return model.info.email;
   },
 
-  customerContactName: function customerContactName(model) {
-    return model.info.name;
+  customerContactGivenName: function customerContactGivenName(model) {
+    return model.info.givenName;
   },
 
   customerContactNumber: function customerContactNumber(model) {

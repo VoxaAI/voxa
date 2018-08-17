@@ -39,7 +39,17 @@ When a customer enables your Alexa skill, your skill can request the customer's 
 
   Gets name or given name, phone number, and email address
 
-  :returns Object: A JSON object with user's info
+  :returns Object: A JSON object with user's info with the following structure
+
+.. code-block:: json
+
+  {
+    "countryCode": "string",
+    "email": "string",
+    "givenName": "string",
+    "name": "string",
+    "phoneNumber": "string"
+  }
 
 With Voxa, you can ask for the user's full name like this:
 

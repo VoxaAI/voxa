@@ -33,7 +33,7 @@ const views = (function views() {
     },
     CustomerContact: {
       FullInfo: {
-        tell: 'Welcome {customerContactName}, your email address is {customerContactEmail}, and your phone number is {customerContactCountry} {customerContactNumber}',
+        tell: 'Welcome {customerContactGivenName}, your email address is {customerContactEmail}, and your phone number is {customerContactCountry} {customerContactNumber}',
       },
       PermissionNotGranted: {
         tell: 'To get the user\'s info, go to your Alexa app and grant permission to the skill.',

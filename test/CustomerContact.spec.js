@@ -49,8 +49,6 @@ describe('CustomerContact', () => {
     nock('https://api.amazonalexa.com', { reqheaders })
       .get('/v2/accounts/~current/settings/Profile.email')
       .reply(200, 'example@example.com')
-      .get('/v2/accounts/~current/settings/Profile.givenName')
-      .reply(200, 'John')
       .get('/v2/accounts/~current/settings/Profile.name')
       .reply(200, 'John Doe')
       .get('/v2/accounts/~current/settings/Profile.mobileNumber')
@@ -62,6 +60,10 @@ describe('CustomerContact', () => {
   });
 
   it('should get full contact information', async () => {
+    nock('https://api.amazonalexa.com', { reqheaders })
+      .get('/v2/accounts/~current/settings/Profile.givenName')
+      .reply(200, 'John');
+
     const stateMachineSkill = new StateMachineSkill({ variables, views });
 
     stateMachineSkill.onIntent('InformationIntent', async (alexaEvent) => {
@@ -73,17 +75,38 @@ describe('CustomerContact', () => {
 
     const reply = await stateMachineSkill.execute(event);
 
-    expect(reply.msg.statements[0]).to.equal('Welcome John Doe, your email address is example@example.com, and your phone number is +1 999-999-9999');
+    expect(reply.msg.statements[0]).to.equal('Welcome John, your email address is example@example.com, and your phone number is +1 999-999-9999');
+    expect(reply.msg.reprompt).to.be.empty;
+    expect(reply.session.attributes.state).to.equal('die');
+    expect(reply.toJSON().response.shouldEndSession).to.equal(true);
+  });
+
+  it('should get full contact information but givenName due to safe-to-ignore error', async () => {
+    nock('https://api.amazonalexa.com', { reqheaders })
+      .get('/v2/accounts/~current/settings/Profile.givenName')
+      .replyWithError({ message: 'Access to this resource cannot be requested', code: 403 });
+
+    const stateMachineSkill = new StateMachineSkill({ variables, views });
+
+    stateMachineSkill.onIntent('InformationIntent', async (alexaEvent) => {
+      const info = await alexaEvent.customerContact.getFullUserInformation();
+
+      alexaEvent.model.info = info;
+      return { reply: 'CustomerContact.FullInfo' };
+    });
+
+    const reply = await stateMachineSkill.execute(event);
+
+    expect(reply.msg.statements[0]).to.equal('Welcome , your email address is example@example.com, and your phone number is +1 999-999-9999');
     expect(reply.msg.reprompt).to.be.empty;
     expect(reply.session.attributes.state).to.equal('die');
     expect(reply.toJSON().response.shouldEndSession).to.equal(true);
   });
 
   it('should send error when trying to fetch contact information and permission hasn\'t been granted', async () => {
-    nock.cleanAll();
     nock('https://api.amazonalexa.com', { reqheaders })
-      .get('/v2/accounts/~current/settings/Profile.email')
-      .replyWithError('Access to this resource cannot be requested');
+      .get('/v2/accounts/~current/settings/Profile.givenName')
+      .replyWithError({ message: 'Access to this resource cannot be requested', code: 500 });
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
 
