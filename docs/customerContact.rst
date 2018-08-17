@@ -11,17 +11,35 @@ When a customer enables your Alexa skill, your skill can request the customer's 
 
   :param alexaEvent: Alexa Event object.
 
-.. js:function:: CustomerContact.getAddress()
+.. js:function:: CustomerContact.getEmail()
 
-  Gets full address info
+  Gets user's email
 
-  :returns Object: A JSON object with the full address info
+  :returns Object: A string with user's email address
 
-.. js:function:: CustomerContact.getCountryRegionPostalCode()
+.. js:function:: CustomerContact.getGivenName()
 
-  Gets country/region and postal code
+  Gets user's given name
 
-  :returns Object: A JSON object with country/region info
+  :returns Object: A string with user's given name
+
+.. js:function:: CustomerContact.getName()
+
+  Gets user's full name
+
+  :returns Object: A string with user's full name
+
+.. js:function:: CustomerContact.getPhoneNumber()
+
+  Gets user's phone number
+
+  :returns Object: A JSON object with user's phone number and country code
+
+.. js:function:: CustomerContact.getFullUserInformation()
+
+  Gets name or given name, phone number, and email address
+
+  :returns Object: A JSON object with user's info
 
 With Voxa, you can ask for the user's full name like this:
 
