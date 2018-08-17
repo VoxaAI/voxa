@@ -127,6 +127,7 @@ Links
   statemachine-skill
   request-flow
   i18n
+  canFulfillIntentRequest
   inSkillPurchases
   lists
   gadgetController
