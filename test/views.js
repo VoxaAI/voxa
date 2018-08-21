@@ -50,6 +50,14 @@ const views = (function views() {
         tell: 'Your postal code is: {deviceInfo}',
       },
     },
+    DeviceSettings: {
+      FullSettings: {
+        tell: 'Your default settings are: {settingsInfo}',
+      },
+      Error: {
+        tell: 'There was an error trying to get your settings info.',
+      },
+    },
     Lists: {
       ListDeleted: {
         tell: 'List has been successfully deleted',

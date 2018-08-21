@@ -86,6 +86,10 @@ const variables = {
   deviceInfo: function deviceInfo(model) {
     return model.deviceInfo;
   },
+
+  settingsInfo: function settingsInfo(model) {
+    return model.settingsInfo;
+  },
 };
 
 module.exports = variables;

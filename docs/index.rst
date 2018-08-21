@@ -130,6 +130,7 @@ Links
   canFulfillIntentRequest
   customerContact
   deviceAddress
+  deviceSettings
   inSkillPurchases
   lists
   gadgetController
