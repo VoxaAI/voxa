@@ -102,8 +102,14 @@ describe('DeviceSettings', () => {
   });
 
   it('should send error when trying to fetch distance units information', async () => {
+    nock.cleanAll();
+
     nock('https://api.amazonalexa.com', { reqheaders })
       .get('/v2/devices/deviceId/settings/System.distanceUnits')
+      .replyWithError({ message: 'Could not find resource for URI', code: 204 })
+      .get('/v2/devices/deviceId/settings/System.temperatureUnits')
+      .replyWithError({ message: 'Could not find resource for URI', code: 204 })
+      .get('/v2/devices/deviceId/settings/System.timeZone')
       .replyWithError('Could not find resource for URI');
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
