@@ -104,8 +104,12 @@ describe('CustomerContact', () => {
   });
 
   it('should send error when trying to fetch contact information and permission hasn\'t been granted', async () => {
+    nock.cleanAll();
+
     nock('https://api.amazonalexa.com', { reqheaders })
       .get('/v2/accounts/~current/settings/Profile.givenName')
+      .replyWithError('Access to this resource cannot be requested')
+      .get('/v2/accounts/~current/settings/Profile.name')
       .replyWithError({ message: 'Access to this resource cannot be requested', code: 500 });
 
     const stateMachineSkill = new StateMachineSkill({ variables, views });
