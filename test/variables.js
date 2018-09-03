@@ -1,5 +1,7 @@
 'use strict';
 
+const _ = require('lodash');
+
 /**
  * Variables for tests
  *
@@ -59,6 +61,34 @@ const variables = {
     }
 
     return 1;
+  },
+
+  listsWithItems: function listsWithItems(model) {
+    return `${_.join(_.initial(model.listsWithItems), ', ')}, and ${_.last(model.listsWithItems)}`;
+  },
+
+  customerContactCountry: function customerContactCountry(model) {
+    return model.info.countryCode;
+  },
+
+  customerContactEmail: function customerContactEmail(model) {
+    return model.info.email;
+  },
+
+  customerContactGivenName: function customerContactGivenName(model) {
+    return model.info.givenName;
+  },
+
+  customerContactNumber: function customerContactNumber(model) {
+    return model.info.phoneNumber;
+  },
+
+  deviceInfo: function deviceInfo(model) {
+    return model.deviceInfo;
+  },
+
+  settingsInfo: function settingsInfo(model) {
+    return model.settingsInfo;
   },
 };
 

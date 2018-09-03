@@ -127,6 +127,14 @@ Links
   statemachine-skill
   request-flow
   i18n
+  canFulfillIntentRequest
+  customerContact
+  deviceAddress
+  deviceSettings
+  inSkillPurchases
+  lists
+  gadgetController
+  gameEngine
   plugins
   debugging
   starter-kit
