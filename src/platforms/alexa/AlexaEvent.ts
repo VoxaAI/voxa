@@ -7,9 +7,15 @@ import {
 } from "ask-sdk-model";
 import { i18n, TranslationFunction } from "i18next";
 import * as _ from "lodash";
+
 import { Model } from "../../Model";
 import { IVoxaEvent, IVoxaIntent, IVoxaSession } from "../../VoxaEvent";
 import { AlexaIntent } from "./AlexaIntent";
+import { CustomerContact } from "./apis/CustomerContact";
+import { DeviceAddress } from "./apis/DeviceAddress";
+import { DeviceSettings } from "./apis/DeviceSettings";
+import { InSkillPurchase } from "./apis/InSkillPurchase";
+import { Lists } from "./apis/Lists";
 
 export class AlexaEvent extends IVoxaEvent {
   public intent!: IVoxaIntent;
@@ -22,6 +28,7 @@ export class AlexaEvent extends IVoxaEvent {
     "AudioPlayer.PlaybackNearlyFinished": "AudioPlayer.PlaybackNearlyFinished",
     "AudioPlayer.PlaybackStarted": "AudioPlayer.PlaybackStarted",
     "AudioPlayer.PlaybackStopped": "AudioPlayer.PlaybackStopped",
+    "Connections.Response": "Connections.Response",
     "Display.ElementSelected": "Display.ElementSelected",
     "GameEngine.InputHandlerEvent": "GameEngine.InputHandlerEvent",
     "LaunchRequest": "LaunchIntent",
@@ -50,6 +57,14 @@ export class AlexaEvent extends IVoxaEvent {
     }
 
     this.platform = "alexa";
+
+    this.alexa = {
+      customerContact: new CustomerContact(event),
+      deviceAddress: new DeviceAddress(event),
+      deviceSettings: new DeviceSettings(event),
+      isp: new InSkillPurchase(event),
+      lists: new Lists(event),
+    };
   }
 
   get user() {

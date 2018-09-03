@@ -50,6 +50,19 @@ export const views =  {
         Say:  "{count}",
         Tell: "{count}" ,
       },
+      CustomerContact: {
+        FullInfo: 'Welcome {customerContactGivenName}, your email address is {customerContactEmail}, and your phone number is {customerContactCountry} {customerContactNumber}',
+        PermissionNotGranted: 'To get the user\'s info, go to your Alexa app and grant permission to the skill.',
+      },
+      DeviceAddress: {
+        FullAddress: 'Right now your device is in: {deviceInfo}',
+        PermissionNotGranted: 'To get the device\'s address, go to your Alexa app and grant permission to the skill.',
+        PostalCode: 'Your postal code is: {deviceInfo}',
+      },
+      DeviceSettings: {
+        FullSettings: 'Your default settings are: {settingsInfo}',
+        Error: 'There was an error trying to get your settings info.',
+      },
       DialogFlowBasicCard: {
         buttons: {
           openUrlAction: "https://example.com",
@@ -92,11 +105,28 @@ export const views =  {
         HelpAboutSkill: "For more help visit www.rain.agency" ,
       },
       Hint: "string",
+      ISP: {
+        Invalid: {
+          ask: 'To do In Skill Purchases, you need to link your Amazon account to the US market.',
+          reprompt: 'Can you try again?',
+        },
+        ProductBought: {
+          ask: 'Thanks for buying this product, do you want to try it out?',
+          reprompt: 'Do you want to try it out?',
+        },
+        ProductNotBought: 'Thanks for your interest',
+      },
       LaunchIntent: {
         OpenResponse: {
           alexa: "Hello! Good {time}",
           dialogFlow: "Hello from DialogFlow",
         },
+      },
+      Lists: {
+        ListDeleted: 'List has been successfully deleted',
+        ProductCreated: 'Product has been successfully created',
+        ProductModified: 'Product has been successfully modified',
+        WithItems: 'Lists with items are: {listsWithItems}',
       },
       Number: {
         One: "{numberOne}" ,

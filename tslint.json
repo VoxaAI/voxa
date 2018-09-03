@@ -9,7 +9,11 @@
     },
     "rules": {
       "no-console": [true, true, true],
-      "max-classes-per-file": [false]
+      "max-classes-per-file": [false],
+      "max-line-length": {
+          "options": [120],
+          "severity": "warning"
+      }
     },
     "rulesDirectory": []
 }

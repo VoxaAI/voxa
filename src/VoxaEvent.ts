@@ -24,6 +24,8 @@ export abstract class IVoxaEvent {
   public requestToIntent: ITypeMap = {};
   public requestToRequest: ITypeMap = {};
   public platform!: string;
+  public alexa: any;
+  public google: any;
 
   constructor(event: any, context: any) {
     this.rawEvent = _.cloneDeep(event);

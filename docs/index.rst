@@ -133,6 +133,11 @@ Links
   statemachine-skill
   request-flow
   i18n
+  customerContact
+  deviceAddress
+  deviceSettings
+  inSkillPurchases
+  lists
   gadgetController
   gameEngine
   plugins
