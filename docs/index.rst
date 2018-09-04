@@ -127,17 +127,16 @@ Links
   controllers
   transition
   voxa-event
+  alexa-event
+  botframework-event
+  dialogflow-event
   alexa-directives
   dialogflow-directives
+  alexa-apis
   voxa-reply
   statemachine-skill
   request-flow
   i18n
-  customerContact
-  deviceAddress
-  deviceSettings
-  inSkillPurchases
-  lists
   gadgetController
   gameEngine
   plugins
