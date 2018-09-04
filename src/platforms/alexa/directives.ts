@@ -309,8 +309,8 @@ export class ConnectionsSendRequest implements IDirective {
   public static platform: string = "alexa";
 
   public name?: string;
-  public type: string = "Connections.SendRequest";
   public template?: interfaces.connections.SendRequestDirective;
+  public type?: string = "Connections.SendRequest";
 
   constructor(name: string|interfaces.connections.SendRequestDirective, public payload: any, public token: string) {
     if (_.isString(name)) {
@@ -321,7 +321,7 @@ export class ConnectionsSendRequest implements IDirective {
   }
 
   public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    let template;
+    let template: any;
     const response = (reply as AlexaReply).response;
 
     if (!response.directives) {
@@ -333,7 +333,7 @@ export class ConnectionsSendRequest implements IDirective {
         name: this.name,
         payload: this.payload,
         token: this.token || "token",
-        type: this.type,
+        type: "Connections.SendRequest",
       };
     } else {
       template = this.template;

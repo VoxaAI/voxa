@@ -2,7 +2,7 @@ import { RequestEnvelope } from "ask-sdk-model";
 import * as _ from "lodash";
 import * as rp from "request-promise";
 
-const ConnectionsSendRequest = require('../directives').ConnectionsSendRequest;
+import { ConnectionsSendRequest } from "../directives";
 
 export class InSkillPurchase {
   public static buy(productId: string, token: string) {

@@ -105,7 +105,7 @@ describe("Lists", () => {
   it("should create a custom list and create an item", async () => {
     const reqheaders = {
       "accept": "application/json",
-      "authorization":`Bearer ${event.context.System.user.permissions.consentToken}`,
+      "authorization": `Bearer ${event.context.System.user.permissions.consentToken}`,
       "content-type": "application/json",
       "host": "api.amazonalexa.com",
     };
@@ -159,10 +159,10 @@ describe("Lists", () => {
     const value = "NEW NAME";
     const newListName = "NEW LIST";
 
-    const customListMock = _.cloneDeep(listMock);
+    const customListMock: any = _.cloneDeep(listMock);
     customListMock.lists.push({ listId: "listId", name: LIST_NAME });
 
-    const customItemCreatedMock = _.cloneDeep(itemCreatedMock);
+    const customItemCreatedMock: any = _.cloneDeep(itemCreatedMock);
     customItemCreatedMock.name = value;
 
     nock("https://api.amazonalexa.com", { reqheaders })
@@ -187,7 +187,7 @@ describe("Lists", () => {
       let listInfo = await voxaEvent.alexa.lists.getOrCreateList(LIST_NAME);
       listInfo = await voxaEvent.alexa.lists.updateList(listInfo.listId, newListName, "active", 1);
 
-      const listItem = _.find(listInfo.items, { name: productName });
+      const listItem: any = _.find(listInfo.items, { name: productName });
 
       await voxaEvent.alexa.lists.updateItem(listInfo.listId, listItem.id, value, "active", 1);
 
@@ -212,7 +212,7 @@ describe("Lists", () => {
 
     const value = "NEW NAME";
 
-    const customItemCreatedMock = _.cloneDeep(itemCreatedMock);
+    const customItemCreatedMock: any = _.cloneDeep(itemCreatedMock);
     customItemCreatedMock.name = value;
 
     nock("https://api.amazonalexa.com", { reqheaders })
@@ -248,7 +248,7 @@ describe("Lists", () => {
     const value = "NEW NAME";
     const newListName = "NEW LIST";
 
-    const customItemCreatedMock = _.cloneDeep(itemCreatedMock);
+    const customItemCreatedMock: any = _.cloneDeep(itemCreatedMock);
     customItemCreatedMock.name = value;
 
     const shoppintListMock = _.cloneDeep(listByIdMock);
@@ -306,7 +306,7 @@ describe("Lists", () => {
 
       voxaEvent.model.listsWithItems = listsWithItems;
 
-      let data = {
+      let data: any = {
         name: newListName,
         state: "active",
         version: 1,

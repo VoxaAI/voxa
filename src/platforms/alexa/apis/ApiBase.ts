@@ -39,11 +39,11 @@ export class ApiBase {
     throw err;
   }
 
-  private getToken() {
+  protected getToken() {
     return _.get(this.voxaEvent, "context.System.apiAccessToken");
   }
 
-  private getEndpoint() {
+  protected getEndpoint() {
     return _.get(this.voxaEvent, "context.System.apiEndpoint");
   }
 }

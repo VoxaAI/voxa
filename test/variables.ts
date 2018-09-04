@@ -78,7 +78,7 @@ export const variables = {
   },
 
   listsWithItems: function listsWithItems(request: IVoxaEvent) {
-    return `${_.join(_.initial(request.model.listsWithItems), ', ')}, and ${_.last(request.model.listsWithItems)}`;
+    return `${_.join(_.initial(request.model.listsWithItems), ", ")}, and ${_.last(request.model.listsWithItems)}`;
   },
 
   customerContactCountry: function customerContactCountry(request: IVoxaEvent) {
