@@ -1,17 +1,15 @@
-export const views =  {
+export const views = {
   "de-DE": {
     translation: {
+      Ask: "wie spät ist es?",
       ExitIntent: {
-        Farewell: "Ok für weitere Infos besuchen {site} Website" ,
+        Farewell: "Ok für weitere Infos besuchen {site} Website",
       },
       LaunchIntent: {
         OpenResponse: "Hallo! guten {time}",
       },
       Number: {
-        One:  "{numberOne}" ,
-      },
-      Question: {
-        Ask:  "wie spät ist es?" ,
+        One: "{numberOne}",
       },
       RandomResponse: [
         "zufällig1",
@@ -20,13 +18,20 @@ export const views =  {
         "zufällig4",
         "zufällig5",
       ],
-      Say: {
-        Say: "sagen" ,
-      },
+      Say: "sagen",
     },
   },
   "en-US": {
     translation: {
+      Ask: {
+        ask: "What time is it?",
+        reprompt: "What time is it?",
+      },
+      AskRandom: ['ask1', 'ask2', 'ask3'],
+      AskRandomObj: {
+        ask: ["ask1", "ask2", "ask3"],
+        reprompt: ["reprompt1", "reprompt2", "reprompt3"],
+      },
       BadInput: {
         RepeatLastAskReprompt: {
           say: "I'm sorry. I didn't understand.",
@@ -47,8 +52,8 @@ export const views =  {
       },
       Card2: "{card2}",
       Count: {
-        Say:  "{count}",
-        Tell: "{count}" ,
+        Say: "{count}",
+        Tell: "{count}",
       },
       DialogFlowBasicCard: {
         buttons: {
@@ -56,7 +61,7 @@ export const views =  {
           title: "Example.com",
         },
         display: "DEFAULT",
-        image:  {
+        image: {
           url: "https://example.com/image.png",
         },
         subtitle: "subtitle",
@@ -89,7 +94,7 @@ export const views =  {
       },
       Help: "This is the help",
       HelpIntent: {
-        HelpAboutSkill: "For more help visit www.rain.agency" ,
+        HelpAboutSkill: "For more help visit www.rain.agency",
       },
       Hint: "string",
       LaunchIntent: {
@@ -99,26 +104,14 @@ export const views =  {
         },
       },
       Number: {
-        One: "{numberOne}" ,
+        One: "{numberOne}",
       },
       Playing: {
         SayStop: {
           ask: "Say stop if you want to finish the playback",
         },
       },
-      Question: {
-        Ask: {
-          ask: "What time is it?",
-          reprompt: "What time is it?",
-        },
-
-      },
-      RandomResponse: [
-        "Random 1",
-        "Random 2",
-        "Random 3",
-        "Random 4",
-      ],
+      RandomResponse: ["Random 1", "Random 2", "Random 3", "Random 4"],
       RenderTemplate: {
         template: {
           backButton: "VISIBLE",
@@ -143,26 +136,29 @@ export const views =  {
         },
         type: "Display.RenderTemplate",
       },
+      Reprompt: "reprompt",
+      RepromptRandom: ["reprompt1", "reprompt2", "reprompt3"],
       Reply: {
-        Ask: {
-          ask: "this is an ask",
+        Card: {
+          alexaCard: {
+            image: {
+              largeImageUrl: "https://example.com/large.jpg",
+              smallImageUrl: "https://example.com/small.jpg",
+            },
+            title: "Title",
+            type: "Standard",
+          },
+          alexaHint: "this is the hint",
+        },
+        Say: {
           reprompt: "this is a reprompt",
-        },
-        Combined: {
-          ask: "this is an ask",
-          directives: ["{hintDirective}"],
-          reprompt: "this is a reprompt",
-        },
-        Directives: {
-          directives: ["{hintDirective}"],
-        },
-        Tell: {
-          tell: "this is a tell",
+          say: "this is a say",
         },
       },
-      Say: {
-        Say: "say" ,
-      },
+      Say: "say",
+      SayRandom: ["say1", "say2", "say3"],
+      Tell: "tell",
+      TellRandom: ["tell1", "tell2", "tell3"],
     },
   },
 };

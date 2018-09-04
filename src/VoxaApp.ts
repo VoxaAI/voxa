@@ -4,26 +4,59 @@ import * as i18n from "i18next";
 import * as _ from "lodash";
 
 import { Context as AWSLambdaContext } from "aws-lambda";
-import { Ask, IDirective, IDirectiveClass, Reprompt, Say, SayP, Tell } from "./directives";
-import { InvalidTransitionError, OnSessionEndedError, TimeoutError, UnknownRequestType } from "./errors";
+import {
+  Ask,
+  IDirective,
+  IDirectiveClass,
+  Reprompt,
+  Say,
+  SayP,
+  Tell,
+} from "./directives";
+import {
+  InvalidTransitionError,
+  OnSessionEndedError,
+  TimeoutError,
+  UnknownRequestType,
+} from "./errors";
 import { IModel, Model } from "./Model";
-import { IMessage, IRenderer, IRendererConfig, Renderer } from "./renderers/Renderer";
-import { isState, IState, IStateMachineConfig, isTransition, ITransition, StateMachine } from "./StateMachine";
+import {
+  IMessage,
+  IRenderer,
+  IRendererConfig,
+  Renderer,
+} from "./renderers/Renderer";
+import {
+  isState,
+  IState,
+  IStateMachineConfig,
+  isTransition,
+  ITransition,
+  StateMachine,
+} from "./StateMachine";
 import { IBag, IVoxaEvent } from "./VoxaEvent";
 import { IVoxaReply } from "./VoxaReply";
 
 const log: debug.IDebugger = debug("voxa");
 
 export interface IVoxaAppConfig extends IRendererConfig {
-  appIds?: string[]|string;
+  appIds?: string[] | string;
   Model?: IModel;
   RenderClass?: IRenderer;
   views: any;
   variables?: any;
 }
 
-export type IEventHandler = (event: IVoxaEvent, response: IVoxaReply, transition?: ITransition) => IVoxaReply|void;
-export type IErrorHandler = (event: IVoxaEvent, error: Error, ReplyClass: IVoxaReply) => IVoxaReply;
+export type IEventHandler = (
+  event: IVoxaEvent,
+  response: IVoxaReply,
+  transition?: ITransition,
+) => IVoxaReply | void;
+export type IErrorHandler = (
+  event: IVoxaEvent,
+  error: Error,
+  ReplyClass: IVoxaReply,
+) => IVoxaReply;
 export type IStateHandler = (event: IVoxaEvent) => ITransition;
 
 export class VoxaApp {
@@ -47,43 +80,56 @@ export class VoxaApp {
       SessionEndedRequest: this.handleOnSessionEnded.bind(this),
     };
 
-    _.forEach(this.requestTypes, (requestType) => this.registerRequestHandler(requestType));
+    _.forEach(this.requestTypes, (requestType) =>
+      this.registerRequestHandler(requestType),
+    );
     this.registerEvents();
-    this.onError((voxaEvent: IVoxaEvent, error: Error, reply: IVoxaReply): IVoxaReply => {
-      console.error("onError");
-      console.error(error.message ? error.message : error);
-      if (error.stack) {
-        console.error(error.stack);
-      }
+    this.onError(
+      (voxaEvent: IVoxaEvent, error: Error, reply: IVoxaReply): IVoxaReply => {
+        console.error("onError");
+        console.error(error.message ? error.message : error);
+        if (error.stack) {
+          console.error(error.stack);
+        }
 
-      log(error);
+        log(error);
 
-      reply.clear();
-      reply.addStatement("An unrecoverable error occurred.");
-      reply.terminate();
-      return reply;
-    }, true);
+        reply.clear();
+        reply.addStatement("An unrecoverable error occurred.");
+        reply.terminate();
+        return reply;
+      },
+      true,
+    );
 
     this.states = {
       core: {},
     };
-    this.config = _.assign({
-      Model,
-      RenderClass: Renderer,
-    }, this.config);
+    this.config = _.assign(
+      {
+        Model,
+        RenderClass: Renderer,
+      },
+      this.config,
+    );
 
     this.validateConfig();
 
     this.i18nextPromise = new Promise((resolve, reject) => {
-      this.i18n.init({
-        fallbackLng: "en",
-        load: "all",
-        nonExplicitWhitelist: true,
-        resources: this.config.views,
-      }, (err: Error, t: i18n.TranslationFunction) => {
-        if (err) { return reject(err); }
-        return resolve(t);
-      });
+      this.i18n.init(
+        {
+          fallbackLng: "en",
+          load: "all",
+          nonExplicitWhitelist: true,
+          resources: this.config.views,
+        },
+        (err: Error, t: i18n.TranslationFunction) => {
+          if (err) {
+            return reject(err);
+          }
+          return resolve(t);
+        },
+      );
     });
 
     this.renderer = new this.config.RenderClass(this.config);
@@ -98,7 +144,7 @@ export class VoxaApp {
     this.onAfterStateChanged(this.renderDirectives);
     this.onBeforeReplySent(this.serializeModel, true);
 
-    this.directiveHandlers = [  Say, SayP, Ask, Reprompt, Tell ];
+    this.directiveHandlers = [Say, SayP, Ask, Reprompt, Tell];
   }
 
   public validateConfig() {
@@ -106,7 +152,10 @@ export class VoxaApp {
       throw new Error("Model should have a deserialize method");
     }
 
-    if (!this.config.Model.serialize && !(this.config.Model.prototype && this.config.Model.prototype.serialize)) {
+    if (
+      !this.config.Model.serialize &&
+      !(this.config.Model.prototype && this.config.Model.prototype.serialize)
+    ) {
       throw new Error("Model should have a serialize method");
     }
   }
@@ -114,16 +163,20 @@ export class VoxaApp {
   /*
    * This way we can simply override the method if we want different request types
    */
-  get requestTypes(): string[] { // eslint-disable-line class-methods-use-this
-    return [
-      "IntentRequest",
-      "SessionEndedRequest",
-    ];
+  get requestTypes(): string[] {
+    // eslint-disable-line class-methods-use-this
+    return ["IntentRequest", "SessionEndedRequest"];
   }
 
-  public async handleOnSessionEnded(event: IVoxaEvent, response: IVoxaReply): Promise<IVoxaReply> {
+  public async handleOnSessionEnded(
+    event: IVoxaEvent,
+    response: IVoxaReply,
+  ): Promise<IVoxaReply> {
     const sessionEndedHandlers = this.getOnSessionEndedHandlers(event.platform);
-    const replies = await bluebird.mapSeries(sessionEndedHandlers, (fn: IEventHandler) => fn(event, response));
+    const replies = await bluebird.mapSeries(
+      sessionEndedHandlers,
+      (fn: IEventHandler) => fn(event, response),
+    );
     const lastReply = _.last(replies);
     if (lastReply) {
       return lastReply;
@@ -136,12 +189,19 @@ export class VoxaApp {
    * iterate on all error handlers and simply return the first one that
    * generates a reply
    */
-  public async handleErrors(event: IVoxaEvent, error: Error, reply: IVoxaReply): Promise<IVoxaReply> {
+  public async handleErrors(
+    event: IVoxaEvent,
+    error: Error,
+    reply: IVoxaReply,
+  ): Promise<IVoxaReply> {
     const errorHandlers = this.getOnErrorHandlers(event.platform);
-    const replies: IVoxaReply[] = await bluebird.map(errorHandlers, async (errorHandler: IErrorHandler) => {
-      return await errorHandler(event, error, reply);
-    });
-    let response: IVoxaReply|undefined = _.find(replies);
+    const replies: IVoxaReply[] = await bluebird.map(
+      errorHandlers,
+      async (errorHandler: IErrorHandler) => {
+        return await errorHandler(event, error, reply);
+      },
+    );
+    let response: IVoxaReply | undefined = _.find(replies);
     if (!response) {
       reply.clear();
       response = reply;
@@ -151,7 +211,10 @@ export class VoxaApp {
   }
 
   // Call the specific request handlers for each request type
-  public async execute(voxaEvent: IVoxaEvent, reply: IVoxaReply): Promise<IVoxaReply> {
+  public async execute(
+    voxaEvent: IVoxaEvent,
+    reply: IVoxaReply,
+  ): Promise<IVoxaReply> {
     log("Received new event", JSON.stringify(voxaEvent.rawEvent, null, 2));
     try {
       // Validate that this AlexaRequest originated from authorized source.
@@ -159,12 +222,23 @@ export class VoxaApp {
         const appId = voxaEvent.context.application.applicationId;
 
         if (_.isString(this.config.appIds) && this.config.appIds !== appId) {
-          log(`The applicationIds don't match: "${appId}"  and  "${this.config.appIds}"`);
+          log(
+            `The applicationIds don't match: "${appId}"  and  "${
+              this.config.appIds
+            }"`,
+          );
           throw new Error("Invalid applicationId");
         }
 
-        if (_.isArray(this.config.appIds) && !_.includes(this.config.appIds, appId)) {
-          log(`The applicationIds don't match: "${appId}"  and  "${this.config.appIds}"`);
+        if (
+          _.isArray(this.config.appIds) &&
+          !_.includes(this.config.appIds, appId)
+        ) {
+          log(
+            `The applicationIds don't match: "${appId}"  and  "${
+              this.config.appIds
+            }"`,
+          );
           throw new Error("Invalid applicationId");
         }
       }
@@ -179,18 +253,25 @@ export class VoxaApp {
           case "IntentRequest":
           case "SessionEndedRequest": {
             // call all onRequestStarted callbacks serially.
-            const result = await bluebird.mapSeries(this.getOnRequestStartedHandlers(voxaEvent.platform),
+            const result = await bluebird.mapSeries(
+              this.getOnRequestStartedHandlers(voxaEvent.platform),
               (fn: IEventHandler) => {
-              return fn(voxaEvent, reply);
-            });
+                return fn(voxaEvent, reply);
+              },
+            );
 
-            if (voxaEvent.request.type === "SessionEndedRequest" && _.get(voxaEvent, "request.reason") === "ERROR") {
+            if (
+              voxaEvent.request.type === "SessionEndedRequest" &&
+              _.get(voxaEvent, "request.reason") === "ERROR"
+            ) {
               throw new OnSessionEndedError(_.get(voxaEvent, "request.error"));
             }
 
             // call all onSessionStarted callbacks serially.
-            await bluebird.mapSeries(this.getOnSessionStartedHandlers(voxaEvent.platform),
-              (fn: IEventHandler) => fn(voxaEvent, reply));
+            await bluebird.mapSeries(
+              this.getOnSessionStartedHandlers(voxaEvent.platform),
+              (fn: IEventHandler) => fn(voxaEvent, reply),
+            );
             // Route the request to the proper handler which may have been overriden.
             return await requestHandler(voxaEvent, reply);
           }
@@ -210,7 +291,7 @@ export class VoxaApp {
         promises.push(timerPromise);
         promises.push(executeHandlers());
 
-        response =  await bluebird.race(promises);
+        response = await bluebird.race(promises);
         if (timer) {
           clearTimeout(timer);
         }
@@ -237,15 +318,24 @@ export class VoxaApp {
     const eventName = `on${_.upperFirst(requestType)}`;
     this.registerEvent(eventName);
 
-    this.requestHandlers[requestType] = async (voxaEvent: IVoxaEvent, response: IVoxaReply): Promise<IVoxaReply> => {
+    this.requestHandlers[requestType] = async (
+      voxaEvent: IVoxaEvent,
+      response: IVoxaReply,
+    ): Promise<IVoxaReply> => {
       log(eventName);
       const capitalizedEventName = _.upperFirst(_.camelCase(eventName));
 
-      const runCallback = (fn: IEventHandler): IVoxaReply => fn.call(this, voxaEvent, response);
-      const result = await bluebird.mapSeries(this[`get${capitalizedEventName}Handlers`](), runCallback);
+      const runCallback = (fn: IEventHandler): IVoxaReply =>
+        fn.call(this, voxaEvent, response);
+      const result = await bluebird.mapSeries(
+        this[`get${capitalizedEventName}Handlers`](),
+        runCallback,
+      );
 
       // if the handlers produced a reply we return the last one
-      const lastReply = _(result).filter().last();
+      const lastReply = _(result)
+        .filter()
+        .last();
       if (lastReply) {
         return lastReply;
       }
@@ -295,21 +385,33 @@ export class VoxaApp {
 
     if (!this[eventName]) {
       const capitalizedEventName = _.upperFirst(_.camelCase(eventName));
-      this[eventName] = (callback: IEventHandler, atLast: boolean = false, platform: string  = "core") => {
+      this[eventName] = (
+        callback: IEventHandler,
+        atLast: boolean = false,
+        platform: string = "core",
+      ) => {
         if (atLast) {
-          this.eventHandlers[eventName][`${platform}Last`] = this.eventHandlers[eventName][`${platform}Last`] || [];
-          this.eventHandlers[eventName][`${platform}Last`].push(callback.bind(this));
+          this.eventHandlers[eventName][`${platform}Last`] =
+            this.eventHandlers[eventName][`${platform}Last`] || [];
+          this.eventHandlers[eventName][`${platform}Last`].push(
+            callback.bind(this),
+          );
         } else {
-          this.eventHandlers[eventName][platform] = this.eventHandlers[eventName][platform] || [];
+          this.eventHandlers[eventName][platform] =
+            this.eventHandlers[eventName][platform] || [];
           this.eventHandlers[eventName][platform].push(callback.bind(this));
         }
       };
 
-      this[`get${capitalizedEventName}Handlers`] = (platform?: string): IEventHandler[] => {
+      this[`get${capitalizedEventName}Handlers`] = (
+        platform?: string,
+      ): IEventHandler[] => {
         let handlers: IEventHandler[];
         if (platform) {
-          this.eventHandlers[eventName][platform] = this.eventHandlers[eventName][platform] || [];
-          this.eventHandlers[eventName][`${platform}Last`] = this.eventHandlers[eventName][`${platform}Last`] || [];
+          this.eventHandlers[eventName][platform] =
+            this.eventHandlers[eventName][platform] || [];
+          this.eventHandlers[eventName][`${platform}Last`] =
+            this.eventHandlers[eventName][`${platform}Last`] || [];
           handlers = _.concat(
             this.eventHandlers[eventName].core,
             this.eventHandlers[eventName][platform],
@@ -332,7 +434,8 @@ export class VoxaApp {
     stateName: string,
     handler: IStateHandler | ITransition,
     intents: string[] | string = [],
-    platform: string = "core"): void {
+    platform: string = "core",
+  ): void {
     const state = _.get(this.states[platform], stateName, { name: stateName });
     const stateEnter = _.get(state, "enter", {});
 
@@ -342,10 +445,13 @@ export class VoxaApp {
       } else if (_.isString(intents)) {
         stateEnter[intents] = handler;
       } else if (_.isArray(intents)) {
-        _.merge(stateEnter, _(intents)
-          .map((intentName) => [intentName, handler])
-          .fromPairs()
-          .value());
+        _.merge(
+          stateEnter,
+          _(intents)
+            .map((intentName) => [intentName, handler])
+            .fromPairs()
+            .value(),
+        );
       }
       state.enter = stateEnter;
       _.set(this.states, [platform, stateName], state);
@@ -355,7 +461,11 @@ export class VoxaApp {
     }
   }
 
-  public onIntent(intentName: string, handler: IStateHandler|ITransition, platform: string = "core"): void {
+  public onIntent(
+    intentName: string,
+    handler: IStateHandler | ITransition,
+    platform: string = "core",
+  ): void {
     if (!_.get(this.states, [platform, "entry"])) {
       _.set(this.states, [platform, "entry"], { to: {}, name: "entry" });
     }
@@ -364,29 +474,46 @@ export class VoxaApp {
     this.onState(intentName, handler, [], platform);
   }
 
-  public async runStateMachine(voxaEvent: IVoxaEvent, response: IVoxaReply): Promise<IVoxaReply> {
-    let fromState = voxaEvent.session.new ? "entry" : _.get(voxaEvent, "session.attributes.state", "entry");
+  public async runStateMachine(
+    voxaEvent: IVoxaEvent,
+    response: IVoxaReply,
+  ): Promise<IVoxaReply> {
+    let fromState = voxaEvent.session.new
+      ? "entry"
+      : _.get(voxaEvent, "session.attributes.state", "entry");
     if (fromState === "die") {
       fromState = "entry";
     }
 
     const stateMachine = new StateMachine({
-      onAfterStateChanged: this.getOnAfterStateChangedHandlers(voxaEvent.platform),
-      onBeforeStateChanged: this.getOnBeforeStateChangedHandlers(voxaEvent.platform),
+      onAfterStateChanged: this.getOnAfterStateChangedHandlers(
+        voxaEvent.platform,
+      ),
+      onBeforeStateChanged: this.getOnBeforeStateChangedHandlers(
+        voxaEvent.platform,
+      ),
       onUnhandledState: this.getOnUnhandledStateHandlers(voxaEvent.platform),
       states: this.states,
     });
 
     log("Starting the state machine from %s state", fromState);
 
-    const transition: ITransition = await stateMachine.runTransition(fromState, voxaEvent, response);
+    const transition: ITransition = await stateMachine.runTransition(
+      fromState,
+      voxaEvent,
+      response,
+    );
     if (!_.isString(transition.to) && _.get(transition, "to.isTerminal")) {
       await this.handleOnSessionEnded(voxaEvent, response);
     }
 
-    const onBeforeReplyHandlers = this.getOnBeforeReplySentHandlers(voxaEvent.platform);
+    const onBeforeReplyHandlers = this.getOnBeforeReplySentHandlers(
+      voxaEvent.platform,
+    );
     log("Running onBeforeReplySent");
-    await bluebird.mapSeries(onBeforeReplyHandlers, (fn: IEventHandler) => fn(voxaEvent, response, transition));
+    await bluebird.mapSeries(onBeforeReplyHandlers, (fn: IEventHandler) =>
+      fn(voxaEvent, response, transition),
+    );
 
     return response;
   }
@@ -394,67 +521,65 @@ export class VoxaApp {
   public async renderDirectives(
     voxaEvent: IVoxaEvent,
     response: IVoxaReply,
-    transition: ITransition): Promise<ITransition> {
-    const directives = _.concat(
+    transition: ITransition,
+  ): Promise<ITransition> {
+    const directiveClasses: IDirectiveClass[] = _.concat(
       _.filter(this.directiveHandlers, { platform: "core" }),
       _.filter(this.directiveHandlers, { platform: voxaEvent.platform }),
     );
 
-    const directivesKeyOrder = _.map(directives, "key");
-
-    const pairs = _(transition)
-    .toPairs()
-    .sortBy((pair) => {
-      const [key, value] = pair;
-      return _.indexOf(directivesKeyOrder, key);
-    })
-    .value();
-
-    while (pairs.length) {
-      const pair = pairs.shift();
-      if (!pair) {
-        continue;
-      }
-
-      const [key, value] = pair;
-      const handlers = _.filter(directives, { key });
-      if (!handlers.length) {
-        continue;
-      }
-
-      for (const handler of handlers) {
-        await new handler(value).writeToReply(response, voxaEvent, transition);
-      }
-
+    const directivesKeyOrder = _.map(directiveClasses, "key");
+    if (transition.reply) {
+      // special handling for `transition.reply`
+      const reply = await voxaEvent.t(transition.reply, {
+        returnObjects: true,
+      });
+      const replyKeys = _.keys(reply);
+      const replyTransition = _(replyKeys)
+        .map((key) => {
+          return [key, transition.reply + "." + key];
+        })
+        .fromPairs()
+        .value();
+      transition = _.merge({}, transition, replyTransition);
     }
 
-    if (transition.directives) {
-      if (_.isString(transition.directives)) {
-        transition.directives = await voxaEvent.renderer.renderPath(transition.directives, voxaEvent);
-      }
+    transition.directives = _(transition)
+      .toPairs()
+      .sortBy((pair) => {
+        const [key, value] = pair;
+        return _.indexOf(directivesKeyOrder, key);
+      })
+      .map(
+        _.spread((key, value) => {
+          const handlers = _.filter(directiveClasses, { key });
+          return _.map(
+            handlers,
+            (Directive: IDirectiveClass) => new Directive(value),
+          );
+        }),
+      )
+      .flatten()
+      .concat(transition.directives)
+      .filter()
+      .filter((directive) => {
+        const constructor: any = directive.constructor;
+        return _.includes(["core", voxaEvent.platform], constructor.platform);
+      })
+      .value();
 
-      if (!transition.directives) {
-        return transition;
-      }
-
-      if (!_.isArray(transition.directives)) {
-        transition.directives = [transition.directives];
-      }
-
-      transition.directives = _.concat(
-        _.filter(transition.directives, (directive: any) => directive.constructor.platform === "core"),
-        _.filter(transition.directives, (directive: any) => directive.constructor.platform === voxaEvent.platform),
-      );
-
-      for (const handler of transition.directives) {
-        await handler.writeToReply(response, voxaEvent, transition);
-      }
+    for (const handler of transition.directives) {
+      await handler.writeToReply(response, voxaEvent, transition);
     }
 
     return transition;
   }
 
-  public async serializeModel(voxaEvent: IVoxaEvent, response: IVoxaReply, transition: ITransition): Promise <void> {
+  public async serializeModel(
+    voxaEvent: IVoxaEvent,
+    response: IVoxaReply,
+    transition: ITransition,
+  ): Promise<void> {
     const serialize = _.get(voxaEvent, "model.serialize");
 
     // we do require models to have a serialize method and check that when Voxa is initialized,
@@ -468,10 +593,18 @@ export class VoxaApp {
     if (!transition.to) {
       throw new InvalidTransitionError(transition, "Missing transition.to");
     }
-    const stateName = typeof transition.to === "string" ? transition.to
-    : isState(transition.to) ? transition.to.name
-    : "";
-    if (!stateName) { throw new InvalidTransitionError(transition, "Expected transition to transition to something"); }
+    const stateName =
+      typeof transition.to === "string"
+        ? transition.to
+        : isState(transition.to)
+          ? transition.to.name
+          : "";
+    if (!stateName) {
+      throw new InvalidTransitionError(
+        transition,
+        "Expected transition to transition to something",
+      );
+    }
 
     // We save off the state so that we know where to resume from when the conversation resumes
     const modelData = await voxaEvent.model.serialize();
@@ -483,7 +616,7 @@ export class VoxaApp {
     await response.saveSession(attributes, voxaEvent);
   }
 
-  public async transformRequest(voxaEvent: IVoxaEvent): Promise <void> {
+  public async transformRequest(voxaEvent: IVoxaEvent): Promise<void> {
     await this.i18nextPromise;
     let model: Model;
     const data = voxaEvent.session.attributes.model as IBag;
@@ -493,7 +626,7 @@ export class VoxaApp {
       model = await Model.deserialize(data, voxaEvent);
     }
 
-    model.state = (model.state === "die") ? "entry" : model.state;
+    model.state = model.state === "die" ? "entry" : model.state;
 
     voxaEvent.model = model;
     log("Initialized model like %s", JSON.stringify(voxaEvent.model));
@@ -502,12 +635,14 @@ export class VoxaApp {
   }
 }
 
-export function timeout(context: AWSLambdaContext): { timerPromise: Promise<void>, timer: NodeJS.Timer|undefined } {
+export function timeout(
+  context: AWSLambdaContext,
+): { timerPromise: Promise<void>; timer: NodeJS.Timer | undefined } {
   const timeRemaining = context.getRemainingTimeInMillis();
 
-  let timer: NodeJS.Timer|undefined;
-  const timerPromise =  new Promise<void>((resolve, reject) => {
-    timer = setTimeout( () => {
+  let timer: NodeJS.Timer | undefined;
+  const timerPromise = new Promise<void>((resolve, reject) => {
+    timer = setTimeout(() => {
       reject(new TimeoutError());
     }, Math.max(timeRemaining - 500, 0));
   });

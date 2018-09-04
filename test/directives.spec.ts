@@ -1,11 +1,12 @@
 import { expect, use } from "chai";
 import * as i18n from "i18next";
 import "mocha";
-import { Ask, Reply, Reprompt, Say, Tell } from "../src/directives";
+import { Ask, Reprompt, Say, Tell } from "../src/directives";
 import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
 import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
 import { Hint } from "../src/platforms/alexa/directives";
 import { Renderer } from "../src/renderers/Renderer";
+import { VoxaApp } from "../src/VoxaApp";
 import { IVoxaEvent } from "../src/VoxaEvent";
 import { AlexaRequestBuilder } from "./tools";
 import { variables } from "./variables";
@@ -14,9 +15,10 @@ import { views } from "./views";
 describe("directives", () => {
   let response: AlexaReply;
   let event: IVoxaEvent;
+  let voxaApp: VoxaApp;
 
   before(() => {
-    i18n .init({
+    i18n.init({
       load: "all",
       nonExplicitWhitelist: true,
       resources: views,
@@ -24,6 +26,9 @@ describe("directives", () => {
   });
 
   beforeEach(() => {
+    voxaApp = new VoxaApp({
+      views: {},
+    });
     const rb = new AlexaRequestBuilder();
     const renderer = new Renderer({ views, variables });
     event = new AlexaEvent(rb.getIntentRequest("AMAZON.YesIntent"));
@@ -33,76 +38,82 @@ describe("directives", () => {
     response = new AlexaReply();
   });
 
-  describe("reply", () => {
-    it("should pick up the directive statements", async () => {
-      const transition: any = {};
-      await new Reply("Reply.Directives").writeToReply(response, event, transition);
-      expect(transition.directives).to.have.lengthOf(1);
-      expect(transition.directives[0]).to.be.an.instanceof(Hint);
-      expect(response.hasTerminated).to.be.false;
-    });
-
-    it("should pick up the tell statements", async () => {
-      await new Reply("Reply.Tell").writeToReply(response, event, {});
-      expect(response.speech).to.deep.equal("<speak>this is a tell</speak>");
-      expect(response.hasTerminated).to.be.true;
-    });
-
-    it("should pick up the ask statements", async () => {
-      await new Reply("Reply.Ask").writeToReply(response, event, {});
-      expect(response.speech).to.deep.equal("<speak>this is an ask</speak>");
-      expect(response.reprompt).to.deep.equal("<speak>this is a reprompt</speak>");
-      expect(response.hasTerminated).to.be.false;
-    });
-
-    it("should ask and directives and reprmpt", async () => {
-      const transition: any = {};
-      await new Reply("Reply.Combined").writeToReply(response, event, transition);
-      expect(response.speech).to.deep.equal("<speak>this is an ask</speak>");
-      expect(response.reprompt).to.deep.equal("<speak>this is a reprompt</speak>");
-      expect(transition.directives).to.have.lengthOf(1);
-      expect(transition.directives[0]).to.be.an.instanceof(Hint);
-      expect(response.hasTerminated).to.be.false;
-    });
-
-  });
-
   describe("tell", () => {
     it("should end the session", async () => {
-      await new Tell("Question.Ask.ask").writeToReply(response, event, {});
-      expect(response.speech).to.deep.equal("<speak>What time is it?</speak>");
+      await new Tell("Tell").writeToReply(response, event, {});
+      expect(response.speech).to.equal("<speak>tell</speak>");
+      expect(response.hasTerminated).to.be.true;
+    });
+    it("should render a random tell from the list", async () => {
+      await new Tell("TellRandom").writeToReply(response, event, {});
+      expect([
+        "<speak>tell1</speak>",
+        "<speak>tell2</speak>",
+        "<speak>tell3</speak>",
+      ]).to.include(response.speech);
       expect(response.hasTerminated).to.be.true;
     });
   });
 
   describe("ask", () => {
     it("should render ask statements", async () => {
-      await new Ask("Question.Ask.ask").writeToReply(response, event, {});
+      await new Ask("Ask").writeToReply(response, event, {});
       expect(response.speech).to.deep.equal("<speak>What time is it?</speak>");
+    });
+    it("should render Random Ask statements", async () => {
+      await new Ask("AskRandomObj").writeToReply(response, event, {});
+      expect([
+        "<speak>ask1</speak>",
+        "<speak>ask2</speak>",
+        "<speak>ask3</speak>",
+      ]).to.include(response.speech);
+
+      expect([
+        "<speak>reprompt1</speak>",
+        "<speak>reprompt2</speak>",
+        "<speak>reprompt3</speak>",
+      ]).to.include(response.reprompt);
     });
 
     it("should not terminate the session", async () => {
-      await new Ask("Question.Ask.ask").writeToReply(response, event, {});
+      await new Ask("Ask").writeToReply(response, event, {});
       expect(response.hasTerminated).to.be.false;
     });
   });
 
   describe("say", () => {
     it("should render ask statements", async () => {
-      await new Say("Question.Ask.ask").writeToReply(response, event, {});
-      expect(response.speech).to.deep.equal("<speak>What time is it?</speak>");
+      await new Say("Say").writeToReply(response, event, {});
+      expect(response.speech).to.deep.equal("<speak>say</speak>");
     });
 
     it("should not terminate the session", async () => {
-      await new Say("Question.Ask.ask").writeToReply(response, event, {});
+      await new Say("Say").writeToReply(response, event, {});
       expect(response.hasTerminated).to.be.false;
+    });
+
+    it("should render a random Say ", async () => {
+      await new Say("SayRandom").writeToReply(response, event, {});
+      expect([
+        "<speak>say1</speak>",
+        "<speak>say2</speak>",
+        "<speak>say3</speak>",
+      ]).to.include(response.speech);
     });
   });
 
   describe("reprompt", () => {
     it("should render reprompt statements", async () => {
-      await new Reprompt("Question.Ask.ask").writeToReply(response, event, {});
-      expect(response.reprompt).to.equal("<speak>What time is it?</speak>");
+      await new Reprompt("Reprompt").writeToReply(response, event, {});
+      expect(response.reprompt).to.equal("<speak>reprompt</speak>");
+    });
+    it("should render random reprompt statements", async () => {
+      await new Reprompt("RepromptRandom").writeToReply(response, event, {});
+      expect([
+        "<speak>reprompt1</speak>",
+        "<speak>reprompt2</speak>",
+        "<speak>reprompt3</speak>",
+      ]).to.include(response.reprompt);
     });
   });
 });

@@ -42,8 +42,6 @@
     "@types/url-join": "^0.8.2",
     "@types/uuid": "^3.4.3",
     "actions-on-google": "2",
-    "ask-sdk": "^2.0.7",
-    "ask-sdk-core": "^2.0.7",
     "ask-sdk-model": "^1.4.0-beta.1",
     "azure-functions-ts-essentials": "^1.3.2",
     "bluebird": "^3.5.1",

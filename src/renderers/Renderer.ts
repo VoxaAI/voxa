@@ -57,12 +57,7 @@ export class Renderer {
       throw new Error(`View ${view} for ${locale} locale is missing`);
     }
 
-    const statement =  await this.renderMessage(message, voxaEvent);
-    if (_.isArray(statement)) {
-      return _.sample(statement);
-    }
-
-    return statement;
+    return this.renderMessage(message, voxaEvent);
   }
 
   public renderMessage(msg: any, event: IVoxaEvent) {
@@ -83,7 +78,7 @@ export class Renderer {
           .map(_.spread((key, value) => {
             const isAnOpenResponse = _.includes(["ask", "tell", "say", "reprompt"], key);
             if (isAnOpenResponse && _.isArray(value)) {
-              return [key, deepSearchRenderVariable(_.sample(value), voxaEvent)];
+              return [key, deepSearchRenderVariable(value, voxaEvent)];
             }
 
             return [key, deepSearchRenderVariable(value, voxaEvent)];
