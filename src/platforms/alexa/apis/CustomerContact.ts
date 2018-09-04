@@ -20,14 +20,14 @@ export class CustomerContact extends ApiBase {
   /*
    * Gets user's email address
    */
-  public getEmail() {
+  public getEmail(): Promise<string> {
     return this.getResult("v2/accounts/~current/settings/Profile.email");
   }
 
   /*
    * Gets user's given name
    */
-  public getGivenName() {
+  public getGivenName(): Promise<string> {
     return this.getResult("v2/accounts/~current/settings/Profile.givenName")
       .catch((err: any) => this.checkError(err));
   }
@@ -35,7 +35,7 @@ export class CustomerContact extends ApiBase {
   /*
    * Gets user's name
    */
-  public getName() {
+  public getName(): Promise<string> {
     return this.getResult("v2/accounts/~current/settings/Profile.name")
       .catch((err: any) => this.checkError(err));
   }
@@ -43,7 +43,7 @@ export class CustomerContact extends ApiBase {
   /*
    * Gets user's phone number
    */
-  public getPhoneNumber() {
+  public getPhoneNumber(): Promise<any> {
     return this.getResult("v2/accounts/~current/settings/Profile.mobileNumber");
   }
 

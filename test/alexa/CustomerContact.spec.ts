@@ -2,9 +2,10 @@ import { expect } from "chai";
 import * as _ from "lodash";
 import * as nock from "nock";
 
+import { AlexaEvent } from "../../src/platforms/alexa/AlexaEvent";
 import { AlexaPlatform } from "../../src/platforms/alexa/AlexaPlatform";
 import { VoxaApp } from "../../src/VoxaApp";
-import { AlexaRequestBuilder } from "./../tools";
+import { AlexaRequestBuilder, isAlexaEvent } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";
 
@@ -45,7 +46,11 @@ describe("CustomerContact", () => {
       .reply(200, "John");
 
     alexaSkill.onIntent("InformationIntent", async (voxaEvent) => {
-      const info = await voxaEvent.alexa.customerContact.getFullUserInformation();
+      let info;
+
+      if (isAlexaEvent(voxaEvent)) {
+        info = await voxaEvent.alexa.customerContact.getFullUserInformation();
+      }
 
       voxaEvent.model.info = info;
       return { tell: "CustomerContact.FullInfo" };
@@ -67,7 +72,11 @@ describe("CustomerContact", () => {
       .replyWithError({ message: "Access to this resource cannot be requested", code: 403 });
 
     alexaSkill.onIntent("InformationIntent", async (voxaEvent) => {
-      const info = await voxaEvent.alexa.customerContact.getFullUserInformation();
+      let info;
+
+      if (isAlexaEvent(voxaEvent)) {
+        info = await voxaEvent.alexa.customerContact.getFullUserInformation();
+      }
 
       voxaEvent.model.info = info;
       return { tell: "CustomerContact.FullInfo" };
@@ -94,7 +103,11 @@ describe("CustomerContact", () => {
 
     alexaSkill.onIntent("InformationIntent", async (voxaEvent) => {
       try {
-        const info = await voxaEvent.alexa.customerContact.getFullUserInformation();
+        let info;
+
+        if (isAlexaEvent(voxaEvent)) {
+          info = await voxaEvent.alexa.customerContact.getFullUserInformation();
+        }
 
         voxaEvent.model.info = info;
         return { tell: "CustomerContact.FullInfo" };

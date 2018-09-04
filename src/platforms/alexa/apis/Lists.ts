@@ -1,3 +1,4 @@
+import { services } from "ask-sdk-model";
 import * as _ from "lodash";
 
 import { ApiBase } from "./ApiBase";
@@ -7,7 +8,7 @@ export class Lists extends ApiBase {
    * Gets information from the default Shopping List
    * https://developer.amazon.com/docs/custom-skills/list-faq.html
    */
-  public getDefaultShoppingList() {
+  public getDefaultShoppingList(): Promise<services.listManagement.AlexaListMetadata> {
     return this.getDefaultList("SHOPPING_ITEM");
   }
 
@@ -15,7 +16,7 @@ export class Lists extends ApiBase {
    * Gets information from the default To-Do List
    * https://developer.amazon.com/docs/custom-skills/list-faq.html
    */
-  public getDefaultToDoList() {
+  public getDefaultToDoList(): Promise<services.listManagement.AlexaListMetadata> {
     return this.getDefaultList("TASK");
   }
 
@@ -23,7 +24,7 @@ export class Lists extends ApiBase {
    * Gets metadata from all lists in user"s account
    * https://developer.amazon.com/docs/custom-skills/access-the-alexa-shopping-and-to-do-lists.html#getListsMetadata
    */
-  public getListMetadata() {
+  public getListMetadata(): Promise<services.listManagement.AlexaListsMetadata> {
     return this.getResult();
   }
 
@@ -31,19 +32,20 @@ export class Lists extends ApiBase {
    * Gets list"s information. Items are included
    * https://developer.amazon.com/docs/custom-skills/access-the-alexa-shopping-and-to-do-lists.html#getList
    */
-  public getListById(listId: string, status = "active") {
+  public getListById(listId: string, status = "active"): Promise<services.listManagement.AlexaList> {
     return this.getResult(`${listId}/${status}`);
   }
 
   /*
    * Looks for a list by name, if not found, it creates it, and returns it
    */
-  public async getOrCreateList(name: string) {
-    const listsMetadata = await this.getListMetadata();
-    const listMeta = _.find(listsMetadata.lists, { name });
+  public async getOrCreateList(name: string): Promise<services.listManagement.AlexaList | services.listManagement.AlexaListMetadata> {
+    const listsMetadata: services.listManagement.AlexaListsMetadata = await this.getListMetadata();
+    const listMeta: services.listManagement.AlexaListMetadata|undefined = _.find(listsMetadata.lists, { name });
 
     if (listMeta) {
-      return this.getListById(_.get(listMeta, "listId"));
+      listMeta.listId = listMeta.listId || "";
+      return this.getListById(listMeta.listId);
     }
 
     return this.createList(name);
@@ -53,7 +55,7 @@ export class Lists extends ApiBase {
    * Creates an empty list. The state default value is active
    * https://developer.amazon.com/docs/custom-skills/access-the-alexa-shopping-and-to-do-lists.html#createList
    */
-  public createList(name: string, state = "active") {
+  public createList(name: string, state = "active"): Promise<services.listManagement.AlexaListMetadata> {
     return this.getResult("", "POST", { name, state });
   }
 
@@ -61,10 +63,12 @@ export class Lists extends ApiBase {
    * Updates list"s values like: name, state and version
    * https://developer.amazon.com/docs/custom-skills/access-the-alexa-shopping-and-to-do-lists.html#updateList
    */
-  public updateList(listId: string, name: string, state = "active", version: string) {
+  public updateList(listId: string, name: string, state?: string, version?: number): Promise<services.listManagement.AlexaListMetadata> {
     if (typeof name === "object") {
       return this.getResult(`${listId}`, "PUT", name);
     }
+
+    state = state || "active";
 
     return this.getResult(`${listId}`, "PUT", { name, state, version });
   }
@@ -81,7 +85,7 @@ export class Lists extends ApiBase {
    * Gets information from a list"s item
    * https://developer.amazon.com/docs/custom-skills/access-the-alexa-shopping-and-to-do-lists.html#getListItem
    */
-  public getListItem(listId: string, itemId: string) {
+  public getListItem(listId: string, itemId: string): Promise<services.listManagement.AlexaListItem> {
     return this.getResult(`${listId}/items/${itemId}`);
   }
 
@@ -89,7 +93,7 @@ export class Lists extends ApiBase {
    * Creates an item in a list
    * https://developer.amazon.com/docs/custom-skills/access-the-alexa-shopping-and-to-do-lists.html#createListItem
    */
-  public createItem(listId: string, value: string, status = "active") {
+  public createItem(listId: string, value: string, status = "active"): Promise<services.listManagement.AlexaListItem> {
     return this.getResult(`${listId}/items`, "POST", { value, status });
   }
 
@@ -97,7 +101,7 @@ export class Lists extends ApiBase {
    * Updates information from an item in a list: value, status and version
    * https://developer.amazon.com/docs/custom-skills/access-the-alexa-shopping-and-to-do-lists.html#updateListItem
    */
-  public updateItem(listId: string, itemId: string, value: string, status: string, version: string) {
+  public updateItem(listId: string, itemId: string, value: string, status?: string, version?: number): Promise<services.listManagement.AlexaListItem> {
     if (typeof value === "object") {
       return this.getResult(`${listId}/items/${itemId}`, "PUT", value);
     }
@@ -114,7 +118,7 @@ export class Lists extends ApiBase {
   }
 
   protected getToken() {
-    return _.get(this.voxaEvent, "context.System.user.permissions.consentToken");
+    return _.get(this.rawEvent, "context.System.user.permissions.consentToken");
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -126,7 +130,7 @@ export class Lists extends ApiBase {
    * Gets information from the default lists
    * https://developer.amazon.com/docs/custom-skills/list-faq.html
    */
-  private async getDefaultList(listSuffix: string) {
+  private async getDefaultList(listSuffix: string): Promise<services.listManagement.AlexaListMetadata> {
     const metadata: any = await this.getResult();
     const defaultList: any = _.find(metadata.lists, (currentList: any) => {
       // According to the alexa lists FAQ available in

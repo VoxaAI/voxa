@@ -14,7 +14,7 @@ export class DeviceSettings extends DeviceBase {
    * Gets distance unit associated to device settings
    * https://developer.amazon.com/docs/smapi/alexa-settings-api-reference.html#get-the-distance-measurement-unit
    */
-  public getDistanceUnits() {
+  public getDistanceUnits(): Promise<string> {
     return this.getResult(`v2/devices/${this.deviceId}/settings/System.distanceUnits`)
       .catch((err: any) => this.checkError(err));
   }
@@ -23,7 +23,7 @@ export class DeviceSettings extends DeviceBase {
    * Gets temperature unit associated to device settings
    * https://developer.amazon.com/docs/smapi/alexa-settings-api-reference.html#get-the-temperature-measurement-unit
    */
-  public getTemperatureUnits() {
+  public getTemperatureUnits(): Promise<string> {
     return this.getResult(`v2/devices/${this.deviceId}/settings/System.temperatureUnits`)
       .catch((err: any) => this.checkError(err));
   }
@@ -32,7 +32,7 @@ export class DeviceSettings extends DeviceBase {
    * Gets the timezone specified in device settings
    * https://developer.amazon.com/docs/smapi/alexa-settings-api-reference.html#get-the-timezone
    */
-  public getTimezone() {
+  public getTimezone(): Promise<string> {
     return this.getResult(`v2/devices/${this.deviceId}/settings/System.timeZone`)
       .catch((err: any) => this.checkError(err));
   }

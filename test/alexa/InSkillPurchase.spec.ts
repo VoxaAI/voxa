@@ -4,7 +4,7 @@ import * as nock from "nock";
 
 import { AlexaPlatform } from "../../src/platforms/alexa/AlexaPlatform";
 import { VoxaApp } from "../../src/VoxaApp";
-import { AlexaRequestBuilder } from "./../tools";
+import { AlexaRequestBuilder, isAlexaEvent } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";
 
@@ -57,8 +57,12 @@ describe("InSkillPurchase", () => {
     alexaSkill.onIntent("BuyIntent", async (voxaEvent) => {
       const { productName } = _.get(voxaEvent, "intent.params");
       const token = "startState";
+      let buyDirective;
 
-      const buyDirective = await voxaEvent.alexa.isp.buyByReferenceName(productName, token);
+      if (isAlexaEvent(voxaEvent)) {
+        buyDirective = await voxaEvent.alexa.isp.buyByReferenceName(productName, token);
+      }
+
       return { alexaConnectionsSendRequest: buyDirective };
     });
 
@@ -83,8 +87,12 @@ describe("InSkillPurchase", () => {
     alexaSkill.onIntent("RefundIntent", async (voxaEvent) => {
       const { productName } = _.get(voxaEvent, "intent.params");
       const token = "startState";
+      let buyDirective;
 
-      const buyDirective = await voxaEvent.alexa.isp.cancelByReferenceName(productName, token);
+      if (isAlexaEvent(voxaEvent)) {
+        buyDirective = await voxaEvent.alexa.isp.cancelByReferenceName(productName, token);
+      }
+
       return { alexaConnectionsSendRequest: buyDirective };
     });
 
@@ -110,11 +118,15 @@ describe("InSkillPurchase", () => {
     alexaSkill.onIntent("BuyIntent", async (voxaEvent) => {
       const { productName } = _.get(voxaEvent, "intent.params");
       const token = "startState";
+      let buyDirective;
 
-      const buyDirective = await voxaEvent.alexa.isp.upsellByReferenceName(
-        productName,
-        upsellMessage,
-        token);
+      if (isAlexaEvent(voxaEvent)) {
+        buyDirective = await voxaEvent.alexa.isp.upsellByReferenceName(
+          productName,
+          upsellMessage,
+          token);
+      }
+
       return { alexaConnectionsSendRequest: buyDirective };
     });
 
@@ -138,7 +150,7 @@ describe("InSkillPurchase", () => {
     _.set(event, "context.System.apiEndpoint", "https://api.fe.amazonalexa.com");
 
     alexaSkill.onIntent("BuyIntent", (voxaEvent) => {
-      if (!voxaEvent.alexa.isp.isAllowed()) {
+      if (isAlexaEvent(voxaEvent) && !voxaEvent.alexa.isp.isAllowed()) {
         return { ask: "ISP.Invalid", to: "entry" };
       }
 

@@ -4,7 +4,7 @@ import * as nock from "nock";
 
 import { AlexaPlatform } from "../../src/platforms/alexa/AlexaPlatform";
 import { VoxaApp } from "../../src/VoxaApp";
-import { AlexaRequestBuilder } from "./../tools";
+import { AlexaRequestBuilder, isAlexaEvent } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";
 
@@ -56,9 +56,13 @@ describe("DeviceAddress", () => {
 
   it("should get full address", async () => {
     alexaSkill.onIntent("AddressIntent", async (voxaEvent) => {
-      const info = await voxaEvent.alexa.deviceAddress.getAddress();
+      let info;
 
-      voxaEvent.model.deviceInfo = `${info.addressLine1}, ${info.city}, ${info.countryCode}`;
+      if (isAlexaEvent(voxaEvent)) {
+        info = await voxaEvent.alexa.deviceAddress.getAddress();
+        voxaEvent.model.deviceInfo = `${info.addressLine1}, ${info.city}, ${info.countryCode}`;
+      }
+
       return { tell: "DeviceAddress.FullAddress" };
     });
 
@@ -72,9 +76,13 @@ describe("DeviceAddress", () => {
 
   it("should get coutry/region and postal code", async () => {
     alexaSkill.onIntent("AddressIntent", async (voxaEvent) => {
-      const info = await voxaEvent.alexa.deviceAddress.getCountryRegionPostalCode();
+      let info;
 
-      voxaEvent.model.deviceInfo = `${info.postalCode}, ${info.countryCode}`;
+      if (isAlexaEvent(voxaEvent)) {
+        info = await voxaEvent.alexa.deviceAddress.getCountryRegionPostalCode();
+        voxaEvent.model.deviceInfo = `${info.postalCode}, ${info.countryCode}`;
+      }
+
       return { tell: "DeviceAddress.PostalCode" };
     });
 
@@ -94,9 +102,13 @@ describe("DeviceAddress", () => {
 
     alexaSkill.onIntent("AddressIntent", async (voxaEvent) => {
       try {
-        const info = await voxaEvent.alexa.deviceAddress.getCountryRegionPostalCode();
+        let info;
 
-        voxaEvent.model.deviceInfo = `${info.postalCode}, ${info.countryCode}`;
+        if (isAlexaEvent(voxaEvent)) {
+          info = await voxaEvent.alexa.deviceAddress.getCountryRegionPostalCode();
+          voxaEvent.model.deviceInfo = `${info.postalCode}, ${info.countryCode}`;
+        }
+
         return { tell: "DeviceAddress.PostalCode" };
       } catch (err) {
         return { tell: "DeviceAddress.PermissionNotGranted" };

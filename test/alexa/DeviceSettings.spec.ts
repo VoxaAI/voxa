@@ -4,7 +4,7 @@ import * as nock from "nock";
 
 import { AlexaPlatform } from "../../src/platforms/alexa/AlexaPlatform";
 import { VoxaApp } from "../../src/VoxaApp";
-import { AlexaRequestBuilder } from "./../tools";
+import { AlexaRequestBuilder, isAlexaEvent } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";
 
@@ -44,9 +44,13 @@ describe("DeviceSettings", () => {
       .reply(200, "METRIC");
 
     alexaSkill.onIntent("SettingsIntent", async (voxaEvent) => {
-      const info = await voxaEvent.alexa.deviceSettings.getSettings();
+      let info;
 
-      voxaEvent.model.settingsInfo = `${info.distanceUnits}, ${info.temperatureUnits}, ${info.timezone}`;
+      if (isAlexaEvent(voxaEvent)) {
+        info = await voxaEvent.alexa.deviceSettings.getSettings();
+        voxaEvent.model.settingsInfo = `${info.distanceUnits}, ${info.temperatureUnits}, ${info.timezone}`;
+      }
+
       return { tell: "DeviceSettings.FullSettings" };
     });
 
@@ -64,9 +68,13 @@ describe("DeviceSettings", () => {
       .replyWithError({ message: "Could not find resource for URI", code: 204 });
 
     alexaSkill.onIntent("SettingsIntent", async (voxaEvent) => {
-      const info = await voxaEvent.alexa.deviceSettings.getSettings();
+      let info;
 
-      voxaEvent.model.settingsInfo = `${info.temperatureUnits}, ${info.timezone}`;
+      if (isAlexaEvent(voxaEvent)) {
+        info = await voxaEvent.alexa.deviceSettings.getSettings();
+        voxaEvent.model.settingsInfo = `${info.temperatureUnits}, ${info.timezone}`;
+      }
+
       return { tell: "DeviceSettings.FullSettings" };
     });
 
@@ -91,9 +99,13 @@ describe("DeviceSettings", () => {
 
     alexaSkill.onIntent("SettingsIntent", async (voxaEvent) => {
       try {
-        const info = await voxaEvent.alexa.deviceSettings.getSettings();
+        let info;
 
-        voxaEvent.model.settingsInfo = `${info.distanceUnits}, ${info.temperatureUnits}, ${info.timezone}`;
+        if (isAlexaEvent(voxaEvent)) {
+          info = await voxaEvent.alexa.deviceSettings.getSettings();
+          voxaEvent.model.settingsInfo = `${info.distanceUnits}, ${info.temperatureUnits}, ${info.timezone}`;
+        }
+
         return { tell: "DeviceSettings.FullSettings" };
       } catch (err) {
         return { tell: "DeviceSettings.Error" };

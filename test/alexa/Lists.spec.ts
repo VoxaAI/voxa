@@ -4,7 +4,7 @@ import * as nock from "nock";
 
 import { AlexaPlatform } from "../../src/platforms/alexa/AlexaPlatform";
 import { VoxaApp } from "../../src/VoxaApp";
-import { AlexaRequestBuilder } from "./../tools";
+import { AlexaRequestBuilder, isAlexaEvent } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";
 
@@ -123,15 +123,21 @@ describe("Lists", () => {
 
     alexaSkill.onIntent("AddProductToListIntent", async (voxaEvent) => {
       const { productName } = _.get(voxaEvent, "intent.params");
+      let listInfo: any;
 
-      const listInfo = await voxaEvent.alexa.lists.getOrCreateList(LIST_NAME);
-      let listItem = _.find(listInfo.items, { name: productName });
+      if (isAlexaEvent(voxaEvent)) {
+        listInfo = await voxaEvent.alexa.lists.getOrCreateList(LIST_NAME);
+      }
+
+      let listItem: any = _.find(listInfo.items, { name: productName });
 
       if (listItem) {
         return false;
       }
 
-      listItem = await voxaEvent.alexa.lists.createItem(listInfo.listId, productName);
+      if (isAlexaEvent(voxaEvent)) {
+        listItem = await voxaEvent.alexa.lists.createItem(listInfo.listId, productName);
+      }
 
       if (listItem) {
         return { tell: "Lists.ProductCreated" };
@@ -184,12 +190,16 @@ describe("Lists", () => {
     alexaSkill.onIntent("ModifyProductInListIntent", async (voxaEvent) => {
       const { productName } = _.get(voxaEvent, "intent.params");
 
-      let listInfo = await voxaEvent.alexa.lists.getOrCreateList(LIST_NAME);
-      listInfo = await voxaEvent.alexa.lists.updateList(listInfo.listId, newListName, "active", 1);
+      if (isAlexaEvent(voxaEvent)) {
+        const listInfo = await voxaEvent.alexa.lists.getOrCreateList(LIST_NAME);
+        listInfo.listId = listInfo.listId || "";
 
-      const listItem: any = _.find(listInfo.items, { name: productName });
+        await voxaEvent.alexa.lists.updateList(listInfo.listId, newListName, "active", 1);
 
-      await voxaEvent.alexa.lists.updateItem(listInfo.listId, listItem.id, value, "active", 1);
+        const listItem: any = _.find(_.get(listInfo, "items"), { name: productName });
+
+        await voxaEvent.alexa.lists.updateItem(listInfo.listId, listItem.id, value, "active", 1);
+      }
 
       return { tell: "Lists.ProductModified" };
     });
@@ -225,9 +235,13 @@ describe("Lists", () => {
 
     event.request.intent.name = "DeleteIntent";
 
-    alexaSkill.onIntent("DeleteIntent", (voxaEvent) => voxaEvent.alexa.lists.deleteItem("listId", 1)
-      .then(() => voxaEvent.alexa.lists.deleteList("listId"))
-      .then(() => ({ tell: "Lists.ListDeleted" })));
+    alexaSkill.onIntent("DeleteIntent", (voxaEvent) => {
+      if (isAlexaEvent(voxaEvent)) {
+        return voxaEvent.alexa.lists.deleteItem("listId", "1")
+          .then(() => voxaEvent.alexa.lists.deleteList("listId"))
+          .then(() => ({ tell: "Lists.ListDeleted" }));
+      }
+    });
 
     const reply = await alexaSkill.execute(event, {});
 
@@ -284,46 +298,54 @@ describe("Lists", () => {
 
     alexaSkill.onIntent("ShowIntent", async (voxaEvent) => {
       const listsWithItems = [];
-      let listInfo = await voxaEvent.alexa.lists.getDefaultShoppingList();
-      listInfo = await voxaEvent.alexa.lists.getListById(listInfo.listId);
 
-      if (!_.isEmpty(listInfo.items)) {
-        listsWithItems.push(listInfo.name);
+      if (isAlexaEvent(voxaEvent)) {
+        const listMetadataInfo = await voxaEvent.alexa.lists.getDefaultShoppingList();
+        listMetadataInfo.listId = listMetadataInfo.listId || "";
+
+        let listInfo = await voxaEvent.alexa.lists.getListById(listMetadataInfo.listId);
+
+        if (!_.isEmpty(listInfo.items)) {
+          listsWithItems.push(listInfo.name);
+        }
+
+        listInfo = await voxaEvent.alexa.lists.getDefaultToDoList();
+        listInfo.listId = listInfo.listId || "";
+
+        listInfo = await voxaEvent.alexa.lists.getListById(listInfo.listId);
+
+        if (!_.isEmpty(listInfo.items)) {
+          listsWithItems.push(listInfo.name);
+        }
+
+        listInfo = await voxaEvent.alexa.lists.getListById("listId");
+        listInfo.listId = listInfo.listId || "";
+
+        if (!_.isEmpty(listInfo.items)) {
+          listsWithItems.push(listInfo.name);
+        }
+
+        voxaEvent.model.listsWithItems = listsWithItems;
+
+        let data: any = {
+          name: newListName,
+          state: "active",
+          version: 1,
+        };
+
+        listInfo = await voxaEvent.alexa.lists.updateList(listInfo.listId, data);
+        listInfo.listId = listInfo.listId || "";
+
+        const itemInfo = await voxaEvent.alexa.lists.getListItem(listInfo.listId, "1");
+
+        data = {
+          status: itemInfo.status,
+          value,
+          version: 1,
+        };
+
+        await voxaEvent.alexa.lists.updateItem(listInfo.listId, "1", data);
       }
-
-      listInfo = await voxaEvent.alexa.lists.getDefaultToDoList();
-      listInfo = await voxaEvent.alexa.lists.getListById(listInfo.listId);
-
-      if (!_.isEmpty(listInfo.items)) {
-        listsWithItems.push(listInfo.name);
-      }
-
-      listInfo = await voxaEvent.alexa.lists.getListById("listId");
-
-      if (!_.isEmpty(listInfo.items)) {
-        listsWithItems.push(listInfo.name);
-      }
-
-      voxaEvent.model.listsWithItems = listsWithItems;
-
-      let data: any = {
-        name: newListName,
-        state: "active",
-        version: 1,
-      };
-
-      listInfo = await voxaEvent.alexa.lists.updateList(listInfo.listId, data);
-
-      const listId = listInfo.listId;
-      const itemInfo = await voxaEvent.alexa.lists.getListItem(listId, 1);
-
-      data = {
-        status: itemInfo.status,
-        value,
-        version: 1,
-      };
-
-      await voxaEvent.alexa.lists.updateItem(listId, 1, data);
 
       return { tell: "Lists.WithItems" };
     });

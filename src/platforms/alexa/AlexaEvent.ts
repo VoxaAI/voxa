@@ -19,6 +19,13 @@ import { Lists } from "./apis/Lists";
 
 export class AlexaEvent extends IVoxaEvent {
   public intent!: IVoxaIntent;
+  public alexa: {
+    customerContact: CustomerContact,
+    deviceAddress: DeviceAddress,
+    deviceSettings: DeviceSettings,
+    isp: InSkillPurchase,
+    lists: Lists,
+  };
 
   public requestToIntent: any = {
     "AlexaSkillEvent.SkillDisabled": "AlexaSkillEvent.SkillDisabled",
@@ -38,7 +45,7 @@ export class AlexaEvent extends IVoxaEvent {
     "PlaybackController.PreviousCommandIssued": "PlaybackController.PreviousCommandIssued",
   };
 
-  constructor(event: RequestEnvelope , context?: any) {
+  constructor(event: RequestEnvelope, context?: any) {
     super(event, context);
     this.session = (_.cloneDeep(event.session) || {}) as IVoxaSession;
     this.session.outputAttributes = {};
@@ -59,11 +66,11 @@ export class AlexaEvent extends IVoxaEvent {
     this.platform = "alexa";
 
     this.alexa = {
-      customerContact: new CustomerContact(event),
-      deviceAddress: new DeviceAddress(event),
-      deviceSettings: new DeviceSettings(event),
-      isp: new InSkillPurchase(event),
-      lists: new Lists(event),
+      customerContact: new CustomerContact(this.rawEvent),
+      deviceAddress: new DeviceAddress(this.rawEvent),
+      deviceSettings: new DeviceSettings(this.rawEvent),
+      isp: new InSkillPurchase(this.rawEvent),
+      lists: new Lists(this.rawEvent),
     };
   }
 

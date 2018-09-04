@@ -8,13 +8,13 @@ const alexalog: debug.IDebugger = debug("voxa:alexa");
 export class ApiBase {
   public errorCodeSafeToIgnore: number = 0; // the code error to ignore on checkError function
   public tag: string = ""; // the class reference for error logging
-  public voxaEvent: any; // the event as sent by the service
+  public rawEvent: RequestEnvelope; // the event as sent by the service
 
   constructor(event: RequestEnvelope) {
-    this.voxaEvent = _.cloneDeep(event);
+    this.rawEvent = _.cloneDeep(event);
   }
 
-  protected getResult(path = "", method = "GET", body = {}): any {
+  protected getResult(path = "", method = "GET", body = {}) {
     const options = {
       body,
       headers: {
@@ -25,7 +25,7 @@ export class ApiBase {
       uri: `${this.getEndpoint()}/${path}`,
     };
 
-    return rp(options);
+    return Promise.resolve(rp(options));
   }
 
   protected checkError(err: any) {
@@ -40,10 +40,10 @@ export class ApiBase {
   }
 
   protected getToken() {
-    return _.get(this.voxaEvent, "context.System.apiAccessToken");
+    return _.get(this.rawEvent, "context.System.apiAccessToken");
   }
 
   protected getEndpoint() {
-    return _.get(this.voxaEvent, "context.System.apiEndpoint");
+    return _.get(this.rawEvent, "context.System.apiEndpoint");
   }
 }

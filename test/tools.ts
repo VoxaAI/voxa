@@ -14,6 +14,8 @@ import {
 import * as _ from "lodash";
 import { v1 } from "uuid";
 
+import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
+
 export class AlexaRequestBuilder {
   public version = "1.0";
   public applicationId: string;
@@ -296,4 +298,8 @@ export function getAPIGatewayProxyEvent(method: string = "GET", body: string|nul
     resource: "",
     stageVariables: null,
   };
+}
+
+export function isAlexaEvent(voxaEvent: any): voxaEvent is AlexaEvent {
+  return voxaEvent.alexa !== undefined;
 }
