@@ -27,7 +27,7 @@ export const views = {
         ask: "What time is it?",
         reprompt: "What time is it?",
       },
-      AskRandom: ['ask1', 'ask2', 'ask3'],
+      AskRandom: ["ask1", "ask2", "ask3"],
       AskRandomObj: {
         ask: ["ask1", "ask2", "ask3"],
         reprompt: ["reprompt1", "reprompt2", "reprompt3"],
@@ -136,8 +136,6 @@ export const views = {
         },
         type: "Display.RenderTemplate",
       },
-      Reprompt: "reprompt",
-      RepromptRandom: ["reprompt1", "reprompt2", "reprompt3"],
       Reply: {
         Card: {
           alexaCard: {
@@ -155,6 +153,8 @@ export const views = {
           say: "this is a say",
         },
       },
+      Reprompt: "reprompt",
+      RepromptRandom: ["reprompt1", "reprompt2", "reprompt3"],
       Say: "say",
       SayRandom: ["say1", "say2", "say3"],
       Tell: "tell",
