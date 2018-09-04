@@ -18,23 +18,43 @@ The ``to`` key should be the name of a state in your state machine, when present
 ``directives``
 --------------
 
-Directives are used passed directly to the alexa response, the format is described in `the alexa documentation <https://developer.amazon.com/public/solutions/alexa/alexa-voice-service/reference/interaction-model#interfaces>`_
+Directives is an array of directive objects that implement the ``IDirective`` interface, they can make modifications to the reply object directly
 
 .. code-block:: javascript
 
+  const { PlayAudio } = require('voxa').alexa;
+
   return {
-    directives: [{
-      type: 'AudioPlayer.Play',
-      playBehavior: 'REPLACE_ALL',
-      audioItem: {
-        stream: {
-          token: lesson.id,
-          url: lesson.Url,
-          offsetInMilliseconds: 0,
-        }
-      }
-    }],
+    directives: [new PlayAudio(url, token)],
   };
+
+
+``flow``
+--------
+
+The ``flow`` key can take one of three values:
+
+``continue``:
+  This is the default value if the flow key is not present, it merely continues the state machine execution with an internal transition, it keeps building the response until a controller returns a ``yield`` or a ``terminate`` flow.
+
+``yield``:
+  This stops the state machine and returns the current response to the user without terminating the session.
+
+``terminate``:
+  This stops the state machine and returns the current response to the user, it closes the session.
+
+
+``say``
+-------
+
+Used to render a view and add the result to the response
+
+
+``reprompt``
+------------
+
+Used to render a view and add the result to the response as a reprompt
+
 
 ``reply``
 ---------
