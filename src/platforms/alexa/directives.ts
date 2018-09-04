@@ -303,3 +303,44 @@ export class GameEngineStopInputHandler implements IDirective {
     (reply as AlexaReply).response = response;
   }
 }
+
+export class ConnectionsSendRequest implements IDirective {
+  public static key: string = "alexaConnectionsSendRequest";
+  public static platform: string = "alexa";
+
+  public name?: string;
+  public template?: interfaces.connections.SendRequestDirective;
+  public type?: string = "Connections.SendRequest";
+
+  constructor(name: string|interfaces.connections.SendRequestDirective, public payload: any, public token: string) {
+    if (_.isString(name)) {
+      this.name = name;
+    } else {
+      this.template = name;
+    }
+  }
+
+  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+    let template: any;
+    const response = (reply as AlexaReply).response;
+
+    if (!response.directives) {
+      response.directives = [];
+    }
+
+    if (this.name) {
+      template = {
+        name: this.name,
+        payload: this.payload,
+        token: this.token || "token",
+        type: "Connections.SendRequest",
+      };
+    } else {
+      template = this.template;
+    }
+
+    response.directives.push(template);
+
+    (reply as AlexaReply).response = response;
+  }
+}

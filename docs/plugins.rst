@@ -18,9 +18,9 @@ After instantiating a StateMachineSkill you can register plugins on it. Built in
     const views = require('./views'):
     const variables = require('./variables');
 
-    const skill = new Voxa({ Model, variables, views });
+    const app = new Voxa({ Model, variables, views });
 
-    Voxa.plugins.replaceIntent(skill);
+    Voxa.plugins.replaceIntent(app);
 
 
 State Flow plugin
@@ -28,11 +28,11 @@ State Flow plugin
 
 Stores the state transitions for every alexa event in an array.
 
-.. js:function:: stateFlow(skill)
+.. js:function:: stateFlow(app)
 
   State Flow attaches callbacks to :js:func:`~Voxa.onRequestStarted`, :js:func:`~Voxa.onBeforeStateChanged` and :js:func:`~Voxa.onBeforeReplySent` to track state transitions in a ``voxaEvent.flow`` array
 
-  :param Voxa skill: The skill object
+  :param Voxa app: The app object
 
 
 
@@ -42,9 +42,9 @@ Usage
 .. code-block:: javascript
 
   const alexa = require('alexa-statemachine');
-  alexa.plugins.stateFlow.register(skill)
+  alexa.plugins.stateFlow.register(app)
 
-  skill.onBeforeReplySent((voxaEvent) => {
+  app.onBeforeReplySent((voxaEvent) => {
     console.log(voxaEvent.flow.join(' > ')); // entry > firstState > secondState > die
   });
 
@@ -56,11 +56,11 @@ Replace Intent plugin
 It allows you to rename an intent name based on a regular expression. By default it will match ``/(.*)OnlyIntent$/`` and replace it with ``$1Intent``.
 
 
-.. js:function:: replaceIntent(skill, [config])
+.. js:function:: replaceIntent(app, [config])
 
   Replace Intent plugin uses :js:func:`~Voxa.onIntentRequest` to modify the incoming request intent name
 
-  :param Voxa skill: The stateMachineSkill
+  :param Voxa app: The stateMachineSkill
   :param config: An object with the ``regex`` to look for and the ``replace`` value.
 
 
@@ -69,10 +69,10 @@ Usage
 
 .. code-block:: javascript
 
-    const skill = new Voxa({ Model, variables, views });
+    const app = new Voxa({ Model, variables, views });
 
-    Voxa.plugins.replaceIntent(skill, { regex: /(.*)OnlyIntent$/, replace: '$1Intent' });
-    Voxa.plugins.replaceIntent(skill, { regex: /^VeryLong(.*)/, replace: 'Long$1' });
+    Voxa.plugins.replaceIntent(app, { regex: /(.*)OnlyIntent$/, replace: '$1Intent' });
+    Voxa.plugins.replaceIntent(app, { regex: /^VeryLong(.*)/, replace: 'Long$1' });
 
 Why OnlyIntents?
 *****************
@@ -104,11 +104,11 @@ It logs a CloudWatch metric when the skill catches an error or success execution
 Params
 ******
 
-.. js:function:: cloudwatch(skill, cloudwatch, [eventMetric])
+.. js:function:: cloudwatch(app, cloudwatch, [eventMetric])
 
   CloudWatch plugin uses :js:func:`Voxa.onError`, :js:func:`Voxa.onStateMachineError` and :js:func:`Voxa.onBeforeReplySent` to log metrics
 
-  :param Voxa skill: The stateMachineSkill
+  :param Voxa app: The stateMachineSkill
   :param cloudwatch: A new `AWS.CloudWatch <http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#constructor-property/>`_ object.
   :param putMetricDataParams: Params for `putMetricData <http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#putMetricData-property>`_
 
@@ -119,7 +119,7 @@ Usage
 .. code-block:: javascript
 
     const AWS = require('aws-sdk');
-    const skill = new Voxa({ Model, variables, views });
+    const app = new Voxa({ Model, variables, views });
 
     const cloudWatch = new AWS.CloudWatch({});
     const eventMetric = {
@@ -127,7 +127,7 @@ Usage
       Namespace: 'SkillName' // Name of your skill
     };
 
-    Voxa.plugins.cloudwatch(skill, cloudWatch, eventMetric);
+    Voxa.plugins.cloudwatch(app, cloudWatch, eventMetric);
 
 
 
@@ -139,11 +139,11 @@ It accepts an adapter to autoload info into the model object coming in every ale
 Params
 ******
 
-.. js:function:: autoLoad(skill, [config])
+.. js:function:: autoLoad(app, [config])
 
-  Autoload plugin uses ``skill.onSessionStarted`` to load data the first time the user opens a skill
+  Autoload plugin uses ``app.onSessionStarted`` to load data the first time the user opens a skill
 
-  :param Voxa skill: The stateMachineSkill.
+  :param Voxa app: The stateMachineSkill.
   :param config: An object with an ``adapter`` key with a `get` Promise method in which you can handle your database access to fetch information from any resource.
 
 
@@ -152,6 +152,6 @@ Usage
 
 .. code-block:: javascript
 
-    const skill = new Voxa({ Model, variables, views });
+    const app = new Voxa({ Model, variables, views });
 
-    Voxa.plugins.autoLoad(skill, { adapter });
+    Voxa.plugins.autoLoad(app, { adapter });

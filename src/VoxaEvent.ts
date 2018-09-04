@@ -77,7 +77,7 @@ export interface IBag extends Object {
 }
 
 export interface IVoxaSession {
-  // Session attributes that are attributes that are  inbound on the event.
+  // Session attributes that are inbound on the event.
   // These have been set by in the prior event by setting the outputAttributes.
   attributes: IBag;
 

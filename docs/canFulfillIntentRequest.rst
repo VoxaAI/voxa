@@ -13,7 +13,7 @@ In Voxa, you can take advantage of this feature by following this example:
 
 .. code-block:: javascript
 
-  skill.onCanFulfillIntentRequest((alexaEvent, reply) => {
+  app.onCanFulfillIntentRequest((alexaEvent, reply) => {
     if (alexaEvent.intent.name === 'InfluencerIntent') {
       reply.fulfillIntent('YES');
 

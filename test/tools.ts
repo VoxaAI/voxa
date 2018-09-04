@@ -14,6 +14,8 @@ import {
 import * as _ from "lodash";
 import { v1 } from "uuid";
 
+import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
+
 export class AlexaRequestBuilder {
   public version = "1.0";
   public applicationId: string;
@@ -119,7 +121,7 @@ export class AlexaRequestBuilder {
       },
       System: {
         apiAccessToken: v1(),
-        apiEndpoint: "https://api.amazonalexa.com/",
+        apiEndpoint: "https://api.amazonalexa.com",
         application: { applicationId: this.applicationId },
         device: {
           deviceId: this.deviceId,
@@ -128,7 +130,12 @@ export class AlexaRequestBuilder {
             Display: {},
           },
         },
-        user: { userId: this.userId },
+        user: {
+          permissions: {
+            consentToken: v1(),
+          },
+          userId: this.userId,
+        },
       },
     };
   }
@@ -221,6 +228,33 @@ export class AlexaRequestBuilder {
       version: this.version,
     };
   }
+
+  public getConnectionsResponseRequest(
+    name: string,
+    token: string,
+    payload: any,
+    status?: interfaces.connections.ConnectionsStatus,
+  ): RequestEnvelope {
+    status = status || { code: "200", message: "OK" };
+
+    const request: interfaces.connections.ConnectionsResponse = {
+      locale: "en-US",
+      name,
+      payload,
+      requestId: `EdwRequestId.${v1()}`,
+      status,
+      timestamp: new Date().toISOString(),
+      token,
+      type: "Connections.Response",
+    };
+
+    return {
+      context: this.getContextData(),
+      request,
+      session: this.getSessionData(false),
+      version: this.version,
+    };
+  }
 }
 
 export function getLambdaContext(
@@ -291,4 +325,8 @@ export function getAPIGatewayProxyEvent(
     resource: "",
     stageVariables: null,
   };
+}
+
+export function isAlexaEvent(voxaEvent: any): voxaEvent is AlexaEvent {
+  return voxaEvent.alexa !== undefined;
 }

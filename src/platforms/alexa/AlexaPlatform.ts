@@ -9,6 +9,7 @@ import { AlexaEvent } from "./AlexaEvent";
 import { AlexaReply } from "./AlexaReply";
 import {
   AccountLinkingCard,
+  ConnectionsSendRequest,
   DialogDelegate,
   GadgetControllerLightDirective,
   GameEngineStartInputHandler,
@@ -41,6 +42,7 @@ const AlexaRequests = [
   "AlexaHouseholdListEvent.ItemsCreated",
   "AlexaHouseholdListEvent.ItemsUpdated",
   "AlexaHouseholdListEvent.ItemsDeleted",
+  "Connections.Response",
   "Display.ElementSelected",
   "CanFulfillIntentRequest",
   "GameEngine.InputHandlerEvent",
@@ -71,6 +73,7 @@ export class AlexaPlatform extends VoxaPlatform {
   public getDirectiveHandlers() {
     return [
       AccountLinkingCard,
+      ConnectionsSendRequest,
       DialogDelegate,
       GadgetControllerLightDirective,
       GameEngineStartInputHandler,

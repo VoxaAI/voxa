@@ -22,6 +22,7 @@ export {
 
 import {
   AccountLinkingCard as AlexaAccountLinkingCard,
+  ConnectionsSendRequest,
   DialogDelegate,
   GadgetControllerLightDirective,
   GameEngineStartInputHandler,

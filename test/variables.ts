@@ -4,6 +4,7 @@
  * Copyright (c) 2016 Rain Agency.
  * Licensed under the MIT license.
  */
+import * as _ from "lodash";
 
 import { Hint, HomeCard } from "../src/platforms/alexa/directives";
 import { IVoxaEvent } from "../src/VoxaEvent";
@@ -74,5 +75,33 @@ export const variables = {
     }
 
     return 1;
+  },
+
+  listsWithItems: function listsWithItems(request: IVoxaEvent) {
+    return `${_.join(_.initial(request.model.listsWithItems), ", ")}, and ${_.last(request.model.listsWithItems)}`;
+  },
+
+  customerContactCountry: function customerContactCountry(request: IVoxaEvent) {
+    return request.model.info.countryCode;
+  },
+
+  customerContactEmail: function customerContactEmail(request: IVoxaEvent) {
+    return request.model.info.email;
+  },
+
+  customerContactGivenName: function customerContactGivenName(request: IVoxaEvent) {
+    return request.model.info.givenName;
+  },
+
+  customerContactNumber: function customerContactNumber(request: IVoxaEvent) {
+    return request.model.info.phoneNumber;
+  },
+
+  deviceInfo: function deviceInfo(request: IVoxaEvent) {
+    return request.model.deviceInfo;
+  },
+
+  settingsInfo: function settingsInfo(request: IVoxaEvent) {
+    return request.model.settingsInfo;
   },
 };
