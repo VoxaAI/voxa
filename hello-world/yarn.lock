@@ -172,31 +172,9 @@ asap@~2.0.3:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
 
-ask-sdk-core@^2.0.7:
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/ask-sdk-core/-/ask-sdk-core-2.0.7.tgz#0f2300aa99a5bd92c0bd700d1ed92ff8da1f83b9"
-
-ask-sdk-dynamodb-persistence-adapter@^2.0.7:
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/ask-sdk-dynamodb-persistence-adapter/-/ask-sdk-dynamodb-persistence-adapter-2.0.7.tgz#c00c88579cd32cf91b1b3d843615ff29cadc5234"
-  dependencies:
-    aws-sdk "^2.163.0"
-
-ask-sdk-model@^1.0.0:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/ask-sdk-model/-/ask-sdk-model-1.3.1.tgz#a583809e4e9d3fb5308306249907808fab37fd4f"
-
 ask-sdk-model@^1.4.0-beta.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/ask-sdk-model/-/ask-sdk-model-1.4.1.tgz#cbc3e071ac720336ee289dd0a57e6bbdf5c9d0f9"
-
-ask-sdk@^2.0.7:
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/ask-sdk/-/ask-sdk-2.0.7.tgz#1157fb90399b50bb1deab55a866255fba4317d72"
-  dependencies:
-    ask-sdk-core "^2.0.7"
-    ask-sdk-dynamodb-persistence-adapter "^2.0.7"
-    ask-sdk-model "^1.0.0"
 
 asn1@~0.2.3:
   version "0.2.3"
@@ -217,20 +195,6 @@ async@^1.5.2:
 asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
-
-aws-sdk@^2.163.0:
-  version "2.266.1"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.266.1.tgz#1d0f14cbf82c95cec97752cd5b00df0315a67ff4"
-  dependencies:
-    buffer "4.9.1"
-    events "1.1.1"
-    ieee754 "1.1.8"
-    jmespath "0.15.0"
-    querystring "0.2.0"
-    sax "1.2.1"
-    url "0.10.3"
-    uuid "3.1.0"
-    xml2js "0.4.17"
 
 aws-sign2@~0.7.0:
   version "0.7.0"
@@ -254,10 +218,6 @@ azure-functions-ts-essentials@^1.3.2:
 balanced-match@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
-
-base64-js@^1.0.2:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.3.0.tgz#cab1e6118f051095e58b5281aea8c1cd22bfc0e3"
 
 base64url@^2.0.0:
   version "2.0.0"
@@ -309,14 +269,6 @@ browser-stdout@1.3.1:
 buffer-equal-constant-time@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/buffer-equal-constant-time/-/buffer-equal-constant-time-1.0.1.tgz#f8e71132f7ffe6e01a5c9697a4c6f3e48d5cc819"
-
-buffer@4.9.1:
-  version "4.9.1"
-  resolved "https://registry.yarnpkg.com/buffer/-/buffer-4.9.1.tgz#6d1bb601b07a4efced97094132093027c95bc298"
-  dependencies:
-    base64-js "^1.0.2"
-    ieee754 "^1.1.4"
-    isarray "^1.0.0"
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -410,10 +362,6 @@ ecdsa-sig-formatter@1.0.10:
 escape-string-regexp@1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
-
-events@1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
 
 extend@^3.0.1, extend@~3.0.1:
   version "3.0.1"
@@ -564,14 +512,6 @@ i18next@^9.0.1:
   version "9.1.0"
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-9.1.0.tgz#408005fe262a990c8d93946a6de0c77bba11667b"
 
-ieee754@1.1.8:
-  version "1.1.8"
-  resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.8.tgz#be33d40ac10ef1926701f6f08a2d86fbfd1ad3e4"
-
-ieee754@^1.1.4:
-  version "1.1.12"
-  resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.12.tgz#50bf24e5b9c8bb98af4964c941cdb0918da7b60b"
-
 inflight@^1.0.4:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/inflight/-/inflight-1.0.6.tgz#49bd6331d7d02d0c09bc910a1075ba8165b56df9"
@@ -591,10 +531,6 @@ is-typedarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/is-typedarray/-/is-typedarray-1.0.0.tgz#e479c80858df0c1b11ddda6940f96011fcda4a9a"
 
-isarray@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
-
 isemail@1.x.x:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/isemail/-/isemail-1.2.0.tgz#be03df8cc3e29de4d2c5df6501263f1fa4595e9a"
@@ -602,10 +538,6 @@ isemail@1.x.x:
 isstream@~0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
-
-jmespath@0.15.0:
-  version "0.15.0"
-  resolved "https://registry.yarnpkg.com/jmespath/-/jmespath-0.15.0.tgz#a3f222a9aae9f966f5d27c796510e28091764217"
 
 joi@^6.10.1:
   version "6.10.1"
@@ -674,7 +606,7 @@ lodash.once@^4.0.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/lodash.once/-/lodash.once-4.1.1.tgz#0dd3971213c7c56df880977d504c88fb471a97ac"
 
-lodash@^4.0.0, lodash@^4.13.1:
+lodash@^4.13.1:
   version "4.17.10"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
 
@@ -787,10 +719,6 @@ psl@^1.1.24:
   version "1.1.28"
   resolved "https://registry.yarnpkg.com/psl/-/psl-1.1.28.tgz#4fb6ceb08a1e2214d4fd4de0ca22dae13740bc7b"
 
-punycode@1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.3.2.tgz#9653a036fb7c1ee42342f2325cceefea3926c48d"
-
 punycode@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
@@ -798,10 +726,6 @@ punycode@^1.4.1:
 qs@^6.5.1, qs@~6.5.1:
   version "6.5.2"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
-
-querystring@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
 
 request-promise-core@1.1.1:
   version "1.1.1"
@@ -858,14 +782,6 @@ safe-buffer@^5.0.1, safe-buffer@^5.1.1:
 safer-buffer@^2.0.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
-
-sax@1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.1.tgz#7b8e656190b228e81a66aea748480d828cd2d37a"
-
-sax@>=0.6.0:
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
 
 sprintf-js@^1.0.3:
   version "1.1.1"
@@ -945,17 +861,6 @@ url-join@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/url-join/-/url-join-3.0.0.tgz#26e8113ace195ea30d0fc38186e45400f9cea672"
 
-url@0.10.3:
-  version "0.10.3"
-  resolved "https://registry.yarnpkg.com/url/-/url-0.10.3.tgz#021e4d9c7705f21bbf37d03ceb58767402774c64"
-  dependencies:
-    punycode "1.3.2"
-    querystring "0.2.0"
-
-uuid@3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.1.0.tgz#3dd3d3e790abc24d7b0d3a034ffababe28ebbc04"
-
 uuid@^3.1.0, uuid@^3.2.1:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
@@ -969,7 +874,7 @@ verror@1.10.0:
     extsprintf "^1.2.0"
 
 "voxa@file:..":
-  version "3.0.0-alpha29"
+  version "3.0.0-alpha31"
   dependencies:
     "@types/aws-lambda" "^8.10.6"
     "@types/bluebird" "^3.5.18"
@@ -982,8 +887,6 @@ verror@1.10.0:
     "@types/url-join" "^0.8.2"
     "@types/uuid" "^3.4.3"
     actions-on-google "2"
-    ask-sdk "^2.0.7"
-    ask-sdk-core "^2.0.7"
     ask-sdk-model "^1.4.0-beta.1"
     azure-functions-ts-essentials "^1.3.2"
     bluebird "^3.5.1"
@@ -1000,19 +903,6 @@ verror@1.10.0:
 wrappy@1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
-
-xml2js@0.4.17:
-  version "0.4.17"
-  resolved "https://registry.yarnpkg.com/xml2js/-/xml2js-0.4.17.tgz#17be93eaae3f3b779359c795b419705a8817e868"
-  dependencies:
-    sax ">=0.6.0"
-    xmlbuilder "^4.1.0"
-
-xmlbuilder@^4.1.0:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/xmlbuilder/-/xmlbuilder-4.2.1.tgz#aa58a3041a066f90eaa16c2f5389ff19f3f461a5"
-  dependencies:
-    lodash "^4.0.0"
 
 xtend@^4.0.1:
   version "4.0.1"

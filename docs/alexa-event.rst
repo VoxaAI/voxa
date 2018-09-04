@@ -7,24 +7,28 @@ The ``AlexaEvent`` Object
 
   The ``alexaEvent`` object contains all the information from the Voxa event, it's an object kept for the entire lifecycle of the state machine transitions and as such is a perfect place for middleware to put information that should be available on every request.
 
-  .. js:attribute:: AlexaEvent.intent
-
-    In Voxa the alexaEvent object makes ``intent.slots`` available through ``intent.params`` after aplying a simple transformation so ``{ slots: [{ name: 'Dish', value: 'Fried Chicken' }] }`` becomes ``{ Dish: 'Fried Chicken' }``, in other platforms it does it best to make the intent params for each platform also available on ``intent.params``
-
-  .. js:attribute:: AlexaEvent.user
-
-    A convenience getter to obtain the user from ``session.user`` or ``context.System.user`` in alexa, and ``conv.user.id`` in dialogflow. In other platforms it's also available, you can always count on the ``alexaEvent.user.userId`` being available. If there's an ``accessToken`` it will also be available through ``alexaEvent.user.accessToken``
 
   .. js:attribute:: AlexaEvent.token
 
     A convenience getter to obtain the request's token, specially when using the ``Display.ElementSelected``
 
-  .. js:attribute:: AlexaEvent.requestToIntent
+  .. js:attribute:: AlexaEvent.alexa.customerContact
 
-    An array of requests to be converted to intents to be used as ``app.toIntent`` in the app code.
 
-  .. js:function:: AlexaEvent.supportedInterfaces()
+    When a customer enables your Alexa skill, your skill can request the customer's permission to the their contact information, see :ref:`alexa-customer-contact`.
 
-    Array of supported interfaces
+  .. js:attribute:: AlexaEvent.alexa.deviceAddress
 
-    :returns Array: A string array of the platform's supported interfaces
+    When a customer enables your Alexa skill, your skill can obtain the customer's permission to use address data associated with the customer's Alexa device., see :ref:`alexa-device-address`.
+
+  .. js:attribute:: AlexaEvent.alexa.deviceSettings
+
+    Alexa customers can set their timezone, distance measuring unit, and temperature measurement unit in the Alexa app, see :ref:`alexa-device-settings`.
+
+  .. js:attribute:: AlexaEvent.alexa.isp
+
+    The `in-skill purchasing <https://developer.amazon.com/docs/in-skill-purchase/isp-overview.html>`_ feature enables you to sell premium content such as game features and interactive stories for use in skills with a custom interaction model, see :ref:`alexa-isp`.
+
+  .. js:attribute:: AlexaEvent.alexa.lists
+
+    Alexa customers have access to two default lists: Alexa to-do and Alexa shopping, see :ref:`alexa-lists`.

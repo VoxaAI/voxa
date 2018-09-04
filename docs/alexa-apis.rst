@@ -3,6 +3,9 @@ Alexa APIs
 ==============================================
 Amazon has integrated several APIs so users can leverage the Alexa's configurations, device's and user's information.
 
+
+.. _alexa-customer-contact:
+
 --------------------------------------
 Customer Contact Information Reference
 --------------------------------------
@@ -99,6 +102,8 @@ To send a card requesting user the permission to access their information, you c
   },
 
 
+.. _alexa-device-address:
+
 ------------------------------------
 Device Address Information Reference
 ------------------------------------
@@ -172,6 +177,8 @@ To send a card requesting user the permission to access the device address info,
   },
 
 
+.. _alexa-device-settings:
+
 -------------------------
 Device Settings Reference
 -------------------------
@@ -229,6 +236,7 @@ With Voxa, you can ask for the full device's address like this:
 
 You don't need to request to the user the permission to access the device settings info.
 
+.. _alexa-isp:
 
 ----------------------------
 In-Skill Purchases Reference
@@ -312,6 +320,7 @@ When users accept or refuse to buy/cancel an item, Alexa sends a Connections.Res
     "token": "string"
   }
 
+.. _alexa-lists:
 
 ----------------------------------------
 Alexa Shopping and To-Do Lists Reference

@@ -13,7 +13,22 @@ The ``voxaEvent`` Object
 
   .. js:attribute:: VoxaEvent.intent.params
 
-    In Voxa the voxaEvent object makes ``intent.slots`` available through ``intent.params`` after aplying a simple transformation so ``{ slots: [{ name: 'Dish', value: 'Fried Chicken' }] }`` becomes ``{ Dish: 'Fried Chicken' }``, in other platforms it does it best to make the intent params for each platform also available on ``intent.params``
+    In Voxa the voxaEvent object makes ``intent.slots`` available through ``intent.params`` after aplying a simple transformation so
+
+
+    .. code-block:: json
+
+          { slots: [{ name: 'Dish', value: 'Fried Chicken' }] }
+    ..
+
+    becomes:
+
+    .. code-block:: json
+
+        { Dish: 'Fried Chicken' }
+    ..
+
+    in other platforms it does it best to make the intent params for each platform also available on ``intent.params``
 
   .. js:attribute:: VoxaEvent.user
 
@@ -28,14 +43,6 @@ The ``voxaEvent`` Object
     Array of supported interfaces
 
     :returns Array: A string array of the platform's supported interfaces
-
-  .. js:function:: VoxaEvent.mapRequestToIntent()
-
-    Converts a request into an intent to be handled by ``app.toIntent``
-
-  .. js:function:: VoxaEvent.mapRequestToRequest()
-
-    Converts a request into another type of request
 
 ``IVoxaEvent`` is an interface that inherits its attributes and function to the specific platforms, for more information about each platform's own methods visit:
 
