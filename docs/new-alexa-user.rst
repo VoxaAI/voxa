@@ -20,7 +20,7 @@ You can see the different types of skills `here <https://developer.amazon.com/pu
 `````````````````````````````````````````
 How users interact with Alexa?
 `````````````````````````````````````````
-With Interaction Model. 
+With Interaction Model.
 
 End users interact with all of Alexa’s abilities in the same way – by waking the device with the wake word (or a button for a device such as the Amazon Tap) and asking a question or making a request.
 
@@ -36,7 +36,7 @@ In the context of Alexa, an interaction model is somewhat analogous to a graphic
 --------------------------------
 Amazon Developer Service Account
 --------------------------------
-Amazon Web Services provides a suite of solutions that enable developers and their organizations to leverage Amazon.com's robust technology infrastructure and content via simple API calls. 
+Amazon Web Services provides a suite of solutions that enable developers and their organizations to leverage Amazon.com's robust technology infrastructure and content via simple API calls.
 
 The first thing you need to do is create your own `Amazon Developer Account <https://developer.amazon.com>`_.
 

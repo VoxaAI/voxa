@@ -11,16 +11,16 @@ Voxa
 
   .. code-block:: javascript
 
-    const skill = new VoxaApp.pp({ Model, variables, views, appIds });
+    const app = new VoxaApp.pp({ Model, variables, views, appIds });
 
 .. js:function:: VoxaApp.lambda()
 
 
-  :returns: A lambda handler that will call your :js:func:`skill.execute <VoxaApp.execute>` method
+  :returns: A lambda handler that will call your :js:func:`app.execute <VoxaApp.execute>` method
 
   .. code-block:: javascript
 
-      exports.handler = skill.lambda();
+      exports.handler = app.lambda();
 
 .. js:function:: VoxaApp.execute(event)
 
@@ -32,7 +32,7 @@ Voxa
 
   .. code-block:: javascript
 
-      skill.execute(event, context)
+      app.execute(event, context)
         .then(result => callback(null, result))
         .catch(callback);
 
@@ -46,12 +46,12 @@ Voxa
 
   .. code-block:: javascript
 
-    skill.onState('entry', {
+    app.onState('entry', {
       LaunchIntent: 'launch',
       'AMAZON.HelpIntent': 'help',
     });
 
-    skill.onState('launch', (voxaEvent) => {
+    app.onState('launch', (voxaEvent) => {
       return { tell: 'LaunchIntent.OpenResponse', to: 'die' };
     });
 
@@ -65,7 +65,7 @@ Voxa
 
   .. code-block:: javascript
 
-    skill.onIntent('HelpIntent', (voxaEvent) => {
+    app.onIntent('HelpIntent', (voxaEvent) => {
       return { tell: 'HelpIntent.HelpAboutSkill' };
     });
 
@@ -93,7 +93,7 @@ Voxa
 
   .. code-block:: javascript
 
-      skill.onBeforeReplySent((voxaEvent, reply) => {
+      app.onBeforeReplySent((voxaEvent, reply) => {
         const rendered = reply.write();
         analytics.track(voxaEvent, rendered)
       });
@@ -106,7 +106,7 @@ Voxa
 
   .. code-block:: javascript
 
-    skill.onAfterStateChanged((voxaEvent, reply, transition) => {
+    app.onAfterStateChanged((voxaEvent, reply, transition) => {
       if (transition.reply === 'LaunchIntent.PlayTodayLesson') {
         transition.reply = _.sample(['LaunchIntent.PlayTodayLesson1', 'LaunchIntent.PlayTodayLesson2']);
       }
@@ -127,7 +127,7 @@ Voxa
 
   .. code-block:: javascript
 
-    skill.onSessionStarted((voxaEvent, reply) => {
+    app.onSessionStarted((voxaEvent, reply) => {
       analytics.trackSessionStarted(voxaEvent);
     });
 
@@ -138,7 +138,7 @@ Voxa
 
   .. code-block:: javascript
 
-    skill.onRequestStarted((voxaEvent, reply) => {
+    app.onRequestStarted((voxaEvent, reply) => {
       let data = ... // deserialized from the platform's session
       voxaEvent.model = this.config.Model.deserialize(data, voxaEvent);
     });
@@ -179,7 +179,7 @@ They're executed sequentially and will stop when the first handler returns a rep
 
   .. code-block:: javascript
 
-    skill.onStateMachineError((voxaEvent, reply, error) => {
+    app.onStateMachineError((voxaEvent, reply, error) => {
       // it gets the current reply, which could be incomplete due to an error.
       return new Reply(voxaEvent, { tell: 'An error in the controllers code' })
         .write();
@@ -191,7 +191,7 @@ They're executed sequentially and will stop when the first handler returns a rep
 
   .. code-block:: javascript
 
-    skill.onError((voxaEvent, error) => {
+    app.onError((voxaEvent, error) => {
       return new Reply(voxaEvent, { tell: 'An unrecoverable error occurred.' })
         .write();
     });
@@ -215,7 +215,7 @@ Handle events from the `AudioPlayer interface <https://developer.amazon.com/publ
 
   .. code-block:: javascript
 
-    skill['onAudioPlayer.PlaybackNearlyFinished']((voxaEvent, reply) => {
+    app['onAudioPlayer.PlaybackNearlyFinished']((voxaEvent, reply) => {
       const directives = {
         type: 'AudioPlayer.Play',
         playBehavior: 'REPLACE_ENQUEUED',
@@ -263,7 +263,7 @@ Handle request for the `Alexa Skill Events <https://developer.amazon.com/public/
 
   .. code-block:: javascript
 
-    skill['onAlexaSkillEvent.SkillEnabled']((alexaEvent, reply) => {
+    app['onAlexaSkillEvent.SkillEnabled']((alexaEvent, reply) => {
       const userId = alexaEvent.user.userId;
       console.log(`skill was enabled for user: ${userId}`);
       return reply;
@@ -297,7 +297,7 @@ Handle request for the `Alexa List Events <https://developer.amazon.com/public/s
 
   .. code-block:: javascript
 
-    skill['onAlexaHouseholdListEvent.ItemsCreated']((alexaEvent, reply) => {
+    app['onAlexaHouseholdListEvent.ItemsCreated']((alexaEvent, reply) => {
       const listId = alexaEvent.request.body.listId;
       const userId = alexaEvent.user.userId;
       console.log(`Items created for list: ${listId}` for user ${userId});
