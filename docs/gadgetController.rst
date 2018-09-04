@@ -12,7 +12,7 @@ With Voxa, you can implement this interface like this:
   const voxa = require('voxa');
   const { GadgetController, TRIGGER_EVENT_ENUM } = voxa.alexa;
 
-  skill.onIntent('GameEngine.InputHandlerEvent', (voxaEvent) => {
+  app.onIntent('GameEngine.InputHandlerEvent', (voxaEvent) => {
     // REMEMBER TO SAVE THE VALUE originatingRequestId in your model
     voxaEvent.model.originatingRequestId = voxaEvent.request.originatingRequestId;
 

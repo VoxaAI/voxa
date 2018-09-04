@@ -9,7 +9,7 @@ States come in one of two ways, they can be an object of mappings from intent na
 
 .. code-block:: javascript
 
-  skill.onState('entry', {
+  app.onState('entry', {
     LaunchIntent: 'launch',
     'AMAZON.HelpIntent': 'help',
   });
@@ -19,7 +19,7 @@ Or they can be a function that gets a :ref:`voxaEvent <voxa-event>` object.
 
 .. code-block:: javascript
 
-  skill.onState('launch', (voxaEvent) => {
+  app.onState('launch', (voxaEvent) => {
     return { tell: 'LaunchIntent.OpenResponse' };
   });
 
@@ -34,7 +34,7 @@ For example in the next snipped there's a ``waiting`` state that expects an ``AM
 
 .. code-block:: javascript
 
-  skill.onState('waiting', (voxaEvent) => {
+  app.onState('waiting', (voxaEvent) => {
     if (voxaEvent.intent.name === 'AMAZON.NextIntent') {
       voxaEvent.model.index += 1;
       return { ask: 'Ingredients.Describe', to: 'waiting' }
@@ -52,7 +52,7 @@ For the simple pattern of having a controller respond to an specific intent the 
 
 .. code-block:: javascript
 
-  skill.onIntent('LaunchIntent', (voxaEvent) => {
+  app.onIntent('LaunchIntent', (voxaEvent) => {
     return { tell: 'LaunchIntent.OpenResponse' };
   });
 
@@ -60,7 +60,7 @@ If you receive a Display.ElementSelected type request, you could use the same ap
 
 .. code-block:: javascript
 
-  skill.onIntent('DisplayElementSelected', (voxaEvent) => {
+  app.onIntent('DisplayElementSelected', (voxaEvent) => {
     return { tell: 'DisplayElementSelected.OpenResponse' };
   });
 

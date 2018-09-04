@@ -14,7 +14,7 @@ With Voxa, you can implement this interface like this:
   const voxa = require('voxa');
   const { ANCHOR_ENUM, EVENT_REPORT_ENUM, GameEngine } = voxa.alexa;
 
-  skill.onIntent('LaunchIntent', (voxaEvent) => {
+  app.onIntent('LaunchIntent', (voxaEvent) => {
     const alexaGameEngineStartInputHandler = rollCall(voxaEvent);
 
     return {
@@ -101,7 +101,7 @@ The field `originatingRequestId`_ provides the requestId of the request to which
 
   const voxa = require('voxa');
 
-  skill.onIntent('ExitIntent', (voxaEvent) => {
+  app.onIntent('ExitIntent', (voxaEvent) => {
     const { originatingRequestId } = voxaEvent.model;
 
     return {

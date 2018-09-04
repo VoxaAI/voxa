@@ -109,7 +109,7 @@ With Voxa, you can implement all lists features. In this code snippet you will s
 
 .. code-block:: javascript
 
-  skill.onIntent('AddItemToListIntent', async (voxaEvent) => {
+  app.onIntent('AddItemToListIntent', async (voxaEvent) => {
     const { productName } = voxaEvent.intent.params;
     const listsMetadata = await voxaEvent.alexa.lists.getListMetadata();
     const listName = 'MY_CUSTOM_LIST';
@@ -140,7 +140,7 @@ There's also a faster way to consult and/or create a list. Follow this example:
 
 .. code-block:: javascript
 
-  skill.onIntent('AddItemToListIntent', async (voxaEvent) => {
+  app.onIntent('AddItemToListIntent', async (voxaEvent) => {
     const { productName } = voxaEvent.intent.params;
     const listName = 'MY_CUSTOM_LIST';
 
@@ -161,7 +161,7 @@ Let's review another example. Let's say we have an activity in the default To-Do
 
 .. code-block:: javascript
 
-  skill.onIntent('CompleteActivityIntent', async (voxaEvent) => {
+  app.onIntent('CompleteActivityIntent', async (voxaEvent) => {
     const { activity } = voxaEvent.intent.params;
 
     const listInfo = await voxaEvent.alexa.lists.getDefaultToDoList();
@@ -181,7 +181,7 @@ Let's check another example. Let's say users want to remove an item in their def
 
 .. code-block:: javascript
 
-  skill.onIntent('RemoveProductIntent', async (voxaEvent) => {
+  app.onIntent('RemoveProductIntent', async (voxaEvent) => {
     const { productId } = voxaEvent.model;
 
     const listInfo = await voxaEvent.alexa.lists.getDefaultShoppingList();
@@ -200,7 +200,7 @@ Finally, if you want to remove the list you had created:
 
 .. code-block:: javascript
 
-  skill.onIntent('DeleteListIntent', async (voxaEvent) => {
+  app.onIntent('DeleteListIntent', async (voxaEvent) => {
     const listName = 'MY_CUSTOM_LIST';
 
     const listInfo = await voxaEvent.alexa.lists.getOrCreateList(listName);

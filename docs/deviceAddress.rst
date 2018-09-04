@@ -29,7 +29,7 @@ With Voxa, you can ask for the full device's address like this:
 
 .. code-block:: javascript
 
-  skill.onIntent('FullAddressIntent', async (voxaEvent) => {
+  app.onIntent('FullAddressIntent', async (voxaEvent) => {
     const info = await voxaEvent.alexa.deviceAddress.getAddress();
 
     voxaEvent.model.deviceInfo = `${info.addressLine1}, ${info.city}, ${info.countryCode}`;
@@ -40,7 +40,7 @@ You can decide to only get the country/region and postal code. You can do it thi
 
 .. code-block:: javascript
 
-  skill.onIntent('PostalCodeIntent', async (voxaEvent) => {
+  app.onIntent('PostalCodeIntent', async (voxaEvent) => {
     const info = await voxaEvent.alexa.deviceAddress.getCountryRegionPostalCode();
 
     voxaEvent.model.deviceInfo = `${info.postalCode}, ${info.countryCode}`;

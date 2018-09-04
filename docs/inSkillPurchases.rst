@@ -13,7 +13,7 @@ With Voxa, you can implement all ISP features like buying, refunding and upselli
 
 .. code-block:: javascript
 
-  skill.onIntent('BuyIntent', async (voxaEvent) => {
+  app.onIntent('BuyIntent', async (voxaEvent) => {
     const { productName } = voxaEvent.intent.params;
     const token = 'startState';
     const buyDirective = await voxaEvent.alexa.isp.buyByReferenceName(productName, token);
@@ -21,7 +21,7 @@ With Voxa, you can implement all ISP features like buying, refunding and upselli
     return { alexaConnectionsSendRequest: buyDirective };
   });
 
-  skill.onIntent('RefundIntent', async (voxaEvent) => {
+  app.onIntent('RefundIntent', async (voxaEvent) => {
     const { productName } = voxaEvent.intent.params;
     const token = 'startState';
     const buyDirective = await voxaEvent.alexa.isp.cancelByReferenceName(productName, token);
@@ -34,7 +34,7 @@ You can also check if the ISP feature is allowed in a locale or the account is c
 
 .. code-block:: javascript
 
-  skill.onIntent('UpsellIntent', async (voxaEvent) => {
+  app.onIntent('UpsellIntent', async (voxaEvent) => {
     if (!voxaEvent.alexa.isp.isAllowed()) {
       return { ask: 'ISP.Invalid', to: 'entry' };
     }
@@ -51,7 +51,7 @@ To get the full list of products and know which ones have been purchased, you ca
 
 .. code-block:: javascript
 
-  skill.onIntent('ProductsIntent', async (voxaEvent) => {
+  app.onIntent('ProductsIntent', async (voxaEvent) => {
     const list = await voxaEvent.alexa.isp.getProductList();
 
     voxaEvent.model.productArray = list.inSkillProducts.map(x => x.referenceName);

@@ -55,7 +55,7 @@ With Voxa, you can ask for the user's full name like this:
 
 .. code-block:: javascript
 
-  skill.onIntent('FullAddressIntent', async (voxaEvent) => {
+  app.onIntent('FullAddressIntent', async (voxaEvent) => {
     const name = await voxaEvent.alexa.customerContact.getName();
 
     voxaEvent.model.name = name;
@@ -66,7 +66,7 @@ Voxa also has a method to request all parameters at once:
 
 .. code-block:: javascript
 
-  skill.onIntent('FullAddressIntent', async (voxaEvent) => {
+  app.onIntent('FullAddressIntent', async (voxaEvent) => {
     const info = await voxaEvent.alexa.customerContact.getFullUserInformation();
     const { countryCode, email, name, phoneNumber } = info;
 

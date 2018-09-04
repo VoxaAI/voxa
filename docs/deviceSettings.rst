@@ -47,7 +47,7 @@ With Voxa, you can ask for the full device's address like this:
 
 .. code-block:: javascript
 
-  skill.onIntent('FullSettingsIntent', async (voxaEvent) => {
+  app.onIntent('FullSettingsIntent', async (voxaEvent) => {
     const info = await voxaEvent.alexa.deviceSettings.getSettings();
 
     voxaEvent.model.settingsInfo = `${info.distanceUnits}, ${info.temperatureUnits}, ${info.timezone}`;

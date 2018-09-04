@@ -31,14 +31,14 @@ In Voxa you can send cards using a view or returning a Card like structure direc
     };
 
 
-    skill.onState('someState', () => {
+    app.onState('someState', () => {
       return {
         alexaCard: 'Card',
       };
     });
 
 
-    skill.onState('someState', () => {
+    app.onState('someState', () => {
       return {
         alexaCard: {
           image: {
@@ -62,7 +62,7 @@ An account linking card is sent with the `alexaAccountLinkingCard` key in your c
 
 .. code-block:: javascript
 
-    skill.onState('someState', () => {
+    app.onState('someState', () => {
       return {
         alexaAccountLinkingCard: null,
       };
@@ -81,7 +81,7 @@ Voxa provides a `DisplayTemplate` builder that can be used with the `alexaRender
     const voxa = require('voxa');
     const { DisplayTemplate } = voxa.alexa;
 
-    skill.onState('someState', () => {
+    app.onState('someState', () => {
       const template = new DisplayTemplate("BodyTemplate1")
         .setToken("token")
         .setTitle("This is the title")
@@ -106,7 +106,7 @@ PlayAudio
     const voxa = require('voxa');
     const { PlayAudio } = voxa.alexa;
 
-    skill.onState('someState', () => {
+    app.onState('someState', () => {
       const playAudio = new PlayAudio(
         'http://example.com/example.mp3',
         '{}',

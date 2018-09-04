@@ -15,7 +15,7 @@ The single-select list presents the user with a vertical list of multiple items 
 
 .. code-block:: javascript
 
-  skill.onState('someState', () => {
+  app.onState('someState', () => {
     return {
       dialogFlowList: {
         title: 'List Title',
@@ -78,7 +78,7 @@ The carousel scrolls horizontally and allows for selecting one item. Compared to
 
 .. code-block:: javascript
 
-  skill.onState('someState', () => {
+  app.onState('someState', () => {
     return {
       dialogFlowCarousel: {
         items: {
@@ -140,7 +140,7 @@ Whenever possible, you should incorporate one key suggestion as part of the chat
 
 .. code-block:: javascript
 
-  skill.onState('someState', () => {
+  app.onState('someState', () => {
     return {
       dialogFlowSuggestions: ['Exit', 'Continue']
     }
@@ -169,7 +169,7 @@ Avoid repeating the information presented in the card in the chat bubble at all 
 
 .. code-block:: javascript
 
-  skill.onState('someState', () => {
+  app.onState('someState', () => {
     return {
       dialogFlowBasicCard: {
         text: `This is a basic card.  Text in a basic card can include "quotes" and
@@ -202,7 +202,7 @@ Account linking is a great way to lets users connect their Google accounts to ex
 
 .. code-block:: javascript
 
-  skill.onState('someState', () => {
+  app.onState('someState', () => {
     return {
       dialogFlowAccountLinkingCard: "To track your exercise"
     }
@@ -226,7 +226,7 @@ Media responses let your app play audio content with a playback duration longer 
 
   const { MediaObject } = require('actions-on-google');
 
-  skill.onState('someState', () => {
+  app.onState('someState', () => {
 
     const mediaObject = new MediaObject({
       name,
@@ -255,7 +255,7 @@ You can obtain the following user information with this helper:
 
 .. code-block:: javascript
 
-  skill.onState('someState', () => {
+  app.onState('someState', () => {
     return {
       dialogFlowPermission: {
         context: 'To read your mind',
@@ -274,7 +274,7 @@ You can obtain a date and time from users by requesting fulfillment of the actio
 
 .. code-block:: javascript
 
-  skill.onState('someState', () => {
+  app.onState('someState', () => {
     return {
       dialogFlowDateTime: {
         prompts: {
@@ -296,7 +296,7 @@ You can ask a generic confirmation from the user (yes/no question) and get the r
 
 .. code-block:: javascript
 
-  skill.onState('someState', () => {
+  app.onState('someState', () => {
     return {
       dialogFlowConfirmation: 'Can you confirm?',
     };
@@ -314,7 +314,7 @@ You can ask the user to continue an interaction via your Android app. This helpe
 
 .. code-block:: javascript
 
-  skill.onState('someState', () => {
+  app.onState('someState', () => {
     const options = {
       destination: 'Google',
       url: 'example://gizmos',
@@ -339,7 +339,7 @@ Saved locations will only return the address, not the associated mapping (e.g. "
 
 .. code-block:: javascript
 
-  skill.onState('someState', () => {
+  app.onState('someState', () => {
     return {
       dialogFlowPlace: {
         context: 'To find a place to pick you up',
@@ -365,7 +365,7 @@ To consistently re-engage with users, you need to become a part of their daily h
 
 .. code-block:: javascript
 
-  skill.onState('someState', () => {
+  app.onState('someState', () => {
     return {
       dialogFlowRegisterUpdate: {
         intent: 'Show Image',
@@ -385,7 +385,7 @@ Your app can send push notifications to users whenever relevant, such as sending
 
 .. code-block:: javascript
 
-  skill.onState('someState', () => {
+  app.onState('someState', () => {
     return {
       dialogFlowUpdatePermission: {
         intent: 'tell_latest_tip'
@@ -405,7 +405,7 @@ At any point during your app's flow, you can check if the user has any other sur
 
 .. code-block:: javascript
 
-  skill.onIntent('someState', async (voxaEvent) => {
+  app.onIntent('someState', async (voxaEvent) => {
     const screen = 'actions.capability.SCREEN_OUTPUT';
     if (!_.includes(voxaEvent.supportedInterfaces, screen)) {
       const screenAvailable = voxaEvent.conv.available.surfaces.capabilities.has(screen);
