@@ -28,7 +28,9 @@ export class AlexaRequestBuilder {
     this.deviceId = applicationId || `amzn1.ask.device.${v1()}`;
   }
 
-  public getSessionEndedRequest(reason: SessionEndedReason = "ERROR"): RequestEnvelope {
+  public getSessionEndedRequest(
+    reason: SessionEndedReason = "ERROR",
+  ): RequestEnvelope {
     return {
       context: this.getContextData(),
       request: {
@@ -43,7 +45,25 @@ export class AlexaRequestBuilder {
     };
   }
 
-  public getCanFulfillIntentRequestRequest(intentName: string, slots?: any): RequestEnvelope {
+  public getDisplayElementSelectedRequest(token: string): RequestEnvelope {
+    return {
+      context: this.getContextData(),
+      request: {
+        locale: "en-US",
+        requestId: `EdwRequestId.${v1()}`,
+        timestamp: new Date().toISOString(),
+        token,
+        type: "Display.ElementSelected",
+      },
+      session: this.getSessionData(),
+      version: this.version,
+    };
+  }
+
+  public getCanFulfillIntentRequestRequest(
+    intentName: string,
+    slots?: any,
+  ): RequestEnvelope {
     if (!slots) {
       slots = {};
     } else {
@@ -57,7 +77,6 @@ export class AlexaRequestBuilder {
     return {
       context: this.getContextData(),
       request: {
-        dialogState: "STARTED",
         intent: { name: intentName, slots, confirmationStatus: "NONE" },
         locale: "en-US",
         requestId: `EdwRequestId.${v1()}`,
@@ -151,7 +170,7 @@ export class AlexaRequestBuilder {
   }
 
   public getPlaybackStoppedRequest(token?: string): RequestEnvelope {
-    const request: interfaces.audioplayer.PlaybackStoppedRequest =  {
+    const request: interfaces.audioplayer.PlaybackStoppedRequest = {
       locale: "en-US",
       requestId: "EdwRequestId." + v1(),
       timestamp: new Date().toISOString(),
@@ -167,8 +186,10 @@ export class AlexaRequestBuilder {
     };
   }
 
-  public getGameEngineInputHandlerEventRequest(buttonsRecognized: number = 1): RequestEnvelope {
-    const request: interfaces.gameEngine.InputHandlerEventRequest =  {
+  public getGameEngineInputHandlerEventRequest(
+    buttonsRecognized: number = 1,
+  ): RequestEnvelope {
+    const request: interfaces.gameEngine.InputHandlerEventRequest = {
       events: [],
       locale: "en-US",
       requestId: `amzn1.echo-api.request.${v1()}`,
@@ -212,7 +233,8 @@ export class AlexaRequestBuilder {
     name: string,
     token: string,
     payload: any,
-    status?: interfaces.connections.ConnectionsStatus): RequestEnvelope {
+    status?: interfaces.connections.ConnectionsStatus,
+  ): RequestEnvelope {
     status = status || { code: "200", message: "OK" };
 
     const request: interfaces.connections.ConnectionsResponse = {
@@ -235,7 +257,9 @@ export class AlexaRequestBuilder {
   }
 }
 
-export function getLambdaContext(callback: AWSLambdaCallback<any>): AWSLambdaContext {
+export function getLambdaContext(
+  callback: AWSLambdaCallback<any>,
+): AWSLambdaContext {
   return {
     awsRequestId: "aws://",
     callbackWaitsForEmptyEventLoop: false,
@@ -249,7 +273,7 @@ export function getLambdaContext(callback: AWSLambdaCallback<any>): AWSLambdaCon
     getRemainingTimeInMillis: () => 1000,
 
     done: callback,
-    fail: (err: Error|string) => {
+    fail: (err: Error | string) => {
       if (_.isString(err)) {
         return callback(new Error(err));
       }
@@ -260,7 +284,10 @@ export function getLambdaContext(callback: AWSLambdaCallback<any>): AWSLambdaCon
   };
 }
 
-export function getAPIGatewayProxyEvent(method: string = "GET", body: string|null = null): APIGatewayProxyEvent {
+export function getAPIGatewayProxyEvent(
+  method: string = "GET",
+  body: string | null = null,
+): APIGatewayProxyEvent {
   return {
     body,
     headers: {},

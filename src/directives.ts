@@ -10,6 +10,7 @@
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
 import { ITransition } from "./StateMachine";
+import { VoxaApp } from "./VoxaApp";
 import { IVoxaEvent } from "./VoxaEvent";
 import { IVoxaReply } from "./VoxaReply";
 
@@ -17,68 +18,33 @@ export interface IDirectiveClass {
   platform: string; // botframework, dialogFlow or alexa
   key: string; // The key in the transition that links to the specific directive
 
-  new(...args: any[]): IDirective;
+  new (...args: any[]): IDirective;
 }
 
 export interface IDirective {
-  writeToReply: (reply: IVoxaReply, event: IVoxaEvent, transition: ITransition) => Promise<void>;
-}
-
-export class Reply implements IDirective {
-  public static key: string = "reply";
-  public static platform: string = "core";
-
-  constructor(public viewPaths: string|string[]) {}
-
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    let viewPaths = this.viewPaths;
-    if (!_.isArray(viewPaths)) {
-      viewPaths = [viewPaths];
-    }
-
-    await bluebird.map(viewPaths, async (viewPath: string): Promise<void> => {
-      const message = await event.renderer.renderPath(viewPath, event);
-      if (message.say) {
-        await new SayP(message.say).writeToReply(reply, event, transition);
-      }
-
-      if (message.ask) {
-        reply.addStatement(message.ask);
-        transition.flow = "yield";
-      }
-
-      if (message.tell) {
-        reply.addStatement(message.tell);
-        reply.terminate();
-        transition.flow = "terminate";
-      }
-
-      if (message.reprompt) {
-        reply.addReprompt(message.reprompt);
-      }
-
-      if (message.directives) {
-        if (transition.directives) {
-          transition.directives = transition.directives.concat(message.directives);
-        } else {
-          transition.directives = message.directives;
-        }
-      }
-    });
-  }
+  writeToReply: (
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+    voxaApp: VoxaApp,
+  ) => Promise<void>;
 }
 
 export class Reprompt implements IDirective {
   public static key: string = "reprompt";
   public static platform: string = "core";
-  public viewPath: string;
 
-  constructor(viewPath: string) {
-    this.viewPath = viewPath;
-  }
+  constructor(public viewPath: string) {}
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    const statement = await event.renderer.renderPath(this.viewPath, event);
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    let statement = await event.renderer.renderPath(this.viewPath, event);
+    if (_.isArray(statement)) {
+      statement = _.sample(statement);
+    }
     reply.addReprompt(statement);
   }
 }
@@ -88,19 +54,34 @@ export class Ask implements IDirective {
   public static platform: string = "core";
   public viewPaths: string[];
 
-  constructor(viewPaths: string|string[]) {
+  constructor(viewPaths: string | string[]) {
     this.viewPaths = _.isString(viewPaths) ? [viewPaths] : viewPaths;
   }
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
     for (const viewPath of this.viewPaths) {
       const statement = await event.renderer.renderPath(viewPath, event);
-      if (_.isString(statement)) {
+      if (_.isArray(statement)) {
+        reply.addStatement(_.sample(statement));
+      } else if (_.isString(statement)) {
         reply.addStatement(statement);
       } else if (statement.ask) {
-        reply.addStatement(statement.ask);
+        if (_.isArray(statement.ask)) {
+          reply.addStatement(_.sample(statement.ask));
+        } else {
+          reply.addStatement(statement.ask);
+        }
+
         if (statement.reprompt) {
-          reply.addReprompt(statement.reprompt);
+          if (_.isArray(statement.reprompt)) {
+            reply.addReprompt(_.sample(statement.reprompt));
+          } else {
+            reply.addReprompt(statement.reprompt);
+          }
         }
       }
     }
@@ -114,16 +95,23 @@ export class Say implements IDirective {
   public static key: string = "say";
   public static platform: string = "core";
 
-  constructor(public viewPaths: string|string[]) { }
+  constructor(public viewPaths: string | string[]) {}
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
     let viewPaths = this.viewPaths;
     if (_.isString(viewPaths)) {
       viewPaths = [viewPaths];
     }
 
     await bluebird.mapSeries(viewPaths, async (view: string) => {
-      const statement = await event.renderer.renderPath(view, event);
+      let statement = await event.renderer.renderPath(view, event);
+      if (_.isArray(statement)) {
+        statement = _.sample(statement);
+      }
       reply.addStatement(statement);
     });
   }
@@ -133,29 +121,32 @@ export class SayP implements IDirective {
   public static key: string = "sayp";
   public static platform: string = "core";
 
-  constructor(public statements: string|string[]) { }
+  constructor(public statement: string) {}
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    let statements = this.statements;
-    if (_.isString(statements)) {
-      statements = [statements];
-    }
-
-    _.map(statements, (s) => reply.addStatement(s));
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    reply.addStatement(this.statement);
   }
 }
 
 export class Tell implements IDirective {
   public static key: string = "tell";
   public static platform: string = "core";
-  public viewPath: string;
 
-  constructor(viewPath: string) {
-    this.viewPath = viewPath;
-  }
+  constructor(public viewPath: string) {}
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    const statement = await event.renderer.renderPath(this.viewPath, event);
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    let statement = await event.renderer.renderPath(this.viewPath, event);
+    if (_.isArray(statement)) {
+      statement = _.sample(statement);
+    }
     reply.addStatement(statement);
     reply.terminate();
     transition.flow = "terminate";

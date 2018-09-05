@@ -122,6 +122,8 @@ Links
 
   new-alexa-user
   mvc-description
+  voxa-app
+  voxa-platform
   models
   views-and-variables
   controllers

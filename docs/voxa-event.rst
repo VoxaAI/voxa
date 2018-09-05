@@ -13,29 +13,36 @@ The ``voxaEvent`` Object
 
   .. js:attribute:: VoxaEvent.intent.params
 
-    In Voxa the voxaEvent object makes ``intent.slots`` available through ``intent.params`` after aplying a simple transformation so ``{ slots: [{ name: 'Dish', value: 'Fried Chicken' }] }`` becomes ``{ Dish: 'Fried Chicken' }``, in other platforms it does it best to make the intent params for each platform also available on ``intent.params``
+    In Alexa the voxaEvent object makes ``intent.slots`` available through ``intent.params`` after aplying a simple transformation so
+
+
+    .. code-block:: json
+
+          { "slots": [{ "name": "Dish", "value": "Fried Chicken" }] }
+    ..
+
+    becomes:
+
+    .. code-block:: json
+
+        { "Dish": "Fried Chicken" }
+    ..
+
+    in other platforms it does it's best to make the intent params for each platform also available on ``intent.params``
 
   .. js:attribute:: VoxaEvent.user
 
     A convenience getter to obtain the user from ``session.user`` or ``context.System.user`` in alexa, and ``conv.user.id`` in dialogflow. In other platforms it's also available, you can always count on the ``voxaEvent.user.userId`` being available. If there's an ``accessToken`` it will also be available through ``voxaEvent.user.accessToken``
 
-  .. js:attribute:: VoxaEvent.session
+  .. js:attribute:: VoxaEvent.model
 
-    A convenience getter to obtain the user from ``session.user`` or ``context.System.user`` in alexa, and ``conv.user.id`` in dialogflow. In other platforms it's also available, you can always count on the ``voxaEvent.user.userId`` being available. If there's an ``accessToken`` it will also be available through ``voxaEvent.user.accessToken``
+    An instance of the :ref:`Voxa App Model <models>`.
 
   .. js:function:: VoxaEvent.supportedInterfaces()
 
     Array of supported interfaces
 
     :returns Array: A string array of the platform's supported interfaces
-
-  .. js:function:: VoxaEvent.mapRequestToIntent()
-
-    Converts a request into an intent to be handled by ``app.toIntent``
-
-  .. js:function:: VoxaEvent.mapRequestToRequest()
-
-    Converts a request into another type of request
 
 ``IVoxaEvent`` is an interface that inherits its attributes and function to the specific platforms, for more information about each platform's own methods visit:
 

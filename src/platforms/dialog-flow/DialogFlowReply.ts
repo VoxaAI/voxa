@@ -31,7 +31,7 @@ export class DialogFlowReply implements IVoxaReply {
 
   constructor() {
     this.payload = {
-      google : {
+      google: {
         expectUserResponse: true,
         isSsml: true,
       },
@@ -41,9 +41,11 @@ export class DialogFlowReply implements IVoxaReply {
   public async saveSession(attributes: IBag, event: IVoxaEvent): Promise<void> {
     const dialogFlowEvent = event as DialogFlowEvent;
     const serializedData = JSON.stringify(attributes);
-    dialogFlowEvent.conv.contexts.set("attributes", 10000, { attributes: serializedData });
+    dialogFlowEvent.google.conv.contexts.set("attributes", 10000, {
+      attributes: serializedData,
+    });
 
-    this.outputContexts = dialogFlowEvent.conv.contexts._serialize();
+    this.outputContexts = dialogFlowEvent.google.conv.contexts._serialize();
   }
 
   public get speech() {
@@ -92,5 +94,4 @@ export class DialogFlowReply implements IVoxaReply {
 
     this.payload.google.noInputPrompts = noInputPrompts;
   }
-
 }
