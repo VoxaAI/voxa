@@ -19,7 +19,7 @@ The ``AlexaEvent`` Object
 
   .. js:attribute:: AlexaEvent.alexa.deviceAddress
 
-    When a customer enables your Alexa skill, your skill can obtain the customer's permission to use address data associated with the customer's Alexa device., see :ref:`alexa-device-address`.
+    When a customer enables your Alexa skill, your skill can obtain the customer's permission to use address data associated with the customer's Alexa device, see :ref:`alexa-device-address`.
 
   .. js:attribute:: AlexaEvent.alexa.deviceSettings
 
@@ -31,4 +31,4 @@ The ``AlexaEvent`` Object
 
   .. js:attribute:: AlexaEvent.alexa.lists
 
-    Alexa customers have access to two default lists: Alexa to-do and Alexa shopping, see :ref:`alexa-lists`.
+    Alexa customers have access to two default lists: Alexa to-do and Alexa shopping. In addition, Alexa customer can create and manage `custom lists <https://developer.amazon.com/docs/custom-skills/access-the-alexa-shopping-and-to-do-lists.html>`_ in a skill that supports that, see :ref:`alexa-lists`.

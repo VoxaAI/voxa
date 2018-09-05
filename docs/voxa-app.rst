@@ -1,9 +1,9 @@
 .. _voxa-app:
 
-Voxa
+Voxa Application
 ==================
 
-.. js:class:: VoxaApp.pp(config)
+.. js:class:: VoxaApp(config)
 
   :param config: Configuration for your skill, it should include :ref:`views-and-variables` and optionally a :ref:`model <models>` and a list of appIds.
 
@@ -13,20 +13,11 @@ Voxa
 
     const app = new VoxaApp.pp({ Model, variables, views, appIds });
 
-.. js:function:: VoxaApp.lambda()
-
-
-  :returns: A lambda handler that will call your :js:func:`app.execute <VoxaApp.execute>` method
-
-  .. code-block:: javascript
-
-      exports.handler = app.lambda();
-
-.. js:function:: VoxaApp.execute(event)
+.. js:function:: VoxaApp.execute(event, context)
 
   The main entry point for the Skill execution
 
-  :param event: The event sent by alexa.
+  :param event: The event sent by the platform.
   :param context: The context of the lambda function
   :returns Promise: A response resolving to a javascript object to be sent as a result to Alexa.
 

@@ -2,7 +2,7 @@
 #
 
 # You can set these variables from the command line.
-SPHINXOPTS    = -n -a
+SPHINXOPTS    = -n -a --ignore _build
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = voxa
 SOURCEDIR     = .
