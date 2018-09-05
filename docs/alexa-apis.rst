@@ -12,41 +12,39 @@ Customer Contact Information Reference
 
 When a customer enables your Alexa skill, your skill can request the customer's permission to the their contact information, which includes name, email address and phone number, if the customer has consented. You can then use this data to support personalized intents to enhance the customer experience without account linking. For example, your skill may use customer contact information to make a reservation at a nearby restaurant and send a confirmation to the customer.
 
-.. js:function:: CustomerContact.constructor(voxaEvent)
+.. js:class:: CustomerContact(alexaEvent)
 
-  Constructor
+  :param VoxaEvent.rawEvent alexaEvent: Alexa Event object.
 
-  :param voxaEvent: Voxa Event object.
+  .. js:method:: getEmail()
 
-.. js:function:: CustomerContact.getEmail()
+    Gets user's email
 
-  Gets user's email
+    :returns string: A string with user's email address
 
-  :returns Object: A string with user's email address
+  .. js:method:: getGivenName()
 
-.. js:function:: CustomerContact.getGivenName()
+    Gets user's given name
 
-  Gets user's given name
+    :returns string: A string with user's given name
 
-  :returns Object: A string with user's given name
+  .. js:method:: getName()
 
-.. js:function:: CustomerContact.getName()
+    Gets user's full name
 
-  Gets user's full name
+    :returns string: A string with user's full name
 
-  :returns Object: A string with user's full name
+  .. js:method:: getPhoneNumber()
 
-.. js:function:: CustomerContact.getPhoneNumber()
+    Gets user's phone number
 
-  Gets user's phone number
+    :returns object: A JSON object with user's phone number and country code
 
-  :returns Object: A JSON object with user's phone number and country code
+  .. js:method:: getFullUserInformation()
 
-.. js:function:: CustomerContact.getFullUserInformation()
+    Gets name or given name, phone number, and email address
 
-  Gets name or given name, phone number, and email address
-
-  :returns Object: A JSON object with user's info with the following structure
+    :returns object: A JSON object with user's info with the following structure
 
 .. code-block:: json
 
@@ -112,23 +110,21 @@ When a customer enables your Alexa skill, your skill can obtain the customer's p
 
 Note that the address entered in the Alexa device may not represent the current physical address of the device. This API uses the address that the customer has entered manually in the Alexa app, and does not have any capability of testing for GPS or other location-based data.
 
-.. js:function:: DeviceAddress.constructor(voxaEvent)
+.. js:class:: DeviceAddress(alexaEvent)
 
-  Constructor
+  :param VoxaEvent.rawEvent alexaEvent: Alexa Event object.
 
-  :param voxaEvent: Voxa Event object.
+  .. js:method:: getAddress()
 
-.. js:function:: DeviceAddress.getAddress()
+    Gets full address info
 
-  Gets full address info
+    :returns object: A JSON object with the full address info
 
-  :returns Object: A JSON object with the full address info
+  .. js:method:: getCountryRegionPostalCode()
 
-.. js:function:: DeviceAddress.getCountryRegionPostalCode()
+    Gets country/region and postal code
 
-  Gets country/region and postal code
-
-  :returns Object: A JSON object with country/region info
+    :returns object: A JSON object with country/region info
 
 With Voxa, you can ask for the full device's address like this:
 
@@ -185,43 +181,41 @@ Device Settings Reference
 
 Alexa customers can set their timezone, distance measuring unit, and temperature measurement unit in the Alexa app. The Alexa Settings APIs allow developers to retrieve customer preferences for these settings in a unified view.
 
-.. js:function:: DeviceSettings.constructor(voxaEvent)
+.. js:class:: DeviceSettings(voxaEvent)
 
-  Constructor
+  :param VoxaEvent.rawEvent alexaEvent: Alexa Event object.
 
-  :param voxaEvent: Alexa Event object.
+  .. js:method:: getDistanceUnits()
 
-.. js:function:: DeviceSettings.getDistanceUnits()
+    Gets distance units
 
-  Gets distance units
+    :returns string: A string with the distance units
 
-  :returns Object: A string with the distance units
+  .. js:method:: getTemperatureUnits()
 
-.. js:function:: DeviceSettings.getTemperatureUnits()
+    Gets temperature units
 
-  Gets temperature units
+    :returns string: A string with the temperature units
 
-  :returns Object: A string with the temperature units
+  .. js:method:: getTimezone()
 
-.. js:function:: DeviceSettings.getTimezone()
+    Gets timezone
 
-  Gets timezone
+    :returns string: A string with the timezone value
 
-  :returns Object: A string with the timezone value
+  .. js:method:: getSettings()
 
-.. js:function:: DeviceSettings.getSettings()
+    Gets all settings details
 
-  Gets all settings details
+    :returns object: A JSON object with device's info with the following structure
 
-  :returns Object: A JSON object with device's info with the following structure
+    .. code-block:: json
 
-.. code-block:: json
-
-  {
-    "distanceUnits": "string",
-    "temperatureUnits": "string",
-    "timezone": "string"
-  }
+      {
+        "distanceUnits": "string",
+        "temperatureUnits": "string",
+        "timezone": "string"
+      }
 
 With Voxa, you can ask for the full device's address like this:
 
@@ -330,103 +324,101 @@ Alexa customers have access to two default lists: Alexa to-do and Alexa shopping
 
 Customers can review and modify their Alexa lists using voice through a device with Alexa or via the Alexa app. For example, a customer can tell Alexa to add items to the Alexa Shopping List at home, and then while at the store, view the items via the Alexa app, and check them off.
 
-.. js:function:: Lists.constructor(voxaEvent)
+.. js:class:: Lists(alexaEvent)
 
-  Constructor
+  :param VoxaEvent.rawEvent alexaEvent: Alexa Raw Event object.
 
-  :param voxaEvent: Voxa Event object.
+  .. js:method:: getDefaultShoppingList()
 
-.. js:function:: Lists.getDefaultShoppingList()
+    Gets info for the Alexa default Shopping list
 
-  Gets info for the Alexa default Shopping list
+    :returns Object: A JSON object with the Shopping list info
 
-  :returns Object: A JSON object with the Shopping list info
+  .. js:method:: getDefaultToDoList()
 
-.. js:function:: Lists.getDefaultToDoList()
+    Gets info for the Alexa default To-Do list
 
-  Gets info for the Alexa default To-Do list
+    :returns Object: A JSON object with the To-Do list info
 
-  :returns Object: A JSON object with the To-Do list info
+  .. js:method:: getListMetadata()
 
-.. js:function:: Lists.getListMetadata()
+    Gets list metadata for all user's lists including the default list
 
-  Gets list metadata for all user's lists including the default list
+    :returns Array: An object array
 
-  :returns Array: An object array
+  .. js:method:: getListById(listId, status = 'active')
 
-.. js:function:: Lists.getListById(listId, status = 'active')
+    Gets specific list by id and status
 
-  Gets specific list by id and status
+    :param listId: List ID.
+    :param status: list status, defaults to active (only value accepted for now)
+    :returns Object: A JSON object with the specific list info.
 
-  :param listId: List ID.
-  :param status: list status, defaults to active (only value accepted for now)
-  :returns Object: A JSON object with the specific list info.
+  .. js:method:: getOrCreateList(name)
 
-.. js:function:: Lists.getOrCreateList(name)
+    Looks for a list by name and returns it, if it is not found, it creates a new list with that name and returns it.
 
-  Looks for a list by name and returns it, if it is not found, it creates a new list with that name and returns it.
+    :param name: List name.
+    :returns Object: A JSON object with the specific list info.
 
-  :param name: List name.
-  :returns Object: A JSON object with the specific list info.
+  .. js:method:: createList(name, state = 'active')
 
-.. js:function:: Lists.createList(name, state = 'active')
+    Creates a new list with the name and state.
 
-  Creates a new list with the name and state.
+    :param name: List name.
+    :param active: list status, defaults to active (only value accepted for now)
+    :returns Object: A JSON object with the specific list info.
 
-  :param name: List name.
-  :param active: list status, defaults to active (only value accepted for now)
-  :returns Object: A JSON object with the specific list info.
+  .. js:method:: updateList(listId, name, state = 'active', version)
 
-.. js:function:: Lists.updateList(listId, name, state = 'active', version)
+    Updates list with the name, state, and version.
 
-  Updates list with the name, state, and version.
+    :param listId: List ID.
+    :param state: list status, defaults to active (only value accepted for now)
+    :param version: List version.
+    :returns Object: A JSON object with the specific list info.
 
-  :param listId: List ID.
-  :param state: list status, defaults to active (only value accepted for now)
-  :param version: List version.
-  :returns Object: A JSON object with the specific list info.
+  .. js:method:: deleteList(listId)
 
-.. js:function:: Lists.deleteList(listId)
+    Deletes a list by ID.
 
-  Deletes a list by ID.
+    :param listId: List ID.
+    :returns: undefined. HTTP response with 200 or error if any.
 
-  :param listId: List ID.
-  :returns: undefined. HTTP response with 200 or error if any.
+  .. js:method:: getListItem(listId, itemId)
 
-.. js:function:: Lists.getListItem(listId, itemId)
+    Creates a new list with the name and state.
 
-  Creates a new list with the name and state.
+    :param listId: List ID.
+    :param itemId: Item ID.
+    :returns Object: A JSON object with the specific list info.
 
-  :param listId: List ID.
-  :param itemId: Item ID.
-  :returns Object: A JSON object with the specific list info.
+  .. js:method:: createItem(listId, value, status = 'active')
 
-.. js:function:: Lists.createItem(listId, value, status = 'active')
+    Creates a new list with the name and state.
 
-  Creates a new list with the name and state.
+    :param listId: List ID.
+    :param value: Item name.
+    :param status: item status, defaults to active. Other values accepted: 'completed'
+    :returns Object: A JSON object with the specific item info.
 
-  :param listId: List ID.
-  :param value: Item name.
-  :param status: item status, defaults to active. Other values accepted: 'completed'
-  :returns Object: A JSON object with the specific item info.
+  .. js:method:: updateItem(listId, itemId, value, status, version)
 
-.. js:function:: Lists.updateItem(listId, itemId, value, status, version)
+    Creates a new list with the name and state.
 
-  Creates a new list with the name and state.
+    :param listId: List ID.
+    :param itemId: Item ID.
+    :param value: Item name.
+    :param status: item status. Values accepted: 'active | completed'
+    :returns Object: A JSON object with the specific item info.
 
-  :param listId: List ID.
-  :param itemId: Item ID.
-  :param value: Item name.
-  :param status: item status. Values accepted: 'active | completed'
-  :returns Object: A JSON object with the specific item info.
+  .. js:method:: deleteItem(listId, itemId)
 
-.. js:function:: Lists.deleteItem(listId, itemId)
+    Creates a new list with the name and state.
 
-  Creates a new list with the name and state.
-
-  :param listId: List ID.
-  :param itemId: Item ID.
-  :returns: undefined. HTTP response with 200 or error if any.
+    :param listId: List ID.
+    :param itemId: Item ID.
+    :returns: undefined. HTTP response with 200 or error if any.
 
 With Voxa, you can implement all lists features. In this code snippet you will see how to check if a list exists, if not, it creates one. If it does exist, it will check if an item is already in the list and updates the list with a new version, if no, it adds it:
 
