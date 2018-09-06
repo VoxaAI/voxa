@@ -1,39 +1,42 @@
-import { DialogflowConversation, DialogflowConversationOptions } from "actions-on-google";
+import {
+  DialogflowConversation,
+  DialogflowConversationOptions,
+} from "actions-on-google";
 import { expect } from "chai";
-import { DialogFlowEvent } from "../../src/platforms/dialog-flow/DialogFlowEvent";
+import { DialogFlowEvent } from "../../src/platforms/dialogflow/DialogFlowEvent";
 
 /* tslint:disable-next-line:no-var-requires */
-const launchIntent = require("../requests/dialog-flow/launchIntent.json");
+const launchIntent = require("../requests/dialogflow/launchIntent.json");
 
 /* tslint:disable-next-line:no-var-requires */
-const optionIntent = require("../requests/dialog-flow/actions.intent.OPTION.json");
+const optionIntent = require("../requests/dialogflow/actions.intent.OPTION.json");
 
 /* tslint:disable-next-line:no-var-requires */
-const mediaStatusIntent = require("../requests/dialog-flow/actions.intent.MEDIA_STATUS.json");
+const mediaStatusIntent = require("../requests/dialogflow/actions.intent.MEDIA_STATUS.json");
 
 /* tslint:disable-next-line:no-var-requires */
-const signinIntent = require("../requests/dialog-flow/actions.intent.SIGN_IN.json");
+const signinIntent = require("../requests/dialogflow/actions.intent.SIGN_IN.json");
 
 /* tslint:disable-next-line:no-var-requires */
-const helpIntent = require("../requests/dialog-flow/helpIntent.json");
+const helpIntent = require("../requests/dialogflow/helpIntent.json");
 
 /* tslint:disable-next-line:no-var-requires */
-const permissionIntent = require("../requests/dialog-flow/actions.intent.PERMISSION.json");
+const permissionIntent = require("../requests/dialogflow/actions.intent.PERMISSION.json");
 
 /* tslint:disable-next-line:no-var-requires */
-const datetimeIntent = require("../requests/dialog-flow/actions.intent.DATETIME.json");
+const datetimeIntent = require("../requests/dialogflow/actions.intent.DATETIME.json");
 
 /* tslint:disable-next-line:no-var-requires */
-const placeIntent = require("../requests/dialog-flow/actions.intent.PLACE.json");
+const placeIntent = require("../requests/dialogflow/actions.intent.PLACE.json");
 
 /* tslint:disable-next-line:no-var-requires */
-const confirmationIntent = require("../requests/dialog-flow/actions.intent.CONFIRMATION.json");
+const confirmationIntent = require("../requests/dialogflow/actions.intent.CONFIRMATION.json");
 
 /* tslint:disable-next-line:no-var-requires */
-const slotsIntent = require("../requests/dialog-flow/slots.json");
+const slotsIntent = require("../requests/dialogflow/slots.json");
 
 /* tslint:disable-next-line:no-var-requires */
-const newSurfaceIntent = require("../requests/dialog-flow/actions.intent.NEW_SURFACE.json");
+const newSurfaceIntent = require("../requests/dialogflow/actions.intent.NEW_SURFACE.json");
 
 describe("DialogFlowEvent", () => {
   it("should format option values", () => {
@@ -54,7 +57,7 @@ describe("DialogFlowEvent", () => {
         amount: 10,
         unit: "min",
       },
-        requestPhrase: "",
+      requestPhrase: "",
       text: "10 minutes sleep exercise",
     });
   });
@@ -62,7 +65,9 @@ describe("DialogFlowEvent", () => {
   it("should find users on the session", () => {
     const event = new DialogFlowEvent(launchIntent, {});
     /* tslint:disable-next-line:max-line-length */
-    expect(event.user.userId).to.equal("ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y");
+    expect(event.user.userId).to.equal(
+      "ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y",
+    );
   });
 
   it("should return supported capabilities", () => {
@@ -80,7 +85,7 @@ describe("DialogFlowEvent", () => {
     expect(event.intent.name).to.equal("LaunchIntent");
     expect(event.intent.params).to.deep.equal({
       KEYBOARD: "Talk to my test app",
-       requestPhrase: "",
+      requestPhrase: "",
     });
   });
 
@@ -98,9 +103,9 @@ describe("DialogFlowEvent", () => {
   it("should return the SIGN_IN information", () => {
     const event = new DialogFlowEvent(signinIntent, {});
     expect(event.intent.params).to.deep.equal({
-        SIGN_IN: {
-          "@type": "type.googleapis.com/google.actions.v2.SignInValue",
-          "status": "OK",
+      SIGN_IN: {
+        "@type": "type.googleapis.com/google.actions.v2.SignInValue",
+        "status": "OK",
       },
     });
   });
@@ -113,7 +118,7 @@ describe("DialogFlowEvent", () => {
   it("should extract the session attributes from the context", () => {
     const event = new DialogFlowEvent(helpIntent, {});
     expect(event.session.attributes).to.deep.equal({
-        key: "value",
+      key: "value",
     });
   });
 
@@ -131,14 +136,14 @@ describe("DialogFlowEvent", () => {
     const event = new DialogFlowEvent(datetimeIntent, {});
     expect(event.intent.params).to.deep.equal({
       DATETIME: {
-          date: {
-            day: 8,
-            month: 6,
-            year: 2018,
-          },
-          time: {
-            hours: 12,
-          },
+        date: {
+          day: 8,
+          month: 6,
+          year: 2018,
+        },
+        time: {
+          hours: 12,
+        },
       },
       KEYBOARD: "noon",
     });
@@ -147,15 +152,15 @@ describe("DialogFlowEvent", () => {
   it("should extract the correct parameters from a confirmationIntent", () => {
     const event = new DialogFlowEvent(placeIntent, {});
     expect(event.intent.params).to.deep.equal({
-        KEYBOARD: "Query handled by Actions on Google",
+      KEYBOARD: "Query handled by Actions on Google",
       PLACE: {
-          coordinates: {
-            latitude: 37.1390728,
-            longitude: -121.6572152,
-          },
-          formattedAddress: "Digital Drive, Morgan Hill, CA 95037, USA",
-          name: "Digital Drive",
-          placeId: "ChIJF_RbBuogjoAR0BmGuyTKHCY",
+        coordinates: {
+          latitude: 37.1390728,
+          longitude: -121.6572152,
+        },
+        formattedAddress: "Digital Drive, Morgan Hill, CA 95037, USA",
+        name: "Digital Drive",
+        placeId: "ChIJF_RbBuogjoAR0BmGuyTKHCY",
       },
     });
   });
