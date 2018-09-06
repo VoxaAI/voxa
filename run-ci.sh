@@ -17,6 +17,7 @@ else
 fi
 (
   cd hello-world
+  rm -rf node_modules
   yarn
   yarn mocha hello-world.spec.js
 )
