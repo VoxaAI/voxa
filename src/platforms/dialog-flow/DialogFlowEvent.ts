@@ -20,7 +20,7 @@ export class DialogFlowEvent extends IVoxaEvent {
 
   public session: DialogFlowSession;
   public request: any;
-  public platform: string = "dialogflow";
+  public platform: string;
   public context: any;
   public intent: DialogFlowIntent;
   public google: { conv: DialogflowConversation };
@@ -40,6 +40,7 @@ export class DialogFlowEvent extends IVoxaEvent {
     };
     this.session = new DialogFlowSession(this.google.conv);
     this.intent = new DialogFlowIntent(this.google.conv);
+    this.platform = "dialogFlow";
   }
 
   get user(): IVoxaUser {
