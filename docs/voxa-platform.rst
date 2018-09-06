@@ -4,7 +4,7 @@
 Voxa Platforms
 ==================
 
-Voxa Platforms wrap your :js:class:`VoxaApp <VoxaApp>` and allow you to defined handlers for the different supported voice platforms.
+Voxa Platforms wrap your :js:class:`VoxaApp <VoxaApp>` and allows you to define handlers for the different supported voice platforms.
 
 
 .. js:class:: VoxaPlatform(voxaApp, config)
@@ -48,7 +48,7 @@ Voxa Platforms wrap your :js:class:`VoxaApp <VoxaApp>` and allow you to defined 
 Alexa
 -------
 
-The Alexa Platform let's you use Voxa with Alexa
+The Alexa Platform allows you to use Voxa with Alexa
 
 .. code-block:: javascript
 
@@ -65,7 +65,7 @@ The Alexa Platform let's you use Voxa with Alexa
 DialogFlow
 -------------
 
-The DialogFlow Platform let's you use Voxa with DialogFlow
+The DialogFlow Platform allows you to use Voxa with DialogFlow
 
 .. code-block:: javascript
 
@@ -81,7 +81,7 @@ The DialogFlow Platform let's you use Voxa with DialogFlow
 Botframework
 ------------------
 
-The BotFramework Platform let's you use Voxa with Microsoft Botframework
+The BotFramework Platform allows you to use Voxa with Microsoft Botframework
 
 .. code-block:: javascript
 
@@ -95,11 +95,11 @@ The BotFramework Platform let's you use Voxa with Microsoft Botframework
   const azureTableClient = new AzureTableClient(tableName, storageName, storageKey);
   const tableStorage = new AzureBotStorage({ gzipData: false }, azureTableClient);
 
-  const botframeworkSkill = new BotFrameworkPlatform(app, {
+  const botframeworkSkill = new BotFrameworkPlatform(voxaApp, {
     storage: tableStorage,
-    recognizerURI: config.recognizerURI,
-    applicationId: config.applicationId,
-    applicationPassword: config.applicationPassword,
+    recognizerURI: process.env.LuisRecognizerURI,
+    applicationId: process.env.MicrosoftAppId,
+    applicationPassword: process.env.MicrosoftAppPassword,
     defaultLocale: 'en',
   });
 

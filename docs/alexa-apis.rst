@@ -409,7 +409,7 @@ Customers can review and modify their Alexa lists using voice through a device w
     :param listId: List ID.
     :param itemId: Item ID.
     :param value: Item name.
-    :param status: item status. Values accepted: 'active | completed'
+    :param status: Item status. Values accepted: 'active | completed'
     :returns Object: A JSON object with the specific item info.
 
   .. js:method:: deleteItem(listId, itemId)
