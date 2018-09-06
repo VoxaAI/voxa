@@ -1,4 +1,3 @@
-
 import * as debug from "debug";
 import * as _ from "lodash";
 
@@ -28,12 +27,16 @@ export abstract class VoxaPlatform {
   public config: any;
   public platform?: string;
 
-  constructor(voxaApp: VoxaApp, config: any= {}) {
+  constructor(voxaApp: VoxaApp, config: any = {}) {
     this.app = voxaApp;
     this.config = config;
 
-    _.forEach(this.getDirectiveHandlers(), (directive) => this.app.directiveHandlers.push(directive));
-    _.forEach(this.getPlatformRequests(), (requestType) => voxaApp.registerRequestHandler(requestType));
+    _.forEach(this.getDirectiveHandlers(), (directive) =>
+      this.app.directiveHandlers.push(directive),
+    );
+    _.forEach(this.getPlatformRequests(), (requestType) =>
+      voxaApp.registerRequestHandler(requestType),
+    );
   }
 
   public startServer(port: number): void {
@@ -54,7 +57,11 @@ export abstract class VoxaPlatform {
   public abstract execute(event: any, context?: any): Promise<any>;
 
   public lambda() {
-    return async (event: any, context: AWSLambdaContext, callback: AWSLambdaCallback<any>) => {
+    return async (
+      event: any,
+      context: AWSLambdaContext,
+      callback: AWSLambdaCallback<any>,
+    ) => {
       try {
         const result = await this.execute(event, context);
         return callback(null, result);
@@ -68,14 +75,15 @@ export abstract class VoxaPlatform {
     return async (
       event: APIGatewayProxyEvent,
       context: AWSLambdaContext,
-      callback: AWSLambdaCallback<APIGatewayProxyResult>) => {
-        try {
+      callback: AWSLambdaCallback<APIGatewayProxyResult>,
+    ) => {
+      try {
         const body = JSON.parse(event.body || "");
         const result = await this.execute(body, context);
         const response: APIGatewayProxyResult = {
           body: JSON.stringify(result),
           headers: {
-            "Content-Type" : "application/json",
+            "Content-Type": "application/json; charset=utf-8",
           },
           statusCode: 200,
         };
@@ -89,44 +97,49 @@ export abstract class VoxaPlatform {
 
   public azureFunction() {
     return async (context: AzureContext, req: AzureHttpRequest) => {
-
       try {
         let res: AzureHttpResponse;
 
         if (req.method !== AzureHttpMethod.Post) {
-            res = {
-              body: {
-                error: {
-                  message: `Method ${req.method} not supported.`,
-                  type: "not_supported",
-                },
+          res = {
+            body: {
+              error: {
+                message: `Method ${req.method} not supported.`,
+                type: "not_supported",
               },
-              status: AzureHttpStatusCode.MethodNotAllowed,
-            };
+            },
+            status: AzureHttpStatusCode.MethodNotAllowed,
+          };
         } else {
-            const body = await this.execute(req.body, {});
-            res = {
-              body,
-              headers: {
-                "Content-Type" : "application/json",
-              },
-              status: AzureHttpStatusCode.OK,
-            };
+          const body = await this.execute(req.body, {});
+          res = {
+            body,
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+            },
+            status: AzureHttpStatusCode.OK,
+          };
         }
 
         context.done(undefined, res);
-
       } catch (error) {
         context.done(error);
       }
     };
   }
 
-  public onIntent(intentName: string, handler: IStateHandler|ITransition): void {
+  public onIntent(
+    intentName: string,
+    handler: IStateHandler | ITransition,
+  ): void {
     this.app.onIntent(intentName, handler, this.platform);
   }
 
-  public onState(stateName: string, handler: IStateHandler | ITransition, intents: string[] | string = []): void {
+  public onState(
+    stateName: string,
+    handler: IStateHandler | ITransition,
+    intents: string[] | string = [],
+  ): void {
     this.app.onState(stateName, handler, intents, this.platform);
   }
 }

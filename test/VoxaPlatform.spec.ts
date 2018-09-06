@@ -11,7 +11,11 @@ import {
 import { expect } from "chai";
 import { VoxaPlatform } from "../src/platforms/VoxaPlatform";
 import { VoxaApp } from "../src/VoxaApp";
-import { AlexaRequestBuilder, getAPIGatewayProxyEvent, getLambdaContext } from "./tools";
+import {
+  AlexaRequestBuilder,
+  getAPIGatewayProxyEvent,
+  getLambdaContext,
+} from "./tools";
 import { views } from "./views";
 
 const rb = new AlexaRequestBuilder();
@@ -31,14 +35,17 @@ describe("VoxaPlatform", () => {
       const adapter = new Platform(app);
       const handler = adapter.lambda();
       const event = rb.getSessionEndedRequest();
-      const callback: AWSLambdaCallback<any> = (error?: Error|null|string, result?: any): void => {
+      const callback: AWSLambdaCallback<any> = (
+        error?: Error | null | string,
+        result?: any,
+      ): void => {
         expect(error).to.be.null;
         expect(result.context).to.deep.equal(context);
         expect(result.event).to.deep.equal(event);
       };
 
       const context: AWSLambdaContext = getLambdaContext(callback);
-      await handler(event, context, callback);
+      return await handler(event, context, callback);
     });
   });
 
@@ -47,13 +54,25 @@ describe("VoxaPlatform", () => {
       const app = new VoxaApp({ views });
       const adapter = new Platform(app);
       const handler = adapter.lambdaHTTP();
-      const event = getAPIGatewayProxyEvent("POST", JSON.stringify(rb.getSessionEndedRequest()));
+      const event = getAPIGatewayProxyEvent(
+        "POST",
+        JSON.stringify(rb.getSessionEndedRequest()),
+      );
 
-      const callback: AWSLambdaCallback<any> = (error?: Error|null|string, result?: any) => {
-        expect(error).to.be.null;
-        expect(result.statusCode).to.equal(200);
-        expect(result.headers["Content-Type"]).to.equal("application/json");
-        done();
+      const callback: AWSLambdaCallback<any> = (
+        error?: Error | null | string,
+        result?: any,
+      ) => {
+        try {
+          expect(error).to.be.null;
+          expect(result.statusCode).to.equal(200);
+          expect(result.headers["Content-Type"]).to.equal(
+            "application/json; charset=utf-8",
+          );
+          done();
+        } catch (error) {
+          done(error);
+        }
       };
       const context = getLambdaContext(callback);
 
@@ -72,9 +91,10 @@ describe("VoxaPlatform", () => {
       };
 
       const context: AzureContext = {
-        done: (error?: Error|null, result?: any) => {
+        done: (error?: Error | null, result?: any) => {
           done(error);
-        }};
+        },
+      };
 
       handler(context, event);
     });
@@ -139,5 +159,4 @@ describe("VoxaPlatform", () => {
       });
     });
   });
-
 });
