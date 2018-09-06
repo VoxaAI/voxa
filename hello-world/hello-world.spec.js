@@ -4,7 +4,7 @@ const dockerLambda = require('docker-lambda');
 
 const NODE_VERSION = process.env.TRAVIS_NODE_VERSION || "8.10"
 const launchIntent = require('../test/requests/alexa/launchRequest.json')
-const lambdaProxyLaunchIntent = require('../test/requests/dialog-flow/lambdaProxyLaunchIntent.json')
+const lambdaProxyLaunchIntent = require('../test/requests/dialogflow/lambdaProxyLaunchIntent.json')
 
 /* tslint:disable-next-line:no-var-requires */
 const views = require("./views.json");
