@@ -79,18 +79,20 @@ export class BotFrameworkEvent extends IVoxaEvent {
   }
 
   public get supportedInterfaces() {
-    return [];
+    const entity: any = getEntity(this.rawEvent, "DeviceInfo");
+    if (!entity) {
+      return [];
+    }
+
+    return entity.supportsDisplay === "true" ? ["Display"] : [];
   }
 
-  public getIntentFromEntity(): void {
+  protected getIntentFromEntity(): void {
     if (!isIMessage(this.rawEvent)) {
       return;
     }
 
-    const intentEntity: any = _.find(
-      this.rawEvent.entities,
-      (e: any) => e.type === "Intent",
-    );
+    const intentEntity: any = getEntity(this.rawEvent, "Intent");
 
     if (!intentEntity) {
       return;
@@ -108,7 +110,7 @@ export class BotFrameworkEvent extends IVoxaEvent {
     };
   }
 
-  public mapUtilitiesIntent(intent: IVoxaIntent): IVoxaIntent {
+  protected mapUtilitiesIntent(intent: IVoxaIntent): IVoxaIntent {
     if (this.utilitiesIntentMapping[intent.name]) {
       intent.name = this.utilitiesIntentMapping[intent.name];
     }
@@ -122,10 +124,7 @@ export class BotFrameworkEvent extends IVoxaEvent {
     };
 
     if (isIMessage(this.rawEvent)) {
-      const auth: any = _(this.rawEvent.entities)
-        .filter((e: any) => e.type === "AuthorizationToken")
-        .first();
-
+      const auth: any = getEntity(this.rawEvent, "AuthorizationToken");
       if (auth) {
         result.accessToken = auth.token;
       }
@@ -134,7 +133,7 @@ export class BotFrameworkEvent extends IVoxaEvent {
     return result;
   }
 
-  public mapRequestToIntent(): void {
+  protected mapRequestToIntent(): void {
     if (
       isIConversationUpdate(this.rawEvent) &&
       this.rawEvent.address.channelId === "webchat"
@@ -159,7 +158,7 @@ export class BotFrameworkEvent extends IVoxaEvent {
     }
   }
 
-  public getRequest() {
+  protected getRequest() {
     const type = this.rawEvent.type;
     let locale;
 
@@ -169,12 +168,8 @@ export class BotFrameworkEvent extends IVoxaEvent {
       }
 
       if (this.rawEvent.entities) {
-        const entity: any = _(this.rawEvent.entities)
-          .filter((e: any) => e.type === "clientInfo")
-          .filter((e: any) => !!e.locale)
-          .first();
-
-        if (entity) {
+        const entity: any = getEntity(this.rawEvent, "clientInfo");
+        if (entity && entity.locale) {
           locale = entity.locale;
         }
       }
@@ -192,4 +187,12 @@ export function isIConversationUpdate(
   event: IEvent | IConversationUpdate,
 ): event is IConversationUpdate {
   return event.type === "conversationUpdate";
+}
+
+export function getEntity(msg: IMessage, type: string): any {
+  if (!msg.entities) {
+    return;
+  }
+
+  return _.find(msg.entities, (entity) => entity.type === type);
 }

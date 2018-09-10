@@ -5,6 +5,7 @@
  * Licensed under the MIT license.
  */
 
+export { VoxaPlatform } from "./platforms";
 export { IVoxaEvent, IVoxaIntent } from "./VoxaEvent";
 export {
   AlexaPlatform,

@@ -22,6 +22,18 @@
     {
       "type": "DeviceInfo",
       "supportsDisplay": "true"
+    },
+    {
+      "locale": "en-US",
+      "country": "US",
+      "platform": "Windows",
+      "timezone": "America/Los_Angeles",
+      "type": "clientInfo"
+    },
+    {
+      "type": "AuthorizationToken",
+      "token": "token",
+      "status": 1
     }
   ],
   "channelData": {
@@ -30,4 +42,3 @@
     "isDebug": true
   }
 }
-

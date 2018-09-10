@@ -1,6 +1,14 @@
 import "mocha";
 
-import { IMessage, LuisRecognizer } from "botbuilder";
+import {
+  AttachmentLayout,
+  CardAction,
+  CardImage,
+  HeroCard,
+  IMessage,
+  LuisRecognizer,
+  Session,
+} from "botbuilder";
 import { AzureBotStorage, AzureTableClient } from "botbuilder-azure";
 import { expect, use } from "chai";
 import * as i18n from "i18next";
@@ -88,6 +96,134 @@ describe("BotFramework directives", () => {
               ],
             },
             contentType: "application/vnd.microsoft.card.audio",
+          },
+        ],
+        channelId: "cortana",
+        conversation: {
+          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4",
+        },
+        from: {
+          id: "tide",
+        },
+        inputHint: "acceptingInput",
+        locale: "en-US",
+        recipient: {
+          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722",
+        },
+        replyToId: "4Cq2PVQFeti",
+        speak: "",
+        text: "",
+        textFormat: "plain",
+        type: "message",
+      });
+    });
+  });
+
+  describe("TextP", () => {
+    it("should add plain text to the message", async () => {
+      app.onIntent("LaunchIntent", {
+        textp: "Some Text",
+        to: "die",
+      });
+
+      await botFrameworkSkill.execute(event, {});
+      const mock: any = BotFrameworkReply.prototype.botApiRequest;
+      expect(mock.called).to.be.true;
+      expect(mock.callCount).to.equal(1);
+      const reply = JSON.parse(JSON.stringify(mock.lastCall.args[2]));
+      expect(_.omit(reply, "timestamp", "id")).to.deep.equal({
+        channelId: "cortana",
+        conversation: {
+          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4",
+        },
+        from: {
+          id: "tide",
+        },
+        inputHint: "acceptingInput",
+        locale: "en-US",
+        recipient: {
+          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722",
+        },
+        replyToId: "4Cq2PVQFeti",
+        speak: "",
+        text: "Some Text",
+        textFormat: "plain",
+        type: "message",
+      });
+    });
+  });
+
+  describe("Text", () => {
+    it("should add plain text to the message", async () => {
+      app.onIntent("LaunchIntent", {
+        text: "Say",
+        to: "die",
+      });
+
+      await botFrameworkSkill.execute(event, {});
+      const mock: any = BotFrameworkReply.prototype.botApiRequest;
+      expect(mock.called).to.be.true;
+      expect(mock.callCount).to.equal(1);
+      const reply = JSON.parse(JSON.stringify(mock.lastCall.args[2]));
+      expect(_.omit(reply, "timestamp", "id")).to.deep.equal({
+        channelId: "cortana",
+        conversation: {
+          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4",
+        },
+        from: {
+          id: "tide",
+        },
+        inputHint: "acceptingInput",
+        locale: "en-US",
+        recipient: {
+          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722",
+        },
+        replyToId: "4Cq2PVQFeti",
+        speak: "",
+        text: "say",
+        textFormat: "plain",
+        type: "message",
+      });
+    });
+  });
+
+  describe("Attachments", () => {
+    it("should add plain text to the message", async () => {
+      const cards = _.map([1, 2, 3], (index: number) => {
+        return new HeroCard().title(`Event ${index}`).toAttachment();
+      });
+
+      app.onIntent("LaunchIntent", {
+        botframeworkAttachmentLayout: AttachmentLayout.carousel,
+        botframeworkAttachments: cards,
+        to: "die",
+      });
+
+      await botFrameworkSkill.execute(event, {});
+      const mock: any = BotFrameworkReply.prototype.botApiRequest;
+      expect(mock.called).to.be.true;
+      expect(mock.callCount).to.equal(1);
+      const reply = JSON.parse(JSON.stringify(mock.lastCall.args[2]));
+      expect(_.omit(reply, "timestamp", "id")).to.deep.equal({
+        attachmentLayout: "carousel",
+        attachments: [
+          {
+            content: {
+              title: "Event 1",
+            },
+            contentType: "application/vnd.microsoft.card.hero",
+          },
+          {
+            content: {
+              title: "Event 2",
+            },
+            contentType: "application/vnd.microsoft.card.hero",
+          },
+          {
+            content: {
+              title: "Event 3",
+            },
+            contentType: "application/vnd.microsoft.card.hero",
           },
         ],
         channelId: "cortana",

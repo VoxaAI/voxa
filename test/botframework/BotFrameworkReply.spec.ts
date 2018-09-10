@@ -4,12 +4,14 @@ import { AzureBotStorage, AzureTableClient } from "botbuilder-azure";
 import { expect } from "chai";
 import * as _ from "lodash";
 import * as simple from "simple-mock";
-import { BotFrameworkEvent } from "../../src/platforms/botframework/BotFrameworkEvent";
-import { BotFrameworkPlatform } from "../../src/platforms/botframework/BotFrameworkPlatform";
+import {
+  BotFrameworkEvent,
+  BotFrameworkPlatform,
+  BotFrameworkReply,
+  VoxaApp,
+  VoxaPlatform,
+} from "../../src/";
 import { prepIncomingMessage } from "../../src/platforms/botframework/BotFrameworkPlatform";
-import { BotFrameworkReply } from "../../src/platforms/botframework/BotFrameworkReply";
-import { VoxaPlatform } from "../../src/platforms/VoxaPlatform";
-import { VoxaApp } from "../../src/VoxaApp";
 
 describe("BotFrameworkReply", () => {
   let reply: BotFrameworkReply;

@@ -33,6 +33,22 @@ describe("BotFrameworkEvent", () => {
     expect(event.intent.name).to.equal("LaunchIntent");
   });
 
+  it("should give display as a supportedInterface when available", () => {
+    const rawEvent = _.cloneDeep(
+      require("../requests/botframework/microsoft.launch.json"),
+    );
+    const event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
+    expect(event.supportedInterfaces).to.deep.equal(["Display"]);
+  });
+
+  it("should return empty supported interfaces if the entity is not present", () => {
+    const rawEvent = _.cloneDeep(
+      require("../requests/botframework/StaintIntent.json"),
+    );
+    const event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
+    expect(event.supportedInterfaces).to.deep.equal([]);
+  });
+
   it("should map an endOfConversation request to a voxa SessionEndedRequest", () => {
     const rawEvent = require("../requests/botframework/endOfRequest.json");
     const event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
