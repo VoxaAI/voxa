@@ -36,6 +36,7 @@ export {
   SuggestedActions,
 } from "./platforms/botframework";
 export {
+  DialogFlowReply,
   DialogFlowPlatform,
   AccountLinkingCard as DialogFlowAccountLinkingCard,
   BasicCard,

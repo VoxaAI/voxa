@@ -1,7 +1,5 @@
 import { expect } from "chai";
-import * as Voxa from "../../src/main";
-import { DialogFlowPlatform } from "../../src/platforms/dialogflow/DialogFlowPlatform";
-import { DialogFlowReply } from "../../src/platforms/dialogflow/DialogFlowReply";
+import { AlexaPlatform, DialogFlowPlatform, DialogFlowReply } from "../../src";
 import { VoxaApp } from "../../src/VoxaApp";
 import { views } from "../views";
 
@@ -30,8 +28,8 @@ describe("DialogFlowPlatform", () => {
         to: "entry",
       });
 
-      const alexaSkill = new Voxa.AlexaPlatform(voxaApp);
-      const platform = new Voxa.DialogFlowPlatform(voxaApp);
+      const alexaSkill = new AlexaPlatform(voxaApp);
+      const platform = new DialogFlowPlatform(voxaApp);
 
       const reply = (await platform.execute(rawEvent, {})) as DialogFlowReply;
       expect(reply.speech).to.equal("<speak>This is the help</speak>");

@@ -23,8 +23,8 @@ describe("BotFrameworkReply", () => {
   beforeEach(() => {
     audioCard = new AudioCard();
     const cardMedia: ICardMediaUrl = {
-      url: "http://example.com/audio.mp3",
       profile: "",
+      url: "http://example.com/audio.mp3",
     };
     audioCard.media([cardMedia]);
 
