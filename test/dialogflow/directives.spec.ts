@@ -4,10 +4,12 @@ import * as i18n from "i18next";
 import * as _ from "lodash";
 import "mocha";
 
-import { DialogFlowEvent } from "../../src/platforms/dialog-flow/DialogFlowEvent";
-import { DialogFlowPlatform } from "../../src/platforms/dialog-flow/DialogFlowPlatform";
-import { DialogFlowReply } from "../../src/platforms/dialog-flow/DialogFlowReply";
-import { MediaResponse } from "../../src/platforms/dialog-flow/directives";
+import {
+  DialogFlowEvent,
+  DialogFlowPlatform,
+  DialogFlowReply,
+  MediaResponse,
+} from "../../src/platforms/dialogflow";
 import { VoxaApp } from "../../src/VoxaApp";
 import { variables } from "./../variables";
 import { views } from "./../views";
@@ -18,7 +20,7 @@ describe("DialogFlow Directives", () => {
   let dialogFlowAgent: DialogFlowPlatform;
 
   before(() => {
-    i18n .init({
+    i18n.init({
       load: "all",
       nonExplicitWhitelist: true,
       resources: views,
@@ -26,9 +28,9 @@ describe("DialogFlow Directives", () => {
   });
 
   beforeEach(() => {
-    app =  new VoxaApp({ views, variables });
+    app = new VoxaApp({ views, variables });
     dialogFlowAgent = new DialogFlowPlatform(app);
-    event = require("../requests/dialog-flow/launchIntent.json");
+    event = require("../requests/dialogflow/launchIntent.json");
   });
 
   describe("MediaResponse", () => {
@@ -40,7 +42,7 @@ describe("DialogFlow Directives", () => {
       });
     });
 
-    it("should not add a MediaResponse to a device with no audio support",  async () => {
+    it("should not add a MediaResponse to a device with no audio support", async () => {
       event = _.cloneDeep(event);
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
       app.onIntent("LaunchIntent", {
@@ -101,7 +103,7 @@ describe("DialogFlow Directives", () => {
       const dialogFlowEvent = new DialogFlowEvent(event, {});
       const mediaResponse = new MediaResponse(mediaObject);
 
-      let error: Error|null = null;
+      let error: Error | null = null;
       try {
         await mediaResponse.writeToReply(reply, dialogFlowEvent, {});
       } catch (e) {
@@ -112,13 +114,14 @@ describe("DialogFlow Directives", () => {
       if (error == null) {
         throw expect(error).to.not.be.null;
       }
-      expect(error.message).to.equal("MediaResponse requires another simple response first");
+      expect(error.message).to.equal(
+        "MediaResponse requires another simple response first",
+      );
     });
   });
 
   describe("Carousel", () => {
     it("should add a carousel from carouselOptions to the reply", async () => {
-
       const carousel = {
         items: {
           LIST_ITEM: {
@@ -204,14 +207,16 @@ describe("DialogFlow Directives", () => {
         data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
           "listSelect": {
-            items: [{
-              description: "The item description",
-              image: {
-                accessibilityText: "The image",
-                url: "http://example.com/image.jpg",
+            items: [
+              {
+                description: "The item description",
+                image: {
+                  accessibilityText: "The image",
+                  url: "http://example.com/image.jpg",
+                },
+                title: "The list item",
               },
-              title: "The list item",
-            }],
+            ],
             title: "The list select",
           },
         },
@@ -283,7 +288,6 @@ describe("DialogFlow Directives", () => {
 
       const reply = await dialogFlowAgent.execute(event, {});
       expect(reply.payload.google.systemIntent).to.deep.equal({
-
         data: {
           "@type": "type.googleapis.com/google.actions.v2.DateTimeValueSpec",
           "dialogSpec": {
@@ -309,7 +313,8 @@ describe("DialogFlow Directives", () => {
       const reply = await dialogFlowAgent.execute(event, {});
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
-          "@type": "type.googleapis.com/google.actions.v2.ConfirmationValueSpec",
+          "@type":
+            "type.googleapis.com/google.actions.v2.ConfirmationValueSpec",
           "dialogSpec": {
             requestConfirmationText: "Is that true?",
           },
@@ -337,7 +342,8 @@ describe("DialogFlow Directives", () => {
           "@type": "type.googleapis.com/google.actions.v2.PlaceValueSpec",
           "dialogSpec": {
             extension: {
-              "@type": "type.googleapis.com/google.actions.v2.PlaceValueSpec.PlaceDialogSpec",
+              "@type":
+                "type.googleapis.com/google.actions.v2.PlaceValueSpec.PlaceDialogSpec",
               "permissionContext": "To get a your home address",
               "requestPrompt": "can i get your location?",
             },
@@ -365,9 +371,7 @@ describe("DialogFlow Directives", () => {
         data: {
           "@type": "type.googleapis.com/google.actions.v2.PermissionValueSpec",
           "optContext": "Can i get your name?",
-          "permissions": [
-            "NAME",
-          ],
+          "permissions": ["NAME"],
         },
         intent: "actions.intent.PERMISSION",
       });
@@ -394,7 +398,8 @@ describe("DialogFlow Directives", () => {
           "@type": "type.googleapis.com/google.actions.v2.LinkValueSpec",
           "dialogSpec": {
             extension: {
-              "@type": "type.googleapis.com/google.actions.v2.LinkValueSpec.LinkDialogSpec",
+              "@type":
+                "type.googleapis.com/google.actions.v2.LinkValueSpec.LinkDialogSpec",
               "destinationName": "Google",
               "requestLinkReason": "handle this for you",
             },
@@ -421,7 +426,9 @@ describe("DialogFlow Directives", () => {
       });
 
       const reply = await dialogFlowAgent.execute(event, {});
-      expect(_.get(reply, "payload.google.richResponse.items[1]")).to.deep.equal({
+      expect(
+        _.get(reply, "payload.google.richResponse.items[1]"),
+      ).to.deep.equal({
         basicCard: {
           buttons: [
             {
@@ -448,7 +455,7 @@ describe("DialogFlow Directives", () => {
             title: "Example.com",
           },
           display: "DEFAULT",
-          image:  {
+          image: {
             url: "https://example.com/image.png",
           },
           subtitle: "subtitle",
@@ -461,7 +468,9 @@ describe("DialogFlow Directives", () => {
       });
 
       const reply = await dialogFlowAgent.execute(event, {});
-      expect(_.get(reply, "payload.google.richResponse.items[1]")).to.deep.equal({
+      expect(
+        _.get(reply, "payload.google.richResponse.items[1]"),
+      ).to.deep.equal({
         basicCard: {
           buttons: [
             {
@@ -491,7 +500,9 @@ describe("DialogFlow Directives", () => {
       });
 
       const reply = await dialogFlowAgent.execute(event, {});
-      expect(_.get(reply, "payload.google.richResponse.suggestions")).to.deep.equal([
+      expect(
+        _.get(reply, "payload.google.richResponse.suggestions"),
+      ).to.deep.equal([
         {
           title: "suggestion",
         },
@@ -551,9 +562,13 @@ describe("DialogFlow Directives", () => {
 
       const reply = await dialogFlowAgent.execute(event, {});
       expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
-        data: _.merge({
-          "@type": "type.googleapis.com/google.actions.v2.TransactionDecisionValueSpec",
-        }, transactionDecisionOptions),
+        data: _.merge(
+          {
+            "@type":
+              "type.googleapis.com/google.actions.v2.TransactionDecisionValueSpec",
+          },
+          transactionDecisionOptions,
+        ),
         intent: "actions.intent.TRANSACTION_DECISION",
       });
     });
@@ -584,9 +599,13 @@ describe("DialogFlow Directives", () => {
 
       const reply = await dialogFlowAgent.execute(event, {});
       expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
-        data: _.merge({
-          "@type": "type.googleapis.com/google.actions.v2.TransactionRequirementsCheckSpec",
-        }, transactionRequirementsOptions),
+        data: _.merge(
+          {
+            "@type":
+              "type.googleapis.com/google.actions.v2.TransactionRequirementsCheckSpec",
+          },
+          transactionRequirementsOptions,
+        ),
         intent: "actions.intent.TRANSACTION_REQUIREMENTS_CHECK",
       });
     });
@@ -609,7 +628,8 @@ describe("DialogFlow Directives", () => {
       const reply = await dialogFlowAgent.execute(event, {});
       expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
         data: {
-          "@type": "type.googleapis.com/google.actions.v2.RegisterUpdateValueSpec",
+          "@type":
+            "type.googleapis.com/google.actions.v2.RegisterUpdateValueSpec",
           "arguments": undefined,
           "intent": "tell.tip",
           "triggerContext": {
@@ -620,17 +640,18 @@ describe("DialogFlow Directives", () => {
         },
         intent: "actions.intent.REGISTER_UPDATE",
       });
-
     });
   });
 
   describe("UpdatePermission Directive", () => {
     it("should add an UpdatePermission response", async () => {
       const updatePermissionOptions = {
-        arguments: [{
-          name: "image_to_show",
-          textValue: "image_type_1",
-        }],
+        arguments: [
+          {
+            name: "image_to_show",
+            textValue: "image_type_1",
+          },
+        ],
         intent: "show.image",
       };
 
@@ -646,9 +667,7 @@ describe("DialogFlow Directives", () => {
         data: {
           "@type": "type.googleapis.com/google.actions.v2.PermissionValueSpec",
           "optContext": undefined,
-          "permissions": [
-            "UPDATE",
-          ],
+          "permissions": ["UPDATE"],
           "updatePermissionValueSpec": {
             arguments: [
               {
@@ -661,7 +680,6 @@ describe("DialogFlow Directives", () => {
         },
         intent: "actions.intent.PERMISSION",
       });
-
     });
   });
 
@@ -714,7 +732,9 @@ describe("DialogFlow Directives", () => {
       });
 
       const reply = await dialogFlowAgent.execute(event, {});
-      expect(_.get(reply, "payload.google.richResponse.items[1]")).to.deep.equal({
+      expect(
+        _.get(reply, "payload.google.richResponse.items[1]"),
+      ).to.deep.equal({
         tableCard: {
           buttons: [
             {
@@ -813,9 +833,7 @@ describe("DialogFlow Directives", () => {
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.NewSurfaceValueSpec",
-          "capabilities": [
-            "actions.capability.SCREEN_OUTPUT",
-          ],
+          "capabilities": ["actions.capability.SCREEN_OUTPUT"],
           "context": "To show you an image",
           "notificationTitle": "Check out this image",
         },
@@ -823,5 +841,4 @@ describe("DialogFlow Directives", () => {
       });
     });
   });
-
 });

@@ -1,4 +1,3 @@
-
 import {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
@@ -22,7 +21,16 @@ import { ITypeMap, IVoxaIntent } from "../../VoxaEvent";
 import { VoxaPlatform } from "../VoxaPlatform";
 import { BotFrameworkEvent } from "./BotFrameworkEvent";
 import { BotFrameworkReply } from "./BotFrameworkReply";
-import { Ask, AudioCard, HeroCard, Say, SigninCard, SuggestedActions } from "./directives";
+import {
+  AttachmentLayout,
+  Attachments,
+  AudioCard,
+  HeroCard,
+  SigninCard,
+  SuggestedActions,
+  Text,
+  TextP,
+} from "./directives";
 
 const botframeworklog: debug.IDebugger = debug("voxa:botframework");
 
@@ -41,22 +49,28 @@ const toAddress = {
   serviceUrl: "serviceUrl",
 };
 
+export type IRecognize = (msg: IMessage) => Promise<IVoxaIntent | void>;
+export interface IBotframeworkPlatformConfig {
+  applicationId?: string;
+  applicationPassword?: string;
+  storage: IBotStorage;
+  recognize: IRecognize;
+  defaultLocale: string;
+}
+
 export class BotFrameworkPlatform extends VoxaPlatform {
-  public recognizerURI: string;
+  public recognize: IRecognize;
   public storage: IBotStorage;
-  public applicationId: string;
-  public applicationPassword: string;
+  public applicationId?: string;
+  public applicationPassword?: string;
 
-  constructor(voxaApp: VoxaApp, config: any) {
+  constructor(voxaApp: VoxaApp, config: IBotframeworkPlatformConfig) {
     super(voxaApp, config);
-    if (!config.storage) {
-      throw new Error("Cortana requires a state storage");
-    }
 
-    this.recognizerURI = config.recognizerURI;
     this.storage = config.storage;
     this.applicationId = config.applicationId;
     this.applicationPassword = config.applicationPassword;
+    this.recognize = config.recognize;
   }
 
   // Botframework requires a lot more headers to work than
@@ -77,7 +91,8 @@ export class BotFrameworkPlatform extends VoxaPlatform {
     return async (
       event: APIGatewayProxyEvent,
       context: AWSLambdaContext,
-      callback: AWSLambdaCallback<APIGatewayProxyResult>) => {
+      callback: AWSLambdaCallback<APIGatewayProxyResult>,
+    ) => {
       const response = {
         body: "{}",
         headers: {
@@ -105,28 +120,20 @@ export class BotFrameworkPlatform extends VoxaPlatform {
     };
   }
 
-  public getDirectiveHandlers() {
-    return [
-      HeroCard,
-      SuggestedActions,
-      AudioCard,
-      Ask,
-      SigninCard,
-      Say,
-    ];
-  }
-
-  public getPlatformRequests() {
-    return CortanaRequests;
-  }
-
   public async execute(msg: any, context: any) {
     msg = prepIncomingMessage(msg);
 
-    const stateData: IBotStorageData|undefined = await this.getStateData(msg);
+    const stateData: IBotStorageData | undefined = await this.getStateData(msg);
     const intent = await this.recognize(msg);
 
-    const event = new BotFrameworkEvent(msg, context, stateData, this.storage, intent);
+    const event = new BotFrameworkEvent(
+      msg,
+      context,
+      stateData,
+      this.storage,
+      intent,
+    );
+
     event.applicationId = this.applicationId;
     event.applicationPassword = this.applicationPassword;
 
@@ -134,46 +141,32 @@ export class BotFrameworkPlatform extends VoxaPlatform {
       event.request.locale = this.config.defaultLocale;
     }
 
-    const reply = await this.app.execute(event, new BotFrameworkReply(event)) as BotFrameworkReply;
+    const reply = (await this.app.execute(
+      event,
+      new BotFrameworkReply(event),
+    )) as BotFrameworkReply;
     await reply.send(event);
     return {};
   }
 
-  public async recognize(msg: IMessage): Promise<IVoxaIntent|undefined> {
-    interface IRecognizeResult {
-      intents?: IIntent[];
-      entities?: IEntity[];
-    }
-
-    const { intents, entities } = await new Promise<IRecognizeResult>((resolve, reject) => {
-      if (msg.text) {
-        return LuisRecognizer.recognize(msg.text, this.config.recognizerURI,
-          (err: Error, recognizedIntents?: IIntent[], recognizedEntities?: IEntity[]) => {
-            if (err) { return reject(err); }
-            botframeworklog("Luis.ai response", { intents: recognizedIntents, entities: recognizedEntities });
-            resolve({ intents: recognizedIntents, entities: recognizedEntities });
-          });
-      }
-
-      resolve({});
-    });
-
-    if (!intents) {
-      return undefined;
-    }
-
-    return {
-      name: intents[0].intent,
-      params: _(entities).map(entityToParam).fromPairs().value(),
-      rawIntent: { intents, entities },
-    };
-
-    function entityToParam(entity: IEntity) {
-      return [entity.type, entity.entity];
-    }
+  protected getDirectiveHandlers() {
+    return [
+      HeroCard,
+      SuggestedActions,
+      AudioCard,
+      SigninCard,
+      Text,
+      TextP,
+      Attachments,
+      AttachmentLayout,
+    ];
   }
 
-  public async getStateData(event: IMessage): Promise<IBotStorageData> {
+  protected getPlatformRequests() {
+    return CortanaRequests;
+  }
+
+  protected async getStateData(event: IMessage): Promise<IBotStorageData> {
     if (!event.address.conversation) {
       throw new Error("Missing conversation address");
     }
@@ -189,7 +182,9 @@ export class BotFrameworkPlatform extends VoxaPlatform {
 
     return new Promise((resolve, reject) => {
       this.storage.getData(context, (err: Error, result: IBotStorageData) => {
-        if (err) { return reject(err); }
+        if (err) {
+          return reject(err);
+        }
 
         botframeworklog("got stateData");
         botframeworklog(result, context);
@@ -197,10 +192,13 @@ export class BotFrameworkPlatform extends VoxaPlatform {
       });
     });
   }
-
 }
 
-export function moveFieldsTo(frm: any, to: any, fields: { [id: string]: string; }): void {
+export function moveFieldsTo(
+  frm: any,
+  to: any,
+  fields: { [id: string]: string },
+): void {
   if (frm && to) {
     for (const f in fields) {
       if (frm.hasOwnProperty(f)) {
@@ -234,7 +232,12 @@ export function prepIncomingMessage(msg: IMessage): IMessage {
   msg.source = address.channelId;
 
   // Check for facebook quick replies
-  if (msg.source === "facebook" && msg.sourceEvent && msg.sourceEvent.message && msg.sourceEvent.message.quick_reply) {
+  if (
+    msg.source === "facebook" &&
+    msg.sourceEvent &&
+    msg.sourceEvent.message &&
+    msg.sourceEvent.message.quick_reply
+  ) {
     msg.text = msg.sourceEvent.message.quick_reply.payload;
   }
 

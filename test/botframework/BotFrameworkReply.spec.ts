@@ -1,8 +1,4 @@
-import {
-  AudioCard,
-  ICardMediaUrl,
-  SuggestedActions,
-} from "botbuilder";
+import { AudioCard, ICardMediaUrl, SuggestedActions } from "botbuilder";
 import { LuisRecognizer } from "botbuilder";
 import { AzureBotStorage, AzureTableClient } from "botbuilder-azure";
 import { expect } from "chai";
@@ -26,23 +22,29 @@ describe("BotFrameworkReply", () => {
 
   beforeEach(() => {
     audioCard = new AudioCard();
-    const cardMedia: ICardMediaUrl = { url: "http://example.com/audio.mp3", profile: "" };
+    const cardMedia: ICardMediaUrl = {
+      url: "http://example.com/audio.mp3",
+      profile: "",
+    };
     audioCard.media([cardMedia]);
 
     const azureTableClient = new AzureTableClient("", "", "");
     const storage = new AzureBotStorage({ gzipData: false }, azureTableClient);
 
-    const rawEvent = prepIncomingMessage(_.cloneDeep(require("../requests/botframework/conversationUpdate.json")));
+    const rawEvent = prepIncomingMessage(
+      _.cloneDeep(require("../requests/botframework/conversationUpdate.json")),
+    );
     event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
 
     reply = new BotFrameworkReply(event);
 
-    simple.mock(storage, "saveData")
-      .callbackWith(null, {});
+    simple.mock(storage, "saveData").callbackWith(null, {});
   });
 
   it("should correctly format the reply activity", () => {
-    expect(_.omit(JSON.parse(JSON.stringify(reply)), "timestamp")).to.deep.equal({
+    expect(
+      _.omit(JSON.parse(JSON.stringify(reply)), "timestamp"),
+    ).to.deep.equal({
       channelId: "webchat",
       conversation: {
         id: "6b19caf39bee43fb88ca463872861646",
@@ -74,11 +76,13 @@ describe("BotFrameworkReply", () => {
 
   it("should remove all directives and speech statements", () => {
     reply.addStatement("Some text");
-    reply.attachments = [ audioCard.toAttachment() ];
+    reply.attachments = [audioCard.toAttachment()];
 
     reply.clear();
 
-    expect(_.omit(JSON.parse(JSON.stringify(reply)), "timestamp")).to.deep.equal({
+    expect(
+      _.omit(JSON.parse(JSON.stringify(reply)), "timestamp"),
+    ).to.deep.equal({
       channelId: "webchat",
       conversation: {
         id: "6b19caf39bee43fb88ca463872861646",
@@ -114,9 +118,8 @@ describe("BotFrameworkReply", () => {
   it("should set hasDirectives to true after suggestedActions", () => {
     expect(reply.hasDirectives).to.be.false;
     reply.suggestedActions = new SuggestedActions()
-      .addAction({ type: "" , value: ""})
-      .toSuggestedActions()
-      .actions;
+      .addAction({ type: "", value: "" })
+      .toSuggestedActions().actions;
 
     expect(reply.hasDirectives).to.be.true;
   });

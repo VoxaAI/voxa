@@ -12,7 +12,7 @@ import { views } from "./views";
 import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
 import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
 import { PlayAudio } from "../src/platforms/alexa/directives";
-import { DialogFlowEvent } from "../src/platforms/dialog-flow/DialogFlowEvent";
+import { DialogFlowEvent } from "../src/platforms/dialogflow/DialogFlowEvent";
 import { AlexaRequestBuilder } from "./tools";
 
 const rb = new AlexaRequestBuilder();
@@ -226,7 +226,7 @@ describe("Renderer", () => {
 
   it("should use the dialogFlow view if available", async () => {
     const dialogFlowEvent = new DialogFlowEvent(
-      require("./requests/dialog-flow/launchIntent.json"),
+      require("./requests/dialogflow/launchIntent.json"),
       {},
     );
     dialogFlowEvent.t = event.t;

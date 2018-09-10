@@ -11,20 +11,22 @@ import * as _ from "lodash";
 import { Model } from "../../Model";
 import { IVoxaEvent, IVoxaIntent, IVoxaSession } from "../../VoxaEvent";
 import { AlexaIntent } from "./AlexaIntent";
-import { CustomerContact } from "./apis/CustomerContact";
-import { DeviceAddress } from "./apis/DeviceAddress";
-import { DeviceSettings } from "./apis/DeviceSettings";
-import { InSkillPurchase } from "./apis/InSkillPurchase";
-import { Lists } from "./apis/Lists";
+import {
+  CustomerContact,
+  DeviceAddress,
+  DeviceSettings,
+  InSkillPurchase,
+  Lists,
+} from "./apis";
 
 export class AlexaEvent extends IVoxaEvent {
   public intent!: IVoxaIntent;
   public alexa: {
-    customerContact: CustomerContact,
-    deviceAddress: DeviceAddress,
-    deviceSettings: DeviceSettings,
-    isp: InSkillPurchase,
-    lists: Lists,
+    customerContact: CustomerContact;
+    deviceAddress: DeviceAddress;
+    deviceSettings: DeviceSettings;
+    isp: InSkillPurchase;
+    lists: Lists;
   };
 
   public requestToIntent: any = {
@@ -39,10 +41,14 @@ export class AlexaEvent extends IVoxaEvent {
     "Display.ElementSelected": "Display.ElementSelected",
     "GameEngine.InputHandlerEvent": "GameEngine.InputHandlerEvent",
     "LaunchRequest": "LaunchIntent",
-    "PlaybackController.NextCommandIssued": "PlaybackController.NextCommandIssued",
-    "PlaybackController.PauseCommandIssued": "PlaybackController.PauseCommandIssued",
-    "PlaybackController.PlayCommandIssued": "PlaybackController.PlayCommandIssued",
-    "PlaybackController.PreviousCommandIssued": "PlaybackController.PreviousCommandIssued",
+    "PlaybackController.NextCommandIssued":
+      "PlaybackController.NextCommandIssued",
+    "PlaybackController.PauseCommandIssued":
+      "PlaybackController.PauseCommandIssued",
+    "PlaybackController.PlayCommandIssued":
+      "PlaybackController.PlayCommandIssued",
+    "PlaybackController.PreviousCommandIssued":
+      "PlaybackController.PreviousCommandIssued",
   };
 
   constructor(event: RequestEnvelope, context?: any) {
@@ -83,7 +89,11 @@ export class AlexaEvent extends IVoxaEvent {
   }
 
   get supportedInterfaces() {
-     const interfaces = _.get(this, "context.System.device.supportedInterfaces", {});
-     return _.keys(interfaces);
+    const interfaces = _.get(
+      this,
+      "context.System.device.supportedInterfaces",
+      {},
+    );
+    return _.keys(interfaces);
   }
 }

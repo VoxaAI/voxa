@@ -39,6 +39,7 @@ export class BotFrameworkReply implements IVoxaReply {
   public type: string = "message";
   public attachments?: IAttachment[];
   public suggestedActions?: ICardAction[];
+  public attachmentLayout?: string;
 
   constructor(event: IVoxaEvent) {
     this.channelId = event.rawEvent.address.channelId;
@@ -140,10 +141,14 @@ export class BotFrameworkReply implements IVoxaReply {
     uri: string,
     reply: BotFrameworkReply,
     event: BotFrameworkEvent,
-    attempts: number = 0): Promise<any> {
+    attempts: number = 0,
+  ): Promise<any> {
     let authorization: IAuthorizationResponse;
     try {
-      authorization = await this.getAuthorization(event.applicationId, event.applicationPassword);
+      authorization = await this.getAuthorization(
+        event.applicationId,
+        event.applicationPassword,
+      );
       const requestOptions: rp.Options = {
         auth: {
           bearer: authorization.access_token,
@@ -187,7 +192,12 @@ export class BotFrameworkReply implements IVoxaReply {
     return urljoin(baseUri, path);
   }
 
-  public async getAuthorization(applicationId: string, applicationPassword: string): Promise<IAuthorizationResponse> {
+  public async getAuthorization(
+    applicationId?: string,
+    applicationPassword?: string,
+  ): Promise<IAuthorizationResponse> {
+    const url =
+      "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token";
     const requestOptions: rp.Options = {
       form: {
         client_id: applicationId,
@@ -197,16 +207,16 @@ export class BotFrameworkReply implements IVoxaReply {
       },
       json: true,
       method: "POST",
-      url: "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token",
+      url,
     };
     botframeworklog("getAuthorization");
     botframeworklog(requestOptions);
 
-    return await rp(requestOptions) as IAuthorizationResponse;
+    return (await rp(requestOptions)) as IAuthorizationResponse;
   }
 
   public async saveSession(attributes: IBag, event: IVoxaEvent): Promise<void> {
-    const conversationId = event.session.sessionId;
+    const conversationId = encodeURIComponent(event.session.sessionId);
     const userId = event.rawEvent.address.bot.id;
     const context: IBotStorageContext = {
       conversationId,
@@ -228,7 +238,9 @@ export class BotFrameworkReply implements IVoxaReply {
 
     await new Promise((resolve, reject) => {
       storage.saveData(context, data, (error: Error) => {
-        if (error) { return reject(error); }
+        if (error) {
+          return reject(error);
+        }
 
         botframeworklog("savedStateData");
         botframeworklog(data, context);
@@ -236,5 +248,4 @@ export class BotFrameworkReply implements IVoxaReply {
       });
     });
   }
-
 }

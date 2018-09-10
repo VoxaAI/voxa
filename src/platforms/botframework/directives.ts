@@ -1,6 +1,7 @@
 import {
   AudioCard as AudioCardType,
   HeroCard as HeroCardType,
+  IAttachment,
   ICardMediaUrl,
   SigninCard as SigninCardType,
   SuggestedActions as SuggestedActionsType,
@@ -14,16 +15,26 @@ import { IVoxaReply } from "../../VoxaReply";
 import { BotFrameworkEvent } from "./BotFrameworkEvent";
 import { BotFrameworkReply } from "./BotFrameworkReply";
 
+export interface ISignInCardOptions {
+  url: string;
+  cardText: string;
+  buttonTitle: string;
+}
+
 export class SigninCard implements IDirective {
   public static platform: string = "botframework";
   public static key: string = "botframeworkSigninCard";
 
-  constructor(public url: string, public cardText: string = "", public buttonTitle: string = "") {}
+  constructor(public signInOptions: ISignInCardOptions) {}
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition) {
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ) {
     const card = new SigninCardType();
-    card.button(this.buttonTitle, this.url);
-    card.text(this.cardText);
+    card.button(this.signInOptions.buttonTitle, this.signInOptions.url);
+    card.text(this.signInOptions.cardText);
 
     const attachments = (reply as BotFrameworkReply).attachments || [];
     attachments.push(card.toAttachment());
@@ -39,7 +50,7 @@ export class HeroCard implements IDirective {
   public viewPath?: string;
   public card?: HeroCardType;
 
-  constructor(viewPath: string|HeroCardType) {
+  constructor(viewPath: string | HeroCardType) {
     if (_.isString(viewPath)) {
       this.viewPath = viewPath;
     } else {
@@ -47,7 +58,11 @@ export class HeroCard implements IDirective {
     }
   }
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition) {
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ) {
     let card;
     if (this.viewPath) {
       if (!event.renderer) {
@@ -73,8 +88,7 @@ export class SuggestedActions implements IDirective {
   public viewPath?: string;
   public suggestedActions?: SuggestedActionsType;
 
-  constructor(viewPath: string|SuggestedActionsType) {
-
+  constructor(viewPath: string | SuggestedActionsType) {
     if (_.isString(viewPath)) {
       this.viewPath = viewPath;
     } else {
@@ -82,13 +96,13 @@ export class SuggestedActions implements IDirective {
     }
   }
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition) {
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ) {
     let suggestedActions;
     if (this.viewPath) {
-      if (!event.renderer) {
-        throw new Error("event.renderer is missing");
-      }
-
       suggestedActions = await event.renderer.renderPath(this.viewPath, event);
     } else {
       suggestedActions = this.suggestedActions;
@@ -105,8 +119,7 @@ export class AudioCard implements IDirective {
   public url?: string;
   public audioCard?: AudioCardType;
 
-  constructor(url: string|AudioCardType, public profile: string = "") {
-
+  constructor(url: string | AudioCardType, public profile: string = "") {
     if (_.isString(url)) {
       this.url = url;
     } else {
@@ -114,7 +127,11 @@ export class AudioCard implements IDirective {
     }
   }
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition) {
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ) {
     let audioCard;
     if (this.url) {
       audioCard = new AudioCardType();
@@ -146,54 +163,59 @@ export class AudioCard implements IDirective {
   }
 }
 
-// i want to add plain statements
-export class Ask implements IDirective {
-  public static key: string = "ask";
+export class Text implements IDirective {
+  public static key: string = "text";
   public static platform: string = "botframework";
-  public viewPath: string;
 
-  constructor(viewPath: string) {
-    this.viewPath = viewPath;
-  }
-
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    if (event.rawEvent.address.channelId !== "webchat") {
-      return;
-    }
-
-    if (!event.renderer) {
-      throw new Error("event.renderer is missing");
-    }
-
-    const statement = await event.renderer.renderPath(this.viewPath, event);
-    if (_.isString(statement)) {
-      reply.addStatement(striptags(statement), true);
-    } else if (statement.ask) {
-      reply.addStatement(striptags(statement.ask), true);
-    }
+  constructor(public viewPath: string) {}
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    const text = await event.renderer.renderPath(this.viewPath, event);
+    reply.addStatement(text, true);
   }
 }
 
-// i want to add plain statements
-export class Say implements IDirective {
-  public static key: string = "say";
+export class TextP implements IDirective {
+  public static key: string = "textp";
   public static platform: string = "botframework";
-  public viewPath: string;
 
-  constructor(viewPath: string) {
-    this.viewPath = viewPath;
+  constructor(public text: string) {}
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    reply.addStatement(this.text, true);
   }
+}
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    if (event.rawEvent.address.channelId !== "webchat") {
-      return;
-    }
+export class AttachmentLayout implements IDirective {
+  public static key: string = "botframeworkAttachmentLayout";
+  public static platform: string = "botframework";
 
-    if (!event.renderer) {
-      throw new Error("event.renderer is missing");
-    }
+  constructor(public layout: string) {}
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    (reply as BotFrameworkReply).attachmentLayout = this.layout;
+  }
+}
 
-    const statement = await event.renderer.renderPath(this.viewPath, event);
-    reply.addStatement(striptags(statement), true);
+export class Attachments implements IDirective {
+  public static key: string = "botframeworkAttachments";
+  public static platform: string = "botframework";
+
+  constructor(public attachments: IAttachment[]) {}
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    (reply as BotFrameworkReply).attachments = this.attachments;
   }
 }

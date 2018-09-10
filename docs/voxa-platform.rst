@@ -92,6 +92,7 @@ The BotFramework Platform allows you to use Voxa with Microsoft Botframework
 
   const tableName = config.tableName;
   const storageKey = config.storageKey; // Obtain from Azure Portal
+  const storageName = config.storageName;
   const azureTableClient = new AzureTableClient(tableName, storageName, storageKey);
   const tableStorage = new AzureBotStorage({ gzipData: false }, azureTableClient);
 
