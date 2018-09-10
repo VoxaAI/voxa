@@ -54,7 +54,7 @@ Instantiating a Voxa Application requires a configuration specifying your :ref:`
 Platforms
 -------------
 
-Once you have instantiated a platform it's time to create a plaform application. There are platform handlers for Alexa, DialogFlow and Botframework (Cortana);
+Once you have instantiated a platform is time to create a plaform application. There are platform handlers for Alexa, DialogFlow and Botframework (Cortana);
 
 .. code-block:: javascript
 
@@ -134,11 +134,10 @@ Links
   dialogflow-event
   alexa-directives
   dialogflow-directives
+  botframework-directives
   alexa-apis
   voxa-reply
-  statemachine-skill
   request-flow
-  i18n
   gadgetController
   gameEngine
   plugins

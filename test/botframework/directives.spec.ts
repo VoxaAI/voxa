@@ -8,6 +8,7 @@ import {
   IMessage,
   LuisRecognizer,
   Session,
+  SuggestedActions,
 } from "botbuilder";
 import { AzureBotStorage, AzureTableClient } from "botbuilder-azure";
 import { expect, use } from "chai";
@@ -240,6 +241,156 @@ describe("BotFramework directives", () => {
         },
         replyToId: "4Cq2PVQFeti",
         speak: "",
+        text: "",
+        textFormat: "plain",
+        type: "message",
+      });
+    });
+  });
+
+  describe("HeroCard", () => {
+    it("should add a hero card", async () => {
+      const card = new HeroCard()
+        .title("Card Title")
+        .subtitle("Card Subtitle")
+        .text("Some Text");
+
+      app.onIntent("LaunchIntent", {
+        botframeworkHeroCard: card,
+        to: "die",
+      });
+
+      await botFrameworkSkill.execute(event, {});
+      const mock: any = BotFrameworkReply.prototype.botApiRequest;
+      expect(mock.called).to.be.true;
+      expect(mock.callCount).to.equal(1);
+      const reply = JSON.parse(JSON.stringify(mock.lastCall.args[2]));
+      expect(_.omit(reply, "timestamp", "id")).to.deep.equal({
+        attachments: [
+          {
+            content: {
+              subtitle: "Card Subtitle",
+              text: "Some Text",
+              title: "Card Title",
+            },
+            contentType: "application/vnd.microsoft.card.hero",
+          },
+        ],
+        channelId: "cortana",
+        conversation: {
+          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4",
+        },
+        from: {
+          id: "tide",
+        },
+        inputHint: "acceptingInput",
+        locale: "en-US",
+        recipient: {
+          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722",
+        },
+        replyToId: "4Cq2PVQFeti",
+        speak: "",
+        text: "",
+        textFormat: "plain",
+        type: "message",
+      });
+    });
+  });
+
+  describe("SignInCard", () => {
+    it("should add Sign In Card to the message", async () => {
+      app.onIntent("LaunchIntent", {
+        botframeworkSigninCard: {
+          buttonTitle: "Sign In",
+          cardText: "Sign In Card",
+          url: "https://example.com",
+        },
+        to: "die",
+      });
+
+      await botFrameworkSkill.execute(event, {});
+      const mock: any = BotFrameworkReply.prototype.botApiRequest;
+      expect(mock.called).to.be.true;
+      expect(mock.callCount).to.equal(1);
+      const reply = JSON.parse(JSON.stringify(mock.lastCall.args[2]));
+      expect(_.omit(reply, "timestamp", "id")).to.deep.equal({
+        attachments: [
+          {
+            content: {
+              buttons: [
+                {
+                  title: "Sign In",
+                  type: "signin",
+                  value: "https://example.com",
+                },
+              ],
+              text: "Sign In Card",
+            },
+            contentType: "application/vnd.microsoft.card.signin",
+          },
+        ],
+        channelId: "cortana",
+        conversation: {
+          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4",
+        },
+        from: {
+          id: "tide",
+        },
+        inputHint: "acceptingInput",
+        locale: "en-US",
+        recipient: {
+          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722",
+        },
+        replyToId: "4Cq2PVQFeti",
+        speak: "",
+        text: "",
+        textFormat: "plain",
+        type: "message",
+      });
+    });
+  });
+  describe("Suggested actions", () => {
+    it("should add suggested actions to the message", async () => {
+      const suggestedActions = new SuggestedActions().addAction({
+        title: "Green",
+        type: "imBack",
+        value: "productId=1&color=green",
+      });
+
+      app.onIntent("LaunchIntent", {
+        botframeworkSuggestedActions: suggestedActions,
+        to: "die",
+      });
+
+      await botFrameworkSkill.execute(event, {});
+      const mock: any = BotFrameworkReply.prototype.botApiRequest;
+      expect(mock.called).to.be.true;
+      expect(mock.callCount).to.equal(1);
+      const reply = JSON.parse(JSON.stringify(mock.lastCall.args[2]));
+      expect(_.omit(reply, "timestamp", "id")).to.deep.equal({
+        channelId: "cortana",
+        conversation: {
+          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4",
+        },
+        from: {
+          id: "tide",
+        },
+        inputHint: "acceptingInput",
+        locale: "en-US",
+        recipient: {
+          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722",
+        },
+        replyToId: "4Cq2PVQFeti",
+        speak: "",
+        suggestedActions: {
+          actions: [
+            {
+              title: "Green",
+              type: "imBack",
+              value: "productId=1&color=green",
+            },
+          ],
+        },
         text: "",
         textFormat: "plain",
         type: "message",

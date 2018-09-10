@@ -2,11 +2,11 @@
 #
 
 # You can set these variables from the command line.
-SPHINXOPTS    = -n -a --ignore _build
+SPHINXOPTS    = -n -a
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = voxa
-SOURCEDIR     = .
-BUILDDIR      = _build
+SOURCEDIR     = docs
+BUILDDIR      = docs/_build
 
 # Put it first so that "make" without argument is like "make help".
 help:
