@@ -2,6 +2,7 @@ import "mocha";
 
 import {
   AttachmentLayout,
+  AudioCard,
   CardAction,
   CardImage,
   HeroCard,
@@ -123,6 +124,7 @@ describe("BotFramework directives", () => {
   describe("TextP", () => {
     it("should add plain text to the message", async () => {
       app.onIntent("LaunchIntent", {
+        sayp: "Some Text",
         textp: "Some Text",
         to: "die",
       });
@@ -146,7 +148,7 @@ describe("BotFramework directives", () => {
           id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722",
         },
         replyToId: "4Cq2PVQFeti",
-        speak: "",
+        speak: "<speak>Some Text</speak>",
         text: "Some Text",
         textFormat: "plain",
         type: "message",
@@ -391,6 +393,61 @@ describe("BotFramework directives", () => {
             },
           ],
         },
+        text: "",
+        textFormat: "plain",
+        type: "message",
+      });
+    });
+  });
+  describe("Audio Card", () => {
+    it("should add an audio card to the message", async () => {
+      const audioCard = new AudioCard().title("Sample audio card");
+      audioCard.media([
+        {
+          profile: "audio.mp3",
+          url: "http://example.com/audio.mp3",
+        },
+      ]);
+
+      app.onIntent("LaunchIntent", {
+        botframeworkAudioCard: audioCard,
+        to: "die",
+      });
+
+      await botFrameworkSkill.execute(event, {});
+      const mock: any = BotFrameworkReply.prototype.botApiRequest;
+      expect(mock.called).to.be.true;
+      expect(mock.callCount).to.equal(1);
+      const reply = JSON.parse(JSON.stringify(mock.lastCall.args[2]));
+      expect(_.omit(reply, "timestamp", "id")).to.deep.equal({
+        attachments: [
+          {
+            content: {
+              media: [
+                {
+                  profile: "audio.mp3",
+                  url: "http://example.com/audio.mp3",
+                },
+              ],
+              title: "Sample audio card",
+            },
+            contentType: "application/vnd.microsoft.card.audio",
+          },
+        ],
+        channelId: "cortana",
+        conversation: {
+          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4",
+        },
+        from: {
+          id: "tide",
+        },
+        inputHint: "acceptingInput",
+        locale: "en-US",
+        recipient: {
+          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722",
+        },
+        replyToId: "4Cq2PVQFeti",
+        speak: "",
         text: "",
         textFormat: "plain",
         type: "message",
