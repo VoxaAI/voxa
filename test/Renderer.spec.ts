@@ -2,6 +2,7 @@ import "mocha";
 
 import { expect, use } from "chai";
 import * as i18n from "i18next";
+import { Resource } from "i18next";
 import * as _ from "lodash";
 import { Model } from "../src/Model";
 import { Renderer } from "../src/renderers/Renderer";
@@ -12,7 +13,7 @@ import { views } from "./views";
 import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
 import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
 import { PlayAudio } from "../src/platforms/alexa/directives";
-import { DialogFlowEvent } from "../src/platforms/dialog-flow/DialogFlowEvent";
+import { DialogFlowEvent } from "../src/platforms/dialogflow/DialogFlowEvent";
 import { AlexaRequestBuilder } from "./tools";
 
 const rb = new AlexaRequestBuilder();
@@ -57,6 +58,10 @@ describe("Renderer", () => {
       site: "Ok. For more info visit example.com site.",
     },
   };
+
+  it("should launch an exception if no views are provided", () => {
+    expect(() => new Renderer({ views: null as any })).to.throw(); // tslint-disable-line no-unused-expressions
+  });
 
   it("should return an error if the views file doesn't have the local strings", async () => {
     const localeMissing = "en-GB";
@@ -226,7 +231,7 @@ describe("Renderer", () => {
 
   it("should use the dialogFlow view if available", async () => {
     const dialogFlowEvent = new DialogFlowEvent(
-      require("./requests/dialog-flow/launchIntent.json"),
+      require("./requests/dialogflow/launchIntent.json"),
       {},
     );
     dialogFlowEvent.t = event.t;

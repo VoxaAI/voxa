@@ -25,7 +25,7 @@ The ``voxaEvent`` Object
 
   .. js:attribute:: platform
 
-    A string attribute with the name of platform for the current request, it can be ``alexa``, ``dialogflow`` or ``botframework``
+    A string attribute with the name of platform for the current request, it can be ``alexa``, ``dialogFlow`` or ``botframework``
 
   .. js:attribute:: model
 

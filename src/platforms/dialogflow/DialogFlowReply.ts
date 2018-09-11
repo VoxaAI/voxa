@@ -57,7 +57,25 @@ export class DialogFlowReply implements IVoxaReply {
   }
 
   public get hasDirectives(): boolean {
-    return false;
+    // all system intents are directives
+    if (this.payload.google.systemIntent) {
+      return true;
+    }
+
+    const richResponse = this.payload.google.richResponse;
+    if (!richResponse) {
+      return false;
+    }
+
+    // any rich response item that's not a SimpleResponse counts as a directive
+    const directives = _(richResponse.items)
+      .map(_.values)
+      .flatten()
+      .map((item) => item.constructor.name)
+      .pull("SimpleResponse")
+      .value();
+
+    return !!directives.length;
   }
 
   public get hasTerminated(): boolean {
@@ -83,6 +101,30 @@ export class DialogFlowReply implements IVoxaReply {
   }
 
   public hasDirective(type: string | RegExp): boolean {
+    if (!this.hasDirectives) {
+      return false;
+    }
+
+    const richResponse = this.payload.google.richResponse;
+    const systemIntent = this.payload.google.systemIntent;
+    if (richResponse) {
+      const directives = _(richResponse.items)
+        .map(_.values)
+        .flatten()
+        .map((item) => item.constructor.name)
+        .value();
+
+      if (_.includes(directives, type)) {
+        return true;
+      }
+    }
+
+    if (systemIntent) {
+      if (systemIntent.intent === type) {
+        return true;
+      }
+    }
+
     return false;
   }
 

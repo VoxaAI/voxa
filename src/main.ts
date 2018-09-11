@@ -1,4 +1,3 @@
-
 /**
  * Voxa
  *
@@ -7,8 +6,10 @@
  */
 
 export { AlexaPlatform } from "./platforms/alexa/AlexaPlatform";
-export { BotFrameworkPlatform } from "./platforms/botframework/BotFrameworkPlatform";
-export { DialogFlowPlatform } from "./platforms/dialog-flow/DialogFlowPlatform";
+export {
+  BotFrameworkPlatform,
+} from "./platforms/botframework/BotFrameworkPlatform";
+export { DialogFlowPlatform } from "./platforms/dialogflow/DialogFlowPlatform";
 export { Renderer } from "./renderers/Renderer";
 export { VoxaApp } from "./VoxaApp";
 export {
@@ -33,8 +34,15 @@ import {
   StopAudio,
 } from "./platforms/alexa/directives";
 import { DisplayTemplate } from "./platforms/alexa/DisplayTemplateBuilder";
-import { GadgetController, TRIGGER_EVENT_ENUM } from "./platforms/alexa/GadgetController";
-import { ANCHOR_ENUM, EVENT_REPORT_ENUM, GameEngine } from "./platforms/alexa/GameEngine";
+import {
+  GadgetController,
+  TRIGGER_EVENT_ENUM,
+} from "./platforms/alexa/GadgetController";
+import {
+  ANCHOR_ENUM,
+  EVENT_REPORT_ENUM,
+  GameEngine,
+} from "./platforms/alexa/GameEngine";
 
 import {
   AudioCard,
@@ -52,13 +60,9 @@ import {
   List,
   MediaResponse,
   Suggestions,
-} from "./platforms/dialog-flow/directives";
+} from "./platforms/dialogflow/directives";
 
-import {
-  autoLoad,
-  replaceIntent,
-  stateFlow,
-} from "./plugins";
+import { autoLoad, replaceIntent, stateFlow } from "./plugins";
 
 export const plugins = {
   autoLoad,
