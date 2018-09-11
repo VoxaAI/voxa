@@ -30,7 +30,7 @@ describe("DialogFlow Directives", () => {
   beforeEach(() => {
     app = new VoxaApp({ views, variables });
     dialogFlowAgent = new DialogFlowPlatform(app);
-    event = require("../requests/dialogflow/launchIntent.json");
+    event = _.cloneDeep(require("../requests/dialogflow/launchIntent.json"));
   });
 
   describe("MediaResponse", () => {
@@ -43,7 +43,6 @@ describe("DialogFlow Directives", () => {
     });
 
     it("should not add a MediaResponse to a device with no audio support", async () => {
-      event = _.cloneDeep(event);
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
       app.onIntent("LaunchIntent", {
         dialogFlowMediaResponse: mediaObject,
@@ -121,6 +120,30 @@ describe("DialogFlow Directives", () => {
   });
 
   describe("Carousel", () => {
+    it("should not add a carousel if the event has no SCREEN_OUTPUT", async () => {
+      const carousel = {
+        items: {
+          LIST_ITEM: {
+            description: "The item description",
+            image: {
+              url: "http://example.com/image.png",
+            },
+            synonyms: ["item"],
+            title: "the list item",
+          },
+        },
+      };
+
+      app.onIntent("LaunchIntent", {
+        dialogFlowCarousel: carousel,
+        to: "die",
+      });
+
+      event.originalDetectIntentRequest.payload.surface.capabilities = [];
+      const reply = await dialogFlowAgent.execute(event, {});
+      expect(reply.payload.google.systemIntent).to.be.undefined;
+    });
+
     it("should add a carousel from carouselOptions to the reply", async () => {
       const carousel = {
         items: {
@@ -196,6 +219,17 @@ describe("DialogFlow Directives", () => {
   });
 
   describe("List", () => {
+    it("should not add a List if event has no screen capabilites", async () => {
+      app.onIntent("LaunchIntent", {
+        dialogFlowList: "DialogFlowListSelect",
+        to: "die",
+      });
+
+      event.originalDetectIntentRequest.payload.surface.capabilities = [];
+      const reply = await dialogFlowAgent.execute(event, {});
+      expect(reply.payload.google.systemIntent).to.be.undefined;
+    });
+
     it("should add a List from a view to the reply", async () => {
       app.onIntent("LaunchIntent", {
         dialogFlowList: "DialogFlowListSelect",
@@ -417,6 +451,19 @@ describe("DialogFlow Directives", () => {
   });
 
   describe("BasicCard Directive", () => {
+    it("should not add BasicCard if missing screen output", async () => {
+      app.onIntent("LaunchIntent", {
+        dialogFlowBasicCard: "DialogFlowBasicCard",
+        flow: "yield",
+        sayp: "Hello!",
+        to: "entry",
+      });
+
+      event.originalDetectIntentRequest.payload.surface.capabilities = [];
+      const reply = await dialogFlowAgent.execute(event, {});
+      expect(reply.hasDirective("BasicCard")).to.be.false;
+    });
+
     it("should add a BasicCard from a view", async () => {
       app.onIntent("LaunchIntent", {
         dialogFlowBasicCard: "DialogFlowBasicCard",
@@ -684,46 +731,60 @@ describe("DialogFlow Directives", () => {
   });
 
   describe("Table Directive", () => {
+    const table = {
+      buttons: new Button({
+        title: "Button Title",
+        url: "https://github.com/actions-on-google",
+      }),
+      columns: [
+        {
+          align: "CENTER",
+          header: "header 1",
+        },
+        {
+          align: "LEADING",
+          header: "header 2",
+        },
+        {
+          align: "TRAILING",
+          header: "header 3",
+        },
+      ],
+      image: new Image({
+        alt: "Actions on Google",
+        url: "https://avatars0.githubusercontent.com/u/23533486",
+      }),
+      rows: [
+        {
+          cells: ["row 1 item 1", "row 1 item 2", "row 1 item 3"],
+          dividerAfter: false,
+        },
+        {
+          cells: ["row 2 item 1", "row 2 item 2", "row 2 item 3"],
+          dividerAfter: true,
+        },
+        {
+          cells: ["row 3 item 1", "row 3 item 2", "row 3 item 3"],
+        },
+      ],
+      subtitle: "Table Subtitle",
+      title: "Table Title",
+    };
+
+    it("should not add a Table Response if no screen output", async () => {
+      app.onIntent("LaunchIntent", {
+        dialogFlowTable: table,
+        flow: "yield",
+        sayp: "Hello!",
+        to: "entry",
+      });
+
+      event.originalDetectIntentRequest.payload.surface.capabilities = [];
+      const reply = await dialogFlowAgent.execute(event, {});
+      expect(reply.hasDirective("Table")).to.be.false;
+    });
+
     it("should add a Table Response", async () => {
-      const table = {
-        buttons: new Button({
-          title: "Button Title",
-          url: "https://github.com/actions-on-google",
-        }),
-        columns: [
-          {
-            align: "CENTER",
-            header: "header 1",
-          },
-          {
-            align: "LEADING",
-            header: "header 2",
-          },
-          {
-            align: "TRAILING",
-            header: "header 3",
-          },
-        ],
-        image: new Image({
-          alt: "Actions on Google",
-          url: "https://avatars0.githubusercontent.com/u/23533486",
-        }),
-        rows: [
-          {
-            cells: ["row 1 item 1", "row 1 item 2", "row 1 item 3"],
-            dividerAfter: false,
-          },
-          {
-            cells: ["row 2 item 1", "row 2 item 2", "row 2 item 3"],
-            dividerAfter: true,
-          },
-          {
-            cells: ["row 3 item 1", "row 3 item 2", "row 3 item 3"],
-          },
-        ],
-        subtitle: "Table Subtitle",
-        title: "Table Title",
-      };
       app.onIntent("LaunchIntent", {
         dialogFlowTable: table,
         flow: "yield",
@@ -838,6 +899,39 @@ describe("DialogFlow Directives", () => {
           "notificationTitle": "Check out this image",
         },
         intent: "actions.intent.NEW_SURFACE",
+      });
+    });
+  });
+
+  describe("BrowseCarousel", () => {
+    it("should not include a browse carouse if no screen output", async () => {
+      app.onIntent("LaunchIntent", {
+        dialogFlowBrowseCarousel: {},
+        flow: "yield",
+        sayp: "Hello!",
+        to: "entry",
+      });
+
+      event.originalDetectIntentRequest.payload.surface.capabilities = [];
+      const reply = await dialogFlowAgent.execute(event, {});
+      expect(reply.hasDirective("BrowseCarousel")).to.be.false;
+    });
+
+    it("should include a new surface directive", async () => {
+      app.onIntent("LaunchIntent", {
+        dialogFlowBrowseCarousel: {},
+        flow: "yield",
+        sayp: "Hello!",
+        to: "entry",
+      });
+
+      const reply = await dialogFlowAgent.execute(event, {});
+      expect(
+        _.get(reply, "payload.google.richResponse.items[1]"),
+      ).to.deep.equal({
+        carouselBrowse: {
+          items: [{}],
+        },
       });
     });
   });
