@@ -55,7 +55,6 @@ interface IQuestion {
 abstract class DialogFlowDirective<IOptions> {
   constructor(public options: IOptions, public requiredCapability?: string) {}
   protected hasRequiredCapability(event: IVoxaEvent): boolean {
-    console.log({ req: this.requiredCapability });
     if (!this.requiredCapability) {
       return true;
     }
@@ -77,7 +76,7 @@ function createSystemIntentDirective<IOptions>(
   key: string,
   requiredCapability?: string,
 ): IDirectiveClass {
-  class Directive extends DialogFlowDirective<IOptions> implements IDirective {
+  return class extends DialogFlowDirective<IOptions> implements IDirective {
     public static platform: string = "dialogFlow";
     public static key: string = key;
 
@@ -102,9 +101,7 @@ function createSystemIntentDirective<IOptions>(
         intent: question.intent,
       };
     }
-  }
-
-  return Directive;
+  };
 }
 
 function createRichResponseDirective<IOptions>(
@@ -112,7 +109,7 @@ function createRichResponseDirective<IOptions>(
   key: string,
   requiredCapability?: string,
 ): IDirectiveClass {
-  class Directive extends DialogFlowDirective<IOptions> implements IDirective {
+  return class extends DialogFlowDirective<IOptions> implements IDirective {
     public static platform: string = "dialogFlow";
     public static key: string = key;
 
@@ -137,9 +134,7 @@ function createRichResponseDirective<IOptions>(
       const question = await this.getQuestion(RichResponseItemClass, event);
       google.richResponse.add(question);
     }
-  }
-
-  return Directive;
+  };
 }
 
 export const NewSurface = createSystemIntentDirective<NewSurfaceOptions>(

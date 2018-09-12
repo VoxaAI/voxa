@@ -3,6 +3,7 @@ import {
   HeroCard as HeroCardType,
   IAttachment,
   ICardMediaUrl,
+  ISuggestedActions,
   SigninCard as SigninCardType,
   SuggestedActions as SuggestedActionsType,
 } from "botbuilder";
@@ -84,10 +85,12 @@ export class SuggestedActions
     event: IVoxaEvent,
     transition: ITransition,
   ) {
-    let suggestedActions;
-    suggestedActions = await this.renderOptions(event);
+    const suggestedActionsType = await this.renderOptions(event);
+    const suggestedActions: ISuggestedActions = suggestedActionsType.toSuggestedActions
+      ? suggestedActionsType.toSuggestedActions()
+      : suggestedActionsType;
 
-    (reply as BotFrameworkReply).suggestedActions = suggestedActions.toSuggestedActions();
+    (reply as BotFrameworkReply).suggestedActions = suggestedActions;
   }
 }
 
@@ -153,30 +156,30 @@ export class TextP implements IDirective {
   }
 }
 
-export class AttachmentLayout implements IDirective {
-  public static key: string = "botframeworkAttachmentLayout";
-  public static platform: string = "botframework";
-
-  constructor(public layout: string) {}
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    (reply as BotFrameworkReply).attachmentLayout = this.layout;
-  }
+function createMessageDirective<IOptions>(
+  key: string,
+  messageKey: string,
+): IDirectiveClass {
+  return class implements IDirective {
+    public static key: string = key;
+    public static platform: string = "botframework";
+    constructor(public options: IOptions) {}
+    public async writeToReply(
+      reply: IVoxaReply,
+      event: IVoxaEvent,
+      transition: ITransition,
+    ) {
+      (reply as any)[messageKey] = this.options;
+    }
+  };
 }
 
-export class Attachments implements IDirective {
-  public static key: string = "botframeworkAttachments";
-  public static platform: string = "botframework";
+export const AttachmentLayout = createMessageDirective<string>(
+  "botframeworkAttachmentLayout",
+  "attachmentLayout",
+);
 
-  constructor(public attachments: IAttachment[]) {}
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    (reply as BotFrameworkReply).attachments = this.attachments;
-  }
-}
+export const Attachments = createMessageDirective<string>(
+  "botframeworkAttachments",
+  "attachments",
+);

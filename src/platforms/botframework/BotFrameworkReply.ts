@@ -7,6 +7,7 @@ import {
   IEvent,
   IIdentity,
   IMessage,
+  ISuggestedActions,
 } from "botbuilder";
 import * as debug from "debug";
 import * as _ from "lodash";
@@ -38,7 +39,7 @@ export class BotFrameworkReply implements IVoxaReply {
   public timestamp: string;
   public type: string = "message";
   public attachments?: IAttachment[];
-  public suggestedActions?: ICardAction[];
+  public suggestedActions?: ISuggestedActions;
   public attachmentLayout?: string;
 
   constructor(event: IVoxaEvent) {
