@@ -52,37 +52,50 @@ interface IQuestion {
   intet: string;
 }
 
+abstract class DialogFlowDirective<IOptions> {
+  constructor(public options: IOptions, public requiredCapability?: string) {}
+  protected hasRequiredCapability(event: IVoxaEvent): boolean {
+    console.log({ req: this.requiredCapability });
+    if (!this.requiredCapability) {
+      return true;
+    }
+
+    return _.includes(event.supportedInterfaces, this.requiredCapability);
+  }
+
+  protected async getQuestion(QuestionClass: any, event: IVoxaEvent) {
+    if (_.isString(this.options)) {
+      const options = await event.renderer.renderPath(this.options, event);
+      return new QuestionClass(options);
+    }
+    return new QuestionClass(this.options);
+  }
+}
+
 function createSystemIntentDirective<IOptions>(
   QuestionClass: any,
   key: string,
   requiredCapability?: string,
 ): IDirectiveClass {
-  class Directive implements IDirective {
+  class Directive extends DialogFlowDirective<IOptions> implements IDirective {
     public static platform: string = "dialogFlow";
     public static key: string = key;
 
-    constructor(public options: IOptions) {}
+    constructor(public options: IOptions) {
+      super(options, requiredCapability);
+    }
 
     public async writeToReply(
       reply: IVoxaReply,
       event: IVoxaEvent,
       transition: ITransition,
     ): Promise<void> {
-      if (requiredCapability) {
-        if (!_.includes(event.supportedInterfaces, requiredCapability)) {
-          return;
-        }
+      if (!this.hasRequiredCapability(event)) {
+        return;
       }
 
       const google: any = (reply as DialogFlowReply).payload.google;
-      let question;
-      if (_.isString(this.options)) {
-        question = new QuestionClass(
-          await event.renderer.renderPath(this.options, event),
-        );
-      } else {
-        question = new QuestionClass(this.options);
-      }
+      const question = await this.getQuestion(QuestionClass, event);
 
       google.systemIntent = {
         data: question.inputValueData,
@@ -99,40 +112,31 @@ function createRichResponseDirective<IOptions>(
   key: string,
   requiredCapability?: string,
 ): IDirectiveClass {
-  class Directive implements IDirective {
+  class Directive extends DialogFlowDirective<IOptions> implements IDirective {
     public static platform: string = "dialogFlow";
     public static key: string = key;
 
-    constructor(public options: IOptions) {}
+    constructor(public options: IOptions) {
+      super(options, requiredCapability);
+    }
 
     public async writeToReply(
       reply: IVoxaReply,
       event: IVoxaEvent,
       transition: ITransition,
     ): Promise<void> {
-      if (requiredCapability) {
-        if (!_.includes(event.supportedInterfaces, requiredCapability)) {
-          return;
-        }
+      if (!this.hasRequiredCapability(event)) {
+        return;
       }
 
       const google: any = (reply as DialogFlowReply).payload.google;
-      let item;
-      if (_.isString(this.options)) {
-        item = new RichResponseItemClass(
-          await event.renderer.renderPath(this.options, event),
-        );
-      } else {
-        item = new RichResponseItemClass(this.options);
-      }
 
-      const richResponse = _.get(reply, "payload.google.richResponse");
-      if (!richResponse) {
+      if (!google.richResponse) {
         throw new Error(`A simple response is required before a ${key}`);
       }
 
-      richResponse.add(item);
-      google.richResponse = richResponse;
+      const question = await this.getQuestion(RichResponseItemClass, event);
+      google.richResponse.add(question);
     }
   }
 
@@ -255,13 +259,8 @@ export class Suggestions implements IDirective {
     transition: ITransition,
   ): Promise<void> {
     const suggestions = new ActionsOnGoogleSuggestions(this.suggestions);
-    const richResponse = _.get(
-      reply,
-      "payload.google.richResponse",
-      new RichResponse(),
-    );
-    (reply as DialogFlowReply).payload.google.richResponse = richResponse.addSuggestion(
-      suggestions,
-    );
+    const google: any = (reply as DialogFlowReply).payload.google;
+    const richResponse = google.richResponse;
+    richResponse.addSuggestion(suggestions);
   }
 }
