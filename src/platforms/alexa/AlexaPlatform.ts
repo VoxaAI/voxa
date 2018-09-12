@@ -100,9 +100,21 @@ export class AlexaPlatform extends VoxaPlatform {
     rawEvent: RequestEnvelope,
     context: any,
   ): Promise<ResponseEnvelope> {
+    this.checkAppIds(rawEvent);
+
+    const alexaEvent = new AlexaEvent(rawEvent, context);
+    const reply = (await this.app.execute(
+      alexaEvent,
+      new AlexaReply(),
+    )) as AlexaReply;
+    alexalog("Reply: ", JSON.stringify(reply, null, 2));
+    return reply;
+  }
+
+  protected checkAppIds(rawEvent: RequestEnvelope): void {
     if (this.config.appIds) {
       // Validate that this AlexaRequest originated from authorized source.
-      const appId = rawEvent.context.application.applicationId;
+      const appId = rawEvent.context.System.application.applicationId;
 
       if (_.isString(this.config.appIds) && this.config.appIds !== appId) {
         alexalog(
@@ -125,13 +137,5 @@ export class AlexaPlatform extends VoxaPlatform {
         throw new Error("Invalid applicationId");
       }
     }
-
-    const alexaEvent = new AlexaEvent(rawEvent, context);
-    const reply = (await this.app.execute(
-      alexaEvent,
-      new AlexaReply(),
-    )) as AlexaReply;
-    alexalog("Reply: ", JSON.stringify(reply, null, 2));
-    return reply;
   }
 }
