@@ -121,7 +121,7 @@ describe("BotFrameworkReply", () => {
     expect(reply.hasDirectives).to.be.false;
     reply.suggestedActions = new SuggestedActions()
       .addAction({ type: "", value: "" })
-      .toSuggestedActions().actions;
+      .toSuggestedActions();
 
     expect(reply.hasDirectives).to.be.true;
   });
