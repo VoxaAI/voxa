@@ -28,6 +28,14 @@ export interface IDirective {
   ) => Promise<void>;
 }
 
+function sampleOrItem(statement: string | string[]): string {
+  if (_.isArray(statement)) {
+    return _.sample(statement) as string;
+  }
+
+  return statement;
+}
+
 export class Reprompt implements IDirective {
   public static key: string = "reprompt";
   public static platform: string = "core";
@@ -39,11 +47,8 @@ export class Reprompt implements IDirective {
     event: IVoxaEvent,
     transition: ITransition,
   ): Promise<void> {
-    let statement = await event.renderer.renderPath(this.viewPath, event);
-    if (_.isArray(statement)) {
-      statement = _.sample(statement);
-    }
-    reply.addReprompt(statement);
+    const statement = await event.renderer.renderPath(this.viewPath, event);
+    reply.addReprompt(sampleOrItem(statement));
   }
 }
 
@@ -63,23 +68,13 @@ export class Ask implements IDirective {
   ): Promise<void> {
     for (const viewPath of this.viewPaths) {
       const statement = await event.renderer.renderPath(viewPath, event);
-      if (_.isArray(statement)) {
-        reply.addStatement(_.sample(statement));
-      } else if (_.isString(statement)) {
-        reply.addStatement(statement);
-      } else if (statement.ask) {
-        if (_.isArray(statement.ask)) {
-          reply.addStatement(_.sample(statement.ask));
-        } else {
-          reply.addStatement(statement.ask);
-        }
+      if (!statement.ask) {
+        reply.addStatement(sampleOrItem(statement));
+      } else {
+        reply.addStatement(sampleOrItem(statement.ask));
 
         if (statement.reprompt) {
-          if (_.isArray(statement.reprompt)) {
-            reply.addReprompt(_.sample(statement.reprompt));
-          } else {
-            reply.addReprompt(statement.reprompt);
-          }
+          reply.addReprompt(sampleOrItem(statement.reprompt));
         }
       }
     }
@@ -106,11 +101,8 @@ export class Say implements IDirective {
     }
 
     await bluebird.mapSeries(viewPaths, async (view: string) => {
-      let statement = await event.renderer.renderPath(view, event);
-      if (_.isArray(statement)) {
-        statement = _.sample(statement);
-      }
-      reply.addStatement(statement);
+      const statement = await event.renderer.renderPath(view, event);
+      reply.addStatement(sampleOrItem(statement));
     });
   }
 }
@@ -141,11 +133,8 @@ export class Tell implements IDirective {
     event: IVoxaEvent,
     transition: ITransition,
   ): Promise<void> {
-    let statement = await event.renderer.renderPath(this.viewPath, event);
-    if (_.isArray(statement)) {
-      statement = _.sample(statement);
-    }
-    reply.addStatement(statement);
+    const statement = await event.renderer.renderPath(this.viewPath, event);
+    reply.addStatement(sampleOrItem(statement));
     reply.terminate();
     transition.flow = "terminate";
     transition.say = this.viewPath;

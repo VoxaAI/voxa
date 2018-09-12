@@ -8,7 +8,7 @@ import {
 } from "botbuilder";
 import * as _ from "lodash";
 import * as striptags from "striptags";
-import { IDirective } from "../../directives";
+import { IDirective, IDirectiveClass } from "../../directives";
 import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
@@ -65,10 +65,6 @@ export class HeroCard implements IDirective {
   ) {
     let card;
     if (this.viewPath) {
-      if (!event.renderer) {
-        throw new Error("event.renderer is missing");
-      }
-
       card = await event.renderer.renderPath(this.viewPath, event);
     } else {
       card = this.card;

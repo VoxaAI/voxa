@@ -130,7 +130,6 @@ function createRichResponseDirective<IOptions>(
       }
 
       const google: any = (reply as DialogFlowReply).payload.google;
-
       if (!google.richResponse) {
         throw new Error(`A simple response is required before a ${key}`);
       }
