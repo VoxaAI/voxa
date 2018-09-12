@@ -68,14 +68,8 @@ export class DialogFlowReply implements IVoxaReply {
     }
 
     // any rich response item that's not a SimpleResponse counts as a directive
-    const directives = _(richResponse.items)
-      .map(_.values)
-      .flatten()
-      .map((item) => item.constructor.name)
-      .pull("SimpleResponse")
-      .value();
-
-    return !!directives.length;
+    const directives = this.getRichResponseDirectives();
+    return !!_.pull(directives, "SimpleResponse").length;
   }
 
   public get hasTerminated(): boolean {
@@ -105,20 +99,12 @@ export class DialogFlowReply implements IVoxaReply {
       return false;
     }
 
-    const richResponse = this.payload.google.richResponse;
-    const systemIntent = this.payload.google.systemIntent;
-    if (richResponse) {
-      const directives = _(richResponse.items)
-        .map(_.values)
-        .flatten()
-        .map((item) => item.constructor.name)
-        .value();
-
-      if (_.includes(directives, type)) {
-        return true;
-      }
+    const richResponseDirectives = this.getRichResponseDirectives();
+    if (_.includes(richResponseDirectives, type)) {
+      return true;
     }
 
+    const systemIntent = this.payload.google.systemIntent;
     if (systemIntent) {
       if (systemIntent.intent === type) {
         return true;
@@ -135,5 +121,18 @@ export class DialogFlowReply implements IVoxaReply {
     });
 
     this.payload.google.noInputPrompts = noInputPrompts;
+  }
+
+  protected getRichResponseDirectives(): string[] {
+    const richResponse = this.payload.google.richResponse;
+    if (!richResponse) {
+      return [];
+    }
+
+    return _(richResponse.items)
+      .map(_.values)
+      .flatten()
+      .map((item) => item.constructor.name)
+      .value();
   }
 }

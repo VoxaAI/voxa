@@ -43,14 +43,9 @@ import * as _ from "lodash";
 import { IDirective, IDirectiveClass } from "../../directives";
 import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";
-import { addToSSML, IVoxaReply } from "../../VoxaReply";
+import { IVoxaReply } from "../../VoxaReply";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 import { DialogFlowReply } from "./DialogFlowReply";
-
-interface IQuestion {
-  inputValueData: any;
-  intet: string;
-}
 
 abstract class DialogFlowDirective<IOptions> {
   constructor(public options: IOptions, public requiredCapability?: string) {}
