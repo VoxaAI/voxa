@@ -112,30 +112,23 @@ export class AlexaPlatform extends VoxaPlatform {
   }
 
   protected checkAppIds(rawEvent: RequestEnvelope): void {
-    if (this.config.appIds) {
-      // Validate that this AlexaRequest originated from authorized source.
-      const appId = rawEvent.context.System.application.applicationId;
+    if (!this.config.appIds) {
+      return;
+    }
 
-      if (_.isString(this.config.appIds) && this.config.appIds !== appId) {
-        alexalog(
-          `The applicationIds don't match: "${appId}"  and  "${
-            this.config.appIds
-          }"`,
-        );
-        throw new Error("Invalid applicationId");
-      }
+    // Validate that this AlexaRequest originated from authorized source.
+    const appId = rawEvent.context.System.application.applicationId;
 
-      if (
-        _.isArray(this.config.appIds) &&
-        !_.includes(this.config.appIds, appId)
-      ) {
-        alexalog(
-          `The applicationIds don't match: "${appId}"  and  "${
-            this.config.appIds
-          }"`,
-        );
-        throw new Error("Invalid applicationId");
-      }
+    const expectedAppids: string[] = _.isArray(this.config.appIds)
+      ? this.config.appIds
+      : [this.config.appIds];
+
+    if (!_.includes(expectedAppids, appId)) {
+      alexalog(
+        `The applicationIds don't match: "${appId}"  and  "${expectedAppids}"`,
+      );
+
+      throw new Error("Invalid applicationId");
     }
   }
 }
