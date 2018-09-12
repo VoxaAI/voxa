@@ -21,6 +21,18 @@ export interface ISignInCardOptions {
   buttonTitle: string;
 }
 
+export abstract class RenderDirective<T> {
+  constructor(public options: T) {}
+
+  protected renderOptions(event: IVoxaEvent): any {
+    if (_.isString(this.options)) {
+      return event.renderer.renderPath(this.options, event);
+    }
+
+    return this.options;
+  }
+}
+
 export class SigninCard implements IDirective {
   public static platform: string = "botframework";
   public static key: string = "botframeworkSigninCard";
@@ -43,33 +55,17 @@ export class SigninCard implements IDirective {
   }
 }
 
-export class HeroCard implements IDirective {
+export class HeroCard extends RenderDirective<string | HeroCardType>
+  implements IDirective {
   public static platform: string = "botframework";
   public static key: string = "botframeworkHeroCard";
-
-  public viewPath?: string;
-  public card?: HeroCardType;
-
-  constructor(viewPath: string | HeroCardType) {
-    if (_.isString(viewPath)) {
-      this.viewPath = viewPath;
-    } else {
-      this.card = viewPath;
-    }
-  }
 
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
     transition: ITransition,
   ) {
-    let card;
-    if (this.viewPath) {
-      card = await event.renderer.renderPath(this.viewPath, event);
-    } else {
-      card = this.card;
-    }
-
+    const card = await this.renderOptions(event);
     const attachments = (reply as BotFrameworkReply).attachments || [];
     attachments.push(card.toAttachment());
 
@@ -77,20 +73,11 @@ export class HeroCard implements IDirective {
   }
 }
 
-export class SuggestedActions implements IDirective {
+export class SuggestedActions
+  extends RenderDirective<string | SuggestedActionsType>
+  implements IDirective {
   public static key: string = "botframeworkSuggestedActions";
   public static platform: string = "botframework";
-
-  public viewPath?: string;
-  public suggestedActions?: SuggestedActionsType;
-
-  constructor(viewPath: string | SuggestedActionsType) {
-    if (_.isString(viewPath)) {
-      this.viewPath = viewPath;
-    } else {
-      this.suggestedActions = viewPath;
-    }
-  }
 
   public async writeToReply(
     reply: IVoxaReply,
@@ -98,11 +85,7 @@ export class SuggestedActions implements IDirective {
     transition: ITransition,
   ) {
     let suggestedActions;
-    if (this.viewPath) {
-      suggestedActions = await event.renderer.renderPath(this.viewPath, event);
-    } else {
-      suggestedActions = this.suggestedActions;
-    }
+    suggestedActions = await this.renderOptions(event);
 
     (reply as BotFrameworkReply).suggestedActions = suggestedActions.toSuggestedActions();
   }
