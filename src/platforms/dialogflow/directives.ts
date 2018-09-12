@@ -28,6 +28,7 @@ import {
   RegisterUpdate as ActionsOnGoogleRegisterUpdate,
   RegisterUpdateOptions,
   RichResponse,
+  RichResponseItem,
   SignIn as ActionsOnGoogleSignIn,
   Suggestions as ActionsOnGoogleSuggestions,
   Table as ActionsOnGoogleTable,
@@ -39,78 +40,208 @@ import {
 } from "actions-on-google";
 import * as _ from "lodash";
 
-import { IDirective } from "../../directives";
+import { IDirective, IDirectiveClass } from "../../directives";
 import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, IVoxaReply } from "../../VoxaReply";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 import { DialogFlowReply } from "./DialogFlowReply";
 
-export class List implements IDirective {
-  public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowList";
-
-  constructor(public listOptions: string | ListOptions) {}
-
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const requiredCapability = "actions.capability.SCREEN_OUTPUT";
-    if (!_.includes(event.supportedInterfaces, requiredCapability)) {
-      return;
-    }
-
-    let listSelect;
-    if (_.isString(this.listOptions)) {
-      listSelect = new ActionsOnGoogleList(
-        await event.renderer.renderPath(this.listOptions, event),
-      );
-    } else {
-      listSelect = new ActionsOnGoogleList(this.listOptions);
-    }
-
-    const google: any = (reply as DialogFlowReply).payload.google;
-    google.systemIntent = {
-      data: listSelect.inputValueData,
-      intent: listSelect.intent,
-    };
-  }
+interface IQuestion {
+  inputValueData: any;
+  intet: string;
 }
 
-export class Carousel implements IDirective {
-  public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowCarousel";
+function createSystemIntentDirective<IOptions>(
+  QuestionClass: any,
+  key: string,
+  requiredCapability?: string,
+): IDirectiveClass {
+  class Directive implements IDirective {
+    public static platform: string = "dialogFlow";
+    public static key: string = key;
 
-  constructor(public carouselOptions: string | CarouselOptions) {}
+    constructor(public options: IOptions) {}
 
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const requiredCapability = "actions.capability.SCREEN_OUTPUT";
-    if (!_.includes(event.supportedInterfaces, requiredCapability)) {
-      return;
+    public async writeToReply(
+      reply: IVoxaReply,
+      event: IVoxaEvent,
+      transition: ITransition,
+    ): Promise<void> {
+      if (requiredCapability) {
+        if (!_.includes(event.supportedInterfaces, requiredCapability)) {
+          return;
+        }
+      }
+
+      const google: any = (reply as DialogFlowReply).payload.google;
+      let question;
+      if (_.isString(this.options)) {
+        question = new QuestionClass(
+          await event.renderer.renderPath(this.options, event),
+        );
+      } else {
+        question = new QuestionClass(this.options);
+      }
+
+      google.systemIntent = {
+        data: question.inputValueData,
+        intent: question.intent,
+      };
     }
-
-    let carouselSelect;
-    if (_.isString(this.carouselOptions)) {
-      carouselSelect = new ActionsOnGoogleCarousel(
-        await event.renderer.renderPath(this.carouselOptions, event),
-      );
-    } else {
-      carouselSelect = new ActionsOnGoogleCarousel(this.carouselOptions);
-    }
-
-    const google: any = (reply as DialogFlowReply).payload.google;
-    google.systemIntent = {
-      data: carouselSelect.inputValueData,
-      intent: carouselSelect.intent,
-    };
   }
+
+  return Directive;
 }
+
+function createRichResponseDirective<IOptions>(
+  RichResponseItemClass: any,
+  key: string,
+  requiredCapability?: string,
+): IDirectiveClass {
+  class Directive implements IDirective {
+    public static platform: string = "dialogFlow";
+    public static key: string = key;
+
+    constructor(public options: IOptions) {}
+
+    public async writeToReply(
+      reply: IVoxaReply,
+      event: IVoxaEvent,
+      transition: ITransition,
+    ): Promise<void> {
+      if (requiredCapability) {
+        if (!_.includes(event.supportedInterfaces, requiredCapability)) {
+          return;
+        }
+      }
+
+      const google: any = (reply as DialogFlowReply).payload.google;
+      let item;
+      if (_.isString(this.options)) {
+        item = new RichResponseItemClass(
+          await event.renderer.renderPath(this.options, event),
+        );
+      } else {
+        item = new RichResponseItemClass(this.options);
+      }
+
+      const richResponse = _.get(reply, "payload.google.richResponse");
+      if (!richResponse) {
+        throw new Error(`A simple response is required before a ${key}`);
+      }
+
+      richResponse.add(item);
+      google.richResponse = richResponse;
+    }
+  }
+
+  return Directive;
+}
+
+export const NewSurface = createSystemIntentDirective<NewSurfaceOptions>(
+  ActionsOnGoogleNewSurface,
+  "dialogFlowNewSurface",
+);
+
+export const List = createSystemIntentDirective<string | ListOptions>(
+  ActionsOnGoogleList,
+  "dialogFlowList",
+  "actions.capability.SCREEN_OUTPUT",
+);
+
+export const Carousel = createSystemIntentDirective<string | CarouselOptions>(
+  ActionsOnGoogleCarousel,
+  "dialogFlowCarousel",
+  "actions.capability.SCREEN_OUTPUT",
+);
+
+export const AccountLinkingCard = createSystemIntentDirective<string>(
+  ActionsOnGoogleSignIn,
+  "dialogFlowAccountLinkingCard",
+);
+
+export const Permission = createSystemIntentDirective<PermissionOptions>(
+  ActionsOnGooglePermission,
+  "dialogFlowPermission",
+);
+
+export const DateTime = createSystemIntentDirective<DateTimeOptions>(
+  ActionsOnGoogleDateTime,
+  "dialogFlowDateTime",
+);
+
+export const Confirmation = createSystemIntentDirective<string>(
+  ActionsOnGoogleConfirmation,
+  "dialogFlowConfirmation",
+);
+
+export const DeepLink = createSystemIntentDirective<DeepLinkOptions>(
+  ActionsOnGoogleDeepLink,
+  "dialogFlowDeepLink",
+);
+
+export interface IPlaceOptions {
+  /**
+   * This is the initial response by location sub-dialog.
+   * For example: "Where do you want to get picked up?"
+   * @public
+   */
+  prompt: string;
+  /**
+   * This is the context for seeking permissions.
+   * For example: "To find a place to pick you up"
+   * Prompt to user: "*To find a place to pick you up*, I just need to check your location.
+   *     Can I get that from Google?".
+   * @public
+   */
+  context: string;
+}
+
+export const Place = createSystemIntentDirective<IPlaceOptions>(
+  ActionsOnGooglePlace,
+  "dialogFlowPlace",
+);
+
+export const TransactionDecision = createSystemIntentDirective<
+  GoogleActionsV2TransactionDecisionValueSpec
+>(ActionsOnGoogleTransactionDecision, "dialogFlowTransactionDecision");
+
+export const TransactionRequirements = createSystemIntentDirective<
+  GoogleActionsV2TransactionRequirementsCheckSpec
+>(ActionsOnGoogleTransactionRequirements, "dialogFlowTransactionRequirements");
+
+export const RegisterUpdate = createSystemIntentDirective<
+  RegisterUpdateOptions
+>(ActionsOnGoogleRegisterUpdate, "dialogFlowRegisterUpdate");
+
+export const UpdatePermission = createSystemIntentDirective<
+  UpdatePermissionOptions
+>(ActionsOnGoogleUpdatePermission, "dialogFlowUpdatePermission");
+
+export const BasicCard = createRichResponseDirective<string | BasicCardOptions>(
+  ActionsOnGoogleBasicCard,
+  "dialogFlowBasicCard",
+  "actions.capability.SCREEN_OUTPUT",
+);
+
+export const MediaResponse = createRichResponseDirective<BasicCardOptions>(
+  ActionsOnGoogleMediaResponse,
+  "dialogFlowMediaResponse",
+  "actions.capability.AUDIO_OUTPUT",
+);
+
+export const Table = createRichResponseDirective<BasicCardOptions>(
+  ActionsOnGoogleTable,
+  "dialogFlowTable",
+  "actions.capability.SCREEN_OUTPUT",
+);
+
+export const BrowseCarousel = createRichResponseDirective<BasicCardOptions>(
+  ActionsOnGoogleBrowseCarousel,
+  "dialogFlowBrowseCarousel",
+  "actions.capability.SCREEN_OUTPUT",
+);
 
 export class Suggestions implements IDirective {
   public static platform: string = "dialogFlow";
@@ -132,394 +263,5 @@ export class Suggestions implements IDirective {
     (reply as DialogFlowReply).payload.google.richResponse = richResponse.addSuggestion(
       suggestions,
     );
-  }
-}
-
-export class BasicCard implements IDirective {
-  public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowBasicCard";
-
-  public viewPath?: string;
-  public basicCardOptions?: BasicCardOptions;
-
-  constructor(viewPath: string | BasicCardOptions) {
-    if (_.isString(viewPath)) {
-      this.viewPath = viewPath;
-    } else {
-      this.basicCardOptions = viewPath;
-    }
-  }
-
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const requiredCapability = "actions.capability.SCREEN_OUTPUT";
-    if (!_.includes(event.supportedInterfaces, requiredCapability)) {
-      return;
-    }
-
-    let basicCard;
-    if (this.viewPath) {
-      basicCard = new ActionsOnGoogleBasicCard(
-        await event.renderer.renderPath(this.viewPath, event),
-      );
-    } else if (this.basicCardOptions) {
-      basicCard = new ActionsOnGoogleBasicCard(this.basicCardOptions);
-    }
-
-    const richResponse = _.get(
-      reply,
-      "payload.google.richResponse",
-      new RichResponse(),
-    );
-    (reply as DialogFlowReply).payload.google.richResponse = richResponse.add(
-      basicCard,
-    );
-  }
-}
-
-export class AccountLinkingCard implements IDirective {
-  public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowAccountLinkingCard";
-
-  public constructor(public context?: string) {}
-
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    (reply as DialogFlowReply).fulfillmentText = "login";
-    const signIn = new ActionsOnGoogleSignIn(this.context);
-
-    const google: any = (reply as DialogFlowReply).payload.google;
-    google.systemIntent = {
-      data: signIn.inputValueData,
-      intent: signIn.intent,
-    };
-  }
-}
-
-export class MediaResponse implements IDirective {
-  public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowMediaResponse";
-
-  public constructor(public mediaObject: MediaObject) {}
-
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const requiredCapability = "actions.capability.AUDIO_OUTPUT";
-    if (!_.includes(event.supportedInterfaces, requiredCapability)) {
-      return;
-    }
-
-    const mediaResponse = new ActionsOnGoogleMediaResponse(this.mediaObject);
-
-    const richResponse = _.get(
-      reply,
-      "payload.google.richResponse",
-      new RichResponse(),
-    );
-    if (richResponse.items.length === 0) {
-      throw new Error("MediaResponse requires another simple response first");
-    }
-
-    (reply as DialogFlowReply).payload.google.richResponse = richResponse.add(
-      mediaResponse,
-    );
-  }
-}
-
-export class Permission implements IDirective {
-  public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowPermission";
-
-  public constructor(public permissionOptions: PermissionOptions) {}
-
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    (reply as DialogFlowReply).fulfillmentText = "login";
-    const permission = new ActionsOnGooglePermission(this.permissionOptions);
-
-    const google: any = (reply as DialogFlowReply).payload.google;
-    google.systemIntent = {
-      data: permission.inputValueData,
-      intent: permission.intent,
-    };
-  }
-}
-
-export class DateTime implements IDirective {
-  public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowDateTime";
-
-  constructor(public dateTimeOptions: DateTimeOptions) {}
-
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const google: any = (reply as DialogFlowReply).payload.google;
-    const dateTime = new ActionsOnGoogleDateTime(this.dateTimeOptions);
-    google.systemIntent = {
-      data: dateTime.inputValueData,
-      intent: dateTime.intent,
-    };
-  }
-}
-
-export class Confirmation implements IDirective {
-  public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowConfirmation";
-
-  constructor(public prompt: string) {}
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const google: any = (reply as DialogFlowReply).payload.google;
-    const confirmation = new ActionsOnGoogleConfirmation(this.prompt);
-
-    google.systemIntent = {
-      data: confirmation.inputValueData,
-      intent: confirmation.intent,
-    };
-  }
-}
-
-export class DeepLink implements IDirective {
-  public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowDeepLink";
-
-  constructor(public deepLinkOptions: DeepLinkOptions) {}
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const google: any = (reply as DialogFlowReply).payload.google;
-    const deepLink = new ActionsOnGoogleDeepLink(this.deepLinkOptions);
-
-    google.systemIntent = {
-      data: deepLink.inputValueData,
-      intent: deepLink.intent,
-    };
-  }
-}
-
-export interface IPlaceOptions {
-  /**
-   * This is the initial response by location sub-dialog.
-   * For example: "Where do you want to get picked up?"
-   * @public
-   */
-  prompt: string;
-  /**
-   * This is the context for seeking permissions.
-   * For example: "To find a place to pick you up"
-   * Prompt to user: "*To find a place to pick you up*, I just need to check your location.
-   *     Can I get that from Google?".
-   * @public
-   */
-  context: string;
-}
-
-export class Place implements IDirective {
-  public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowPlace";
-
-  constructor(public placeOptions: IPlaceOptions) {}
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const google: any = (reply as DialogFlowReply).payload.google;
-    const place = new ActionsOnGooglePlace(this.placeOptions);
-
-    google.systemIntent = {
-      data: place.inputValueData,
-      intent: place.intent,
-    };
-  }
-}
-
-export class TransactionDecision implements IDirective {
-  public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowTransactionDecision";
-
-  constructor(
-    public transactionDecisionOptions: GoogleActionsV2TransactionDecisionValueSpec,
-  ) {}
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const google: any = (reply as DialogFlowReply).payload.google;
-    const transactionDecision = new ActionsOnGoogleTransactionDecision(
-      this.transactionDecisionOptions,
-    );
-
-    google.systemIntent = {
-      data: transactionDecision.inputValueData,
-      intent: transactionDecision.intent,
-    };
-  }
-}
-
-export class TransactionRequirements implements IDirective {
-  public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowTransactionRequirements";
-
-  constructor(
-    public transactionRequirementsOptions: GoogleActionsV2TransactionRequirementsCheckSpec,
-  ) {}
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const google: any = (reply as DialogFlowReply).payload.google;
-    const transactionRequirements = new ActionsOnGoogleTransactionRequirements(
-      this.transactionRequirementsOptions,
-    );
-
-    google.systemIntent = {
-      data: transactionRequirements.inputValueData,
-      intent: transactionRequirements.intent,
-    };
-  }
-}
-
-export class RegisterUpdate implements IDirective {
-  public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowRegisterUpdate";
-
-  constructor(public registerUpdateOptions: RegisterUpdateOptions) {}
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const google: any = (reply as DialogFlowReply).payload.google;
-    const registerUpdate = new ActionsOnGoogleRegisterUpdate(
-      this.registerUpdateOptions,
-    );
-
-    google.systemIntent = {
-      data: registerUpdate.inputValueData,
-      intent: registerUpdate.intent,
-    };
-  }
-}
-
-export class UpdatePermission implements IDirective {
-  public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowUpdatePermission";
-
-  constructor(public updatePermissionOptions: UpdatePermissionOptions) {}
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const google: any = (reply as DialogFlowReply).payload.google;
-    const updatePermission = new ActionsOnGoogleUpdatePermission(
-      this.updatePermissionOptions,
-    );
-
-    google.systemIntent = {
-      data: updatePermission.inputValueData,
-      intent: updatePermission.intent,
-    };
-  }
-}
-
-export class Table implements IDirective {
-  public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowTable";
-
-  constructor(public tableOptions: TableOptions) {}
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const requiredCapability = "actions.capability.SCREEN_OUTPUT";
-    if (!_.includes(event.supportedInterfaces, requiredCapability)) {
-      return;
-    }
-
-    const google: any = (reply as DialogFlowReply).payload.google;
-    const table = new ActionsOnGoogleTable(this.tableOptions);
-    const richResponse = _.get(
-      reply,
-      "payload.google.richResponse",
-      new RichResponse(),
-    );
-    (reply as DialogFlowReply).payload.google.richResponse = richResponse.add(
-      table,
-    );
-  }
-}
-
-export class BrowseCarousel implements IDirective {
-  public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowBrowseCarousel";
-
-  constructor(public browseCarouselOptions: BrowseCarouselOptions) {}
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const requiredCapability = "actions.capability.SCREEN_OUTPUT";
-    if (!_.includes(event.supportedInterfaces, requiredCapability)) {
-      return;
-    }
-
-    const google: any = (reply as DialogFlowReply).payload.google;
-    const browseCarousel = new ActionsOnGoogleBrowseCarousel(
-      this.browseCarouselOptions,
-    );
-    const richResponse = _.get(
-      reply,
-      "payload.google.richResponse",
-      new RichResponse(),
-    );
-    (reply as DialogFlowReply).payload.google.richResponse = richResponse.add(
-      browseCarousel,
-    );
-  }
-}
-
-export class NewSurface implements IDirective {
-  public static platform: string = "dialogFlow";
-  public static key: string = "dialogFlowNewSurface";
-
-  constructor(public newSurfaceOptions: NewSurfaceOptions) {}
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const google: any = (reply as DialogFlowReply).payload.google;
-    const newSurface = new ActionsOnGoogleNewSurface(this.newSurfaceOptions);
-
-    google.systemIntent = {
-      data: newSurface.inputValueData,
-      intent: newSurface.intent,
-    };
   }
 }

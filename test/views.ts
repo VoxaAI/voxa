@@ -23,6 +23,7 @@ export const views = {
   },
   "en-US": {
     translation: {
+      AccountLinking: "Please Log in",
       Ask: {
         ask: "What time is it?",
         reprompt: "What time is it?",
@@ -51,17 +52,21 @@ export const views = {
         type: "Standard",
       },
       Card2: "{card2}",
+      Confirmation: "Is that true?",
       Count: {
         Say: "{count}",
         Tell: "{count}",
       },
       CustomerContact: {
-        FullInfo: "Welcome {customerContactGivenName}, your email address is {customerContactEmail}, and your phone number is {customerContactCountry} {customerContactNumber}",
-        PermissionNotGranted: "To get the user's info, go to your Alexa app and grant permission to the skill.",
+        FullInfo:
+          "Welcome {customerContactGivenName}, your email address is {customerContactEmail}, and your phone number is {customerContactCountry} {customerContactNumber}",
+        PermissionNotGranted:
+          "To get the user's info, go to your Alexa app and grant permission to the skill.",
       },
       DeviceAddress: {
         FullAddress: "Right now your device is in: {deviceInfo}",
-        PermissionNotGranted: "To get the device's address, go to your Alexa app and grant permission to the skill.",
+        PermissionNotGranted:
+          "To get the device's address, go to your Alexa app and grant permission to the skill.",
         PostalCode: "Your postal code is: {deviceInfo}",
       },
       DeviceSettings: {
@@ -112,7 +117,8 @@ export const views = {
       Hint: "string",
       ISP: {
         Invalid: {
-          ask: "To do In Skill Purchases, you need to link your Amazon account to the US market.",
+          ask:
+            "To do In Skill Purchases, you need to link your Amazon account to the US market.",
           reprompt: "Can you try again?",
         },
         ProductBought: {

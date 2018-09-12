@@ -114,7 +114,7 @@ describe("DialogFlow Directives", () => {
         throw expect(error).to.not.be.null;
       }
       expect(error.message).to.equal(
-        "MediaResponse requires another simple response first",
+        "A simple response is required before a dialogFlowMediaResponse",
       );
     });
   });
@@ -338,7 +338,7 @@ describe("DialogFlow Directives", () => {
   describe("ConfirmationDirective", () => {
     it("should add a Confirmation Response", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowConfirmation: "Is that true?",
+        dialogFlowConfirmation: "Confirmation",
         flow: "yield",
         sayp: "Hello!",
         to: "entry",
@@ -560,7 +560,7 @@ describe("DialogFlow Directives", () => {
   describe("Account Linking Directive", () => {
     it("should add a DeepLink Response", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowAccountLinkingCard: "To check your account balance",
+        dialogFlowAccountLinkingCard: "AccountLinking",
         flow: "yield",
         sayp: "Hello!",
         to: "entry",
@@ -570,7 +570,7 @@ describe("DialogFlow Directives", () => {
       expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.SignInValueSpec",
-          "optContext": "To check your account balance",
+          "optContext": "Please Log in",
         },
         intent: "actions.intent.SIGN_IN",
       });
