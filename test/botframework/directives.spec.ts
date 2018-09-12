@@ -75,9 +75,9 @@ describe("BotFramework directives", () => {
   });
 
   describe("AudioCard", () => {
-    it("should render an AudioCard with an url", async () => {
+    it("should render an AudioCard with a view", async () => {
       app.onIntent("LaunchIntent", {
-        botframeworkAudioCard: "http://example.com",
+        botframeworkAudioCard: "BotFrameworkAudioCard",
         to: "die",
       });
 

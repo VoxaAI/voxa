@@ -91,34 +91,20 @@ export class SuggestedActions
   }
 }
 
-export class AudioCard implements IDirective {
+export class AudioCard extends RenderDirective<string | AudioCardType>
+  implements IDirective {
   public static key: string = "botframeworkAudioCard";
   public static platform: string = "botframework";
-
-  public url?: string;
-  public audioCard?: AudioCardType;
-
-  constructor(url: string | AudioCardType, public profile: string = "") {
-    if (_.isString(url)) {
-      this.url = url;
-    } else {
-      this.audioCard = url;
-    }
-  }
 
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
     transition: ITransition,
   ) {
-    let audioCard;
-    if (this.url) {
-      audioCard = new AudioCardType();
-      const cardMedia: ICardMediaUrl = { url: this.url, profile: this.profile };
-      audioCard.media([cardMedia]);
-    } else {
-      audioCard = this.audioCard;
-    }
+    const audioCard = await this.renderOptions(event);
+    const attachment: IAttachment = audioCard.toAttachment
+      ? audioCard.toAttachment()
+      : audioCard;
 
     if (reply.hasMessages) {
       // we want to send stuff before the audio card
@@ -129,16 +115,12 @@ export class AudioCard implements IDirective {
 
     // and now we add the card
     const attachments = (reply as BotFrameworkReply).attachments || [];
-
-    if (!audioCard) {
-      throw new Error("audioCard was not initialized");
-    }
-
-    attachments.push(audioCard.toAttachment());
+    attachments.push(attachment);
     (reply as BotFrameworkReply).attachments = attachments;
+
     reply.terminate();
     transition.flow = "terminate";
-    return await (reply as BotFrameworkReply).send(event as BotFrameworkEvent);
+    return (reply as BotFrameworkReply).send(event as BotFrameworkEvent);
   }
 }
 

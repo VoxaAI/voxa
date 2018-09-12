@@ -38,6 +38,17 @@ export const views = {
           say: "I'm sorry. I didn't understand.",
         },
       },
+      BotFrameworkAudioCard: {
+        content: {
+          media: [
+            {
+              profile: "",
+              url: "http://example.com",
+            },
+          ],
+        },
+        contentType: "application/vnd.microsoft.card.audio",
+      },
       Buttons: {
         Bye: "Thanks for playing with echo buttons.",
         Discover: "Press 2 or up to 4 buttons to wake them up.",
