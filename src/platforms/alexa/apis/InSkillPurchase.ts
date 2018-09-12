@@ -1,39 +1,46 @@
-import { RequestEnvelope, services } from "ask-sdk-model";
+import { interfaces, RequestEnvelope, services } from "ask-sdk-model";
 import * as _ from "lodash";
 import * as rp from "request-promise";
 
 import { ConnectionsSendRequest } from "../directives";
 
+export interface IPurchasePayload {
+  InSkillProduct: interfaces.monetization.v1.InSkillProduct;
+  upsellMessage?: string;
+}
+
 export class InSkillPurchase {
   public static buy(productId: string, token: string): ConnectionsSendRequest {
-    const payload: any = {
-      InSkillProduct: {
-        productId,
-      },
-    };
-
+    const payload = this.formatPayload(productId);
     return new ConnectionsSendRequest("Buy", payload, token);
   }
 
-  public static cancel(productId: string, token: string): ConnectionsSendRequest {
-    const payload: any = {
-      InSkillProduct: {
-        productId,
-      },
-    };
-
+  public static cancel(
+    productId: string,
+    token: string,
+  ): ConnectionsSendRequest {
+    const payload = this.formatPayload(productId);
     return new ConnectionsSendRequest("Cancel", payload, token);
   }
 
-  public static upsell(productId: string, upsellMessage: string, token: string): ConnectionsSendRequest {
-    const payload: any = {
+  public static upsell(
+    productId: string,
+    upsellMessage: string,
+    token: string,
+  ): ConnectionsSendRequest {
+    const payload = this.formatPayload(productId, upsellMessage);
+    return new ConnectionsSendRequest("Upsell", payload, token);
+  }
+  protected static formatPayload(
+    productId: string,
+    upsellMessage?: string,
+  ): IPurchasePayload {
+    return {
       InSkillProduct: {
         productId,
       },
       upsellMessage,
     };
-
-    return new ConnectionsSendRequest("Upsell", payload, token);
   }
 
   public rawEvent: RequestEnvelope; // the event as sent by the service
@@ -53,28 +60,47 @@ export class InSkillPurchase {
     return _.get(ALLOWED_ISP_ENDPOINTS, locale) === endpoint;
   }
 
-  public async buyByReferenceName(referenceName: string, token: string): Promise<ConnectionsSendRequest> {
-    const product: services.monetization.InSkillProduct | object =
-      await this.getProductByReferenceName(referenceName);
+  public async buyByReferenceName(
+    referenceName: string,
+    token: string,
+  ): Promise<ConnectionsSendRequest> {
+    const product:
+      | services.monetization.InSkillProduct
+      | object = await this.getProductByReferenceName(referenceName);
 
     return InSkillPurchase.buy(_.get(product, "productId"), token);
   }
 
-  public async cancelByReferenceName(referenceName: string, token: string): Promise<ConnectionsSendRequest> {
-    const product: services.monetization.InSkillProduct | object =
-      await this.getProductByReferenceName(referenceName);
+  public async cancelByReferenceName(
+    referenceName: string,
+    token: string,
+  ): Promise<ConnectionsSendRequest> {
+    const product:
+      | services.monetization.InSkillProduct
+      | object = await this.getProductByReferenceName(referenceName);
 
     return InSkillPurchase.cancel(_.get(product, "productId"), token);
   }
 
-  public async upsellByReferenceName(referenceName: string, upsellMessage: string, token: string): Promise<ConnectionsSendRequest> {
-    const product: services.monetization.InSkillProduct | object =
-      await this.getProductByReferenceName(referenceName);
+  public async upsellByReferenceName(
+    referenceName: string,
+    upsellMessage: string,
+    token: string,
+  ): Promise<ConnectionsSendRequest> {
+    const product:
+      | services.monetization.InSkillProduct
+      | object = await this.getProductByReferenceName(referenceName);
 
-    return InSkillPurchase.upsell(_.get(product, "productId"), upsellMessage, token);
+    return InSkillPurchase.upsell(
+      _.get(product, "productId"),
+      upsellMessage,
+      token,
+    );
   }
 
-  public async getProductByReferenceName(referenceName: string): Promise<services.monetization.InSkillProduct | object> {
+  public async getProductByReferenceName(
+    referenceName: string,
+  ): Promise<services.monetization.InSkillProduct | object> {
     const result: services.monetization.InSkillProductsResponse = await this.getProductList();
 
     return _.find(result.inSkillProducts, { referenceName }) || {};
