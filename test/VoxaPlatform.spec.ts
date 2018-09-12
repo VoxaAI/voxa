@@ -9,6 +9,8 @@ import {
   HttpMethod as AzureHttpMethod,
 } from "azure-functions-ts-essentials";
 import { expect } from "chai";
+import * as portfinder from "portfinder";
+import * as rp from "request-promise";
 import { VoxaPlatform } from "../src/platforms/VoxaPlatform";
 import { VoxaApp } from "../src/VoxaApp";
 import {
@@ -29,10 +31,41 @@ class Platform extends VoxaPlatform {
 }
 
 describe("VoxaPlatform", () => {
+  let app: VoxaApp;
+  let adapter: Platform;
+
+  beforeEach(() => {
+    app = new VoxaApp({ views });
+    adapter = new Platform(app);
+  });
+
+  describe("startServer", () => {
+    it("should call the execute method with an http server", async () => {
+      const port = await portfinder.getPortPromise();
+      const server = await adapter.startServer(port);
+
+      const options = {
+        body: {
+          request: "Hello World",
+        },
+        json: true,
+        method: "POST",
+        uri: `http://localhost:${port}/`,
+      };
+      const response = await rp(options);
+      expect(response).to.deep.equal({
+        context: {},
+        event: {
+          request: "Hello World",
+        },
+      });
+
+      server.close();
+    });
+  });
+
   describe("lambda", () => {
     it("should call the execute method with the event and context", async () => {
-      const app = new VoxaApp({ views });
-      const adapter = new Platform(app);
       const handler = adapter.lambda();
       const event = rb.getSessionEndedRequest();
       const callback: AWSLambdaCallback<any> = (
@@ -51,8 +84,6 @@ describe("VoxaPlatform", () => {
 
   describe("lambdaHTTP", () => {
     it("should return a lambda http proxy response object", (done) => {
-      const app = new VoxaApp({ views });
-      const adapter = new Platform(app);
       const handler = adapter.lambdaHTTP();
       const event = getAPIGatewayProxyEvent(
         "POST",
@@ -82,8 +113,6 @@ describe("VoxaPlatform", () => {
 
   describe("azureFunction", () => {
     it("should call the execute method with the event body", (done) => {
-      const app = new VoxaApp({ views });
-      const adapter = new Platform(app);
       const handler = adapter.azureFunction();
       const event = {
         body: rb.getSessionEndedRequest(),
@@ -102,8 +131,6 @@ describe("VoxaPlatform", () => {
 
   describe("onIntent", () => {
     it("should register onIntent with platform", () => {
-      const app = new VoxaApp({ views });
-      const adapter = new Platform(app);
       const state = {
         flow: "terminate",
         tell: "Bye",
@@ -133,10 +160,8 @@ describe("VoxaPlatform", () => {
     });
   });
 
-  describe("onIntent", () => {
+  describe("onState", () => {
     it("should register states as platform specific", () => {
-      const app = new VoxaApp({ views });
-      const adapter = new Platform(app);
       const state = {
         flow: "terminate",
         tell: "Bye",
