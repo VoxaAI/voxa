@@ -2,10 +2,21 @@ language: node_js
 sudo: required
 node_js:
   - "8.10"
+
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+
 script: ./run-ci.sh
+
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+
 notifications:
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/7454b7624bdd415a8082
+
 services:
   - docker
