@@ -217,32 +217,6 @@ export class VoxaApp {
   ): Promise<IVoxaReply> {
     log("Received new event", JSON.stringify(voxaEvent.rawEvent, null, 2));
     try {
-      // Validate that this AlexaRequest originated from authorized source.
-      if (this.config.appIds) {
-        const appId = voxaEvent.context.application.applicationId;
-
-        if (_.isString(this.config.appIds) && this.config.appIds !== appId) {
-          log(
-            `The applicationIds don't match: "${appId}"  and  "${
-              this.config.appIds
-            }"`,
-          );
-          throw new Error("Invalid applicationId");
-        }
-
-        if (
-          _.isArray(this.config.appIds) &&
-          !_.includes(this.config.appIds, appId)
-        ) {
-          log(
-            `The applicationIds don't match: "${appId}"  and  "${
-              this.config.appIds
-            }"`,
-          );
-          throw new Error("Invalid applicationId");
-        }
-      }
-
       if (!this.requestHandlers[voxaEvent.request.type]) {
         throw new UnknownRequestType(voxaEvent.request.type);
       }

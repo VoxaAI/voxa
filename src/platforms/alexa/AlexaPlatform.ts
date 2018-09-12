@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 
-import { ResponseEnvelope } from "ask-sdk-model";
+import { RequestEnvelope, ResponseEnvelope } from "ask-sdk-model";
 
 import * as debug from "debug";
 import { VoxaApp } from "../../VoxaApp";
@@ -48,26 +48,32 @@ const AlexaRequests = [
   "GameEngine.InputHandlerEvent",
 ];
 
+export interface IAlexaPlatformConfig {
+  appIds?: string | string[];
+  defaultFulfillIntents?: string[];
+}
+
 export class AlexaPlatform extends VoxaPlatform {
   public platform: string = "alexa";
-  public defaultFulfillIntents: string[] = [];
+  public config: IAlexaPlatformConfig;
 
-  constructor(voxaApp: VoxaApp, config: any= {}) {
+  constructor(voxaApp: VoxaApp, config: IAlexaPlatformConfig = {}) {
     super(voxaApp, config);
+    this.config = config;
 
-    this.defaultFulfillIntents = config.defaultFulfillIntents;
+    this.app.onCanFulfillIntentRequest(
+      (event: AlexaEvent, reply: AlexaReply) => {
+        if (_.includes(this.config.defaultFulfillIntents, event.intent.name)) {
+          reply.fulfillIntent("YES");
 
-    this.app.onCanFulfillIntentRequest((event: AlexaEvent, reply: AlexaReply) => {
-      if (_.includes(this.defaultFulfillIntents, event.intent.name)) {
-        reply.fulfillIntent("YES");
+          _.each(event.intent.params, (value, slotName) => {
+            reply.fulfillSlot(slotName, "YES", "YES");
+          });
+        }
 
-        _.each(event.intent.params, (value, slotName) => {
-          reply.fulfillSlot(slotName, "YES", "YES");
-        });
-      }
-
-      return reply;
-    });
+        return reply;
+      },
+    );
   }
 
   public getDirectiveHandlers() {
@@ -90,9 +96,41 @@ export class AlexaPlatform extends VoxaPlatform {
     return AlexaRequests;
   }
 
-  public async execute(rawEvent: any, context: any): Promise<ResponseEnvelope> {
+  public async execute(
+    rawEvent: RequestEnvelope,
+    context: any,
+  ): Promise<ResponseEnvelope> {
+    if (this.config.appIds) {
+      // Validate that this AlexaRequest originated from authorized source.
+      const appId = rawEvent.context.application.applicationId;
+
+      if (_.isString(this.config.appIds) && this.config.appIds !== appId) {
+        alexalog(
+          `The applicationIds don't match: "${appId}"  and  "${
+            this.config.appIds
+          }"`,
+        );
+        throw new Error("Invalid applicationId");
+      }
+
+      if (
+        _.isArray(this.config.appIds) &&
+        !_.includes(this.config.appIds, appId)
+      ) {
+        alexalog(
+          `The applicationIds don't match: "${appId}"  and  "${
+            this.config.appIds
+          }"`,
+        );
+        throw new Error("Invalid applicationId");
+      }
+    }
+
     const alexaEvent = new AlexaEvent(rawEvent, context);
-    const reply = await this.app.execute(alexaEvent, new AlexaReply()) as AlexaReply;
+    const reply = (await this.app.execute(
+      alexaEvent,
+      new AlexaReply(),
+    )) as AlexaReply;
     alexalog("Reply: ", JSON.stringify(reply, null, 2));
     return reply;
   }
