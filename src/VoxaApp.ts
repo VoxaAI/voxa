@@ -626,8 +626,6 @@ export class VoxaApp {
       model = await Model.deserialize(data, voxaEvent);
     }
 
-    model.state = model.state === "die" ? "entry" : model.state;
-
     voxaEvent.model = model;
     log("Initialized model like %s", JSON.stringify(voxaEvent.model));
     voxaEvent.t = this.i18n.getFixedT(voxaEvent.request.locale);

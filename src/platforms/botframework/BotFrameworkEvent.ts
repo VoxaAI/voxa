@@ -10,7 +10,7 @@ import {
 } from "botbuilder";
 import { TranslationFunction } from "i18next";
 import { Model } from "../../Model";
-import { ITypeMap, IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
+import { ITypeMap, IVoxaEvent, IVoxaIntent, IVoxaUser } from "../../VoxaEvent";
 import { IBotFrameworkEntity } from "./BotFrameworkInterfaces";
 
 const MicrosoftCortanaIntents: ITypeMap = {
@@ -24,8 +24,8 @@ export class BotFrameworkEvent extends IVoxaEvent {
   public session: any;
   public context: any;
 
-  public applicationPassword!: string;
-  public applicationId!: string;
+  public applicationPassword?: string;
+  public applicationId?: string;
 
   public executionContext: any;
   public rawEvent!: IEvent;
@@ -50,7 +50,13 @@ export class BotFrameworkEvent extends IVoxaEvent {
     "Utilities.Stop": "StopIntent",
   };
 
-  constructor(message: IEvent, context: any, stateData: IBotStorageData, storage: IBotStorage, intent?: IVoxaIntent) {
+  constructor(
+    message: IEvent,
+    context: any,
+    stateData: IBotStorageData,
+    storage: IBotStorage,
+    intent?: IVoxaIntent | void,
+  ) {
     super(message, context);
     this.session = {
       attributes: stateData.privateConversationData || {},
@@ -73,21 +79,26 @@ export class BotFrameworkEvent extends IVoxaEvent {
   }
 
   public get supportedInterfaces() {
-    return [];
+    const entity: any = getEntity(this.rawEvent, "DeviceInfo");
+    if (!entity) {
+      return [];
+    }
+
+    return entity.supportsDisplay === "true" ? ["Display"] : [];
   }
 
-  public getIntentFromEntity(): void {
+  protected getIntentFromEntity(): void {
     if (!isIMessage(this.rawEvent)) {
       return;
     }
 
-    const intentEntity: any = _.find(this.rawEvent.entities, (e: any) => e.type ===  "Intent" );
+    const intentEntity: any = getEntity(this.rawEvent, "Intent");
 
     if (!intentEntity) {
       return;
     }
 
-    if (intentEntity.name  === "None") {
+    if (intentEntity.name === "None") {
       return;
     }
 
@@ -97,10 +108,9 @@ export class BotFrameworkEvent extends IVoxaEvent {
       params: {},
       rawIntent: intentEntity,
     };
-
   }
 
-  public mapUtilitiesIntent(intent: IVoxaIntent): IVoxaIntent {
+  protected mapUtilitiesIntent(intent: IVoxaIntent): IVoxaIntent {
     if (this.utilitiesIntentMapping[intent.name]) {
       intent.name = this.utilitiesIntentMapping[intent.name];
     }
@@ -108,16 +118,30 @@ export class BotFrameworkEvent extends IVoxaEvent {
     return intent;
   }
 
-  get user() {
-    return _.merge(this.rawEvent.address.user, { userId: this.rawEvent.address.user.id });
+  get user(): IVoxaUser {
+    const result: IVoxaUser = {
+      id: this.rawEvent.address.user.id,
+    };
+
+    if (isIMessage(this.rawEvent)) {
+      const auth: any = getEntity(this.rawEvent, "AuthorizationToken");
+      if (auth) {
+        result.accessToken = auth.token;
+      }
+    }
+
+    return result;
   }
 
-  public mapRequestToIntent(): void {
-    if (isIConversationUpdate(this.rawEvent) && this.rawEvent.address.channelId === "webchat") {
+  protected mapRequestToIntent(): void {
+    if (
+      isIConversationUpdate(this.rawEvent) &&
+      this.rawEvent.address.channelId === "webchat"
+    ) {
       // in webchat we get a conversationUpdate event when the application window is open and another when the
       // user sends his first message, we want to identify that and only do a LaunchIntent for the first one
-      const membersAdded: IIdentity[]|undefined = this.rawEvent.membersAdded;
-      const bot: IIdentity|undefined =  this.rawEvent.address.bot;
+      const membersAdded: IIdentity[] | undefined = this.rawEvent.membersAdded;
+      const bot: IIdentity | undefined = this.rawEvent.address.bot;
 
       if (membersAdded && bot && membersAdded.length === 1) {
         if (membersAdded[0].id === bot.id) {
@@ -134,7 +158,7 @@ export class BotFrameworkEvent extends IVoxaEvent {
     }
   }
 
-  public getRequest() {
+  protected getRequest() {
     const type = this.rawEvent.type;
     let locale;
 
@@ -144,12 +168,8 @@ export class BotFrameworkEvent extends IVoxaEvent {
       }
 
       if (this.rawEvent.entities) {
-        const entity: any = _(this.rawEvent.entities)
-          .filter((e: any) => e.type === "clientInfo")
-          .filter((e: any) => !!e.locale)
-          .first();
-
-        if (entity) {
+        const entity: any = getEntity(this.rawEvent, "clientInfo");
+        if (entity && entity.locale) {
           locale = entity.locale;
         }
       }
@@ -157,13 +177,22 @@ export class BotFrameworkEvent extends IVoxaEvent {
 
     return { type, locale };
   }
-
 }
 
 export function isIMessage(event: IEvent): event is IMessage {
   return event.type === "message";
 }
 
-export function isIConversationUpdate(event: IEvent | IConversationUpdate): event is IConversationUpdate {
+export function isIConversationUpdate(
+  event: IEvent | IConversationUpdate,
+): event is IConversationUpdate {
   return event.type === "conversationUpdate";
+}
+
+export function getEntity(msg: IMessage, type: string): any {
+  if (!msg.entities) {
+    return;
+  }
+
+  return _.find(msg.entities, (entity) => entity.type === type);
 }

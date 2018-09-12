@@ -46,14 +46,6 @@ export abstract class VoxaPlatform {
     });
   }
 
-  public getDirectiveHandlers(): IDirectiveClass[] {
-    return [];
-  }
-
-  public getPlatformRequests(): string[] {
-    return [];
-  }
-
   public abstract execute(event: any, context?: any): Promise<any>;
 
   public lambda() {
@@ -141,5 +133,13 @@ export abstract class VoxaPlatform {
     intents: string[] | string = [],
   ): void {
     this.app.onState(stateName, handler, intents, this.platform);
+  }
+
+  protected getDirectiveHandlers(): IDirectiveClass[] {
+    return [];
+  }
+
+  protected getPlatformRequests(): string[] {
+    return [];
   }
 }

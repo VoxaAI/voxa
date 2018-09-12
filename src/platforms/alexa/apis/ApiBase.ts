@@ -31,8 +31,10 @@ export class ApiBase {
   protected checkError(err: any) {
     alexalog(`${this.tag} Error %s`, JSON.stringify(err, null, 2));
 
-    if (err.statusCode === this.errorCodeSafeToIgnore ||
-      err.error.code === this.errorCodeSafeToIgnore) {
+    if (
+      err.statusCode === this.errorCodeSafeToIgnore ||
+      err.error.code === this.errorCodeSafeToIgnore
+    ) {
       return undefined;
     }
 

@@ -42,7 +42,7 @@ export class DialogFlowPlatform extends VoxaPlatform {
     return voxaReply;
   }
 
-  public getDirectiveHandlers() {
+  protected getDirectiveHandlers() {
     return [
       AccountLinkingCard,
       BasicCard,

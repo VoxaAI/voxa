@@ -7,6 +7,7 @@ import {
   IEvent,
   IIdentity,
   IMessage,
+  ISuggestedActions,
 } from "botbuilder";
 import * as debug from "debug";
 import * as _ from "lodash";
@@ -38,7 +39,8 @@ export class BotFrameworkReply implements IVoxaReply {
   public timestamp: string;
   public type: string = "message";
   public attachments?: IAttachment[];
-  public suggestedActions?: ICardAction[];
+  public suggestedActions?: ISuggestedActions;
+  public attachmentLayout?: string;
 
   constructor(event: IVoxaEvent) {
     this.channelId = event.rawEvent.address.channelId;
@@ -140,33 +142,26 @@ export class BotFrameworkReply implements IVoxaReply {
     uri: string,
     reply: BotFrameworkReply,
     event: BotFrameworkEvent,
-    attempts: number = 0): Promise<any> {
+    attempts: number = 0,
+  ): Promise<any> {
     let authorization: IAuthorizationResponse;
-    try {
-      authorization = await this.getAuthorization(event.applicationId, event.applicationPassword);
-      const requestOptions: rp.Options = {
-        auth: {
-          bearer: authorization.access_token,
-        },
-        body: this,
-        json: true,
-        method,
-        uri,
-      };
+    authorization = await this.getAuthorization(
+      event.applicationId,
+      event.applicationPassword,
+    );
+    const requestOptions: rp.Options = {
+      auth: {
+        bearer: authorization.access_token,
+      },
+      body: this,
+      json: true,
+      method,
+      uri,
+    };
 
-      botframeworklog("botApiRequest");
-      botframeworklog(JSON.stringify(requestOptions, null, 2));
-      return rp(requestOptions);
-    } catch (reason) {
-      if (reason instanceof StatusCodeError && attempts < 2) {
-        attempts += 1;
-        if (reason.statusCode === 401) {
-          return this.botApiRequest(method, uri, reply, event, attempts);
-        }
-      }
-
-      throw reason;
-    }
+    botframeworklog("botApiRequest");
+    botframeworklog(JSON.stringify(requestOptions, null, 2));
+    return rp(requestOptions);
   }
 
   public getReplyUri(event: IEvent): string {
@@ -187,7 +182,12 @@ export class BotFrameworkReply implements IVoxaReply {
     return urljoin(baseUri, path);
   }
 
-  public async getAuthorization(applicationId: string, applicationPassword: string): Promise<IAuthorizationResponse> {
+  public async getAuthorization(
+    applicationId?: string,
+    applicationPassword?: string,
+  ): Promise<IAuthorizationResponse> {
+    const url =
+      "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token";
     const requestOptions: rp.Options = {
       form: {
         client_id: applicationId,
@@ -197,16 +197,16 @@ export class BotFrameworkReply implements IVoxaReply {
       },
       json: true,
       method: "POST",
-      url: "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token",
+      url,
     };
     botframeworklog("getAuthorization");
     botframeworklog(requestOptions);
 
-    return await rp(requestOptions) as IAuthorizationResponse;
+    return (await rp(requestOptions)) as IAuthorizationResponse;
   }
 
   public async saveSession(attributes: IBag, event: IVoxaEvent): Promise<void> {
-    const conversationId = event.session.sessionId;
+    const conversationId = encodeURIComponent(event.session.sessionId);
     const userId = event.rawEvent.address.bot.id;
     const context: IBotStorageContext = {
       conversationId,
@@ -228,7 +228,9 @@ export class BotFrameworkReply implements IVoxaReply {
 
     await new Promise((resolve, reject) => {
       storage.saveData(context, data, (error: Error) => {
-        if (error) { return reject(error); }
+        if (error) {
+          return reject(error);
+        }
 
         botframeworklog("savedStateData");
         botframeworklog(data, context);
@@ -236,5 +238,4 @@ export class BotFrameworkReply implements IVoxaReply {
       });
     });
   }
-
 }
