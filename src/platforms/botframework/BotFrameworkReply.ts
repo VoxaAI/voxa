@@ -144,34 +144,23 @@ export class BotFrameworkReply implements IVoxaReply {
     attempts: number = 0,
   ): Promise<any> {
     let authorization: IAuthorizationResponse;
-    try {
-      authorization = await this.getAuthorization(
-        event.applicationId,
-        event.applicationPassword,
-      );
-      const requestOptions: rp.Options = {
-        auth: {
-          bearer: authorization.access_token,
-        },
-        body: this,
-        json: true,
-        method,
-        uri,
-      };
+    authorization = await this.getAuthorization(
+      event.applicationId,
+      event.applicationPassword,
+    );
+    const requestOptions: rp.Options = {
+      auth: {
+        bearer: authorization.access_token,
+      },
+      body: this,
+      json: true,
+      method,
+      uri,
+    };
 
-      botframeworklog("botApiRequest");
-      botframeworklog(JSON.stringify(requestOptions, null, 2));
-      return rp(requestOptions);
-    } catch (reason) {
-      if (reason instanceof StatusCodeError && attempts < 2) {
-        attempts += 1;
-        if (reason.statusCode === 401) {
-          return this.botApiRequest(method, uri, reply, event, attempts);
-        }
-      }
-
-      throw reason;
-    }
+    botframeworklog("botApiRequest");
+    botframeworklog(JSON.stringify(requestOptions, null, 2));
+    return rp(requestOptions);
   }
 
   public getReplyUri(event: IEvent): string {
