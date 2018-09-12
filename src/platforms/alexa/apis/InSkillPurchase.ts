@@ -19,8 +19,7 @@ export class InSkillPurchase {
     productId: string,
     token: string,
   ): ConnectionsSendRequest {
-    const payload = this.formatPayload(productId);
-    return new ConnectionsSendRequest("Cancel", payload, token);
+    return this.sendConnectionSendRequest("Cancel", productId, token);
   }
 
   public static upsell(
@@ -28,9 +27,24 @@ export class InSkillPurchase {
     upsellMessage: string,
     token: string,
   ): ConnectionsSendRequest {
-    const payload = this.formatPayload(productId, upsellMessage);
-    return new ConnectionsSendRequest("Upsell", payload, token);
+    return this.sendConnectionSendRequest(
+      "Upsell",
+      productId,
+      token,
+      upsellMessage,
+    );
   }
+
+  protected static sendConnectionSendRequest(
+    method: string,
+    productId: string,
+    token: string,
+    upsellMessage?: string,
+  ): ConnectionsSendRequest {
+    const payload = this.formatPayload(productId, upsellMessage);
+    return new ConnectionsSendRequest(method, payload, token);
+  }
+
   protected static formatPayload(
     productId: string,
     upsellMessage?: string,
