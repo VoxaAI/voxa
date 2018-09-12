@@ -10,7 +10,6 @@
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
 import { ITransition } from "./StateMachine";
-import { VoxaApp } from "./VoxaApp";
 import { IVoxaEvent } from "./VoxaEvent";
 import { IVoxaReply } from "./VoxaReply";
 
@@ -26,7 +25,6 @@ export interface IDirective {
     reply: IVoxaReply,
     event: IVoxaEvent,
     transition: ITransition,
-    voxaApp: VoxaApp,
   ) => Promise<void>;
 }
 
