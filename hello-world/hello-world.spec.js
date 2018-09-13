@@ -77,7 +77,8 @@ describe("Hello World", () => {
       child.kill();
     });
 
-    it("runs the alexa function through azure functions", async () => {
+    it("runs the alexa function through azure functions", async function() {
+      this.timeout(10000);
       const options = {
         body: launchIntent,
         json: true,
@@ -106,7 +107,7 @@ describe("Hello World", () => {
 
   describe("Lambda", () => {
     it("runs the lambda call", function() {
-      this.timeout(5000);
+      this.timeout(10000);
       const lambdaCallbackResult = dockerLambda({
         dockerImage: `lambci/lambda:nodejs${NODE_VERSION}`,
         event: launchIntent,
@@ -128,7 +129,7 @@ describe("Hello World", () => {
     });
 
     it("runs the apiGateway call", function() {
-      this.timeout(5000);
+      this.timeout(10000);
       const lambdaCallbackResult = dockerLambda({
         dockerImage: `lambci/lambda:nodejs${NODE_VERSION}`,
         event: lambdaProxyLaunchIntent,
