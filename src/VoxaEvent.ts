@@ -10,6 +10,11 @@ export interface ITypeMap {
   [x: string]: string;
 }
 
+export interface IVoxaRequest {
+  locale: string;
+  type: string;
+}
+
 export abstract class IVoxaEvent {
   public abstract get supportedInterfaces(): string[];
   public executionContext: any; // this would a lambda or azure function context
@@ -17,14 +22,14 @@ export abstract class IVoxaEvent {
   public session!: IVoxaSession;
   public intent?: IVoxaIntent;
   public context: any;
-  public request: any;
+  public request!: IVoxaRequest;
   public model!: Model;
   public t!: i18n.TranslationFunction;
   public renderer!: Renderer;
   public user!: IVoxaUser;
   public requestToIntent: ITypeMap = {};
   public requestToRequest: ITypeMap = {};
-  public platform!: string;
+  public platform!: "alexa" | "dialogflow" | "botframework";
 
   constructor(event: any, context: any) {
     this.rawEvent = _.cloneDeep(event);
@@ -39,7 +44,7 @@ export abstract class IVoxaEvent {
       return;
     }
 
-    _.set(this, "request.type", newRequestType);
+    this.request.type = newRequestType;
   }
 
   protected mapRequestToIntent(): void {

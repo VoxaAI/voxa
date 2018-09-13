@@ -20,7 +20,7 @@ const MicrosoftCortanaIntents: ITypeMap = {
 };
 
 export class BotFrameworkEvent extends IVoxaEvent {
-  public platform: string = "botframework";
+  public platform: "botframework" = "botframework";
   public session: any;
   public context: any;
 

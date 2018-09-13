@@ -1,12 +1,19 @@
 import { interfaces, services } from "ask-sdk-model";
 import { expect, use } from "chai";
-import * as  _ from "lodash";
+import * as _ from "lodash";
 
 import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
 import { AlexaPlatform } from "../src/platforms/alexa/AlexaPlatform";
 import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
-import { GadgetController, TRIGGER_EVENT_ENUM } from "../src/platforms/alexa/GadgetController";
-import { ANCHOR_ENUM, EVENT_REPORT_ENUM, GameEngine } from "../src/platforms/alexa/GameEngine";
+import {
+  GadgetController,
+  TRIGGER_EVENT_ENUM,
+} from "../src/platforms/alexa/GadgetController";
+import {
+  ANCHOR_ENUM,
+  EVENT_REPORT_ENUM,
+  GameEngine,
+} from "../src/platforms/alexa/GameEngine";
 import { VoxaApp } from "../src/VoxaApp";
 import { AlexaRequestBuilder } from "./tools";
 import { variables } from "./variables";
@@ -37,8 +44,10 @@ const COLORS = [
 
 const actionDown: services.gameEngine.InputEventActionType = "down";
 const proxies = _.map(COLORS, "name");
-const rollCallPattern: services.gameEngine.Pattern[] = _.map(proxies, (color) =>
-  ({ gadgetIds: [color], action: actionDown }));
+const rollCallPattern: services.gameEngine.Pattern[] = _.map(
+  proxies,
+  (color) => ({ gadgetIds: [color], action: actionDown }),
+);
 
 const rb = new AlexaRequestBuilder();
 
@@ -48,7 +57,7 @@ describe("Gadgets", () => {
   let alexaSkill: AlexaPlatform;
 
   beforeEach(() => {
-    app =  new VoxaApp({ views, variables });
+    app = new VoxaApp({ views, variables });
     alexaSkill = new AlexaPlatform(app);
   });
 
@@ -68,7 +77,9 @@ describe("Gadgets", () => {
 
     const responseDirectives = _.get(reply, "response.directives");
 
-    expect(_.get(reply, "response.outputSpeech.ssml")).to.include("Press 2 or up to 4 buttons to wake them up.");
+    expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
+      "Press 2 or up to 4 buttons to wake them up.",
+    );
     expect(reply.response.reprompt).to.be.undefined;
     expect(responseDirectives[0].events.sample_event).to.be.ok;
     expect(responseDirectives[0].events.timeout).to.be.ok;
@@ -84,8 +95,9 @@ describe("Gadgets", () => {
     event = rb.getGameEngineInputHandlerEventRequest(2);
 
     app.onIntent("GameEngine.InputHandlerEvent", (voxaEvent) => {
-      voxaEvent.model.originatingRequestId = voxaEvent.request.originatingRequestId;
-      const gameEvents = voxaEvent.request.events[0] || [];
+      voxaEvent.model.originatingRequestId =
+        voxaEvent.rawEvent.request.originatingRequestId;
+      const gameEvents = voxaEvent.rawEvent.request.events[0] || [];
       const inputEvents = _(gameEvents.inputEvents)
         .groupBy("gadgetId")
         .map((value) => value[0])
@@ -164,7 +176,9 @@ describe("Gadgets", () => {
     const reply = await alexaSkill.execute(event, {});
     const responseDirectives = _.get(reply, "response.directives");
 
-    expect(_.get(reply, "response.outputSpeech.ssml")).to.include("Guess the next pattern.");
+    expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
+      "Guess the next pattern.",
+    );
     expect(reply.response.reprompt).to.be.undefined;
     expect(responseDirectives).to.have.lengthOf(5);
 
@@ -177,10 +191,18 @@ describe("Gadgets", () => {
 
     expect(responseDirectives[4].events.sample_event).to.be.ok;
     expect(responseDirectives[4].events.timeout).to.be.ok;
-    expect(responseDirectives[4].recognizers.deviation.type).to.equal("deviation");
-    expect(responseDirectives[4].recognizers.deviation.recognizer).to.equal("sample_event");
-    expect(responseDirectives[4].recognizers.progress.type).to.equal("progress");
-    expect(responseDirectives[4].recognizers.progress.recognizer).to.equal("sample_event");
+    expect(responseDirectives[4].recognizers.deviation.type).to.equal(
+      "deviation",
+    );
+    expect(responseDirectives[4].recognizers.deviation.recognizer).to.equal(
+      "sample_event",
+    );
+    expect(responseDirectives[4].recognizers.progress.type).to.equal(
+      "progress",
+    );
+    expect(responseDirectives[4].recognizers.progress.recognizer).to.equal(
+      "sample_event",
+    );
     expect(responseDirectives[4].recognizers.progress.completion).to.equal(500);
     expect(responseDirectives[4].recognizers.sample_event).to.be.ok;
     expect(responseDirectives[4].proxies).to.deep.equal(proxies);
@@ -205,9 +227,13 @@ describe("Gadgets", () => {
 
     const reply = await alexaSkill.execute(event, {});
 
-    expect(_.get(reply, "response.outputSpeech.ssml")).to.include("Thanks for playing with echo buttons.");
+    expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
+      "Thanks for playing with echo buttons.",
+    );
     expect(reply.response.reprompt).to.be.undefined;
-    expect(_.get(reply, "response.directives[0].type")).to.equal("GameEngine.StopInputHandler");
+    expect(_.get(reply, "response.directives[0].type")).to.equal(
+      "GameEngine.StopInputHandler",
+    );
     expect(_.get(reply, "sessionAttributes.state")).to.equal("die");
     expect(reply.response.shouldEndSession).to.equal(true);
   });
@@ -218,7 +244,9 @@ function rollCall(shouldAddOtherBuilders?: boolean) {
   const gameEngine = new GameEngine();
   const eventBuilder = GameEngine.getEventsBuilder("sample_event");
   const timeoutEventBuilder = GameEngine.getEventsBuilder("timeout");
-  const recognizerBuilder = GameEngine.getPatternRecognizerBuilder("sample_event");
+  const recognizerBuilder = GameEngine.getPatternRecognizerBuilder(
+    "sample_event",
+  );
 
   eventBuilder
     .fails(["fails"])
@@ -241,13 +269,13 @@ function rollCall(shouldAddOtherBuilders?: boolean) {
     .pattern(rollCallPattern);
 
   if (shouldAddOtherBuilders) {
-    const deviationBuilder = GameEngine.getDeviationRecognizerBuilder("deviation");
+    const deviationBuilder = GameEngine.getDeviationRecognizerBuilder(
+      "deviation",
+    );
     const progressBuilder = GameEngine.getProgressRecognizerBuilder("progress");
 
     deviationBuilder.recognizer("sample_event");
-    progressBuilder
-      .completion(500)
-      .recognizer("sample_event");
+    progressBuilder.completion(500).recognizer("sample_event");
 
     gameEngine.setRecognizers(deviationBuilder, progressBuilder);
   }

@@ -141,7 +141,7 @@ export const views = {
       LaunchIntent: {
         OpenResponse: {
           alexa: "Hello! Good {time}",
-          dialogFlow: "Hello from DialogFlow",
+          dialogflow: "Hello from DialogFlow",
         },
       },
       Lists: {

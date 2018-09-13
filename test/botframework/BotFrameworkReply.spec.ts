@@ -36,8 +36,8 @@ describe("BotFrameworkReply", () => {
     const rawEvent = prepIncomingMessage(
       _.cloneDeep(require("../requests/botframework/conversationUpdate.json")),
     );
-    event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
 
+    event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
     reply = new BotFrameworkReply(event);
 
     simple.mock(storage, "saveData").callbackWith(null, {});

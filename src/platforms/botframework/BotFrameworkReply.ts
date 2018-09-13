@@ -42,7 +42,7 @@ export class BotFrameworkReply implements IVoxaReply {
   public suggestedActions?: ISuggestedActions;
   public attachmentLayout?: string;
 
-  constructor(event: IVoxaEvent) {
+  constructor(event: BotFrameworkEvent) {
     this.channelId = event.rawEvent.address.channelId;
     if (!event.session) {
       throw new Error("event.session is missing");
