@@ -1,7 +1,7 @@
 import * as http from "http";
 import { VoxaPlatform } from "./VoxaPlatform";
 
-function createServer(skill: VoxaPlatform): http.Server {
+export function createServer(skill: VoxaPlatform): http.Server {
   return http.createServer((req, res) => {
     if (req.method !== "POST") {
       res.writeHead(404);
@@ -24,5 +24,3 @@ function createServer(skill: VoxaPlatform): http.Server {
     return res.writeHead(200, { "Content-Type": "application/json" });
   });
 }
-
-export { createServer };

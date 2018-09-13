@@ -93,11 +93,13 @@ export abstract class VoxaPlatform {
 
   public azureFunction() {
     return async (context: AzureContext, req: AzureHttpRequest) => {
-      try {
-        let res: AzureHttpResponse;
+      if (context.log) {
+        console.log = context.log;
+      }
 
+      try {
         if (req.method !== AzureHttpMethod.Post) {
-          res = {
+          context.res = {
             body: {
               error: {
                 message: `Method ${req.method} not supported.`,
@@ -108,7 +110,7 @@ export abstract class VoxaPlatform {
           };
         } else {
           const body = await this.execute(req.body, {});
-          res = {
+          context.res = {
             body,
             headers: {
               "Content-Type": "application/json; charset=utf-8",
@@ -116,10 +118,8 @@ export abstract class VoxaPlatform {
             status: AzureHttpStatusCode.OK,
           };
         }
-
-        context.done(undefined, res);
       } catch (error) {
-        context.done(error);
+        context.res = error;
       }
     };
   }

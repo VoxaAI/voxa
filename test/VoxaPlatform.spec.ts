@@ -112,7 +112,7 @@ describe("VoxaPlatform", () => {
   });
 
   describe("azureFunction", () => {
-    it("should call the execute method with the event body", (done) => {
+    it("should call the execute method with the event body and return a response in context.res", async () => {
       const handler = adapter.azureFunction();
       const event = {
         body: rb.getSessionEndedRequest(),
@@ -120,12 +120,11 @@ describe("VoxaPlatform", () => {
       };
 
       const context: AzureContext = {
-        done: (error?: Error | null, result?: any) => {
-          done(error);
-        },
+        done: (error?: Error | null, result?: any) => {}, // tslint:disable-line no-empty
       };
 
-      handler(context, event);
+      await handler(context, event);
+      expect(context.res).to.be.ok;
     });
   });
 
