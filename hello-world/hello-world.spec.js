@@ -4,7 +4,7 @@ const { expect } = require("chai");
 const { VirtualAlexa } = require("virtual-alexa");
 const dockerLambda = require("docker-lambda");
 const { getPortPromise } = require("portfinder");
-const { spawn } = require("child_process");
+const { spawn, execSync } = require("child_process");
 
 const NODE_VERSION = process.env.TRAVIS_NODE_VERSION || "8.10";
 const launchIntent = require("../test/requests/alexa/launchRequest.json");
@@ -75,6 +75,10 @@ describe("Hello World", () => {
 
     afterEach(() => {
       child.kill();
+      // super hack cause that child.kill is not really working
+      execSync(
+        "ps auxw  | grep node | grep func | grep -v mocha | grep -v defunct | awk '{print $2}' | xargs -I% kill %"
+      ).toString();
     });
 
     it("runs the alexa function through azure functions", async function() {
