@@ -50,4 +50,27 @@ describe("AlexaPlatform", () => {
 
     await alexaSkill.execute(event, {});
   });
+
+  it("should fail with an OnSessionEndedError", async () => {
+    const rb = new AlexaRequestBuilder("userId", "applicationId");
+    const sessioneEndedRequest = rb.getSessionEndedRequest("ERROR", {
+      message:
+        "The target device does not support directives for the AudioPlayer interface",
+      type: "INVALID_RESPONSE",
+    });
+    const voxaApp = new VoxaApp({ views });
+    const alexaSkill = new AlexaPlatform(voxaApp, {});
+    const reply = await alexaSkill.execute(sessioneEndedRequest, {});
+    expect(reply).to.deep.equal({
+      response: {
+        outputSpeech: {
+          ssml: "<speak>An unrecoverable error occurred.</speak>",
+          type: "SSML",
+        },
+        shouldEndSession: true,
+      },
+      sessionAttributes: {},
+      version: "1.0",
+    });
+  });
 });

@@ -5,12 +5,15 @@ import { expect, use } from "chai";
 import * as _ from "lodash";
 import * as simple from "simple-mock";
 
-import { Model } from "../src/Model";
-import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
-import { AlexaPlatform } from "../src/platforms/alexa/AlexaPlatform";
-import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
-import { VoxaApp } from "../src/VoxaApp";
-import { IVoxaEvent } from "../src/VoxaEvent";
+import {
+  AlexaEvent,
+  AlexaPlatform,
+  AlexaReply,
+  InvalidTransitionError,
+  IVoxaEvent,
+  Model,
+  VoxaApp,
+} from "../src";
 import { AlexaRequestBuilder } from "./tools";
 import { variables } from "./variables";
 import { views } from "./views";
@@ -34,6 +37,23 @@ describe("VoxaApp", () => {
       secondState: { to: "initState" },
       thirdState: () => Promise.resolve({ to: "endState" }),
     };
+  });
+
+  describe("serializeModel", () => {
+    it("should throw an InvalidTransitionError if the transition doesn't have a `to` key", async () => {
+      const voxaApp = new VoxaApp({ variables, views });
+      const voxaEvent = new AlexaEvent(rb.getIntentRequest("LaunchIntent"));
+      const voxaReply = new AlexaReply();
+      const transition = {};
+      try {
+        await voxaApp.serializeModel(voxaEvent, voxaReply, transition);
+        throw new Error("Should have failed with InvalidTransitionError");
+      } catch (error) {
+        expect(error.message).to.equal(
+          "Transition was not valid Missing transition.to. {}",
+        );
+      }
+    });
   });
 
   describe("entry", () => {
