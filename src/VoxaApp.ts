@@ -166,8 +166,8 @@ export class VoxaApp {
     const errorHandlers = this.getOnErrorHandlers(event.platform);
     const replies: IVoxaReply[] = await bluebird.map(
       errorHandlers,
-      async (errorHandler: IErrorHandler) => {
-        return await errorHandler(event, error, reply);
+      async (handler: IErrorHandler) => {
+        return await handler(event, error, reply);
       },
     );
     let response: IVoxaReply | undefined = _.find(replies);
