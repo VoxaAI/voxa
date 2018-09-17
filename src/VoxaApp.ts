@@ -43,7 +43,7 @@ export interface IVoxaAppConfig extends IRendererConfig {
   appIds?: string[] | string;
   Model?: IModel;
   RenderClass?: IRenderer;
-  views: any;
+  views: i18n.Resource;
   variables?: any;
 }
 
@@ -84,23 +84,7 @@ export class VoxaApp {
       this.registerRequestHandler(requestType),
     );
     this.registerEvents();
-    this.onError(
-      (voxaEvent: IVoxaEvent, error: Error, reply: IVoxaReply): IVoxaReply => {
-        console.error("onError");
-        console.error(error.message ? error.message : error);
-        if (error.stack) {
-          console.error(error.stack);
-        }
-
-        log(error);
-
-        reply.clear();
-        reply.addStatement("An unrecoverable error occurred.");
-        reply.terminate();
-        return reply;
-      },
-      true,
-    );
+    this.onError(errorHandler, true);
 
     this.states = {
       core: {},
@@ -115,22 +99,7 @@ export class VoxaApp {
 
     this.validateConfig();
 
-    this.i18nextPromise = new Promise((resolve, reject) => {
-      this.i18n.init(
-        {
-          fallbackLng: "en",
-          load: "all",
-          nonExplicitWhitelist: true,
-          resources: this.config.views,
-        },
-        (err: Error, t: i18n.TranslationFunction) => {
-          if (err) {
-            return reject(err);
-          }
-          return resolve(t);
-        },
-      );
-    });
+    this.i18nextPromise = initializeI118n(this.i18n, this.config.views);
 
     this.renderer = new this.config.RenderClass(this.config);
 
@@ -628,4 +597,45 @@ function isLambdaContext(context: any): context is AWSLambdaContext {
   }
 
   return (context as AWSLambdaContext).getRemainingTimeInMillis !== undefined;
+}
+
+export function errorHandler(
+  voxaEvent: IVoxaEvent,
+  error: Error,
+  reply: IVoxaReply,
+): IVoxaReply {
+  console.error("onError");
+  console.error(error.message ? error.message : error);
+  if (error.stack) {
+    console.error(error.stack);
+  }
+
+  log(error);
+
+  reply.clear();
+  reply.addStatement("An unrecoverable error occurred.");
+  reply.terminate();
+  return reply;
+}
+
+export function initializeI118n(
+  i18nInstance: i18n.i18n,
+  views: i18n.Resource,
+): Promise<i18n.TranslationFunction> {
+  return new Promise((resolve, reject) => {
+    i18nInstance.init(
+      {
+        fallbackLng: "en",
+        load: "all",
+        nonExplicitWhitelist: true,
+        resources: views,
+      },
+      (err: Error, t: i18n.TranslationFunction) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(t);
+      },
+    );
+  });
 }
