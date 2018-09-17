@@ -20,16 +20,8 @@ import {
   UnknownRequestType,
 } from "./errors";
 import { IModel, Model } from "./Model";
-import {
-  IRenderer,
-  IRendererConfig,
-  Renderer,
-} from "./renderers/Renderer";
-import {
-  isState,
-  ITransition,
-  StateMachine,
-} from "./StateMachine";
+import { IRenderer, IRendererConfig, Renderer } from "./renderers/Renderer";
+import { isState, ITransition, StateMachine } from "./StateMachine";
 import { IBag, IVoxaEvent } from "./VoxaEvent";
 import { IVoxaReply } from "./VoxaReply";
 
@@ -617,21 +609,19 @@ export function errorHandler(
 export function initializeI118n(
   i18nInstance: i18n.i18n,
   views: i18n.Resource,
-): Promise<i18n.TranslationFunction> {
-  return new Promise((resolve, reject) => {
-    i18nInstance.init(
-      {
-        fallbackLng: "en",
-        load: "all",
-        nonExplicitWhitelist: true,
-        resources: views,
-      },
-      (err: Error, t: i18n.TranslationFunction) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve(t);
-      },
-    );
+): bluebird<i18n.TranslationFunction> {
+  type IInitializer = (
+    options: i18n.InitOptions,
+  ) => bluebird<i18n.TranslationFunction>;
+
+  const initialize = bluebird.promisify(i18nInstance.init, {
+    context: i18nInstance,
+  }) as IInitializer;
+
+  return initialize({
+    fallbackLng: "en",
+    load: "all",
+    nonExplicitWhitelist: true,
+    resources: views,
   });
 }
