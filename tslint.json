@@ -1,19 +1,31 @@
 {
-    "defaultSeverity": "error",
-    "extends": [
-        "tslint:recommended",
-        "tslint-no-unused-expression-chai"
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended",
+    "tslint-no-unused-expression-chai"
+  ],
+  "jsRules": {
+    "no-console": [
+      true,
+      true,
+      true
+    ]
+  },
+  "rules": {
+    "no-console": [
+      true,
+      true,
+      true
     ],
-    "jsRules": {
-      "no-console": [true, true, true]
-    },
-    "rules": {
-      "no-console": [true, true, true],
-      "max-classes-per-file": [false],
-      "max-line-length": {
-          "options": [120],
-          "severity": "warning"
-      }
-    },
-    "rulesDirectory": []
+    "max-classes-per-file": [
+      false
+    ],
+    "max-line-length": {
+      "options": [
+        120
+      ],
+      "severity": "warning"
+    }
+  },
+  "rulesDirectory": []
 }

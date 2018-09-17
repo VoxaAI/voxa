@@ -8,7 +8,6 @@ import {
   Context as AzureContext,
   HttpMethod as AzureHttpMethod,
   HttpRequest as AzureHttpRequest,
-  HttpResponse as AzureHttpResponse,
   HttpStatusCode as AzureHttpStatusCode,
 } from "azure-functions-ts-essentials";
 import * as debug from "debug";

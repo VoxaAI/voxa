@@ -1,14 +1,8 @@
 import {
-  IntentRequest,
-  LaunchRequest,
   RequestEnvelope,
-  SessionEndedRequest,
-  Slot,
 } from "ask-sdk-model";
-import { i18n, TranslationFunction } from "i18next";
 import * as _ from "lodash";
 
-import { Model } from "../../Model";
 import { IVoxaEvent, IVoxaIntent, IVoxaSession } from "../../VoxaEvent";
 import { AlexaIntent } from "./AlexaIntent";
 import {

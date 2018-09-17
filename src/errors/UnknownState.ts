@@ -1,5 +1,3 @@
-import { IVoxaEvent } from "../VoxaEvent";
-
 export class UnknownState extends Error {
   public state: string;
 

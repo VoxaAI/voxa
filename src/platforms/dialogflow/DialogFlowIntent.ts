@@ -1,9 +1,5 @@
 import {
   DialogflowConversation,
-  GoogleActionsV2Argument,
-  GoogleActionsV2Input,
-  GoogleCloudDialogflowV2OriginalDetectIntentRequest,
-  GoogleCloudDialogflowV2WebhookRequest,
 } from "actions-on-google";
 import * as _ from "lodash";
 import { IVoxaIntent } from "../../VoxaEvent";

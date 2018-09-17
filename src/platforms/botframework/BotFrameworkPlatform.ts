@@ -9,15 +9,11 @@ import {
   IBotStorageContext,
   IBotStorageData,
   IChatConnectorAddress,
-  IEntity,
-  IIntent,
   IMessage,
-  LuisRecognizer,
 } from "botbuilder";
 import * as debug from "debug";
-import * as _ from "lodash";
 import { VoxaApp } from "../../VoxaApp";
-import { ITypeMap, IVoxaIntent } from "../../VoxaEvent";
+import { IVoxaIntent } from "../../VoxaEvent";
 import { VoxaPlatform } from "../VoxaPlatform";
 import { BotFrameworkEvent } from "./BotFrameworkEvent";
 import { BotFrameworkReply } from "./BotFrameworkReply";

@@ -1,12 +1,7 @@
-import {
-  canfulfill,
-  Response,
-  ResponseEnvelope,
-} from "ask-sdk-model";
+import { Response, ResponseEnvelope } from "ask-sdk-model";
 import * as _ from "lodash";
-import { Model } from "../../Model";
 import { IBag, IVoxaEvent } from "../../VoxaEvent";
-import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
+import { addToSSML, IVoxaReply } from "../../VoxaReply";
 
 export class AlexaReply implements IVoxaReply, ResponseEnvelope {
   public version = "1.0";
@@ -33,16 +28,19 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
     return !!this.response && !!this.response.shouldEndSession;
   }
 
-  public async saveSession(attributes: IBag , event: IVoxaEvent): Promise<void> {
+  public async saveSession(attributes: IBag, event: IVoxaEvent): Promise<void> {
     this.sessionAttributes = attributes;
   }
 
   public terminate() {
     if (!this.response) {
-      this.response = { };
+      this.response = {};
     }
 
-    if (!this.hasDirective("VideoApp.Launch") && !this.hasDirective("GameEngine.StartInputHandler")) {
+    if (
+      !this.hasDirective("VideoApp.Launch") &&
+      !this.hasDirective("GameEngine.StartInputHandler")
+    ) {
       this.response.shouldEndSession = true;
     }
   }
@@ -60,7 +58,11 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
       this.response.shouldEndSession = false;
     }
 
-    let ssml: string = _.get(this.response, "outputSpeech.ssml", "<speak></speak>");
+    let ssml: string = _.get(
+      this.response,
+      "outputSpeech.ssml",
+      "<speak></speak>",
+    );
     ssml = addToSSML(ssml, statement);
     this.response.outputSpeech = {
       ssml,
@@ -69,13 +71,17 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
   }
 
   public addReprompt(statement: string, isPlain: boolean = false) {
-    const type =  "SSML";
-    let ssml: string = _.get(this.response.reprompt, "outputSpeech.ssml", "<speak></speak>");
+    const type = "SSML";
+    let ssml: string = _.get(
+      this.response.reprompt,
+      "outputSpeech.ssml",
+      "<speak></speak>",
+    );
     ssml = addToSSML(ssml, statement);
     this.response.reprompt = {
-      outputSpeech : {
+      outputSpeech: {
         ssml,
-        type: "SSML",
+        type,
       },
     };
   }
@@ -92,10 +98,7 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
     }
   }
 
-  public fulfillSlot(
-    slotName: string,
-    canUnderstand: any,
-    canFulfill: any) {
+  public fulfillSlot(slotName: string, canUnderstand: any, canFulfill: any) {
     if (!_.includes(["YES", "NO", "MAYBE"], canUnderstand)) {
       canUnderstand = "NO";
     }
@@ -104,10 +107,16 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
       canFulfill = "NO";
     }
 
-    this.response.canFulfillIntent = this.response.canFulfillIntent || { canFulfill: "NO" };
-    this.response.canFulfillIntent.slots = this.response.canFulfillIntent.slots || {};
+    this.response.canFulfillIntent = this.response.canFulfillIntent || {
+      canFulfill: "NO",
+    };
+    this.response.canFulfillIntent.slots =
+      this.response.canFulfillIntent.slots || {};
 
-    this.response.canFulfillIntent.slots[slotName] = { canUnderstand, canFulfill };
+    this.response.canFulfillIntent.slots[slotName] = {
+      canFulfill,
+      canUnderstand,
+    };
   }
 
   public clear() {
@@ -121,13 +130,24 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
 
     let allDirectives: any[] = this.response.directives || [];
     if (this.response.card) {
-      allDirectives = _.concat(allDirectives, { type: "card", card: this.response.card });
+      allDirectives = _.concat(allDirectives, {
+        card: this.response.card,
+        type: "card",
+      });
     }
 
     return allDirectives.some((directive: any) => {
-      if (_.isRegExp(type)) { return !!type.exec(directive.type); }
-      if (_.isString(type)) { return type === directive.type; }
-      throw new Error(`Do not know how to use a ${typeof type} to find a directive`);
+      if (_.isRegExp(type)) {
+        return !!type.exec(directive.type);
+      }
+
+      if (_.isString(type)) {
+        return type === directive.type;
+      }
+
+      throw new Error(
+        `Do not know how to use a ${typeof type} to find a directive`,
+      );
     });
   }
 }

@@ -1,8 +1,7 @@
 import "mocha";
 
-import { expect, use } from "chai";
+import { expect } from "chai";
 import * as i18n from "i18next";
-import { Resource } from "i18next";
 import * as _ from "lodash";
 import { Model } from "../src/Model";
 import { Renderer } from "../src/renderers/Renderer";

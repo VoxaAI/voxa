@@ -1,4 +1,4 @@
-import { Button, Carousel, Image, List, MediaObject } from "actions-on-google";
+import { Button, Image, MediaObject } from "actions-on-google";
 import { expect } from "chai";
 import * as i18n from "i18next";
 import * as _ from "lodash";

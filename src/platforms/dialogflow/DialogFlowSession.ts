@@ -2,10 +2,6 @@ import {
   Context,
   Contexts,
   DialogflowConversation,
-  GoogleActionsV2AppRequest,
-  GoogleActionsV2Conversation,
-  GoogleCloudDialogflowV2Context,
-  GoogleCloudDialogflowV2WebhookRequest,
   Parameters,
 } from "actions-on-google";
 import * as _ from "lodash";

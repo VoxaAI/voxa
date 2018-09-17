@@ -1,10 +1,8 @@
 import { interfaces, services } from "ask-sdk-model";
-import { expect, use } from "chai";
+import { expect } from "chai";
 import * as _ from "lodash";
 
-import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
 import { AlexaPlatform } from "../src/platforms/alexa/AlexaPlatform";
-import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
 import {
   GadgetController,
   TRIGGER_EVENT_ENUM,

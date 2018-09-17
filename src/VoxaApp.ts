@@ -21,16 +21,12 @@ import {
 } from "./errors";
 import { IModel, Model } from "./Model";
 import {
-  IMessage,
   IRenderer,
   IRendererConfig,
   Renderer,
 } from "./renderers/Renderer";
 import {
   isState,
-  IState,
-  IStateMachineConfig,
-  isTransition,
   ITransition,
   StateMachine,
 } from "./StateMachine";
@@ -196,7 +192,7 @@ export class VoxaApp {
           case "IntentRequest":
           case "SessionEndedRequest": {
             // call all onRequestStarted callbacks serially.
-            const result = await bluebird.mapSeries(
+            await bluebird.mapSeries(
               this.getOnRequestStartedHandlers(voxaEvent.platform),
               (fn: IEventHandler) => {
                 return fn(voxaEvent, reply);

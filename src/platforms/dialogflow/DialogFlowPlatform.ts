@@ -1,9 +1,6 @@
 import {
-  GoogleCloudDialogflowV2Context,
   GoogleCloudDialogflowV2WebhookRequest,
 } from "actions-on-google";
-import * as _ from "lodash";
-import { Model } from "../../Model";
 import { VoxaPlatform } from "../VoxaPlatform";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 import { DialogFlowReply } from "./DialogFlowReply";

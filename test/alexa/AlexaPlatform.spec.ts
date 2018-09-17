@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AlexaPlatform, DialogFlowPlatform, DialogFlowReply } from "../../src";
+import { AlexaPlatform } from "../../src";
 import { VoxaApp } from "../../src/VoxaApp";
 import { AlexaRequestBuilder } from "../tools";
 import { views } from "../views";

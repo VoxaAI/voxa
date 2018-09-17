@@ -1,5 +1,4 @@
 import { RequestEnvelope } from "ask-sdk-model";
-import * as bluebird from "bluebird";
 import * as _ from "lodash";
 
 import { ApiBase } from "./ApiBase";

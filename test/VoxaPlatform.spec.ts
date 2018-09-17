@@ -1,6 +1,5 @@
 import {
   APIGatewayProxyEvent,
-  APIGatewayProxyResult,
   Callback as AWSLambdaCallback,
   Context as AWSLambdaContext,
 } from "aws-lambda";

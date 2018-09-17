@@ -1,6 +1,3 @@
-"use strict";
-
-import * as botBuilder from "botbuilder";
 import { expect } from "chai";
 import * as i18n from "i18next";
 import { Tell } from "../../src/directives";
@@ -20,7 +17,7 @@ describe("AlexaReply", () => {
   let renderer: Renderer;
 
   before(() => {
-    i18n .init({
+    i18n.init({
       load: "all",
       nonExplicitWhitelist: true,
       resources: views,

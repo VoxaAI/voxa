@@ -1,7 +1,7 @@
 import "mocha";
 
 import { canfulfill, RequestEnvelope } from "ask-sdk-model";
-import { expect, use } from "chai";
+import { expect } from "chai";
 import * as _ from "lodash";
 import * as simple from "simple-mock";
 
@@ -9,7 +9,6 @@ import {
   AlexaEvent,
   AlexaPlatform,
   AlexaReply,
-  InvalidTransitionError,
   IVoxaEvent,
   Model,
   VoxaApp,

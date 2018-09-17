@@ -8,10 +8,7 @@ import {
   IIdentity,
   IMessage,
 } from "botbuilder";
-import { TranslationFunction } from "i18next";
-import { Model } from "../../Model";
 import { ITypeMap, IVoxaEvent, IVoxaIntent, IVoxaUser } from "../../VoxaEvent";
-import { IBotFrameworkEntity } from "./BotFrameworkInterfaces";
 
 const MicrosoftCortanaIntents: ITypeMap = {
   "Microsoft.Launch": "LaunchIntent",

@@ -8,13 +8,8 @@
  * Licensed under the MIT license.
  */
 
-import * as bluebird from "bluebird";
-import * as debug from "debug";
 
-import { IMessage } from "./renderers/Renderer";
 import { IBag, IVoxaEvent } from "./VoxaEvent";
-
-const log: debug.IDebugger = debug("voxa");
 
 export interface IVoxaReply {
   hasMessages: boolean;
@@ -42,12 +37,12 @@ export interface IVoxaReply {
   addReprompt: (statement: string) => void;
 
   hasDirective: (type: string | RegExp) => boolean;
-    // return this.response.directives.some((directive: any) => {
-      // if (_.isRegExp(type)) { return !!type.exec(directive.type); }
-      // if (_.isString(type)) { return type === directive.type; }
-      // if (_.isFunction(type)) { return type(directive); }
-      // throw new Error(`Do not know how to use a ${typeof type} to find a directive`);
-    // });
+  // return this.response.directives.some((directive: any) => {
+  // if (_.isRegExp(type)) { return !!type.exec(directive.type); }
+  // if (_.isString(type)) { return type === directive.type; }
+  // if (_.isFunction(type)) { return type(directive); }
+  // throw new Error(`Do not know how to use a ${typeof type} to find a directive`);
+  // });
   // }
   //
 
@@ -59,7 +54,7 @@ export interface IVoxaReply {
 }
 
 export function addToSSML(ssml: string, statement: string): string {
-  const base = ssml.replace(/^<speak>([\s\S]*)<\/speak>$/g,  "$1");
+  const base = ssml.replace(/^<speak>([\s\S]*)<\/speak>$/g, "$1");
   if (!base) {
     return `<speak>${statement}</speak>`;
   }

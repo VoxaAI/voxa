@@ -1,5 +1,5 @@
 "use strict";
-import { expect, use } from "chai";
+import { expect } from "chai";
 import * as simple from "simple-mock";
 import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
 import { AlexaReply } from "../src/platforms/alexa/AlexaReply";

@@ -2,17 +2,14 @@ import {
   IAttachment,
   IBotStorageContext,
   IBotStorageData,
-  ICardAction,
   IChatConnectorAddress,
   IEvent,
   IIdentity,
-  IMessage,
   ISuggestedActions,
 } from "botbuilder";
 import * as debug from "debug";
 import * as _ from "lodash";
 import * as rp from "request-promise";
-import { StatusCodeError } from "request-promise/errors";
 import * as urljoin from "url-join";
 import * as uuid from "uuid";
 import { NotImplementedError } from "../../errors";

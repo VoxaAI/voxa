@@ -3,16 +3,12 @@ import "mocha";
 import {
   AttachmentLayout,
   AudioCard,
-  CardAction,
-  CardImage,
   HeroCard,
   IMessage,
-  LuisRecognizer,
-  Session,
   SuggestedActions,
 } from "botbuilder";
 import { AzureBotStorage, AzureTableClient } from "botbuilder-azure";
-import { expect, use } from "chai";
+import { expect } from "chai";
 import * as i18n from "i18next";
 import * as _ from "lodash";
 import * as nock from "nock";
@@ -20,7 +16,6 @@ import * as simple from "simple-mock";
 import { BotFrameworkPlatform } from "../../src/platforms/botframework/BotFrameworkPlatform";
 import { BotFrameworkReply } from "../../src/platforms/botframework/BotFrameworkReply";
 import { VoxaApp } from "../../src/VoxaApp";
-import { IVoxaEvent } from "../../src/VoxaEvent";
 import { views } from "../views";
 
 describe("BotFramework directives", () => {

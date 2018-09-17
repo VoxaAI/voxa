@@ -1,13 +1,10 @@
 import {
-  GoogleActionsV2AppResponse,
   GoogleCloudDialogflowV2Context,
-  OutputContexts,
   RichResponse,
 } from "actions-on-google";
 import * as _ from "lodash";
-import { Model } from "../../Model";
 import { IBag, IVoxaEvent } from "../../VoxaEvent";
-import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
+import { addToSSML, IVoxaReply } from "../../VoxaReply";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 
 export interface IDialogFlowPayload {

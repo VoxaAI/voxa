@@ -2,13 +2,9 @@ import {
   DialogflowConversation,
   GoogleCloudDialogflowV2WebhookRequest,
 } from "actions-on-google";
-import { TranslationFunction } from "i18next";
 import * as _ from "lodash";
-import { Model } from "../../Model";
 import {
   IVoxaEvent,
-  IVoxaIntent,
-  IVoxaSession,
   IVoxaUser,
 } from "../../VoxaEvent";
 import { DialogFlowIntent } from "./DialogFlowIntent";

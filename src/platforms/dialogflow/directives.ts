@@ -2,7 +2,6 @@ import {
   BasicCard as ActionsOnGoogleBasicCard,
   BasicCardOptions,
   BrowseCarousel as ActionsOnGoogleBrowseCarousel,
-  BrowseCarouselOptions,
   Carousel as ActionsOnGoogleCarousel,
   CarouselOptions,
   Confirmation as ActionsOnGoogleConfirmation,
@@ -10,15 +9,10 @@ import {
   DateTimeOptions,
   DeepLink as ActionsOnGoogleDeepLink,
   DeepLinkOptions,
-  DeliveryAddress as ActionsOnGoogleDeliveryAddress,
-  GoogleActionsV2DeliveryAddressValueSpec,
-  GoogleActionsV2PermissionValueSpecPermissions,
   GoogleActionsV2TransactionDecisionValueSpec,
   GoogleActionsV2TransactionRequirementsCheckSpec,
-  GoogleCloudDialogflowV2IntentMessageListSelect,
   List as ActionsOnGoogleList,
   ListOptions,
-  MediaObject,
   MediaResponse as ActionsOnGoogleMediaResponse,
   NewSurface as ActionsOnGoogleNewSurface,
   NewSurfaceOptions,
@@ -27,12 +21,9 @@ import {
   Place as ActionsOnGooglePlace,
   RegisterUpdate as ActionsOnGoogleRegisterUpdate,
   RegisterUpdateOptions,
-  RichResponse,
-  RichResponseItem,
   SignIn as ActionsOnGoogleSignIn,
   Suggestions as ActionsOnGoogleSuggestions,
   Table as ActionsOnGoogleTable,
-  TableOptions,
   TransactionDecision as ActionsOnGoogleTransactionDecision,
   TransactionRequirements as ActionsOnGoogleTransactionRequirements,
   UpdatePermission as ActionsOnGoogleUpdatePermission,
@@ -44,7 +35,6 @@ import { IDirective, IDirectiveClass } from "../../directives";
 import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
-import { DialogFlowEvent } from "./DialogFlowEvent";
 import { DialogFlowReply } from "./DialogFlowReply";
 
 abstract class DialogFlowDirective<IOptions> {

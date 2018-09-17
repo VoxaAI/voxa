@@ -1,6 +1,6 @@
 import { Intent, Slot } from "ask-sdk-model";
 import * as _ from "lodash";
-import { IVoxaEvent, IVoxaIntent } from "../../VoxaEvent";
+import { IVoxaIntent } from "../../VoxaEvent";
 
 export class AlexaIntent implements IVoxaIntent {
   public rawIntent: any;
