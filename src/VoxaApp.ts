@@ -191,13 +191,6 @@ export class VoxaApp {
               },
             );
 
-            if (
-              voxaEvent.request.type === "SessionEndedRequest" &&
-              _.get(voxaEvent, "request.reason") === "ERROR"
-            ) {
-              throw new OnSessionEndedError(_.get(voxaEvent, "request.error"));
-            }
-
             // call all onSessionStarted callbacks serially.
             await bluebird.mapSeries(
               this.getOnSessionStartedHandlers(voxaEvent.platform),
@@ -232,7 +225,7 @@ export class VoxaApp {
 
       return response;
     } catch (error) {
-      return await this.handleErrors(voxaEvent, error, reply);
+      return this.handleErrors(voxaEvent, error, reply);
     }
   }
 

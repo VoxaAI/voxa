@@ -21,7 +21,6 @@ export abstract class IVoxaEvent {
   public rawEvent: any; // the raw event as sent by the service
   public session!: IVoxaSession;
   public intent?: IVoxaIntent;
-  public context: any;
   public request!: IVoxaRequest;
   public model!: Model;
   public t!: i18n.TranslationFunction;

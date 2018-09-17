@@ -1,6 +1,8 @@
 import * as _ from "lodash";
 
 import { RequestEnvelope, ResponseEnvelope } from "ask-sdk-model";
+import { OnSessionEndedError } from "../../errors";
+import { IVoxaReply } from "../../VoxaReply";
 
 import * as debug from "debug";
 import { VoxaApp } from "../../VoxaApp";
@@ -99,16 +101,37 @@ export class AlexaPlatform extends VoxaPlatform {
   public async execute(
     rawEvent: RequestEnvelope,
     context: any,
-  ): Promise<ResponseEnvelope> {
+  ): Promise<ResponseEnvelope | AlexaReply> {
     this.checkAppIds(rawEvent);
 
     const alexaEvent = new AlexaEvent(rawEvent, context);
-    const reply = (await this.app.execute(
-      alexaEvent,
-      new AlexaReply(),
-    )) as AlexaReply;
-    alexalog("Reply: ", JSON.stringify(reply, null, 2));
-    return reply;
+    try {
+      this.checkSessionEndedRequest(alexaEvent);
+
+      const reply = (await this.app.execute(
+        alexaEvent,
+        new AlexaReply(),
+      )) as AlexaReply;
+      alexalog("Reply: ", JSON.stringify(reply, null, 2));
+      return reply;
+    } catch (error) {
+      return (await this.app.handleErrors(
+        alexaEvent,
+        error,
+        new AlexaReply(),
+      )) as AlexaReply;
+    }
+  }
+
+  protected checkSessionEndedRequest(alexaEvent: AlexaEvent): void {
+    if (
+      alexaEvent.request.type === "SessionEndedRequest" &&
+      alexaEvent.rawEvent.request.reason === "ERROR"
+    ) {
+      throw new OnSessionEndedError(
+        _.get(alexaEvent.rawEvent, "request.error"),
+      );
+    }
   }
 
   protected checkAppIds(rawEvent: RequestEnvelope): void {
