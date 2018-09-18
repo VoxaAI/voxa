@@ -45,7 +45,12 @@ import {
 import { isLambdaContext, timeout } from "./lambda";
 import { IModel, Model } from "./Model";
 import { IRenderer, IRendererConfig, Renderer } from "./renderers/Renderer";
-import { isState, ITransition, StateMachine } from "./StateMachine";
+import {
+  getStateName,
+  isState,
+  ITransition,
+  StateMachine,
+} from "./StateMachine";
 import { IBag, IVoxaEvent } from "./VoxaEvent";
 import { IVoxaReply } from "./VoxaReply";
 
@@ -541,12 +546,9 @@ export class VoxaApp {
     if (!transition.to) {
       throw new InvalidTransitionError(transition, "Missing transition.to");
     }
-    const stateName =
-      typeof transition.to === "string"
-        ? transition.to
-        : isState(transition.to)
-          ? transition.to.name
-          : "";
+
+    const stateName = getStateName(transition);
+
     if (!stateName) {
       throw new InvalidTransitionError(
         transition,

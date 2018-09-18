@@ -1,10 +1,39 @@
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 import * as bluebird from "bluebird";
 import * as debug from "debug";
 import * as _ from "lodash";
 
-import { UnhandledState, UnknownState } from "./errors";
-import { IVoxaEvent } from "./VoxaEvent";
-import { IVoxaReply } from "./VoxaReply";
+import { UnhandledState, UnknownState } from "../errors";
+import { IVoxaEvent, IVoxaIntent } from "../VoxaEvent";
+import { IVoxaReply } from "../VoxaReply";
+import {
+  isState,
+  IState,
+  isTransition,
+  ITransition,
+  SystemTransition,
+} from "./transitions";
 
 const log: debug.IDebugger = debug("voxa");
 
@@ -31,57 +60,6 @@ export interface IStateMachineConfig {
   onAfterStateChanged?: IStateMachineCb[];
   onUnhandledState?: IUnhandledStateCb[];
 }
-
-export interface ITransition {
-  [propname: string]: any;
-  to?: string | IState | ITransition; // default to 'entry'
-  flow?: string;
-}
-
-export interface IState {
-  name: string;
-  enter: any;
-  to?: IState | string;
-  isTerminal: boolean;
-}
-
-export function isTransition(object: any): object is ITransition {
-  return object && "to" in object;
-}
-
-export function isState(object: any): object is IState {
-  return object && "name" in object;
-}
-
-// A helper class for transitions. Users can return transitions as an object with various command keys.
-// For developer flexibility we allow that transition object to be vague.
-// This object wraps the ITransition and gives defaults helps interpret what the various toggles mean.
-class SystemTransition implements ITransition {
-  [propname: string]: any;
-  public to?: string | IState | ITransition; // default to 'entry'
-  public flow?: string;
-
-  constructor(transition: ITransition) {
-    Object.assign(this, transition);
-    this.flow = this.flow || "continue";
-  }
-
-  get shouldTerminate(): boolean {
-    return (
-      this.flow === "terminate" || (isState(this.to) && this.to.isTerminal)
-    );
-  }
-
-  get shouldContinue(): boolean {
-    return !!(
-      this.flow === "continue" &&
-      this.to &&
-      isState(this.to) &&
-      !this.to.isTerminal
-    );
-  }
-}
-
 export class StateMachine {
   public states: any;
   public currentState?: IState;
@@ -123,19 +101,11 @@ export class StateMachine {
       throw new Error("this.currentState is not a state");
     }
 
-    const runCallbacks = (fn: IUnhandledStateCb) => {
-      if (!isState(this.currentState)) {
-        throw new Error("this.currentState is not a state");
-      }
-
-      return fn(voxaEvent, this.currentState.name);
-    };
-
     if (!transition || _.isEmpty(transition)) {
       log("Running onUnhandledStateCallbacks");
       const onUnhandledStateTransitions = await bluebird.mapSeries(
         this.onUnhandledStateCallbacks,
-        runCallbacks,
+        (fn: IUnhandledStateCb) => this.runCallbacks(fn, voxaEvent),
       );
       const onUnhandledStateTransition = _.last(onUnhandledStateTransitions);
 
@@ -308,49 +278,66 @@ export class StateMachine {
     }
 
     log(`Running simpleTransition for ${this.currentState.name}`);
-    let to = _.get(fromState, ["to", voxaEvent.intent.name]);
-    if (!to) {
-      to = _.get(this.states, [
-        "core",
-        fromState.name,
-        "to",
-        voxaEvent.intent.name,
-      ]);
-    }
-
-    return this.simpleTransition(voxaEvent, this.currentState, to);
+    const to = this.getDestinationStateName(fromState, voxaEvent.intent.name);
+    return this.simpleTransition(
+      voxaEvent.intent,
+      this.currentState,
+      voxaEvent.platform,
+      to,
+    );
   }
 
   public simpleTransition(
-    voxaEvent: IVoxaEvent,
+    voxaIntent: IVoxaIntent,
     state: any,
-    dest: string,
+    platform: string,
+    dest?: string | any,
   ): any {
     if (!dest) {
       return {};
     }
 
-    if (_.isObject(dest)) {
+    if (!_.isString(dest)) {
       return dest;
     }
 
+    // on some ocassions a single object like state could have multiple transitions
+    // Eg:
+    // app.onState('entry', {
+    //   WelcomeIntent: 'LaunchIntent',
+    //   LaunchIntent: { reply: 'SomeReply' }
+    // });
     if (state.to[dest] && dest !== state.to[dest]) {
-      // on some ocassions a single object like state could have multiple transitions
-      // Eg:
-      // app.onState('entry', {
-      //   WelcomeIntent: 'LaunchIntent',
-      //   LaunchIntent: { reply: 'SomeReply' }
-      // });
-      return this.simpleTransition(voxaEvent, state, state.to[dest]);
+      return this.simpleTransition(voxaIntent, state, platform, state.to[dest]);
     }
 
     const destObj =
-      _.get(this.states, [voxaEvent.platform, dest]) ||
+      _.get(this.states, [platform, dest]) ||
       _.get(this.states, ["core", dest]);
     if (!destObj) {
       throw new UnknownState(dest);
     }
 
     return { to: dest };
+  }
+
+  protected runCallbacks(fn: IUnhandledStateCb, voxaEvent: IVoxaEvent) {
+    if (!isState(this.currentState)) {
+      throw new Error("this.currentState is not a state");
+    }
+
+    return fn(voxaEvent, this.currentState.name);
+  }
+
+  protected getDestinationStateName(
+    fromState: IState,
+    intentName: string,
+  ): string {
+    let to = _.get(fromState, ["to", intentName]);
+    if (!to) {
+      to = _.get(this.states, ["core", fromState.name, "to", intentName]);
+    }
+
+    return to;
   }
 }

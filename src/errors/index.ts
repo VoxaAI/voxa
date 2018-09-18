@@ -22,9 +22,25 @@
 
 export { OnSessionEndedError } from "./OnSessionEndedError";
 export { UnhandledState } from "./UnhandledState";
-export { UnknownRequestType } from "./UnknownRequestType";
-export { UnknownState } from "./UnknownState";
 export { NotImplementedError } from "./NotImplementedError";
 export { TimeoutError } from "./TimeoutError";
 export { InvalidTransitionError } from "./InvalidTransitionError";
 export { errorHandler } from "./handler";
+
+function createError(messageTemplate: string, key: string) {
+  return class extends Error {
+    [key: string]: any;
+
+    constructor(value: string) {
+      const message = messageTemplate.replace("{" + key + "}", value);
+      super(message);
+      this[key] = value;
+    }
+  };
+}
+
+export const UnknownState = createError("Unknown state {state}", "state");
+export const UnknownRequestType = createError(
+  "Unknown request type: {requestType}",
+  "requestType",
+);

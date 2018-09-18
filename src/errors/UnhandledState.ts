@@ -23,7 +23,7 @@
 import { IVoxaEvent } from "../VoxaEvent";
 
 export class UnhandledState extends Error {
-  public event: IVoxaEvent;
+  public voxaEvent: IVoxaEvent;
   public fromState: string;
   public transition: any;
 
@@ -36,7 +36,7 @@ export class UnhandledState extends Error {
     }
 
     super(message);
-    this.event = voxaEvent;
+    this.voxaEvent = voxaEvent;
     this.fromState = fromState;
     this.transition = transition;
   }
