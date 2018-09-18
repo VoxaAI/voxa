@@ -183,16 +183,7 @@ export class StateMachine {
       _.get(this.states, [voxaEvent.platform, currentState]) ||
       _.get(this.states, ["core", currentState]);
 
-    const onBeforeState = this.onBeforeStateChangedCallbacks;
-    log("Running onBeforeStateChanged");
-
-    await bluebird.mapSeries(onBeforeState, (fn: IOnBeforeStateChangedCB) => {
-      if (!isState(this.currentState)) {
-        throw new Error("this.currentState is not a state");
-      }
-
-      return fn(voxaEvent, reply, this.currentState);
-    });
+    this.runOnBeforeStateChanged(voxaEvent, reply);
 
     let transition: ITransition = await this.runCurrentState(voxaEvent, reply);
 
@@ -205,23 +196,7 @@ export class StateMachine {
     transition = await this.checkOnUnhandledState(voxaEvent, reply, transition);
     transition = await this.onAfterStateChanged(voxaEvent, reply, transition);
     const sysTransition = new SystemTransition(transition);
-    let to;
-
-    if (sysTransition.to && _.isString(sysTransition.to)) {
-      if (
-        !this.states.core[sysTransition.to] &&
-        !_.get(this.states, [voxaEvent.platform, sysTransition.to])
-      ) {
-        throw new UnknownState(sysTransition.to);
-      }
-      to =
-        _.get(this.states, [voxaEvent.platform, sysTransition.to]) ||
-        this.states.core[sysTransition.to];
-      Object.assign(sysTransition, { to });
-    } else {
-      to = { name: "die" };
-      sysTransition.flow = "terminate";
-    }
+    const to = this.getFinalTransition(sysTransition, voxaEvent, reply);
 
     if (sysTransition.shouldTerminate) {
       reply.terminate();
@@ -230,6 +205,7 @@ export class StateMachine {
     if (sysTransition.shouldContinue) {
       return this.runTransition(to.name, voxaEvent, reply);
     }
+
     return _.merge({}, sysTransition, to);
   }
 
@@ -245,18 +221,9 @@ export class StateMachine {
       throw new Error(`${JSON.stringify(this.currentState)} is not a state`);
     }
 
-    if (_.get(this.currentState, ["enter", voxaEvent.intent.name])) {
-      log(
-        `Running ${this.currentState.name} enter function for ${
-          voxaEvent.intent.name
-        }`,
-      );
-      return this.currentState.enter[voxaEvent.intent.name](voxaEvent, reply);
-    }
-
-    if (_.get(this.currentState, "enter.entry")) {
-      log(`Running ${this.currentState.name} enter function entry`);
-      return this.currentState.enter.entry(voxaEvent, reply);
+    const currentStateHandler = this.getCurrentStateHandler(voxaEvent.intent);
+    if (currentStateHandler) {
+      return currentStateHandler(voxaEvent, reply);
     }
 
     const fromState = this.currentState;
@@ -270,7 +237,7 @@ export class StateMachine {
     // });
     //
     if (!isState(fromState)) {
-      throw new Error(`${JSON.stringify(fromState)} is not a state`);
+      throw new UnknownState(fromState);
     }
 
     if (isTransition(fromState.to)) {
@@ -339,5 +306,57 @@ export class StateMachine {
     }
 
     return to;
+  }
+
+  protected async runOnBeforeStateChanged(
+    voxaEvent: IVoxaEvent,
+    reply: IVoxaReply,
+  ) {
+    const onBeforeState = this.onBeforeStateChangedCallbacks;
+    log("Running onBeforeStateChanged");
+
+    await bluebird.mapSeries(onBeforeState, (fn: IOnBeforeStateChangedCB) => {
+      if (!isState(this.currentState)) {
+        throw new Error("this.currentState is not a state");
+      }
+
+      return fn(voxaEvent, reply, this.currentState);
+    });
+  }
+
+  protected getFinalTransition(
+    sysTransition: SystemTransition,
+    voxaEvent: IVoxaEvent,
+    reply: IVoxaReply,
+  ) {
+    let to;
+
+    if (_.isString(sysTransition.to)) {
+      if (
+        !this.states.core[sysTransition.to] &&
+        !_.get(this.states, [voxaEvent.platform, sysTransition.to])
+      ) {
+        throw new UnknownState(sysTransition.to);
+      }
+
+      to =
+        _.get(this.states, [voxaEvent.platform, sysTransition.to]) ||
+        this.states.core[sysTransition.to];
+      Object.assign(sysTransition, { to });
+
+      return to;
+    }
+
+    sysTransition.flow = "terminate";
+    return { name: "die" };
+  }
+
+  protected getCurrentStateHandler(intent: IVoxaIntent) {
+    const handler = _.get(this.currentState, ["enter", intent.name]);
+    if (handler) {
+      return handler;
+    }
+
+    return _.get(this.currentState, "enter.entry");
   }
 }
