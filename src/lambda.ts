@@ -20,17 +20,28 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { RequestEnvelope } from "ask-sdk-model";
-import * as _ from "lodash";
+import { Context as AWSLambdaContext } from "aws-lambda";
+import { TimeoutError } from "./errors";
 
-import { ApiBase } from "./ApiBase";
+export function timeout(
+  context: AWSLambdaContext,
+): { timerPromise: Promise<void>; timer: NodeJS.Timer | undefined } {
+  const timeRemaining = context.getRemainingTimeInMillis();
 
-export class DeviceBase extends ApiBase {
-  public deviceId: string = "";
+  let timer: NodeJS.Timer | undefined;
+  const timerPromise = new Promise<void>((resolve, reject) => {
+    timer = setTimeout(() => {
+      reject(new TimeoutError());
+    }, Math.max(timeRemaining - 500, 0));
+  });
 
-  constructor(event: RequestEnvelope) {
-    super(event);
+  return { timer, timerPromise };
+}
 
-    this.deviceId = _.get(event, "context.System.device.deviceId");
+export function isLambdaContext(context: any): context is AWSLambdaContext {
+  if (!context) {
+    return false;
   }
+
+  return (context as AWSLambdaContext).getRemainingTimeInMillis !== undefined;
 }

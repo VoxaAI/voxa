@@ -45,7 +45,7 @@ describe("VoxaApp", () => {
       const voxaReply = new AlexaReply();
       const transition = {};
       try {
-        await voxaApp.serializeModel(voxaEvent, voxaReply, transition);
+        await voxaApp.saveSession(voxaEvent, voxaReply, transition);
         throw new Error("Should have failed with InvalidTransitionError");
       } catch (error) {
         expect(error.message).to.equal(

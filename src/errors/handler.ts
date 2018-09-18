@@ -20,17 +20,27 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { RequestEnvelope } from "ask-sdk-model";
-import * as _ from "lodash";
+import * as debug from "debug";
+import { IVoxaEvent } from "../VoxaEvent";
+import { IVoxaReply } from "../VoxaReply";
 
-import { ApiBase } from "./ApiBase";
+const log: debug.IDebugger = debug("voxa");
 
-export class DeviceBase extends ApiBase {
-  public deviceId: string = "";
-
-  constructor(event: RequestEnvelope) {
-    super(event);
-
-    this.deviceId = _.get(event, "context.System.device.deviceId");
+export function errorHandler(
+  voxaEvent: IVoxaEvent,
+  error: Error,
+  reply: IVoxaReply,
+): IVoxaReply {
+  console.error("onError");
+  console.error(error.message ? error.message : error);
+  if (error.stack) {
+    console.error(error.stack);
   }
+
+  log(error);
+
+  reply.clear();
+  reply.addStatement("An unrecoverable error occurred.");
+  reply.terminate();
+  return reply;
 }
