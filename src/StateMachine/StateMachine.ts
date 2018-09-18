@@ -175,14 +175,14 @@ export class StateMachine {
   }
 
   public async runTransition(
-    currentState: string,
+    currentStateName: string,
     voxaEvent: IVoxaEvent,
     reply: IVoxaReply,
   ): Promise<ITransition> {
-    this.currentState =
-      _.get(this.states, [voxaEvent.platform, currentState]) ||
-      _.get(this.states, ["core", currentState]);
-
+    this.currentState = this.getCurrentState(
+      currentStateName,
+      voxaEvent.platform,
+    );
     this.runOnBeforeStateChanged(voxaEvent, reply);
 
     let transition: ITransition = await this.runCurrentState(voxaEvent, reply);
@@ -260,12 +260,8 @@ export class StateMachine {
     platform: string,
     dest?: string | any,
   ): any {
-    if (!dest) {
-      return {};
-    }
-
-    if (!_.isString(dest)) {
-      return dest;
+    if (!dest || !_.isString(dest)) {
+      return dest || {};
     }
 
     // on some ocassions a single object like state could have multiple transitions
@@ -274,7 +270,7 @@ export class StateMachine {
     //   WelcomeIntent: 'LaunchIntent',
     //   LaunchIntent: { reply: 'SomeReply' }
     // });
-    if (state.to[dest] && dest !== state.to[dest]) {
+    if (this.isDestSameAsCurrent(dest, state)) {
       return this.simpleTransition(voxaIntent, state, platform, state.to[dest]);
     }
 
@@ -358,5 +354,16 @@ export class StateMachine {
     }
 
     return _.get(this.currentState, "enter.entry");
+  }
+
+  protected getCurrentState(currentStateName: string, platform: string) {
+    return (
+      _.get(this.states, [platform, currentStateName]) ||
+      _.get(this.states, ["core", currentStateName])
+    );
+  }
+
+  protected isDestSameAsCurrent(dest: any, state: any) {
+    return state.to[dest] && dest !== state.to[dest];
   }
 }
