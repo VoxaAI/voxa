@@ -123,6 +123,11 @@ export class StateMachine {
     return transition;
   }
 
+  /**
+   * If the state controller didn't return a transition
+   * the state machine tries to find a handler for the intent
+   * in the entry controller
+   */
   public async checkForEntryFallback(
     voxaEvent: IVoxaEvent,
     reply: IVoxaReply,
