@@ -54,11 +54,13 @@ export abstract class IVoxaEvent {
       return;
     }
 
-    _.set(this, "intent", {
+    this.intent = {
       name: intentName,
-      slots: {},
-    });
-    _.set(this, "request.type", "IntentRequest");
+      params: {},
+      rawIntent: {},
+    };
+
+    this.request.type = "IntentRequest";
   }
 }
 

@@ -86,40 +86,19 @@ export class Renderer {
     return this.renderMessage(message, voxaEvent);
   }
 
-  public async renderObjectStatement(
-    statement: any,
-    voxaEvent: IVoxaEvent,
-  ): Promise<any> {
-    const objPromises = _.chain(statement)
-      .toPairs()
-      .map(
-        _.spread((key, value) => [key, this.renderMessage(value, voxaEvent)]),
-      )
-      .flattenDeep()
-      .value();
-
-    const result = await Promise.all(objPromises);
-
-    return _.chain(result)
-      .chunk(2)
-      .fromPairs()
-      .value();
-  }
-
+  /**
+   * it makes a deep search for strings that could have a variable on it
+   * @param  any statement - can be a string, array, object or any other value
+   * @param VoxaEvent voxaEvent
+   * @return Promise             Promise with the statement rendered
+   * @example
+   * // return { Launch: 'Hi, morning', card: { type: 'Standard', title: 'title' ...}}
+   * deepSearchRenderVariable({ Launch: 'hi, {time}', card: '{exitCard}' }, voxaEvent);
+   */
   public async renderMessage(
     statement: any,
     voxaEvent: IVoxaEvent,
   ): Promise<any> {
-    /**
-     * it makes a deep search for strings that could have a variable on it
-     * @param  any statement - can be a string, array, object or any other value
-     * @param VoxaEvent voxaEvent
-     * @return Promise             Promise with the statement rendered
-     * @example
-     * // return { Launch: 'Hi, morning', card: { type: 'Standard', title: 'title' ...}}
-     * deepSearchRenderVariable({ Launch: 'hi, {time}', card: '{exitCard}' }, voxaEvent);
-     */
-
     if (_.isArray(statement)) {
       return this.renderArrayStatement(statement, voxaEvent);
     }
@@ -135,16 +114,7 @@ export class Renderer {
     return statement;
   }
 
-  public async renderArrayStatement(
-    statement: any[],
-    voxaEvent: IVoxaEvent,
-  ): Promise<any> {
-    return bluebird.map(statement, (statementItem) =>
-      this.renderMessage(statementItem, voxaEvent),
-    );
-  }
-
-  public async renderStatement(statement: string, voxaEvent: IVoxaEvent) {
+  private async renderStatement(statement: string, voxaEvent: IVoxaEvent) {
     const vars = await this.executeVariables(statement, voxaEvent);
 
     const data = _(vars)
@@ -165,6 +135,35 @@ export class Renderer {
     }
 
     return _.template(statement)(data);
+  }
+
+  private async renderObjectStatement(
+    statement: any,
+    voxaEvent: IVoxaEvent,
+  ): Promise<any> {
+    const objPromises = _.chain(statement)
+      .toPairs()
+      .map(
+        _.spread((key, value) => [key, this.renderMessage(value, voxaEvent)]),
+      )
+      .flattenDeep()
+      .value();
+
+    const result = await Promise.all(objPromises);
+
+    return _.chain(result)
+      .chunk(2)
+      .fromPairs()
+      .value();
+  }
+
+  private async renderArrayStatement(
+    statement: any[],
+    voxaEvent: IVoxaEvent,
+  ): Promise<any> {
+    return bluebird.map(statement, (statementItem) =>
+      this.renderMessage(statementItem, voxaEvent),
+    );
   }
 
   /**

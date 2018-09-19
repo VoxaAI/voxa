@@ -60,4 +60,12 @@ describe("AlexaEvent", () => {
       "Display",
     ]);
   });
+
+  it("should add DisplayElementSelected intent params", () => {
+    const rawEvent = rb.getDisplayElementSelectedRequest(
+      "SleepSingleIntent@2018-09-13T00:40:16.047Z",
+    );
+    const alexaEvent = new AlexaEvent(rawEvent);
+    expect(alexaEvent.intent.params).to.be.ok;
+  });
 });
