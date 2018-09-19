@@ -1,6 +1,5 @@
-import {
-  GoogleCloudDialogflowV2WebhookRequest,
-} from "actions-on-google";
+import { GoogleCloudDialogflowV2WebhookRequest } from "actions-on-google";
+import { IDirectiveClass } from "../../directives";
 import { VoxaPlatform } from "../VoxaPlatform";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 import { DialogFlowReply } from "./DialogFlowReply";
@@ -10,6 +9,7 @@ import {
   BrowseCarousel,
   Carousel,
   Confirmation,
+  Context,
   DateTime,
   DeepLink,
   List,
@@ -39,7 +39,7 @@ export class DialogFlowPlatform extends VoxaPlatform {
     return voxaReply;
   }
 
-  protected getDirectiveHandlers() {
+  protected getDirectiveHandlers(): IDirectiveClass[] {
     return [
       AccountLinkingCard,
       BasicCard,
@@ -59,6 +59,7 @@ export class DialogFlowPlatform extends VoxaPlatform {
       TransactionDecision,
       TransactionRequirements,
       UpdatePermission,
+      Context,
     ];
   }
 }

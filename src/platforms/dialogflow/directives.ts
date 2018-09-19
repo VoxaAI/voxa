@@ -9,6 +9,7 @@ import {
   DateTimeOptions,
   DeepLink as ActionsOnGoogleDeepLink,
   DeepLinkOptions,
+  DialogflowConversation,
   GoogleActionsV2TransactionDecisionValueSpec,
   GoogleActionsV2TransactionRequirementsCheckSpec,
   List as ActionsOnGoogleList,
@@ -16,6 +17,7 @@ import {
   MediaResponse as ActionsOnGoogleMediaResponse,
   NewSurface as ActionsOnGoogleNewSurface,
   NewSurfaceOptions,
+  Parameters,
   Permission as ActionsOnGooglePermission,
   PermissionOptions,
   Place as ActionsOnGooglePlace,
@@ -35,6 +37,7 @@ import { IDirective, IDirectiveClass } from "../../directives";
 import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
+import { DialogFlowEvent } from "./DialogFlowEvent";
 import { DialogFlowReply } from "./DialogFlowReply";
 
 abstract class DialogFlowDirective<IOptions> {
@@ -241,5 +244,31 @@ export class Suggestions implements IDirective {
     const google: any = (reply as DialogFlowReply).payload.google;
     const richResponse = google.richResponse;
     richResponse.addSuggestion(suggestions);
+  }
+}
+
+export interface IContextConfig {
+  name: string;
+  lifespan: number;
+  parameters?: Parameters;
+}
+
+export class Context implements IDirective {
+  public static platform: string = "dialogflow";
+  public static key: string = "dialogFlowContext";
+
+  constructor(public contextConfig: IContextConfig) {}
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    const conv: DialogflowConversation = (event as DialogFlowEvent).google.conv;
+    conv.contexts.set(
+      this.contextConfig.name,
+      this.contextConfig.lifespan,
+      this.contextConfig.parameters,
+    );
   }
 }
