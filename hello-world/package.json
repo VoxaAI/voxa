@@ -15,8 +15,6 @@
     "mocha": "^5.2.0",
     "portfinder": "^1.0.17",
     "request": "^2.88.0",
-    "request-promise": "^4.2.2",
-    "virtual-alexa": "^0.6.6",
-    "virtual-google-assistant": "^0.2.5"
+    "request-promise": "^4.2.2"
   }
 }

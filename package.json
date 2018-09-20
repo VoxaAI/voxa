@@ -77,7 +77,9 @@
     "tslint": "^5.8.0",
     "tslint-no-unused-expression-chai": "^0.0.3",
     "typedoc": "^0.11.1",
-    "typescript": "^2.6.2"
+    "typescript": "^2.6.2",
+    "virtual-alexa": "^0.6.6",
+    "virtual-google-assistant": "^0.2.5"
   },
   "bugs": {
     "url": "https://github.com/mediarain/voxa/issues"

@@ -1,7 +1,28 @@
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 const rp = require("request-promise");
 const _ = require("lodash");
 const { expect } = require("chai");
-const { VirtualAlexa } = require("virtual-alexa");
 const dockerLambda = require("docker-lambda");
 const { getPortPromise } = require("portfinder");
 const { spawn, execSync } = require("child_process");
@@ -15,41 +36,6 @@ const alexaEvent = require("../test/requests/alexa/launchRequest.json");
 const views = require("./views.json");
 
 describe("Hello World", () => {
-  describe("Alexa", () => {
-    let alexa;
-
-    beforeEach(() => {
-      alexa = VirtualAlexa.Builder()
-        .handler("hello-world.alexaLambdaHandler") // Lambda function file and name
-        .interactionModelFile("./alexa-model.json")
-        .create();
-    });
-
-    it("Runs the alexa skill and like's voxa", async () => {
-      let reply = await alexa.launch();
-      expect(reply.response.outputSpeech.ssml).to.include(
-        "Welcome to this voxa app, are you enjoying voxa so far?"
-      );
-
-      reply = await alexa.utter("yes");
-      expect(reply.response.outputSpeech.ssml).to.include(
-        views.en.translation.doesLikeVoxa
-      );
-    });
-
-    it("Runs the alexa skill and does not like voxa", async () => {
-      let reply = await alexa.launch();
-      expect(reply.response.outputSpeech.ssml).to.include(
-        "Welcome to this voxa app, are you enjoying voxa so far?"
-      );
-
-      reply = await alexa.utter("no");
-      expect(reply.response.outputSpeech.ssml).to.include(
-        views.en.translation.doesNotLikeVoxa
-      );
-    });
-  });
-
   describe("azureFunction", () => {
     let port;
     let child;
