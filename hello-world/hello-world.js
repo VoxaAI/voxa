@@ -32,7 +32,6 @@ const VoxaApp = voxa.VoxaApp;
 const DialogFlowPlatform = voxa.DialogFlowPlatform;
 const AlexaPlatform = voxa.AlexaPlatform;
 
-console.log({ VoxaApp, DialogFlowPlatform, AlexaPlatform });
 const views = require("./views.json");
 
 const app = new VoxaApp({ views });
