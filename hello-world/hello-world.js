@@ -21,7 +21,18 @@
  */
 
 require("source-map-support").install();
-const { VoxaApp, DialogFlowPlatform, AlexaPlatform } = require("voxa");
+let voxa;
+try {
+  voxa = require("voxa");
+} catch (err) {
+  voxa = require("../src");
+}
+
+const VoxaApp = voxa.VoxaApp;
+const DialogFlowPlatform = voxa.DialogFlowPlatform;
+const AlexaPlatform = voxa.AlexaPlatform;
+
+console.log({ VoxaApp, DialogFlowPlatform, AlexaPlatform });
 const views = require("./views.json");
 
 const app = new VoxaApp({ views });
