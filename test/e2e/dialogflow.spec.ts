@@ -21,23 +21,26 @@
  */
 
 import { expect } from "chai";
+import { Server } from "http";
 import * as portfinder from "portfinder";
-import { VirtualGoogleAssistant } from "virtual-google-assistant";
+// import { VirtualGoogleAssistant } from "virtual-google-assistant";
 
 /* tslint:disable-next-line:no-var-requires */
 const { dialogFlowAction } = require("../../hello-world/hello-world");
+/* tslint:disable-next-line:no-var-requires */
+const { VirtualGoogleAssistant } = require("virtual-google-assistant");
 
 /* tslint:disable-next-line:no-var-requires */
 const views = require("../../hello-world/views.json");
 
 describe("Hello World Google Assistant", () => {
-  let googleAssistant: VirtualGoogleAssistant;
-  let server: any;
+  let googleAssistant: any;
+  let server: Server;
 
   beforeEach(async () => {
     const port = await portfinder.getPortPromise();
 
-    server = await dialogFlowAction.startServer(port);
+    server = (await dialogFlowAction.startServer(port)) as Server;
 
     googleAssistant = VirtualGoogleAssistant.Builder()
       .directory("hello-world/dialogflowmodel")
