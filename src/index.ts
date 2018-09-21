@@ -8,6 +8,7 @@
 export { VoxaPlatform } from "./platforms";
 export { IVoxaEvent, IVoxaIntent } from "./VoxaEvent";
 export {
+  AlexaReply,
   AlexaPlatform,
   AccountLinkingCard as AlexaAccountLinkingCard,
   AlexaEvent,
@@ -57,7 +58,9 @@ export {
   UnknownState,
   UnknownRequestType,
   NotImplementedError,
+  InvalidTransitionError,
 } from "./errors";
+export { Model } from "./Model";
 
 import { autoLoad, replaceIntent, stateFlow } from "./plugins";
 

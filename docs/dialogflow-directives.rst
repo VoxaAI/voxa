@@ -434,3 +434,23 @@ At any point during your app's flow, you can check if the user has any other sur
       flow: 'terminate',
     };
   });
+
+
+Output Contexts
+------------------
+
+`Actions on Google Documentation <https://actions-on-google.github.io/actions-on-google-nodejs/classes/dialogflow.contextvalues.html#set>`_
+
+If you need to add output contexts to the dialog flow webhook you can use the `dialogFlowContext` directive
+
+.. code-block:: javascript
+
+    app.onIntent("LaunchIntent", {
+      dialogFlowContext: {
+        lifespan: 5,
+        name: "DONE_YES_NO_CONTEXT",
+      },
+      sayp: "Hello!",
+      to: "entry",
+      flow: "yield",
+    });

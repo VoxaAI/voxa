@@ -1,15 +1,11 @@
 import { AudioCard, ICardMediaUrl, SuggestedActions } from "botbuilder";
-import { LuisRecognizer } from "botbuilder";
 import { AzureBotStorage, AzureTableClient } from "botbuilder-azure";
 import { expect } from "chai";
 import * as _ from "lodash";
 import * as simple from "simple-mock";
 import {
   BotFrameworkEvent,
-  BotFrameworkPlatform,
   BotFrameworkReply,
-  VoxaApp,
-  VoxaPlatform,
 } from "../../src/";
 import { prepIncomingMessage } from "../../src/platforms/botframework/BotFrameworkPlatform";
 
@@ -36,8 +32,8 @@ describe("BotFrameworkReply", () => {
     const rawEvent = prepIncomingMessage(
       _.cloneDeep(require("../requests/botframework/conversationUpdate.json")),
     );
-    event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
 
+    event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
     reply = new BotFrameworkReply(event);
 
     simple.mock(storage, "saveData").callbackWith(null, {});

@@ -1,20 +1,18 @@
-import * as debug from "debug";
-import * as _ from "lodash";
-
 import {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
   Callback as AWSLambdaCallback,
   Context as AWSLambdaContext,
 } from "aws-lambda";
-
 import {
   Context as AzureContext,
   HttpMethod as AzureHttpMethod,
   HttpRequest as AzureHttpRequest,
-  HttpResponse as AzureHttpResponse,
   HttpStatusCode as AzureHttpStatusCode,
 } from "azure-functions-ts-essentials";
+import * as debug from "debug";
+import * as http from "http";
+import * as _ from "lodash";
 import { IDirectiveClass } from "../directives";
 import { ITransition } from "../StateMachine";
 import { IStateHandler, VoxaApp } from "../VoxaApp";
@@ -39,10 +37,15 @@ export abstract class VoxaPlatform {
     );
   }
 
-  public startServer(port: number): void {
+  public startServer(port: number): Promise<http.Server> {
     port = port || 3000;
-    createServer(this).listen(port, () => {
-      log(`Listening on port ${port}`);
+
+    return new Promise<http.Server>((resolve, reject) => {
+      const server = createServer(this);
+      server.listen(port, () => {
+        log(`Listening on port ${port}`);
+        resolve(server);
+      });
     });
   }
 
@@ -89,11 +92,13 @@ export abstract class VoxaPlatform {
 
   public azureFunction() {
     return async (context: AzureContext, req: AzureHttpRequest) => {
-      try {
-        let res: AzureHttpResponse;
+      if (context.log) {
+        console.log = context.log;
+      }
 
+      try {
         if (req.method !== AzureHttpMethod.Post) {
-          res = {
+          context.res = {
             body: {
               error: {
                 message: `Method ${req.method} not supported.`,
@@ -104,7 +109,7 @@ export abstract class VoxaPlatform {
           };
         } else {
           const body = await this.execute(req.body, {});
-          res = {
+          context.res = {
             body,
             headers: {
               "Content-Type": "application/json; charset=utf-8",
@@ -112,10 +117,8 @@ export abstract class VoxaPlatform {
             status: AzureHttpStatusCode.OK,
           };
         }
-
-        context.done(undefined, res);
       } catch (error) {
-        context.done(error);
+        context.res = error;
       }
     };
   }

@@ -2,7 +2,6 @@ import {
   Context,
   interfaces,
   RequestEnvelope,
-  services,
   Session,
   SessionEndedReason,
 } from "ask-sdk-model";
@@ -30,10 +29,12 @@ export class AlexaRequestBuilder {
 
   public getSessionEndedRequest(
     reason: SessionEndedReason = "ERROR",
+    error?: any,
   ): RequestEnvelope {
     return {
       context: this.getContextData(),
       request: {
+        error,
         locale: "en-US",
         reason,
         requestId: `EdwRequestId.${v1()}`,

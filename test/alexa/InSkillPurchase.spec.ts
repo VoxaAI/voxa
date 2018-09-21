@@ -29,7 +29,7 @@ describe("InSkillPurchase", () => {
   let alexaSkill: AlexaPlatform;
 
   before(() => {
-    app =  new VoxaApp({ views, variables });
+    app = new VoxaApp({ views, variables });
     alexaSkill = new AlexaPlatform(app);
 
     const reqheaders = {
@@ -60,7 +60,10 @@ describe("InSkillPurchase", () => {
       let buyDirective;
 
       if (isAlexaEvent(voxaEvent)) {
-        buyDirective = await voxaEvent.alexa.isp.buyByReferenceName(productName, token);
+        buyDirective = await voxaEvent.alexa.isp.buyByReferenceName(
+          productName,
+          token,
+        );
       }
 
       return { alexaConnectionsSendRequest: buyDirective };
@@ -90,7 +93,10 @@ describe("InSkillPurchase", () => {
       let buyDirective;
 
       if (isAlexaEvent(voxaEvent)) {
-        buyDirective = await voxaEvent.alexa.isp.cancelByReferenceName(productName, token);
+        buyDirective = await voxaEvent.alexa.isp.cancelByReferenceName(
+          productName,
+          token,
+        );
       }
 
       return { alexaConnectionsSendRequest: buyDirective };
@@ -124,7 +130,8 @@ describe("InSkillPurchase", () => {
         buyDirective = await voxaEvent.alexa.isp.upsellByReferenceName(
           productName,
           upsellMessage,
-          token);
+          token,
+        );
       }
 
       return { alexaConnectionsSendRequest: buyDirective };
@@ -147,7 +154,11 @@ describe("InSkillPurchase", () => {
 
   it("should not send ISP directives on invalid endpoint", async () => {
     event = rb.getIntentRequest("BuyIntent", { productName: "shield" });
-    _.set(event, "context.System.apiEndpoint", "https://api.fe.amazonalexa.com");
+    _.set(
+      event,
+      "context.System.apiEndpoint",
+      "https://api.fe.amazonalexa.com",
+    );
 
     alexaSkill.onIntent("BuyIntent", (voxaEvent) => {
       if (isAlexaEvent(voxaEvent) && !voxaEvent.alexa.isp.isAllowed()) {
@@ -158,10 +169,13 @@ describe("InSkillPurchase", () => {
     });
 
     const reply = await alexaSkill.execute(event, {});
-    const outputSpeech = "To do In Skill Purchases, you need to link your Amazon account to the US market.";
+    const outputSpeech =
+      "To do In Skill Purchases, you need to link your Amazon account to the US market.";
 
     expect(_.get(reply, "response.outputSpeech.ssml")).to.include(outputSpeech);
-    expect(_.get(reply, "response.reprompt.outputSpeech.ssml")).to.include("Can you try again?");
+    expect(_.get(reply, "response.reprompt.outputSpeech.ssml")).to.include(
+      "Can you try again?",
+    );
     expect(_.get(reply, "response.directives")).to.be.undefined;
     expect(_.get(reply, "sessionAttributes.state")).to.equal("entry");
     expect(reply.response.shouldEndSession).to.equal(false);
@@ -179,7 +193,12 @@ describe("InSkillPurchase", () => {
       purchaseResult: "ACCEPTED",
     };
 
-    event = rb.getConnectionsResponseRequest("Buy", "firstState", payload, status);
+    event = rb.getConnectionsResponseRequest(
+      "Buy",
+      "firstState",
+      payload,
+      status,
+    );
 
     app.onSessionStarted((voxaEvent: any) => {
       voxaEvent.model.flag = 1;
@@ -187,8 +206,8 @@ describe("InSkillPurchase", () => {
 
     alexaSkill.onState("firstState", () => ({}));
     alexaSkill.onIntent("Connections.Response", (voxaEvent) => {
-      if (voxaEvent.request.payload.purchaseResult === "ACCEPTED") {
-        const to = voxaEvent.request.token;
+      if (voxaEvent.rawEvent.request.payload.purchaseResult === "ACCEPTED") {
+        const to = voxaEvent.rawEvent.request.token;
 
         return { ask: "ISP.ProductBought", to };
       }
@@ -198,8 +217,12 @@ describe("InSkillPurchase", () => {
 
     const reply = await alexaSkill.execute(event, {});
 
-    expect(_.get(reply, "response.outputSpeech.ssml")).to.include("Thanks for buying this product, do you want to try it out?");
-    expect(_.get(reply, "response.reprompt.outputSpeech.ssml")).to.include("Do you want to try it out?");
+    expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
+      "Thanks for buying this product, do you want to try it out?",
+    );
+    expect(_.get(reply, "response.reprompt.outputSpeech.ssml")).to.include(
+      "Do you want to try it out?",
+    );
     expect(_.get(reply, "sessionAttributes.model.flag")).to.equal(1);
     expect(_.get(reply, "sessionAttributes.state")).to.equal("firstState");
     expect(reply.response.shouldEndSession).to.equal(false);
@@ -217,14 +240,19 @@ describe("InSkillPurchase", () => {
       purchaseResult: "DECLINED",
     };
 
-    event = rb.getConnectionsResponseRequest("Buy", "firstState", payload, status);
+    event = rb.getConnectionsResponseRequest(
+      "Buy",
+      "firstState",
+      payload,
+      status,
+    );
 
     app.onSessionStarted((voxaEvent: any) => {
       voxaEvent.model.flag = 1;
     });
 
     alexaSkill.onIntent("Connections.Response", (voxaEvent) => {
-      if (voxaEvent.request.payload.purchaseResult === "ACCEPTED") {
+      if (voxaEvent.rawEvent.request.payload.purchaseResult === "ACCEPTED") {
         return { ask: "ISP.ProductBought" };
       }
 
@@ -233,7 +261,9 @@ describe("InSkillPurchase", () => {
 
     const reply = await alexaSkill.execute(event, {});
 
-    expect(_.get(reply, "response.outputSpeech.ssml")).to.include("Thanks for your interest");
+    expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
+      "Thanks for your interest",
+    );
     expect(reply.response.reprompt).to.be.undefined;
     expect(_.get(reply, "sessionAttributes.model.flag")).to.equal(1);
     expect(_.get(reply, "sessionAttributes.state")).to.equal("die");

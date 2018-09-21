@@ -1,4 +1,4 @@
-import { Button, Carousel, Image, List, MediaObject } from "actions-on-google";
+import { Button, Image, MediaObject } from "actions-on-google";
 import { expect } from "chai";
 import * as i18n from "i18next";
 import * as _ from "lodash";
@@ -31,6 +31,37 @@ describe("DialogFlow Directives", () => {
     app = new VoxaApp({ views, variables });
     dialogFlowAgent = new DialogFlowPlatform(app);
     event = _.cloneDeep(require("../requests/dialogflow/launchIntent.json"));
+  });
+
+  describe("Context", () => {
+    it("should add an output context", async () => {
+      app.onIntent("LaunchIntent", {
+        dialogFlowContext: {
+          lifespan: 5,
+          name: "DONE_YES_NO_CONTEXT",
+        },
+        sayp: "Hello!",
+        to: "die",
+      });
+
+      const reply = await dialogFlowAgent.execute(event, {});
+      expect(reply.outputContexts).to.deep.equal([
+        {
+          lifespanCount: 5,
+          name:
+            "projects/project/agent/sessions/1525973454075/contexts/DONE_YES_NO_CONTEXT",
+          parameters: undefined,
+        },
+        {
+          lifespanCount: 10000,
+          name:
+            "projects/project/agent/sessions/1525973454075/contexts/attributes",
+          parameters: {
+            attributes: '{"model":{},"state":"die"}',
+          },
+        },
+      ]);
+    });
   });
 
   describe("MediaResponse", () => {

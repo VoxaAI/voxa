@@ -2,7 +2,6 @@ import {
   BasicCard as ActionsOnGoogleBasicCard,
   BasicCardOptions,
   BrowseCarousel as ActionsOnGoogleBrowseCarousel,
-  BrowseCarouselOptions,
   Carousel as ActionsOnGoogleCarousel,
   CarouselOptions,
   Confirmation as ActionsOnGoogleConfirmation,
@@ -10,29 +9,23 @@ import {
   DateTimeOptions,
   DeepLink as ActionsOnGoogleDeepLink,
   DeepLinkOptions,
-  DeliveryAddress as ActionsOnGoogleDeliveryAddress,
-  GoogleActionsV2DeliveryAddressValueSpec,
-  GoogleActionsV2PermissionValueSpecPermissions,
+  DialogflowConversation,
   GoogleActionsV2TransactionDecisionValueSpec,
   GoogleActionsV2TransactionRequirementsCheckSpec,
-  GoogleCloudDialogflowV2IntentMessageListSelect,
   List as ActionsOnGoogleList,
   ListOptions,
-  MediaObject,
   MediaResponse as ActionsOnGoogleMediaResponse,
   NewSurface as ActionsOnGoogleNewSurface,
   NewSurfaceOptions,
+  Parameters,
   Permission as ActionsOnGooglePermission,
   PermissionOptions,
   Place as ActionsOnGooglePlace,
   RegisterUpdate as ActionsOnGoogleRegisterUpdate,
   RegisterUpdateOptions,
-  RichResponse,
-  RichResponseItem,
   SignIn as ActionsOnGoogleSignIn,
   Suggestions as ActionsOnGoogleSuggestions,
   Table as ActionsOnGoogleTable,
-  TableOptions,
   TransactionDecision as ActionsOnGoogleTransactionDecision,
   TransactionRequirements as ActionsOnGoogleTransactionRequirements,
   UpdatePermission as ActionsOnGoogleUpdatePermission,
@@ -72,7 +65,7 @@ function createSystemIntentDirective<IOptions>(
   requiredCapability?: string,
 ): IDirectiveClass {
   return class extends DialogFlowDirective<IOptions> implements IDirective {
-    public static platform: string = "dialogFlow";
+    public static platform: string = "dialogflow";
     public static key: string = key;
 
     constructor(public options: IOptions) {
@@ -105,7 +98,7 @@ function createRichResponseDirective<IOptions>(
   requiredCapability?: string,
 ): IDirectiveClass {
   return class extends DialogFlowDirective<IOptions> implements IDirective {
-    public static platform: string = "dialogFlow";
+    public static platform: string = "dialogflow";
     public static key: string = key;
 
     constructor(public options: IOptions) {
@@ -237,7 +230,7 @@ export const BrowseCarousel = createRichResponseDirective<BasicCardOptions>(
 );
 
 export class Suggestions implements IDirective {
-  public static platform: string = "dialogFlow";
+  public static platform: string = "dialogflow";
   public static key: string = "dialogFlowSuggestions";
 
   constructor(public suggestions: string | string[]) {}
@@ -251,5 +244,31 @@ export class Suggestions implements IDirective {
     const google: any = (reply as DialogFlowReply).payload.google;
     const richResponse = google.richResponse;
     richResponse.addSuggestion(suggestions);
+  }
+}
+
+export interface IContextConfig {
+  name: string;
+  lifespan: number;
+  parameters?: Parameters;
+}
+
+export class Context implements IDirective {
+  public static platform: string = "dialogflow";
+  public static key: string = "dialogFlowContext";
+
+  constructor(public contextConfig: IContextConfig) {}
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    const conv: DialogflowConversation = (event as DialogFlowEvent).google.conv;
+    conv.contexts.set(
+      this.contextConfig.name,
+      this.contextConfig.lifespan,
+      this.contextConfig.parameters,
+    );
   }
 }

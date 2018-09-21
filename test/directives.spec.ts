@@ -1,10 +1,9 @@
-import { expect, use } from "chai";
+import { expect } from "chai";
 import * as i18n from "i18next";
 import "mocha";
 import { Ask, Reprompt, Say, Tell } from "../src/directives";
 import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
 import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
-import { Hint } from "../src/platforms/alexa/directives";
 import { Renderer } from "../src/renderers/Renderer";
 import { VoxaApp } from "../src/VoxaApp";
 import { IVoxaEvent } from "../src/VoxaEvent";

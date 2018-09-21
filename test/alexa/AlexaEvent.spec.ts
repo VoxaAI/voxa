@@ -8,19 +8,20 @@ describe("AlexaEvent", () => {
 
   it("should show an empty intent if not an intent request", () => {
     const alexaEvent = new AlexaEvent(rb.getSessionEndedRequest());
-    expect(alexaEvent.intent.params).to.be.empty;
-    expect(alexaEvent.intent.name).equal("");
+    expect(alexaEvent.intent).to.be.undefined;
   });
 
   it("should format intent slots", () => {
-    const rawEvent = rb.getIntentRequest("SomeIntent", { Dish: "Fried Chicken" });
+    const rawEvent = rb.getIntentRequest("SomeIntent", {
+      Dish: "Fried Chicken",
+    });
     const alexaEvent = new AlexaEvent(rawEvent);
     expect(alexaEvent.intent.params).to.deep.equal({ Dish: "Fried Chicken" });
   });
 
   it("should get token", () => {
     const rawEvent = rb.getPlaybackStoppedRequest("some-token");
-    const alexaEvent = new AlexaEvent(rawEvent );
+    const alexaEvent = new AlexaEvent(rawEvent);
     expect(alexaEvent.token).to.equal("some-token");
   });
 
@@ -29,7 +30,9 @@ describe("AlexaEvent", () => {
     delete rawEvent.session;
 
     const alexaEvent = new AlexaEvent(rawEvent);
-    expect(alexaEvent.user.userId).to.equal(_.get(rawEvent, "context.System.user.userId"));
+    expect(alexaEvent.user.userId).to.equal(
+      _.get(rawEvent, "context.System.user.userId"),
+    );
   });
 
   it("should find users on the session", () => {
@@ -38,7 +41,9 @@ describe("AlexaEvent", () => {
     delete rawEvent.context;
 
     const alexaEvent = new AlexaEvent(rawEvent);
-    expect(alexaEvent.user.userId).to.equal(_.get(rawEvent, "session.user.userId"));
+    expect(alexaEvent.user.userId).to.equal(
+      _.get(rawEvent, "session.user.userId"),
+    );
   });
 
   it("should set session attributes to an object on receiving a null value", () => {
@@ -54,5 +59,13 @@ describe("AlexaEvent", () => {
       "AudioPlayer",
       "Display",
     ]);
+  });
+
+  it("should add DisplayElementSelected intent params", () => {
+    const rawEvent = rb.getDisplayElementSelectedRequest(
+      "SleepSingleIntent@2018-09-13T00:40:16.047Z",
+    );
+    const alexaEvent = new AlexaEvent(rawEvent);
+    expect(alexaEvent.intent.params).to.be.ok;
   });
 });

@@ -1,80 +1,139 @@
-const { expect } = require("chai");
-const { VirtualAlexa } = require("virtual-alexa");
-const dockerLambda = require('docker-lambda');
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
-const NODE_VERSION = process.env.TRAVIS_NODE_VERSION || "8.10"
-const launchIntent = require('../test/requests/alexa/launchRequest.json')
-const lambdaProxyLaunchIntent = require('../test/requests/dialogflow/lambdaProxyLaunchIntent.json')
+const rp = require("request-promise");
+const _ = require("lodash");
+const { expect } = require("chai");
+const dockerLambda = require("docker-lambda");
+const { getPortPromise } = require("portfinder");
+const { spawn, execSync } = require("child_process");
+
+const NODE_VERSION = process.env.TRAVIS_NODE_VERSION || "8.10";
+const launchIntent = require("../test/requests/alexa/launchRequest.json");
+const lambdaProxyLaunchIntent = require("../test/requests/dialogflow/lambdaProxyLaunchIntent.json");
+const alexaEvent = require("../test/requests/alexa/launchRequest.json");
 
 /* tslint:disable-next-line:no-var-requires */
 const views = require("./views.json");
 
 describe("Hello World", () => {
-  describe("Alexa", () => {
-    let alexa;
+  describe("azureFunction", () => {
+    let port;
+    let child;
+    let endpoint;
 
-    beforeEach(() => {
-      alexa = VirtualAlexa.Builder()
-        .handler("hello-world.alexaHandler") // Lambda function file and name
-        .interactionModelFile("./alexa-model.json")
-        .create();
+    beforeEach(async function() {
+      this.timeout(10000);
+      port = await getPortPromise();
+      endpoint = `http://localhost:${port}/api/HelloWorldHttpTrigger`;
+
+      await new Promise((resolve, reject) => {
+        child = spawn("npx", ["func", "start", "--port", port]);
+        child.stdout.on("data", data => {
+          if (_.includes(data.toString(), endpoint)) {
+            return resolve();
+          }
+        });
+        child.stderr.on("data", data => {
+          reject(data.toString());
+        });
+      });
     });
 
-    it("Runs the alexa skill and like\'s voxa", async () => {
-      let reply = await alexa.launch();
-      expect(reply.response.outputSpeech.ssml).to.include("Welcome to this voxa app, are you enjoying voxa so far?");
-
-      reply = await alexa.utter("yes");
-      expect(reply.response.outputSpeech.ssml).to.include(views.en.translation.doesLikeVoxa);
+    afterEach(() => {
+      child.kill();
+      // super hack cause that child.kill is not really working
+      execSync(
+        "ps auxw  | grep node | grep func | grep -v mocha | grep -v defunct | awk '{print $2}' | xargs -I% kill %"
+      ).toString();
     });
 
-    it("Runs the alexa skill and does not like voxa", async () => {
+    it("runs the alexa function through azure functions", async function() {
+      this.timeout(10000);
+      const options = {
+        body: launchIntent,
+        json: true,
+        method: "POST",
+        uri: endpoint
+      };
 
-      let reply = await alexa.launch();
-      expect(reply.response.outputSpeech.ssml).to.include("Welcome to this voxa app, are you enjoying voxa so far?");
-
-      reply = await alexa.utter("no");
-      expect(reply.response.outputSpeech.ssml).to.include(views.en.translation.doesNotLikeVoxa);
+      const response = await rp(options);
+      expect(response).to.deep.equal({
+        response: {
+          outputSpeech: {
+            ssml:
+              "<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>",
+            type: "SSML"
+          },
+          shouldEndSession: false
+        },
+        sessionAttributes: {
+          model: {},
+          state: "likesVoxa?"
+        },
+        version: "1.0"
+      });
     });
   });
 
-  describe('Lambda', () => {
+  describe("Lambda", () => {
     it("runs the lambda call", function() {
-      this.timeout(5000);
+      this.timeout(10000);
       const lambdaCallbackResult = dockerLambda({
         dockerImage: `lambci/lambda:nodejs${NODE_VERSION}`,
         event: launchIntent,
-        handler: 'hello-world.alexaHandler',
+        handler: "hello-world.alexaLambdaHandler"
       });
 
-      expect(lambdaCallbackResult).to.deep.equal( {
-        version: '1.0',
-        response:
-        { shouldEndSession: false,
-          outputSpeech:
-          { ssml: '<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>',
-            type: 'SSML' } },
-        sessionAttributes: { state: 'likesVoxa?', model: {} }
+      expect(lambdaCallbackResult).to.deep.equal({
+        version: "1.0",
+        response: {
+          shouldEndSession: false,
+          outputSpeech: {
+            ssml:
+              "<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>",
+            type: "SSML"
+          }
+        },
+        sessionAttributes: { state: "likesVoxa?", model: {} }
       });
-
     });
 
     it("runs the apiGateway call", function() {
-      this.timeout(5000);
+      this.timeout(10000);
       const lambdaCallbackResult = dockerLambda({
         dockerImage: `lambci/lambda:nodejs${NODE_VERSION}`,
         event: lambdaProxyLaunchIntent,
-        handler: 'hello-world.dialogFlowHTTPHandler',
+        handler: "hello-world.dialogFlowActionLambdaHTTPHandler"
       });
 
-      expect(lambdaCallbackResult).to.deep.equal( {
-        "body": "{\"outputContexts\":[{\"name\":\"projects/project/agent/sessions/1525973454075/contexts/attributes\",\"lifespanCount\":10000,\"parameters\":{\"attributes\":\"{\\\"model\\\":{},\\\"state\\\":\\\"likesVoxa?\\\"}\"}}],\"fulfillmentText\":\"<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>\",\"source\":\"google\",\"payload\":{\"google\":{\"expectUserResponse\":true,\"isSsml\":true,\"richResponse\":{\"items\":[{\"simpleResponse\":{\"textToSpeech\":\"<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>\"}}]}}}}",
-        "headers": {
-          "Content-Type": "application/json; charset=utf-8",
+      expect(lambdaCallbackResult).to.deep.equal({
+        body:
+          '{"outputContexts":[{"name":"projects/project/agent/sessions/1525973454075/contexts/attributes","lifespanCount":10000,"parameters":{"attributes":"{\\"model\\":{},\\"state\\":\\"likesVoxa?\\"}"}}],"fulfillmentText":"<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>","source":"google","payload":{"google":{"expectUserResponse":true,"isSsml":true,"richResponse":{"items":[{"simpleResponse":{"textToSpeech":"<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>"}}]}}}}',
+        headers: {
+          "Content-Type": "application/json; charset=utf-8"
         },
-        "statusCode": 200,
+        statusCode: 200
       });
-
     });
   });
 });

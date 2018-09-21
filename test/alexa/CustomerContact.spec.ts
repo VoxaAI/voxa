@@ -2,7 +2,6 @@ import { expect } from "chai";
 import * as _ from "lodash";
 import * as nock from "nock";
 
-import { AlexaEvent } from "../../src/platforms/alexa/AlexaEvent";
 import { AlexaPlatform } from "../../src/platforms/alexa/AlexaPlatform";
 import { VoxaApp } from "../../src/VoxaApp";
 import { AlexaRequestBuilder, isAlexaEvent } from "./../tools";

@@ -1,13 +1,11 @@
 import { Callback as AWSLambdaCallback } from "aws-lambda";
-import { IMessage, LuisRecognizer } from "botbuilder";
+import { IMessage } from "botbuilder";
 import { AzureBotStorage, AzureTableClient } from "botbuilder-azure";
 import { expect } from "chai";
 import * as _ from "lodash";
 import * as nock from "nock";
 import * as simple from "simple-mock";
-import { BotFrameworkPlatform } from "../../src/platforms/botframework/BotFrameworkPlatform";
-import { VoxaPlatform } from "../../src/platforms/VoxaPlatform";
-import { VoxaApp } from "../../src/VoxaApp";
+import { BotFrameworkPlatform, VoxaApp } from "../../src/";
 import { getAPIGatewayProxyEvent, getLambdaContext } from "../tools";
 import { variables } from "../variables";
 import { views } from "../views";
@@ -94,7 +92,6 @@ describe("BotFrameworkPlatform", () => {
           throw err;
         }
 
-        console.log({ result });
         expect(result).to.be.ok;
       };
       const context = getLambdaContext(callback);

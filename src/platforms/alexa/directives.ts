@@ -1,10 +1,9 @@
-import { interfaces, Response, ui } from "ask-sdk-model";
+import { dialog, Directive, interfaces, Response, ui } from "ask-sdk-model";
 import * as _ from "lodash";
 import { IDirective } from "../../directives";
 import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
-import { AlexaEvent } from "./AlexaEvent";
 import { AlexaReply } from "./AlexaReply";
 
 function isCard(card: any): card is ui.Card {
@@ -12,18 +11,46 @@ function isCard(card: any): card is ui.Card {
     return false;
   }
 
-  return _.includes(["Standard" , "Simple" , "LinkAccount" , "AskForPermissionsConsent"], card.type);
+  return _.includes(
+    ["Standard", "Simple", "LinkAccount", "AskForPermissionsConsent"],
+    card.type,
+  );
+}
+
+export abstract class AlexaDirective {
+  public directive?: Directive | Directive[];
+
+  protected addDirective(reply: IVoxaReply) {
+    const response: Response = (reply as AlexaReply).response;
+    if (!response.directives) {
+      response.directives = [];
+    }
+
+    if (!this.directive) {
+      throw new Error("The directive can't be empty");
+    }
+
+    if (_.isArray(this.directive)) {
+      response.directives = _.concat(response.directives, this.directive);
+    } else {
+      response.directives.push(this.directive);
+    }
+  }
 }
 
 export class HomeCard implements IDirective {
   public static platform: string = "alexa";
   public static key: string = "alexaCard";
 
-  constructor(public viewPath: string|ui.Card) { }
+  constructor(public viewPath: string | ui.Card) {}
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
     if (reply.hasDirective("card")) {
-       throw new Error("At most one card can be specified in a response");
+      throw new Error("At most one card can be specified in a response");
     }
 
     let card: ui.Card;
@@ -46,11 +73,17 @@ export class Hint implements IDirective {
   public static platform: string = "alexa";
   public static key: string = "alexaHint";
 
-  constructor(public  viewPath: string) { }
+  constructor(public viewPath: string) {}
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
     if (reply.hasDirective("Hint")) {
-      throw new Error("At most one Hint directive can be specified in a response");
+      throw new Error(
+        "At most one Hint directive can be specified in a response",
+      );
     }
 
     const response: Response = (reply as AlexaReply).response || {};
@@ -71,96 +104,106 @@ export class Hint implements IDirective {
   }
 }
 
-export class DialogDelegate implements IDirective {
+export class DialogDelegate extends AlexaDirective implements IDirective {
   public static platform: string = "alexa";
   public static key: string = "alexaDialogDelegate";
+  public directive!: dialog.DelegateDirective;
 
-  constructor(public slots?: any) { }
+  constructor(public slots?: any) {
+    super();
+  }
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    this.buildDirective(event);
+    this.buildSlots(event);
+    this.addDirective(reply);
+  }
+
+  protected buildSlots(event: IVoxaEvent) {
     if (!event.intent) {
       throw new Error("An intent is required");
     }
 
-    const directive: any = {
-      type: "Dialog.Delegate",
-    };
-
-    if (this.slots) {
-      const directiveSlots = _(this.slots)
-        .map((value, key) => {
-          const data: any = {
-            confirmationStatus: "NONE",
-            name: key,
-          };
-
-          if (value) {
-            data.value = value;
-          }
-
-          return [key, data];
-        })
-        .fromPairs()
-        .value();
-
-      directive.updatedIntent = {
-        confirmationStatus: "NONE",
-        name: event.intent.name,
-        slots: directiveSlots,
-      };
+    if (!this.slots) {
+      return;
     }
 
-    const response: Response = (reply as AlexaReply).response;
-    response.directives = response.directives || [];
-    response.directives.push(directive);
+    const directiveSlots = _(this.slots)
+      .map((value, key) => {
+        const data: any = {
+          confirmationStatus: "NONE",
+          name: key,
+        };
 
-    (reply as AlexaReply).response = response;
+        if (value) {
+          data.value = value;
+        }
+
+        return [key, data];
+      })
+      .fromPairs()
+      .value();
+
+    this.directive.updatedIntent = {
+      confirmationStatus: "NONE",
+      name: event.intent.name,
+      slots: directiveSlots,
+    };
+  }
+
+  protected buildDirective(event: IVoxaEvent) {
+    this.directive = {
+      type: "Dialog.Delegate",
+    };
   }
 }
 
-export class RenderTemplate implements IDirective {
+export class RenderTemplate extends AlexaDirective implements IDirective {
   public static key: string = "alexaRenderTemplate";
   public static platform: string = "alexa";
 
   public viewPath?: string;
   public token?: string;
-  public template?: interfaces.display.RenderTemplateDirective;
+  public directive?: interfaces.display.RenderTemplateDirective;
 
-  constructor(viewPath: string|interfaces.display.RenderTemplateDirective, token?: string) {
+  constructor(viewPath: string | interfaces.display.RenderTemplateDirective) {
+    super();
+
     if (_.isString(viewPath)) {
       this.viewPath = viewPath;
     } else {
-      this.template = viewPath;
+      this.directive = viewPath;
     }
-
-    this.token = token;
   }
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    let template;
-
-    if (reply.hasDirective("Display.RenderTemplate")) {
-      throw new Error("At most one Display.RenderTemplate directive can be specified in a response");
-    }
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    this.validateReply(reply);
 
     if (!_.includes(event.supportedInterfaces, "Display")) {
       return;
     }
 
     if (this.viewPath) {
-      template = await event.renderer.renderPath(this.viewPath, event, { token: this.token });
-    } else {
-      template = this.template;
+      this.directive = await event.renderer.renderPath(this.viewPath, event);
     }
 
-    const response: Response = (reply as AlexaReply).response;
-    if (!response.directives) {
-      response.directives = [];
+    this.addDirective(reply);
+  }
+
+  private validateReply(reply: IVoxaReply) {
+    if (reply.hasDirective("Display.RenderTemplate")) {
+      throw new Error(
+        "At most one Display.RenderTemplate directive can be specified in a response",
+      );
     }
-
-    response.directives.push(template);
-
-    (reply as AlexaReply).response = response;
   }
 }
 
@@ -168,19 +211,25 @@ export class AccountLinkingCard implements IDirective {
   public static key: string = "alexaAccountLinkingCard";
   public static platform: string = "alexa";
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
     if (reply.hasDirective("card")) {
       throw new Error("At most one card can be specified in a response");
     }
 
-    const card: ui.Card =  { type: "LinkAccount" };
+    const card: ui.Card = { type: "LinkAccount" };
     (reply as AlexaReply).response.card = card;
   }
 }
 
-export class PlayAudio implements IDirective {
+export class PlayAudio extends AlexaDirective implements IDirective {
   public static key: string = "alexaPlayAudio";
   public static platform: string = "alexa";
+
+  public directive?: interfaces.audioplayer.PlayDirective;
 
   constructor(
     public url: string,
@@ -188,21 +237,18 @@ export class PlayAudio implements IDirective {
     public offsetInMilliseconds: number = 0,
     public behavior: interfaces.audioplayer.PlayBehavior = "REPLACE_ALL",
     public metadata: interfaces.audioplayer.AudioItemMetadata = {},
-  ) { }
+  ) {
+    super();
+  }
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    if (reply.hasDirective("VideoApp.Launch")) {
-      throw new Error("Do not include both an AudioPlayer.Play" +
-        " directive and a VideoApp.Launch directive in the same response");
-    }
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    this.validateReply(reply);
 
-    const response = (reply as AlexaReply).response;
-
-    if (!response.directives) {
-      response.directives = [];
-    }
-
-    response.directives.push({
+    this.directive = {
       audioItem: {
         metadata: this.metadata,
         stream: {
@@ -213,134 +259,142 @@ export class PlayAudio implements IDirective {
       },
       playBehavior: this.behavior,
       type: "AudioPlayer.Play",
-    });
+    };
 
-    (reply as AlexaReply).response = response;
+    this.addDirective(reply);
+  }
+
+  private validateReply(reply: IVoxaReply) {
+    if (reply.hasDirective("VideoApp.Launch")) {
+      throw new Error(
+        "Do not include both an AudioPlayer.Play" +
+          " directive and a VideoApp.Launch directive in the same response",
+      );
+    }
   }
 }
 
-export class StopAudio implements IDirective {
+export class StopAudio extends AlexaDirective implements IDirective {
   public static key: string = "alexaStopAudio";
   public static platform: string = "alexa";
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    const response = (reply as AlexaReply).response;
+  public directive: interfaces.audioplayer.StopDirective = {
+    type: "AudioPlayer.Stop",
+  };
 
-    if (!response.directives) {
-      response.directives = [];
-    }
-
-    response.directives.push({
-      type: "AudioPlayer.Stop",
-    });
-
-    (reply as AlexaReply).response = response;
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    this.addDirective(reply);
   }
 }
 
-export class GadgetControllerLightDirective implements IDirective {
+export class GadgetControllerLightDirective extends AlexaDirective
+  implements IDirective {
   public static key: string = "alexaGadgetControllerLightDirective";
   public static platform: string = "alexa";
 
-  constructor(public lightDirective: interfaces.gadgetController.SetLightDirective
-    |interfaces.gadgetController.SetLightDirective[]) { }
+  constructor(
+    public directive:
+      | interfaces.gadgetController.SetLightDirective
+      | interfaces.gadgetController.SetLightDirective[],
+  ) {
+    super();
+  }
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    const response = (reply as AlexaReply).response;
-
-    if (!response.directives) {
-      response.directives = [];
-    }
-
-    if (_.isArray(this.lightDirective)) {
-      response.directives = _.concat(response.directives, this.lightDirective);
-    } else {
-      response.directives.push(this.lightDirective);
-    }
-
-    (reply as AlexaReply).response = response;
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    this.addDirective(reply);
   }
 }
 
-export class GameEngineStartInputHandler implements IDirective {
+export class GameEngineStartInputHandler extends AlexaDirective
+  implements IDirective {
   public static key: string = "alexaGameEngineStartInputHandler";
   public static platform: string = "alexa";
 
-  constructor(public template: interfaces.gameEngine.StartInputHandlerDirective) { }
+  constructor(
+    public directive: interfaces.gameEngine.StartInputHandlerDirective,
+  ) {
+    super();
+  }
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    this.addDirective(reply);
+
     const response = (reply as AlexaReply).response;
-
-    if (!response.directives) {
-      response.directives = [];
-    }
-
-    response.directives.push(this.template);
     delete response.shouldEndSession;
-
-    (reply as AlexaReply).response = response;
   }
 }
 
-export class GameEngineStopInputHandler implements IDirective {
+export class GameEngineStopInputHandler extends AlexaDirective
+  implements IDirective {
   public static key: string = "alexaGameEngineStopInputHandler";
   public static platform: string = "alexa";
 
-  constructor(public originatingRequestId: string) { }
+  constructor(public originatingRequestId: string) {
+    super();
+  }
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    const response = (reply as AlexaReply).response;
-
-    if (!response.directives) {
-      response.directives = [];
-    }
-
-    response.directives.push({
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    this.directive = {
       originatingRequestId: this.originatingRequestId,
       type: "GameEngine.StopInputHandler",
-    });
+    };
 
-    (reply as AlexaReply).response = response;
+    this.addDirective(reply);
   }
 }
 
-export class ConnectionsSendRequest implements IDirective {
+export class ConnectionsSendRequest extends AlexaDirective
+  implements IDirective {
   public static key: string = "alexaConnectionsSendRequest";
   public static platform: string = "alexa";
 
   public name?: string;
-  public template?: interfaces.connections.SendRequestDirective;
+  public directive?: interfaces.connections.SendRequestDirective;
   public type?: string = "Connections.SendRequest";
 
-  constructor(name: string|interfaces.connections.SendRequestDirective, public payload: any, public token: string) {
+  constructor(
+    name: string | interfaces.connections.SendRequestDirective,
+    public payload: any,
+    public token: string,
+  ) {
+    super();
     if (_.isString(name)) {
       this.name = name;
     } else {
-      this.template = name;
+      this.directive = name;
     }
   }
 
-  public async writeToReply(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition): Promise<void> {
-    let template: any;
-    const response = (reply as AlexaReply).response;
-
-    if (!response.directives) {
-      response.directives = [];
-    }
-
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
     if (this.name) {
-      template = {
+      this.directive = {
         name: this.name,
         payload: this.payload,
         token: this.token || "token",
         type: "Connections.SendRequest",
       };
-    } else {
-      template = this.template;
     }
 
-    response.directives.push(template);
-
-    (reply as AlexaReply).response = response;
+    this.addDirective(reply);
   }
 }

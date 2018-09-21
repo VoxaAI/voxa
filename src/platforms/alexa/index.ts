@@ -1,4 +1,5 @@
 export { AlexaPlatform } from "./AlexaPlatform";
+export { AlexaReply } from "./AlexaReply";
 export { AlexaEvent } from "./AlexaEvent";
 export { DisplayTemplate } from "./DisplayTemplateBuilder";
 export { ANCHOR_ENUM, EVENT_REPORT_ENUM, GameEngine } from "./GameEngine";

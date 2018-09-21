@@ -9,15 +9,21 @@ export class GameEngine {
     return new EventsBuilder(name);
   }
 
-  public static getDeviationRecognizerBuilder(name: string): DeviationRecognizerBuilder {
+  public static getDeviationRecognizerBuilder(
+    name: string,
+  ): DeviationRecognizerBuilder {
     return new DeviationRecognizerBuilder(name);
   }
 
-  public static getPatternRecognizerBuilder(name: string): PatternRecognizerBuilder {
+  public static getPatternRecognizerBuilder(
+    name: string,
+  ): PatternRecognizerBuilder {
     return new PatternRecognizerBuilder(name);
   }
 
-  public static getProgressRecognizerBuilder(name: string): ProgressRecognizerBuilder {
+  public static getProgressRecognizerBuilder(
+    name: string,
+  ): ProgressRecognizerBuilder {
     return new ProgressRecognizerBuilder(name);
   }
 
@@ -37,29 +43,17 @@ export class GameEngine {
 
   public setEvents(...eventArray: any[]): GameEngine {
     this.events = this.events || {};
-
-    _.forEach(eventArray, (event) => {
-      if (event instanceof EventsBuilder) {
-        this.events = _.merge(this.events, event.build());
-      } else {
-        this.events = _.merge(this.events, event);
-      }
-    });
-
+    this.mergeParameterArray(eventArray, this.events, EventsBuilder);
     return this;
   }
 
   public setRecognizers(...recognizerArray: any[]): GameEngine {
     this.recognizers = this.recognizers || {};
-
-    _.forEach(recognizerArray, (recognizer) => {
-      if (recognizer instanceof RecognizerBuilder) {
-        this.recognizers = _.merge(this.recognizers, recognizer.build());
-      } else {
-        this.recognizers = _.merge(this.recognizers, recognizer);
-      }
-    });
-
+    this.mergeParameterArray(
+      recognizerArray,
+      this.recognizers,
+      RecognizerBuilder,
+    );
     return this;
   }
 
@@ -75,6 +69,20 @@ export class GameEngine {
       timeout,
       type: "GameEngine.StartInputHandler",
     };
+  }
+
+  protected mergeParameterArray(
+    parameterArray: any[],
+    parameter: any,
+    type: any,
+  ): void {
+    _.forEach(parameterArray, (param) => {
+      if (param instanceof type) {
+        parameter = _.merge(parameter, param.build());
+      } else {
+        parameter = _.merge(parameter, param);
+      }
+    });
   }
 }
 
@@ -95,7 +103,8 @@ export class RecognizerBuilder {
   public setProperty(property: any) {
     this.recognizers[this.recognizerName] = _.merge(
       this.recognizers[this.recognizerName],
-      property);
+      property,
+    );
   }
 
   public build(): any {
@@ -104,7 +113,6 @@ export class RecognizerBuilder {
 }
 
 export class DeviationRecognizerBuilder extends RecognizerBuilder {
-
   constructor(name: string) {
     super(name, "deviation");
   }
@@ -116,7 +124,6 @@ export class DeviationRecognizerBuilder extends RecognizerBuilder {
 }
 
 export class PatternRecognizerBuilder extends RecognizerBuilder {
-
   constructor(name: string) {
     super(name, "match");
   }
@@ -145,14 +152,15 @@ export class PatternRecognizerBuilder extends RecognizerBuilder {
     return this;
   }
 
-  public pattern(pattern: services.gameEngine.Pattern[]): PatternRecognizerBuilder {
+  public pattern(
+    pattern: services.gameEngine.Pattern[],
+  ): PatternRecognizerBuilder {
     this.setProperty({ pattern });
     return this;
   }
 }
 
 export class ProgressRecognizerBuilder extends RecognizerBuilder {
-
   constructor(name: string) {
     super(name, "progress");
   }
@@ -182,7 +190,10 @@ export class EventsBuilder {
   }
 
   public setProperty(property: any): EventsBuilder {
-    this.events[this.eventName] = _.merge(this.events[this.eventName], property);
+    this.events[this.eventName] = _.merge(
+      this.events[this.eventName],
+      property,
+    );
     return this;
   }
 
@@ -215,7 +226,9 @@ export class EventsBuilder {
     return this;
   }
 
-  public triggerTimeMilliseconds(triggerTimeMilliseconds: number): EventsBuilder {
+  public triggerTimeMilliseconds(
+    triggerTimeMilliseconds: number,
+  ): EventsBuilder {
     this.setProperty({ triggerTimeMilliseconds });
     return this;
   }

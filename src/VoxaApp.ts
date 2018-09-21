@@ -1,3 +1,25 @@
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 import * as bluebird from "bluebird";
 import * as debug from "debug";
 import * as i18n from "i18next";
@@ -14,23 +36,18 @@ import {
   Tell,
 } from "./directives";
 import {
+  errorHandler,
   InvalidTransitionError,
   OnSessionEndedError,
   TimeoutError,
   UnknownRequestType,
 } from "./errors";
+import { isLambdaContext, timeout } from "./lambda";
 import { IModel, Model } from "./Model";
+import { IRenderer, IRendererConfig, Renderer } from "./renderers/Renderer";
 import {
-  IMessage,
-  IRenderer,
-  IRendererConfig,
-  Renderer,
-} from "./renderers/Renderer";
-import {
+  getStateName,
   isState,
-  IState,
-  IStateMachineConfig,
-  isTransition,
   ITransition,
   StateMachine,
 } from "./StateMachine";
@@ -43,7 +60,7 @@ export interface IVoxaAppConfig extends IRendererConfig {
   appIds?: string[] | string;
   Model?: IModel;
   RenderClass?: IRenderer;
-  views: any;
+  views: i18n.Resource;
   variables?: any;
 }
 
@@ -84,23 +101,7 @@ export class VoxaApp {
       this.registerRequestHandler(requestType),
     );
     this.registerEvents();
-    this.onError(
-      (voxaEvent: IVoxaEvent, error: Error, reply: IVoxaReply): IVoxaReply => {
-        console.error("onError");
-        console.error(error.message ? error.message : error);
-        if (error.stack) {
-          console.error(error.stack);
-        }
-
-        log(error);
-
-        reply.clear();
-        reply.addStatement("An unrecoverable error occurred.");
-        reply.terminate();
-        return reply;
-      },
-      true,
-    );
+    this.onError(errorHandler, true);
 
     this.states = {
       core: {},
@@ -115,22 +116,7 @@ export class VoxaApp {
 
     this.validateConfig();
 
-    this.i18nextPromise = new Promise((resolve, reject) => {
-      this.i18n.init(
-        {
-          fallbackLng: "en",
-          load: "all",
-          nonExplicitWhitelist: true,
-          resources: this.config.views,
-        },
-        (err: Error, t: i18n.TranslationFunction) => {
-          if (err) {
-            return reject(err);
-          }
-          return resolve(t);
-        },
-      );
-    });
+    this.i18nextPromise = initializeI118n(this.i18n, this.config.views);
 
     this.renderer = new this.config.RenderClass(this.config);
 
@@ -142,7 +128,7 @@ export class VoxaApp {
     this.onIntentRequest(this.runStateMachine, true);
 
     this.onAfterStateChanged(this.renderDirectives);
-    this.onBeforeReplySent(this.serializeModel, true);
+    this.onBeforeReplySent(this.saveSession, true);
 
     this.directiveHandlers = [Say, SayP, Ask, Reprompt, Tell];
   }
@@ -197,8 +183,8 @@ export class VoxaApp {
     const errorHandlers = this.getOnErrorHandlers(event.platform);
     const replies: IVoxaReply[] = await bluebird.map(
       errorHandlers,
-      async (errorHandler: IErrorHandler) => {
-        return await errorHandler(event, error, reply);
+      async (handler: IErrorHandler) => {
+        return await handler(event, error, reply);
       },
     );
     let response: IVoxaReply | undefined = _.find(replies);
@@ -217,32 +203,6 @@ export class VoxaApp {
   ): Promise<IVoxaReply> {
     log("Received new event", JSON.stringify(voxaEvent.rawEvent, null, 2));
     try {
-      // Validate that this AlexaRequest originated from authorized source.
-      if (this.config.appIds) {
-        const appId = voxaEvent.context.application.applicationId;
-
-        if (_.isString(this.config.appIds) && this.config.appIds !== appId) {
-          log(
-            `The applicationIds don't match: "${appId}"  and  "${
-              this.config.appIds
-            }"`,
-          );
-          throw new Error("Invalid applicationId");
-        }
-
-        if (
-          _.isArray(this.config.appIds) &&
-          !_.includes(this.config.appIds, appId)
-        ) {
-          log(
-            `The applicationIds don't match: "${appId}"  and  "${
-              this.config.appIds
-            }"`,
-          );
-          throw new Error("Invalid applicationId");
-        }
-      }
-
       if (!this.requestHandlers[voxaEvent.request.type]) {
         throw new UnknownRequestType(voxaEvent.request.type);
       }
@@ -253,19 +213,12 @@ export class VoxaApp {
           case "IntentRequest":
           case "SessionEndedRequest": {
             // call all onRequestStarted callbacks serially.
-            const result = await bluebird.mapSeries(
+            await bluebird.mapSeries(
               this.getOnRequestStartedHandlers(voxaEvent.platform),
               (fn: IEventHandler) => {
                 return fn(voxaEvent, reply);
               },
             );
-
-            if (
-              voxaEvent.request.type === "SessionEndedRequest" &&
-              _.get(voxaEvent, "request.reason") === "ERROR"
-            ) {
-              throw new OnSessionEndedError(_.get(voxaEvent, "request.error"));
-            }
 
             // call all onSessionStarted callbacks serially.
             await bluebird.mapSeries(
@@ -301,7 +254,7 @@ export class VoxaApp {
 
       return response;
     } catch (error) {
-      return await this.handleErrors(voxaEvent, error, reply);
+      return this.handleErrors(voxaEvent, error, reply);
     }
   }
 
@@ -575,7 +528,7 @@ export class VoxaApp {
     return transition;
   }
 
-  public async serializeModel(
+  public async saveSession(
     voxaEvent: IVoxaEvent,
     response: IVoxaReply,
     transition: ITransition,
@@ -593,12 +546,9 @@ export class VoxaApp {
     if (!transition.to) {
       throw new InvalidTransitionError(transition, "Missing transition.to");
     }
-    const stateName =
-      typeof transition.to === "string"
-        ? transition.to
-        : isState(transition.to)
-          ? transition.to.name
-          : "";
+
+    const stateName = getStateName(transition);
+
     if (!stateName) {
       throw new InvalidTransitionError(
         transition,
@@ -633,25 +583,22 @@ export class VoxaApp {
   }
 }
 
-export function timeout(
-  context: AWSLambdaContext,
-): { timerPromise: Promise<void>; timer: NodeJS.Timer | undefined } {
-  const timeRemaining = context.getRemainingTimeInMillis();
+export function initializeI118n(
+  i18nInstance: i18n.i18n,
+  views: i18n.Resource,
+): bluebird<i18n.TranslationFunction> {
+  type IInitializer = (
+    options: i18n.InitOptions,
+  ) => bluebird<i18n.TranslationFunction>;
 
-  let timer: NodeJS.Timer | undefined;
-  const timerPromise = new Promise<void>((resolve, reject) => {
-    timer = setTimeout(() => {
-      reject(new TimeoutError());
-    }, Math.max(timeRemaining - 500, 0));
+  const initialize = bluebird.promisify(i18nInstance.init, {
+    context: i18nInstance,
+  }) as IInitializer;
+
+  return initialize({
+    fallbackLng: "en",
+    load: "all",
+    nonExplicitWhitelist: true,
+    resources: views,
   });
-
-  return { timer, timerPromise };
-}
-
-function isLambdaContext(context: any): context is AWSLambdaContext {
-  if (!context) {
-    return false;
-  }
-
-  return (context as AWSLambdaContext).getRemainingTimeInMillis !== undefined;
 }

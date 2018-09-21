@@ -2,13 +2,11 @@ import {
   AudioCard as AudioCardType,
   HeroCard as HeroCardType,
   IAttachment,
-  ICardMediaUrl,
   ISuggestedActions,
   SigninCard as SigninCardType,
   SuggestedActions as SuggestedActionsType,
 } from "botbuilder";
 import * as _ from "lodash";
-import * as striptags from "striptags";
 import { IDirective, IDirectiveClass } from "../../directives";
 import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";

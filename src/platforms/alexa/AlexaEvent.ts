@@ -1,14 +1,28 @@
-import {
-  IntentRequest,
-  LaunchRequest,
-  RequestEnvelope,
-  SessionEndedRequest,
-  Slot,
-} from "ask-sdk-model";
-import { i18n, TranslationFunction } from "i18next";
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+import { RequestEnvelope } from "ask-sdk-model";
 import * as _ from "lodash";
 
-import { Model } from "../../Model";
 import { IVoxaEvent, IVoxaIntent, IVoxaSession } from "../../VoxaEvent";
 import { AlexaIntent } from "./AlexaIntent";
 import {
@@ -20,8 +34,9 @@ import {
 } from "./apis";
 
 export class AlexaEvent extends IVoxaEvent {
+  public platform: "alexa" = "alexa";
   public intent!: IVoxaIntent;
-  public alexa: {
+  public alexa!: {
     customerContact: CustomerContact;
     deviceAddress: DeviceAddress;
     deviceSettings: DeviceSettings;
@@ -53,24 +68,39 @@ export class AlexaEvent extends IVoxaEvent {
 
   constructor(event: RequestEnvelope, context?: any) {
     super(event, context);
-    this.session = (_.cloneDeep(event.session) || {}) as IVoxaSession;
-    this.session.outputAttributes = {};
-    this.request = _.cloneDeep(event.request);
-    this.context = _.cloneDeep(event.context);
-    this.executionContext = context;
 
-    if (_.isEmpty(_.get(this, "session.attributes"))) {
-      _.set(this, "session.attributes", {});
-    }
+    this.request = {
+      locale: event.request.locale,
+      type: event.request.type,
+    };
 
+    this.initSession();
+    this.initIntents();
     this.mapRequestToIntent();
+    this.initApis();
+  }
 
-    if (!this.intent) {
-      this.intent = new AlexaIntent(this.request.intent);
-    }
+  get user() {
+    return (
+      _.get(this.rawEvent, "session.user") ||
+      _.get(this.rawEvent, "context.System.user")
+    );
+  }
 
-    this.platform = "alexa";
+  get token() {
+    return _.get(this.rawEvent, "request.token");
+  }
 
+  get supportedInterfaces() {
+    const interfaces = _.get(
+      this.rawEvent,
+      "context.System.device.supportedInterfaces",
+      {},
+    );
+    return _.keys(interfaces);
+  }
+
+  protected initApis() {
     this.alexa = {
       customerContact: new CustomerContact(this.rawEvent),
       deviceAddress: new DeviceAddress(this.rawEvent),
@@ -80,20 +110,22 @@ export class AlexaEvent extends IVoxaEvent {
     };
   }
 
-  get user() {
-    return _.get(this, "session.user") || _.get(this, "context.System.user");
+  protected initSession() {
+    this.session = {
+      attributes: _.get(this.rawEvent, "session.attributes", {}),
+      new: _.get(this.rawEvent, "session.new", false),
+      outputAttributes: {},
+      sessionId: _.get(this.rawEvent, "session.sessionId", ""),
+    };
   }
 
-  get token() {
-    return _.get(this, "request.token");
-  }
+  protected initIntents() {
+    if (this.request.type === "IntentRequest") {
+      this.intent = new AlexaIntent(this.rawEvent.request.intent);
+    }
 
-  get supportedInterfaces() {
-    const interfaces = _.get(
-      this,
-      "context.System.device.supportedInterfaces",
-      {},
-    );
-    return _.keys(interfaces);
+    if (this.request.type === "CanFulfillIntentRequest") {
+      this.intent = new AlexaIntent(this.rawEvent.request.intent);
+    }
   }
 }

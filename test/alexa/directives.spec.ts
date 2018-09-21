@@ -3,12 +3,13 @@ import * as i18n from "i18next";
 import * as _ from "lodash";
 import "mocha";
 
-import { AlexaEvent } from "../../src/platforms/alexa/AlexaEvent";
-import { AlexaPlatform } from "../../src/platforms/alexa/AlexaPlatform";
-import { DisplayTemplate } from "../../src/platforms/alexa/DisplayTemplateBuilder";
-import { VoxaApp } from "../../src/VoxaApp";
-import { IVoxaEvent } from "../../src/VoxaEvent";
-import { HomeCard } from "./../../src/platforms/alexa/directives";
+import {
+  AlexaEvent,
+  AlexaPlatform,
+  DisplayTemplate,
+  HomeCard,
+  VoxaApp,
+} from "../../src/";
 import { AlexaRequestBuilder } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";
@@ -19,7 +20,7 @@ describe("Alexa directives", () => {
   let alexaSkill: AlexaPlatform;
 
   before(() => {
-    i18n .init({
+    i18n.init({
       load: "all",
       nonExplicitWhitelist: true,
       resources: views,
@@ -28,14 +29,14 @@ describe("Alexa directives", () => {
 
   beforeEach(() => {
     const rb = new AlexaRequestBuilder();
-    app =  new VoxaApp({ views, variables });
+    app = new VoxaApp({ views, variables });
     alexaSkill = new AlexaPlatform(app);
     event = rb.getIntentRequest("AMAZON.YesIntent");
   });
 
   describe("RenderTemplate", () => {
     it("should only add the template if request supports it", async () => {
-      app.onIntent("YesIntent",  {
+      app.onIntent("YesIntent", {
         alexaRenderTemplate: "RenderTemplate",
         to: "die",
       });
@@ -55,12 +56,16 @@ describe("Alexa directives", () => {
 
       const reply = await alexaSkill.execute(event, {});
       expect(reply.response.directives).to.not.be.undefined;
-      expect(JSON.parse(JSON.stringify(reply.response.directives))).to.deep.equal([{
-        template: {
-          type: "BodyTemplate1",
+      expect(
+        JSON.parse(JSON.stringify(reply.response.directives)),
+      ).to.deep.equal([
+        {
+          template: {
+            type: "BodyTemplate1",
+          },
+          type: "Display.RenderTemplate",
         },
-        type: "Display.RenderTemplate",
-      }]);
+      ]);
     });
 
     it("should add to the directives", async () => {
@@ -71,30 +76,32 @@ describe("Alexa directives", () => {
 
       const reply = await alexaSkill.execute(event, {});
       expect(reply.response.directives).to.not.be.undefined;
-      expect(reply.response.directives).to.deep.equal([{
-        template: {
-          backButton: "VISIBLE",
-          backgroundImage: "Image",
-          textContent: {
-            primaryText: {
-              text: "string",
-              type: "string",
+      expect(reply.response.directives).to.deep.equal([
+        {
+          template: {
+            backButton: "VISIBLE",
+            backgroundImage: "Image",
+            textContent: {
+              primaryText: {
+                text: "string",
+                type: "string",
+              },
+              secondaryText: {
+                text: "string",
+                type: "string",
+              },
+              tertiaryText: {
+                text: "string",
+                type: "string",
+              },
             },
-            secondaryText: {
-              text: "string",
-              type: "string",
-            },
-            tertiaryText: {
-              text: "string",
-              type: "string",
-            },
+            title: "string",
+            token: "string",
+            type: "BodyTemplate1",
           },
-          title: "string",
-          token: "string",
-          type: "BodyTemplate1",
+          type: "Display.RenderTemplate",
         },
-        type: "Display.RenderTemplate",
-      }]);
+      ]);
     });
   });
 
@@ -106,13 +113,15 @@ describe("Alexa directives", () => {
       });
 
       const reply = await alexaSkill.execute(event, {});
-      expect(reply.response.directives).to.deep.equal([{
-        hint: {
-          text: "string",
-          type: "PlainText",
+      expect(reply.response.directives).to.deep.equal([
+        {
+          hint: {
+            text: "string",
+            type: "PlainText",
+          },
+          type: "Hint",
         },
-        type: "Hint",
-      }]);
+      ]);
     });
   });
 
@@ -123,9 +132,11 @@ describe("Alexa directives", () => {
         to: "die",
       });
       const reply = await alexaSkill.execute(event, {});
-      expect(reply.response.directives).to.deep.equal([{
-        type: "AudioPlayer.Stop",
-      }]);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "AudioPlayer.Stop",
+        },
+      ]);
     });
   });
 
@@ -149,9 +160,11 @@ describe("Alexa directives", () => {
         to: "die",
       });
       const reply = await alexaSkill.execute(event, {});
-      expect(reply.response.directives).to.deep.equal([{
-        type: "Dialog.Delegate",
-      }]);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "Dialog.Delegate",
+        },
+      ]);
     });
   });
 
@@ -198,7 +211,9 @@ describe("Alexa directives", () => {
 
       const reply = await alexaSkill.execute(event, {});
       expect(reply.response.card).to.be.undefined;
-      expect(_.get(reply, "response.outputSpeech.ssml")).to.include("An unrecoverable error");
+      expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
+        "An unrecoverable error",
+      );
     });
 
     it("should not allow more than one card", async () => {
@@ -209,7 +224,9 @@ describe("Alexa directives", () => {
       });
 
       app.onError((request: AlexaEvent, error: Error) => {
-        expect(error.message).to.equal("At most one card can be specified in a response");
+        expect(error.message).to.equal(
+          "At most one card can be specified in a response",
+        );
       });
 
       const reply = await alexaSkill.execute(event, {});
@@ -217,7 +234,9 @@ describe("Alexa directives", () => {
         throw new Error("response missing");
       }
 
-      expect(_.get(reply.response, "outputSpeech.ssml")).to.equal("<speak>An unrecoverable error occurred.</speak>");
+      expect(_.get(reply.response, "outputSpeech.ssml")).to.equal(
+        "<speak>An unrecoverable error occurred.</speak>",
+      );
     });
 
     it("should accept a HomeCard object", async () => {

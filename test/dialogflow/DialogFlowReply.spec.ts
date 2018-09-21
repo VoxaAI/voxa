@@ -1,13 +1,8 @@
 import { expect } from "chai";
 import * as _ from "lodash";
-import { Model } from "../../src/Model";
 import {
-  DialogFlowEvent,
-  DialogFlowPlatform,
   DialogFlowReply,
 } from "../../src/platforms/dialogflow";
-import { VoxaApp } from "../../src/VoxaApp";
-import { views } from "../views";
 
 /* tslint:disable-next-line:no-var-requires */
 const rawEvent = require("../requests/dialogflow/launchIntent.json");

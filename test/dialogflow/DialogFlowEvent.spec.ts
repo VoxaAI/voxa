@@ -1,7 +1,3 @@
-import {
-  DialogflowConversation,
-  DialogflowConversationOptions,
-} from "actions-on-google";
 import { expect } from "chai";
 import { DialogFlowEvent } from "../../src/platforms/dialogflow/DialogFlowEvent";
 

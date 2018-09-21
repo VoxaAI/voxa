@@ -66,21 +66,21 @@ export class Ask implements IDirective {
     event: IVoxaEvent,
     transition: ITransition,
   ): Promise<void> {
+    transition.flow = "yield";
+    transition.say = this.viewPaths;
+
     for (const viewPath of this.viewPaths) {
       const statement = await event.renderer.renderPath(viewPath, event);
       if (!statement.ask) {
-        reply.addStatement(sampleOrItem(statement));
-      } else {
-        reply.addStatement(sampleOrItem(statement.ask));
+        return reply.addStatement(sampleOrItem(statement));
+      }
 
-        if (statement.reprompt) {
-          reply.addReprompt(sampleOrItem(statement.reprompt));
-        }
+      reply.addStatement(sampleOrItem(statement.ask));
+
+      if (statement.reprompt) {
+        reply.addReprompt(sampleOrItem(statement.reprompt));
       }
     }
-
-    transition.flow = "yield";
-    transition.say = this.viewPaths;
   }
 }
 

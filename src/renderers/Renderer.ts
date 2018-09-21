@@ -1,9 +1,31 @@
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 import * as bluebird from "bluebird";
-import * as debug from "debug";
 import { Resource } from "i18next";
 import * as _ from "lodash";
-import { ITransition } from "../StateMachine";
 import { IVoxaEvent } from "../VoxaEvent";
+
+export const tokenRegx = /{([\s\S]+?)}/g;
 
 export interface IRendererConfig {
   variables?: any;
@@ -23,7 +45,7 @@ export interface IMessage {
 }
 
 export interface IRenderer {
-  new(config: IRendererConfig): Renderer;
+  new (config: IRendererConfig): Renderer;
 }
 
 export class Renderer {
@@ -41,7 +63,11 @@ export class Renderer {
     this.config = config;
   }
 
-  public async renderPath(view: string, voxaEvent: IVoxaEvent, variables?: any) {
+  public async renderPath(
+    view: string,
+    voxaEvent: IVoxaEvent,
+    variables?: any,
+  ) {
     const locale = _.get(voxaEvent, "request.locale");
     const platform = _.get(voxaEvent, "platform");
 
@@ -60,61 +86,95 @@ export class Renderer {
     return this.renderMessage(message, voxaEvent);
   }
 
-  public renderMessage(msg: any, event: IVoxaEvent) {
-    /**
-     * it makes a deep search for strings that could have a variable on it
-     * @param  any statement - can be a string, array, object or any other value
-     * @param VoxaEvent voxaEvent
-     * @return Promise             Promise with the statement rendered
-     * @example
-     * // return { Launch: 'Hi, morning', card: { type: 'Standard', title: 'title' ...}}
-     * deepSearchRenderVariable({ Launch: 'hi, {time}', card: '{exitCard}' }, voxaEvent);
-     */
-    const self = this;
-    async function deepSearchRenderVariable(statement: any, voxaEvent: IVoxaEvent): Promise<any> {
-      if (_.isObject(statement) && !_.isArray(statement)) {
-        const objPromises = _.chain(statement)
-          .toPairs()
-          .map(_.spread((key, value) => {
-            const isAnOpenResponse = _.includes(["ask", "tell", "say", "reprompt"], key);
-            if (isAnOpenResponse && _.isArray(value)) {
-              return [key, deepSearchRenderVariable(value, voxaEvent)];
-            }
-
-            return [key, deepSearchRenderVariable(value, voxaEvent)];
-          }))
-          .flattenDeep()
-          .value();
-
-        const result = await Promise.all(objPromises);
-
-        return _.chain(result)
-          .chunk(2)
-          .fromPairs()
-          .value();
-      }
-
-      if (_.isString(statement)) {
-        return await self.renderStatement(statement, voxaEvent);
-      }
-
-      if (_.isArray(statement)) {
-        return await bluebird.map(statement, (statementItem) => deepSearchRenderVariable(statementItem, voxaEvent));
-      }
-
-      return statement;
+  /**
+   * it makes a deep search for strings that could have a variable on it
+   * @param  any statement - can be a string, array, object or any other value
+   * @param VoxaEvent voxaEvent
+   * @return Promise             Promise with the statement rendered
+   * @example
+   * // return { Launch: 'Hi, morning', card: { type: 'Standard', title: 'title' ...}}
+   * deepSearchRenderVariable({ Launch: 'hi, {time}', card: '{exitCard}' }, voxaEvent);
+   */
+  public async renderMessage(
+    statement: any,
+    voxaEvent: IVoxaEvent,
+  ): Promise<any> {
+    if (_.isArray(statement)) {
+      return this.renderArrayStatement(statement, voxaEvent);
     }
 
-    return deepSearchRenderVariable(msg, event);
+    if (_.isObject(statement)) {
+      return this.renderObjectStatement(statement, voxaEvent);
+    }
+
+    if (_.isString(statement)) {
+      return await this.renderStatement(statement, voxaEvent);
+    }
+
+    return statement;
   }
 
-  public async renderStatement(statement: string, voxaEvent: IVoxaEvent) {
-    const tokenRegx = /{([\s\S]+?)}/g;
+  private async renderStatement(statement: string, voxaEvent: IVoxaEvent) {
+    const vars = await this.executeVariables(statement, voxaEvent);
+
+    const data = _(vars)
+      .chunk(2)
+      .fromPairs()
+      .value();
+    const dataKeys = _.keys(data);
+    const dataValues = _.values(data);
+
+    if (
+      _.isEmpty(statement.replace(tokenRegx, "").trim()) &&
+      dataKeys.length === 1
+    ) {
+      const singleValue = _.head(dataValues);
+      return _.isObject(singleValue)
+        ? singleValue
+        : _.template(statement)(data);
+    }
+
+    return _.template(statement)(data);
+  }
+
+  private async renderObjectStatement(
+    statement: any,
+    voxaEvent: IVoxaEvent,
+  ): Promise<any> {
+    const objPromises = _.chain(statement)
+      .toPairs()
+      .map(
+        _.spread((key, value) => [key, this.renderMessage(value, voxaEvent)]),
+      )
+      .flattenDeep()
+      .value();
+
+    const result = await Promise.all(objPromises);
+
+    return _.chain(result)
+      .chunk(2)
+      .fromPairs()
+      .value();
+  }
+
+  private async renderArrayStatement(
+    statement: any[],
+    voxaEvent: IVoxaEvent,
+  ): Promise<any> {
+    return bluebird.map(statement, (statementItem) =>
+      this.renderMessage(statementItem, voxaEvent),
+    );
+  }
+
+  /**
+   * Takes a string statement and gets the value for all variables
+   */
+  private async executeVariables(statement: string, voxaEvent: IVoxaEvent) {
     _.templateSettings.interpolate = tokenRegx;
 
-    const tokenKeys = _
-      .uniq(statement.match(tokenRegx) || [])
-      .map((str: string) => str.substring(1, str.length - 1));
+    const tokenKeys = _.uniq(statement.match(tokenRegx) || []).map(
+      (str: string) => str.substring(1, str.length - 1),
+    );
 
     const qVariables = _(tokenKeys)
       .map((token) => {
@@ -127,16 +187,6 @@ export class Renderer {
       .flatten()
       .value();
 
-    const vars = await Promise.all(qVariables);
-    const data = _(vars).chunk(2).fromPairs().value();
-    const dataKeys = _.keys(data);
-    const dataValues = _.values(data);
-
-    if (_.isEmpty(statement.replace(tokenRegx, "").trim()) && dataKeys.length === 1) {
-      const singleValue = (_.head(dataValues));
-      return _.isObject(singleValue) ? singleValue : _.template(statement)(data);
-    }
-
-    return _.template(statement)(data);
+    return Promise.all(qVariables);
   }
 }

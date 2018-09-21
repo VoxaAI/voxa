@@ -8,10 +8,7 @@ import {
   IIdentity,
   IMessage,
 } from "botbuilder";
-import { TranslationFunction } from "i18next";
-import { Model } from "../../Model";
 import { ITypeMap, IVoxaEvent, IVoxaIntent, IVoxaUser } from "../../VoxaEvent";
-import { IBotFrameworkEntity } from "./BotFrameworkInterfaces";
 
 const MicrosoftCortanaIntents: ITypeMap = {
   "Microsoft.Launch": "LaunchIntent",
@@ -20,7 +17,7 @@ const MicrosoftCortanaIntents: ITypeMap = {
 };
 
 export class BotFrameworkEvent extends IVoxaEvent {
-  public platform: string = "botframework";
+  public platform: "botframework" = "botframework";
   public session: any;
   public context: any;
 
@@ -145,11 +142,13 @@ export class BotFrameworkEvent extends IVoxaEvent {
 
       if (membersAdded && bot && membersAdded.length === 1) {
         if (membersAdded[0].id === bot.id) {
-          _.set(this, "intent", {
+          this.intent = {
             name: "LaunchIntent",
-            slots: {},
-          });
-          _.set(this, "request.type", "IntentRequest");
+            params: {},
+            rawIntent: {},
+          };
+
+          this.request.type = "IntentRequest";
           return;
         }
       }
