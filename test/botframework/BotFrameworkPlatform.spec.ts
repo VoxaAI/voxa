@@ -1,6 +1,27 @@
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 import { Callback as AWSLambdaCallback } from "aws-lambda";
-import { IMessage } from "botbuilder";
-import { AzureBotStorage, AzureTableClient } from "botbuilder-azure";
+import { IMessage, MemoryBotStorage } from "botbuilder";
 import { expect } from "chai";
 import * as _ from "lodash";
 import * as nock from "nock";
@@ -13,8 +34,7 @@ import { views } from "../views";
 describe("BotFrameworkPlatform", () => {
   let platform: BotFrameworkPlatform;
   let app: VoxaApp;
-  let storage: AzureBotStorage;
-  let azureTableClient: AzureTableClient;
+  let storage: MemoryBotStorage;
 
   afterEach(() => {
     simple.restore();
@@ -23,11 +43,16 @@ describe("BotFrameworkPlatform", () => {
 
   beforeEach(() => {
     app = new VoxaApp({ views, variables });
-    azureTableClient = new AzureTableClient("", "", "");
-    storage = new AzureBotStorage({ gzipData: false }, azureTableClient);
+    storage = new MemoryBotStorage();
 
-    async function recognize(msg: IMessage) {
-      // return { name: "LanchIntent", params: {}, rawIntent: {} };
+    app.onIntent("LaunchIntent", {
+      flow: "terminate",
+      sayp: "Hello",
+      to: "die",
+    });
+
+    async function recognize(msg: IMessage): Promise<undefined> {
+      return;
     }
     platform = new BotFrameworkPlatform(app, {
       defaultLocale: "en",
@@ -84,6 +109,7 @@ describe("BotFrameworkPlatform", () => {
         "POST",
         JSON.stringify(launchEvent),
       );
+
       const callback: AWSLambdaCallback = (
         err?: Error | null | string,
         result?: any,
@@ -92,6 +118,7 @@ describe("BotFrameworkPlatform", () => {
           throw err;
         }
 
+        console.log(result);
         expect(result).to.be.ok;
       };
       const context = getLambdaContext(callback);

@@ -3,8 +3,7 @@
 The ``reply`` Object
 ====================
 
-
-.. js:interface:: IVoxaReply()
+.. js:class:: IVoxaReply()
 
   The ``reply`` object is used by the framework to render voxa responses, it takes all of your ``statements``, ``cards`` and ``directives`` and generates a proper json response for each platform.
 
@@ -41,3 +40,8 @@ The ``reply`` Object
     Converts the model object into session attributes
 
     :param event: A Voxa event with session attributes
+
+
+For the speceific classes used in every platform you can check:
+
+- :ref:`AlexaReply <alexa-reply>`

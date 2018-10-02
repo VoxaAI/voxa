@@ -10,6 +10,7 @@ export {
   GadgetControllerLightDirective,
   GameEngineStartInputHandler,
   GameEngineStopInputHandler,
+  Hint,
   HomeCard,
   PlayAudio,
   StopAudio,

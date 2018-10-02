@@ -5,8 +5,10 @@
  * Licensed under the MIT license.
  */
 
+export { Tell, Say, SayP, Ask, Reprompt } from "./directives";
 export { VoxaPlatform } from "./platforms";
 export { IVoxaEvent, IVoxaIntent } from "./VoxaEvent";
+export { IVoxaReply } from "./VoxaReply";
 export {
   AlexaReply,
   AlexaPlatform,
@@ -27,6 +29,7 @@ export {
   RenderTemplate,
   StopAudio,
   TRIGGER_EVENT_ENUM,
+  Hint,
 } from "./platforms/alexa";
 export {
   BotFrameworkPlatform,

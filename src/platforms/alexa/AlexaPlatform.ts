@@ -20,14 +20,14 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import * as _ from "lodash";
-
 import { RequestEnvelope, ResponseEnvelope } from "ask-sdk-model";
+import { Context as AWSLambdaContext } from "aws-lambda";
+import { Context as AzureContext } from "azure-functions-ts-essentials";
+import * as _ from "lodash";
 import { OnSessionEndedError } from "../../errors";
-import { IVoxaReply } from "../../VoxaReply";
-
-import * as debug from "debug";
 import { VoxaApp } from "../../VoxaApp";
+import { IVoxaEvent } from "../../VoxaEvent";
+import { IVoxaReply } from "../../VoxaReply";
 import { VoxaPlatform } from "../VoxaPlatform";
 import { AlexaEvent } from "./AlexaEvent";
 import { AlexaReply } from "./AlexaReply";
@@ -44,8 +44,6 @@ import {
   RenderTemplate,
   StopAudio,
 } from "./directives";
-
-const alexalog: debug.IDebugger = debug("voxa:alexa");
 
 const AlexaRequests = [
   "AudioPlayer.PlaybackStarted",
@@ -78,7 +76,7 @@ export interface IAlexaPlatformConfig {
 }
 
 export class AlexaPlatform extends VoxaPlatform {
-  public platform: string = "alexa";
+  public name: string = "alexa";
   public config: IAlexaPlatformConfig;
 
   constructor(voxaApp: VoxaApp, config: IAlexaPlatformConfig = {}) {
@@ -122,27 +120,37 @@ export class AlexaPlatform extends VoxaPlatform {
 
   public async execute(
     rawEvent: RequestEnvelope,
-    context: any,
-  ): Promise<ResponseEnvelope | AlexaReply> {
+    context?: AWSLambdaContext | AzureContext,
+  ): Promise<any> {
     this.checkAppIds(rawEvent);
+    const alexaEvent = (await this.getEvent(rawEvent, context)) as AlexaEvent;
+    const alexaReply = this.getReply(alexaEvent);
 
-    const alexaEvent = new AlexaEvent(rawEvent, context);
     try {
       this.checkSessionEndedRequest(alexaEvent);
-
-      const reply = (await this.app.execute(
-        alexaEvent,
-        new AlexaReply(),
-      )) as AlexaReply;
-      alexalog("Reply: ", JSON.stringify(reply, null, 2));
-      return reply;
+      return this.app.execute(alexaEvent, alexaReply);
     } catch (error) {
-      return (await this.app.handleErrors(
-        alexaEvent,
-        error,
-        new AlexaReply(),
-      )) as AlexaReply;
+      return this.app.handleErrors(alexaEvent, error, alexaReply);
     }
+  }
+
+  protected async getEvent(
+    rawEvent: RequestEnvelope,
+    context?: AWSLambdaContext | AzureContext,
+  ): Promise<IVoxaEvent> {
+    const alexaEvent = new AlexaEvent(
+      rawEvent,
+      this.getLogOptions(context),
+      context,
+    );
+
+    alexaEvent.platform = this;
+
+    return alexaEvent;
+  }
+
+  protected getReply(event: IVoxaEvent): IVoxaReply {
+    return new AlexaReply();
   }
 
   protected checkSessionEndedRequest(alexaEvent: AlexaEvent): void {
@@ -169,10 +177,6 @@ export class AlexaPlatform extends VoxaPlatform {
       : [this.config.appIds];
 
     if (!_.includes(expectedAppids, appId)) {
-      alexalog(
-        `The applicationIds don't match: "${appId}"  and  "${expectedAppids}"`,
-      );
-
       throw new Error("Invalid applicationId");
     }
   }

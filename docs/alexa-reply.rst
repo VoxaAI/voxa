@@ -1,12 +1,12 @@
 .. _alexa-reply:
 
-The ``reply`` Object
+The ``AlexaReply`` Object
 ====================
 
 
 .. js:class:: AlexaReply()
 
-  The ``reply`` object is used by the framework to render Alexa responses, it takes all of your ``statements``, ``cards`` and ``directives`` and generates a proper json response for Alexa
+  ``AlexaReply`` object is used by the framework to render Alexa responses, it takes all of your ``statements``, ``cards`` and ``directives`` and generates a proper json response for Alexa
 
   .. js:function:: Reply.fulfillIntent(canFulfill)
 

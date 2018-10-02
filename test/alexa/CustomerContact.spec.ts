@@ -1,3 +1,25 @@
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 import { expect } from "chai";
 import * as _ from "lodash";
 import * as nock from "nock";
@@ -21,7 +43,7 @@ describe("CustomerContact", () => {
 
   beforeEach(() => {
     const rb = new AlexaRequestBuilder();
-    app =  new VoxaApp({ views, variables });
+    app = new VoxaApp({ views, variables });
     alexaSkill = new AlexaPlatform(app);
     event = rb.getIntentRequest("InformationIntent");
     _.set(event, "context.System.apiAccessToken", "apiAccessToken");
@@ -32,7 +54,10 @@ describe("CustomerContact", () => {
       .get("/v2/accounts/~current/settings/Profile.name")
       .reply(200, "John Doe")
       .get("/v2/accounts/~current/settings/Profile.mobileNumber")
-      .reply(200, JSON.stringify({ countryCode: "+1", phoneNumber: "999-999-9999" }));
+      .reply(
+        200,
+        JSON.stringify({ countryCode: "+1", phoneNumber: "999-999-9999" }),
+      );
   });
 
   afterEach(() => {
@@ -55,8 +80,9 @@ describe("CustomerContact", () => {
       return { tell: "CustomerContact.FullInfo" };
     });
 
-    const reply = await alexaSkill.execute(event, {});
-    const outputSpeech = "Welcome John, your email address is example@example.com, " +
+    const reply = await alexaSkill.execute(event);
+    const outputSpeech =
+      "Welcome John, your email address is example@example.com, " +
       "and your phone number is +1 999-999-9999";
 
     expect(_.get(reply, "response.outputSpeech.ssml")).to.include(outputSpeech);
@@ -68,7 +94,10 @@ describe("CustomerContact", () => {
   it("should get full contact information but givenName due to safe-to-ignore error", async () => {
     nock("https://api.amazonalexa.com", { reqheaders })
       .get("/v2/accounts/~current/settings/Profile.givenName")
-      .replyWithError({ message: "Access to this resource cannot be requested", code: 403 });
+      .replyWithError({
+        message: "Access to this resource cannot be requested",
+        code: 403,
+      });
 
     alexaSkill.onIntent("InformationIntent", async (voxaEvent) => {
       let info;
@@ -81,9 +110,10 @@ describe("CustomerContact", () => {
       return { tell: "CustomerContact.FullInfo" };
     });
 
-    const reply = await alexaSkill.execute(event, {});
-    const outputSpeech = "Welcome , your email address is example@example.com, " +
-    "and your phone number is +1 999-999-9999";
+    const reply = await alexaSkill.execute(event);
+    const outputSpeech =
+      "Welcome , your email address is example@example.com, " +
+      "and your phone number is +1 999-999-9999";
 
     expect(_.get(reply, "response.outputSpeech.ssml")).to.include(outputSpeech);
     expect(reply.response.reprompt).to.be.undefined;
@@ -98,7 +128,10 @@ describe("CustomerContact", () => {
       .get("/v2/accounts/~current/settings/Profile.givenName")
       .replyWithError("Access to this resource cannot be requested")
       .get("/v2/accounts/~current/settings/Profile.name")
-      .replyWithError({ message: "Access to this resource cannot be requested", code: 500 });
+      .replyWithError({
+        message: "Access to this resource cannot be requested",
+        code: 500,
+      });
 
     alexaSkill.onIntent("InformationIntent", async (voxaEvent) => {
       try {
@@ -115,8 +148,9 @@ describe("CustomerContact", () => {
       }
     });
 
-    const reply = await alexaSkill.execute(event, {});
-    const outputSpeech = "To get the user's info, go to your Alexa app and grant permission to the skill.";
+    const reply = await alexaSkill.execute(event);
+    const outputSpeech =
+      "To get the user's info, go to your Alexa app and grant permission to the skill.";
 
     expect(_.get(reply, "response.outputSpeech.ssml")).to.include(outputSpeech);
     expect(reply.response.reprompt).to.be.undefined;

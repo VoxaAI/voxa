@@ -110,7 +110,7 @@ export class AudioCard extends RenderDirective<string | AudioCardType>
     if (reply.hasMessages) {
       // we want to send stuff before the audio card
       (reply as BotFrameworkReply).inputHint = "ignoringInput";
-      await (reply as BotFrameworkReply).send(event as BotFrameworkEvent);
+      await (reply as BotFrameworkReply).send();
       reply.clear();
     }
 
@@ -121,7 +121,7 @@ export class AudioCard extends RenderDirective<string | AudioCardType>
 
     reply.terminate();
     transition.flow = "terminate";
-    return (reply as BotFrameworkReply).send(event as BotFrameworkEvent);
+    return (reply as BotFrameworkReply).send();
   }
 }
 

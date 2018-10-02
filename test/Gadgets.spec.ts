@@ -71,7 +71,7 @@ describe("Gadgets", () => {
       };
     });
 
-    const reply = await alexaSkill.execute(event, {});
+    const reply = await alexaSkill.execute(event);
 
     const responseDirectives = _.get(reply, "response.directives");
 
@@ -171,7 +171,7 @@ describe("Gadgets", () => {
       };
     });
 
-    const reply = await alexaSkill.execute(event, {});
+    const reply = await alexaSkill.execute(event);
     const responseDirectives = _.get(reply, "response.directives");
 
     expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
@@ -223,7 +223,7 @@ describe("Gadgets", () => {
       };
     });
 
-    const reply = await alexaSkill.execute(event, {});
+    const reply = await alexaSkill.execute(event);
 
     expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
       "Thanks for playing with echo buttons.",

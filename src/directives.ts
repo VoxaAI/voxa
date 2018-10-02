@@ -9,6 +9,7 @@
 
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
+import { VoxaPlatform } from "./platforms/VoxaPlatform";
 import { ITransition } from "./StateMachine";
 import { IVoxaEvent } from "./VoxaEvent";
 import { IVoxaReply } from "./VoxaReply";
@@ -28,8 +29,15 @@ export interface IDirective {
   ) => Promise<void>;
 }
 
-function sampleOrItem(statement: string | string[]): string {
+function sampleOrItem(
+  statement: string | string[],
+  platform: VoxaPlatform,
+): string {
   if (_.isArray(statement)) {
+    if (platform.config.test) {
+      return _.head(statement) as string;
+    }
+
     return _.sample(statement) as string;
   }
 
@@ -48,7 +56,7 @@ export class Reprompt implements IDirective {
     transition: ITransition,
   ): Promise<void> {
     const statement = await event.renderer.renderPath(this.viewPath, event);
-    reply.addReprompt(sampleOrItem(statement));
+    reply.addReprompt(sampleOrItem(statement, event.platform));
   }
 }
 
@@ -72,13 +80,13 @@ export class Ask implements IDirective {
     for (const viewPath of this.viewPaths) {
       const statement = await event.renderer.renderPath(viewPath, event);
       if (!statement.ask) {
-        return reply.addStatement(sampleOrItem(statement));
-      }
+        reply.addStatement(sampleOrItem(statement, event.platform));
+      } else {
+        reply.addStatement(sampleOrItem(statement.ask, event.platform));
 
-      reply.addStatement(sampleOrItem(statement.ask));
-
-      if (statement.reprompt) {
-        reply.addReprompt(sampleOrItem(statement.reprompt));
+        if (statement.reprompt) {
+          reply.addReprompt(sampleOrItem(statement.reprompt, event.platform));
+        }
       }
     }
   }
@@ -102,7 +110,7 @@ export class Say implements IDirective {
 
     await bluebird.mapSeries(viewPaths, async (view: string) => {
       const statement = await event.renderer.renderPath(view, event);
-      reply.addStatement(sampleOrItem(statement));
+      reply.addStatement(sampleOrItem(statement, event.platform));
     });
   }
 }
@@ -134,7 +142,7 @@ export class Tell implements IDirective {
     transition: ITransition,
   ): Promise<void> {
     const statement = await event.renderer.renderPath(this.viewPath, event);
-    reply.addStatement(sampleOrItem(statement));
+    reply.addStatement(sampleOrItem(statement, event.platform));
     reply.terminate();
     transition.flow = "terminate";
     transition.say = this.viewPath;

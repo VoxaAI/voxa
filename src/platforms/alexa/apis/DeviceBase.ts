@@ -21,6 +21,7 @@
  */
 
 import { RequestEnvelope } from "ask-sdk-model";
+import { LambdaLog } from "lambda-log";
 import * as _ from "lodash";
 
 import { ApiBase } from "./ApiBase";
@@ -28,8 +29,8 @@ import { ApiBase } from "./ApiBase";
 export class DeviceBase extends ApiBase {
   public deviceId: string = "";
 
-  constructor(event: RequestEnvelope) {
-    super(event);
+  constructor(event: RequestEnvelope, log: LambdaLog) {
+    super(event, log);
 
     this.deviceId = _.get(event, "context.System.device.deviceId");
   }

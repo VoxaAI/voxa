@@ -1,17 +1,20 @@
 import { expect } from "chai";
 import * as _ from "lodash";
-import {
-  DialogFlowReply,
-} from "../../src/platforms/dialogflow";
+import { DialogFlowReply } from "../../src/platforms/dialogflow";
 
 /* tslint:disable-next-line:no-var-requires */
 const rawEvent = require("../requests/dialogflow/launchIntent.json");
+import { DialogflowConversation } from "actions-on-google";
 
 describe("DialogFlowReply", () => {
   let reply: DialogFlowReply;
 
   beforeEach(() => {
-    reply = new DialogFlowReply();
+    const conv = new DialogflowConversation({
+      body: rawEvent,
+      headers: {},
+    });
+    reply = new DialogFlowReply(conv);
   });
 
   describe("addStatement", () => {

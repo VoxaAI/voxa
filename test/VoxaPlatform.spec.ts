@@ -1,3 +1,25 @@
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 import {
   APIGatewayProxyEvent,
   Callback as AWSLambdaCallback,
@@ -10,8 +32,14 @@ import {
 import { expect } from "chai";
 import * as portfinder from "portfinder";
 import * as rp from "request-promise";
-import { VoxaPlatform } from "../src/platforms/VoxaPlatform";
-import { VoxaApp } from "../src/VoxaApp";
+import {
+  AlexaPlatform,
+  AlexaReply,
+  DialogFlowPlatform,
+  DialogFlowReply,
+  IVoxaEvent,
+  VoxaApp,
+} from "../src";
 import {
   AlexaRequestBuilder,
   getAPIGatewayProxyEvent,
@@ -21,27 +49,21 @@ import { views } from "./views";
 
 const rb = new AlexaRequestBuilder();
 
-class Platform extends VoxaPlatform {
-  public platform: string = "platform";
-
-  public execute(e: any, c: any) {
-    return Promise.resolve({ event: e, context: c });
-  }
-}
-
 describe("VoxaPlatform", () => {
   let app: VoxaApp;
-  let adapter: Platform;
+  let alexaSkill: AlexaPlatform;
+  let dialogFlowAction: DialogFlowPlatform;
 
   beforeEach(() => {
     app = new VoxaApp({ views });
-    adapter = new Platform(app);
+    alexaSkill = new AlexaPlatform(app);
+    dialogFlowAction = new DialogFlowPlatform(app);
   });
 
   describe("startServer", () => {
     it("should call the execute method with an http server", async () => {
       const port = await portfinder.getPortPromise();
-      const server = await adapter.startServer(port);
+      const server = await alexaSkill.startServer(port);
 
       const options = {
         body: {
@@ -53,10 +75,15 @@ describe("VoxaPlatform", () => {
       };
       const response = await rp(options);
       expect(response).to.deep.equal({
-        context: {},
-        event: {
-          request: "Hello World",
+        response: {
+          outputSpeech: {
+            ssml: "<speak>An unrecoverable error occurred.</speak>",
+            type: "SSML",
+          },
+          shouldEndSession: true,
         },
+        sessionAttributes: {},
+        version: "1.0",
       });
 
       server.close();
@@ -65,25 +92,36 @@ describe("VoxaPlatform", () => {
 
   describe("lambda", () => {
     it("should call the execute method with the event and context", async () => {
-      const handler = adapter.lambda();
-      const event = rb.getSessionEndedRequest();
+      const handler = alexaSkill.lambda();
+      const event = rb.getSessionEndedRequest("USER_INITIATED");
+      let error: any;
+      let result: any;
+      let counter = 0;
+
       const callback: AWSLambdaCallback<any> = (
-        error?: Error | null | string,
-        result?: any,
+        tmpError?: Error | null | string,
+        tmpResult?: any,
       ): void => {
-        expect(error).to.be.null;
-        expect(result.context).to.deep.equal(context);
-        expect(result.event).to.deep.equal(event);
+        console.log({ counter, tmpError, tmpResult });
+        counter += 1;
+        error = tmpError;
+        result = tmpResult;
       };
 
       const context: AWSLambdaContext = getLambdaContext(callback);
-      return await handler(event, context, callback);
+      await handler(event, context, callback);
+      expect(error).to.be.null;
+      expect(result).to.deep.equal({
+        response: {},
+        sessionAttributes: {},
+        version: "1.0",
+      });
     });
   });
 
   describe("lambdaHTTP", () => {
     it("should return a lambda http proxy response object", (done) => {
-      const handler = adapter.lambdaHTTP();
+      const handler = alexaSkill.lambdaHTTP();
       const event = getAPIGatewayProxyEvent(
         "POST",
         JSON.stringify(rb.getSessionEndedRequest()),
@@ -112,7 +150,7 @@ describe("VoxaPlatform", () => {
 
   describe("azureFunction", () => {
     it("should call the execute method with the event body and return a response in context.res", async () => {
-      const handler = adapter.azureFunction();
+      const handler = alexaSkill.azureFunction();
       const event = {
         body: rb.getSessionEndedRequest(),
         method: AzureHttpMethod.Post,
@@ -135,51 +173,63 @@ describe("VoxaPlatform", () => {
         to: "die",
       };
 
-      adapter.onIntent("LaunchIntent", state);
-      expect(adapter.app.states).to.deep.equal({
-        core: {},
-        platform: {
-          LaunchIntent: {
-            name: "LaunchIntent",
-            to: {
-              flow: "terminate",
-              tell: "Bye",
-              to: "die",
-            },
-          },
-          entry: {
-            name: "entry",
-            to: {
-              LaunchIntent: "LaunchIntent",
-            },
-          },
-        },
-      });
+      alexaSkill.onIntent("LaunchIntent", state);
     });
   });
 
   describe("onState", () => {
-    it("should register states as platform specific", () => {
-      const state = {
-        flow: "terminate",
-        tell: "Bye",
-        to: "die",
-      };
+    let alexaLaunch: any;
+    let dialogFlowLaunch: any;
 
-      adapter.onState("someState", state);
-      expect(adapter.app.states).to.deep.equal({
-        core: {},
-        platform: {
-          someState: {
-            name: "someState",
-            to: {
-              flow: "terminate",
-              tell: "Bye",
-              to: "die",
-            },
-          },
-        },
+    beforeEach(() => {
+      app.onIntent("LaunchIntent", {
+        flow: "continue",
+        to: "someState",
       });
+
+      alexaSkill.onState("someState", {
+        flow: "yield",
+        sayp: "Hello from alexa",
+        to: "entry",
+      });
+
+      dialogFlowAction.onState("someState", {
+        flow: "yield",
+        sayp: "Hello from dialogflow",
+        to: "entry",
+      });
+
+      alexaLaunch = rb.getIntentRequest("LaunchIntent");
+      /* tslint:disable-next-line:no-var-requires */
+      dialogFlowLaunch = require("./requests/dialogflow/launchIntent.json");
+    });
+
+    it("should register states as platform specific", async () => {
+      const alexaReply = (await alexaSkill.execute(alexaLaunch)) as AlexaReply;
+      expect(alexaReply.speech).to.include("Hello from alexa");
+
+      const dialogFloweReply = (await dialogFlowAction.execute(
+        dialogFlowLaunch,
+      )) as DialogFlowReply;
+
+      expect(dialogFloweReply.speech).to.include("Hello from dialogflow");
+    });
+
+    it("should not modify the original transition in the state definition", async () => {
+      let reply = (await dialogFlowAction.execute(
+        dialogFlowLaunch,
+      )) as DialogFlowReply;
+      expect(reply.speech).to.equal("<speak>Hello from dialogflow</speak>");
+
+      reply = (await dialogFlowAction.execute(
+        dialogFlowLaunch,
+      )) as DialogFlowReply;
+      expect(reply.speech).to.equal("<speak>Hello from dialogflow</speak>");
+
+      reply = (await dialogFlowAction.execute(
+        dialogFlowLaunch,
+      )) as DialogFlowReply;
+      expect(reply.speech).to.equal("<speak>Hello from dialogflow</speak>");
     });
   });
 });

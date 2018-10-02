@@ -1,3 +1,25 @@
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 import "mocha";
 
 import {
@@ -5,9 +27,9 @@ import {
   AudioCard,
   HeroCard,
   IMessage,
+  MemoryBotStorage,
   SuggestedActions,
 } from "botbuilder";
-import { AzureBotStorage, AzureTableClient } from "botbuilder-azure";
 import { expect } from "chai";
 import * as i18n from "i18next";
 import * as _ from "lodash";
@@ -22,8 +44,7 @@ describe("BotFramework directives", () => {
   let event: any;
   let app: VoxaApp;
   let botFrameworkSkill: BotFrameworkPlatform;
-  let storage: AzureBotStorage;
-  let azureTableClient: AzureTableClient;
+  let storage: MemoryBotStorage;
 
   before(() => {
     i18n.init({
@@ -39,12 +60,12 @@ describe("BotFramework directives", () => {
   });
 
   beforeEach(() => {
-    async function recognize(msg: IMessage) {
-      // return { name: "LanchIntent", params: {}, rawIntent: {} };
+    async function recognize(msg: IMessage): Promise<undefined> {
+      return;
     }
+
     app = new VoxaApp({ views });
-    azureTableClient = new AzureTableClient("", "", "");
-    storage = new AzureBotStorage({ gzipData: false }, azureTableClient);
+    storage = new MemoryBotStorage();
     botFrameworkSkill = new BotFrameworkPlatform(app, {
       defaultLocale: "en",
       recognize,
@@ -76,7 +97,7 @@ describe("BotFramework directives", () => {
         to: "die",
       });
 
-      await botFrameworkSkill.execute(event, {});
+      await botFrameworkSkill.execute(event);
       const mock: any = BotFrameworkReply.prototype.botApiRequest;
       expect(mock.called).to.be.true;
       expect(mock.callCount).to.equal(1);
@@ -124,7 +145,7 @@ describe("BotFramework directives", () => {
         to: "die",
       });
 
-      await botFrameworkSkill.execute(event, {});
+      await botFrameworkSkill.execute(event);
       const mock: any = BotFrameworkReply.prototype.botApiRequest;
       expect(mock.called).to.be.true;
       expect(mock.callCount).to.equal(1);
@@ -158,7 +179,7 @@ describe("BotFramework directives", () => {
         to: "die",
       });
 
-      await botFrameworkSkill.execute(event, {});
+      await botFrameworkSkill.execute(event);
       const mock: any = BotFrameworkReply.prototype.botApiRequest;
       expect(mock.called).to.be.true;
       expect(mock.callCount).to.equal(1);
@@ -197,7 +218,7 @@ describe("BotFramework directives", () => {
         to: "die",
       });
 
-      await botFrameworkSkill.execute(event, {});
+      await botFrameworkSkill.execute(event);
       const mock: any = BotFrameworkReply.prototype.botApiRequest;
       expect(mock.called).to.be.true;
       expect(mock.callCount).to.equal(1);
@@ -257,7 +278,7 @@ describe("BotFramework directives", () => {
         to: "die",
       });
 
-      await botFrameworkSkill.execute(event, {});
+      await botFrameworkSkill.execute(event);
       const mock: any = BotFrameworkReply.prototype.botApiRequest;
       expect(mock.called).to.be.true;
       expect(mock.callCount).to.equal(1);
@@ -305,7 +326,7 @@ describe("BotFramework directives", () => {
         to: "die",
       });
 
-      await botFrameworkSkill.execute(event, {});
+      await botFrameworkSkill.execute(event);
       const mock: any = BotFrameworkReply.prototype.botApiRequest;
       expect(mock.called).to.be.true;
       expect(mock.callCount).to.equal(1);
@@ -359,7 +380,7 @@ describe("BotFramework directives", () => {
         to: "die",
       });
 
-      await botFrameworkSkill.execute(event, {});
+      await botFrameworkSkill.execute(event);
       const mock: any = BotFrameworkReply.prototype.botApiRequest;
       expect(mock.called).to.be.true;
       expect(mock.callCount).to.equal(1);
@@ -409,7 +430,7 @@ describe("BotFramework directives", () => {
         to: "die",
       });
 
-      await botFrameworkSkill.execute(event, {});
+      await botFrameworkSkill.execute(event);
       const mock: any = BotFrameworkReply.prototype.botApiRequest;
       expect(mock.called).to.be.true;
       expect(mock.callCount).to.equal(1);

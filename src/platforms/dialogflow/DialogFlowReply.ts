@@ -2,6 +2,7 @@ import {
   GoogleCloudDialogflowV2Context,
   RichResponse,
 } from "actions-on-google";
+import { DialogflowConversation } from "actions-on-google";
 import * as _ from "lodash";
 import { IBag, IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, IVoxaReply } from "../../VoxaReply";
@@ -17,6 +18,8 @@ export interface IDialogFlowPayload {
     inputPrompt?: any;
     systemIntent?: any;
     isSsml?: boolean;
+    userStorage: any;
+    resetUserStorage?: true;
   };
 }
 
@@ -26,11 +29,12 @@ export class DialogFlowReply implements IVoxaReply {
   public source: string = "google";
   public payload: IDialogFlowPayload;
 
-  constructor() {
+  constructor(conv: DialogflowConversation) {
     this.payload = {
       google: {
         expectUserResponse: true,
         isSsml: true,
+        userStorage: conv.user.storage,
       },
     };
   }

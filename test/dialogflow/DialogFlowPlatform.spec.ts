@@ -15,7 +15,7 @@ describe("DialogFlowPlatform", () => {
 
       const platform = new DialogFlowPlatform(voxaApp);
 
-      const reply = (await platform.execute(rawEvent, {})) as DialogFlowReply;
+      const reply = (await platform.execute(rawEvent)) as DialogFlowReply;
       expect(reply.speech).to.equal("<speak>Hello from DialogFlow</speak>");
     });
 
@@ -28,10 +28,9 @@ describe("DialogFlowPlatform", () => {
         to: "entry",
       });
 
-      const alexaSkill = new AlexaPlatform(voxaApp);
       const platform = new DialogFlowPlatform(voxaApp);
 
-      const reply = (await platform.execute(rawEvent, {})) as DialogFlowReply;
+      const reply = (await platform.execute(rawEvent)) as DialogFlowReply;
       expect(reply.speech).to.equal("<speak>This is the help</speak>");
       expect(reply.payload.google.expectUserResponse).to.be.true;
     });

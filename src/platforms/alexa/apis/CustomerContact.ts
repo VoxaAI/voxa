@@ -21,8 +21,8 @@
  */
 
 import { RequestEnvelope } from "ask-sdk-model";
+import { LambdaLog } from "lambda-log";
 import * as _ from "lodash";
-
 import { ApiBase } from "./ApiBase";
 
 /**
@@ -30,8 +30,8 @@ import { ApiBase } from "./ApiBase";
  * https://developer.amazon.com/docs/custom-skills/request-customer-contact-information-for-use-in-your-skill.html#get-customer-contact-information
  */
 export class CustomerContact extends ApiBase {
-  constructor(event: RequestEnvelope) {
-    super(event);
+  constructor(event: RequestEnvelope, log: LambdaLog) {
+    super(event, log);
 
     this.tag = "CustomerContact";
     this.errorCodeSafeToIgnore = 403;

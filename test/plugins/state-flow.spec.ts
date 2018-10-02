@@ -3,11 +3,14 @@ import "mocha";
 import { expect } from "chai";
 
 import * as _ from "lodash";
-import { AlexaEvent } from "../../src/platforms/alexa/AlexaEvent";
-import { AlexaReply } from "../../src/platforms/alexa/AlexaReply";
+import {
+  AlexaEvent,
+  AlexaPlatform,
+  AlexaReply,
+  IVoxaReply,
+  VoxaApp,
+} from "../../src";
 import * as stateFlow from "../../src/plugins/state-flow";
-import { VoxaApp } from "../../src/VoxaApp";
-import { IVoxaReply } from "../../src/VoxaReply";
 import { AlexaRequestBuilder } from "../tools";
 import { variables } from "../variables";
 import { views } from "../views";
@@ -19,7 +22,7 @@ describe("StateFlow plugin", () => {
   let event: any;
 
   beforeEach(() => {
-    event = new AlexaEvent(rb.getIntentRequest("SomeIntent"));
+    event = rb.getIntentRequest("SomeIntent");
     event.session = {
       attributes: {
         state: "secondState",
@@ -39,27 +42,36 @@ describe("StateFlow plugin", () => {
   });
 
   it("should store the execution flow in the request", async () => {
-    const skill = new VoxaApp({ variables, views });
+    const app = new VoxaApp({ variables, views });
+    const skill = new AlexaPlatform(app);
     _.map(states, (state: any, name: string) => {
-      skill.onState(name, state);
+      app.onState(name, state);
     });
-    stateFlow.register(skill);
+    stateFlow.register(app);
 
-    const result = await skill.execute(event, new AlexaReply());
-    expect(event.session.outputAttributes.flow).to.deep.equal(["secondState", "initState", "die"]);
+    const result = await skill.execute(event);
+    expect(_.get(result, "sessionAttributes.flow")).to.deep.equal([
+      "secondState",
+      "initState",
+      "die",
+    ]);
   });
 
   it("should not crash on null transition", async () => {
-    const skill = new VoxaApp({ variables, views });
+    const app = new VoxaApp({ variables, views });
+    const skill = new AlexaPlatform(app);
     _.map(states, (state: any, name: string) => {
-      skill.onState(name, state);
+      app.onState(name, state);
     });
 
-    stateFlow.register(skill);
+    stateFlow.register(app);
     event.session.attributes.state = "fourthState";
-    event.intent.name = "OtherIntent";
 
-    const result = await skill.execute(event, new AlexaReply());
-    expect(event.session.outputAttributes.flow).to.deep.equal(["fourthState"]);
+    const result = await skill.execute(event);
+    expect(_.get(result, "sessionAttributes.flow")).to.deep.equal([
+      "fourthState",
+      "intent",
+      "die",
+    ]);
   });
 });

@@ -1,9 +1,33 @@
-"use strict";
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
+import { Context as AWSLambdaContext } from "aws-lambda";
+import { Context as AzureContext } from "azure-functions-ts-essentials";
+import { Console } from "console";
 import * as i18n from "i18next";
+import { LambdaLog, LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
-
 import { Model } from "./Model";
+import { VoxaPlatform } from "./platforms/VoxaPlatform";
 import { Renderer } from "./renderers/Renderer";
 
 export interface ITypeMap {
@@ -17,23 +41,32 @@ export interface IVoxaRequest {
 
 export abstract class IVoxaEvent {
   public abstract get supportedInterfaces(): string[];
-  public executionContext: any; // this would a lambda or azure function context
   public rawEvent: any; // the raw event as sent by the service
   public session!: IVoxaSession;
   public intent?: IVoxaIntent;
   public request!: IVoxaRequest;
   public model!: Model;
   public t!: i18n.TranslationFunction;
+  public log!: LambdaLog;
   public renderer!: Renderer;
   public user!: IVoxaUser;
-  public requestToIntent: ITypeMap = {};
-  public requestToRequest: ITypeMap = {};
-  public platform!: "alexa" | "dialogflow" | "botframework";
+  public platform!: VoxaPlatform;
+  protected requestToIntent: ITypeMap = {};
+  protected requestToRequest: ITypeMap = {};
 
-  constructor(event: any, context: any) {
-    this.rawEvent = _.cloneDeep(event);
-    this.executionContext = context;
+  constructor(
+    rawEvent: any,
+    logOptions: LambdaLogOptions = {},
+    public executionContext?: AWSLambdaContext | AzureContext,
+  ) {
+    this.rawEvent = _.cloneDeep(rawEvent);
+    this.initSession();
+    this.initUser();
+    this.initLogger(logOptions);
   }
+
+  protected abstract initSession(): void;
+  protected abstract initUser(): void;
 
   protected mapRequestToRequest(): void {
     const requestType = this.request.type;
@@ -57,21 +90,27 @@ export abstract class IVoxaEvent {
     this.intent = {
       name: intentName,
       params: {},
-      rawIntent: {},
     };
 
     this.request.type = "IntentRequest";
+  }
+
+  protected initLogger(logOptions: LambdaLogOptions): void {
+    logOptions = _.cloneDeep(logOptions);
+    _.set(logOptions, "meta.sessionId", this.session.sessionId);
+    this.log = new LambdaLog(logOptions);
   }
 }
 
 export interface IVoxaUser {
   id: string;
+  userId: string;
   accessToken?: string;
   [key: string]: any;
 }
 
 export interface IVoxaIntent {
-  rawIntent: any;
+  rawIntent?: any;
   name: string;
   params: any;
 }

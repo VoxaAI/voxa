@@ -21,6 +21,7 @@
  */
 
 import { interfaces, RequestEnvelope, services } from "ask-sdk-model";
+import { LambdaLog } from "lambda-log";
 import * as _ from "lodash";
 import * as rp from "request-promise";
 
@@ -81,7 +82,7 @@ export class InSkillPurchase {
 
   public rawEvent: RequestEnvelope; // the event as sent by the service
 
-  constructor(event: RequestEnvelope) {
+  constructor(event: RequestEnvelope, public log: LambdaLog) {
     this.rawEvent = _.cloneDeep(event);
   }
 

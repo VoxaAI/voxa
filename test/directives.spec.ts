@@ -1,12 +1,40 @@
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 import { expect } from "chai";
 import * as i18n from "i18next";
 import "mocha";
-import { Ask, Reprompt, Say, Tell } from "../src/directives";
-import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
-import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
-import { Renderer } from "../src/renderers/Renderer";
-import { VoxaApp } from "../src/VoxaApp";
-import { IVoxaEvent } from "../src/VoxaEvent";
+import {
+  AlexaEvent,
+  AlexaPlatform,
+  AlexaReply,
+  Ask,
+  IVoxaEvent,
+  Renderer,
+  Reprompt,
+  Say,
+  Tell,
+  VoxaApp,
+} from "../src";
 import { AlexaRequestBuilder } from "./tools";
 import { variables } from "./variables";
 import { views } from "./views";
@@ -34,6 +62,7 @@ describe("directives", () => {
 
     event.t = i18n.getFixedT(event.request.locale);
     event.renderer = renderer;
+    event.platform = new AlexaPlatform(voxaApp);
     response = new AlexaReply();
   });
 

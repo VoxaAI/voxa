@@ -42,7 +42,7 @@ describe("Alexa directives", () => {
       });
 
       event.context.System.device.supportedInterfaces = {};
-      const reply = await alexaSkill.execute(event, {});
+      const reply = await alexaSkill.execute(event);
       expect(reply.response.directives).to.be.undefined;
     });
 
@@ -54,7 +54,7 @@ describe("Alexa directives", () => {
         };
       });
 
-      const reply = await alexaSkill.execute(event, {});
+      const reply = await alexaSkill.execute(event);
       expect(reply.response.directives).to.not.be.undefined;
       expect(
         JSON.parse(JSON.stringify(reply.response.directives)),
@@ -74,7 +74,7 @@ describe("Alexa directives", () => {
         to: "die",
       });
 
-      const reply = await alexaSkill.execute(event, {});
+      const reply = await alexaSkill.execute(event);
       expect(reply.response.directives).to.not.be.undefined;
       expect(reply.response.directives).to.deep.equal([
         {
@@ -112,7 +112,7 @@ describe("Alexa directives", () => {
         to: "die",
       });
 
-      const reply = await alexaSkill.execute(event, {});
+      const reply = await alexaSkill.execute(event);
       expect(reply.response.directives).to.deep.equal([
         {
           hint: {
@@ -131,7 +131,7 @@ describe("Alexa directives", () => {
         alexaStopAudio: undefined,
         to: "die",
       });
-      const reply = await alexaSkill.execute(event, {});
+      const reply = await alexaSkill.execute(event);
       expect(reply.response.directives).to.deep.equal([
         {
           type: "AudioPlayer.Stop",
@@ -146,7 +146,7 @@ describe("Alexa directives", () => {
         alexaAccountLinkingCard: undefined,
         to: "die",
       });
-      const reply = await alexaSkill.execute(event, {});
+      const reply = await alexaSkill.execute(event);
       expect(reply.response.card).to.deep.equal({
         type: "LinkAccount",
       });
@@ -159,7 +159,7 @@ describe("Alexa directives", () => {
         alexaDialogDelegate: undefined,
         to: "die",
       });
-      const reply = await alexaSkill.execute(event, {});
+      const reply = await alexaSkill.execute(event);
       expect(reply.response.directives).to.deep.equal([
         {
           type: "Dialog.Delegate",
@@ -175,7 +175,7 @@ describe("Alexa directives", () => {
         to: "die",
       });
 
-      const reply = await alexaSkill.execute(event, {});
+      const reply = await alexaSkill.execute(event);
       expect(reply.response.card).to.deep.equal({
         image: {
           largeImageUrl: "https://example.com/large.jpg",
@@ -192,7 +192,7 @@ describe("Alexa directives", () => {
         to: "die",
       });
 
-      const reply = await alexaSkill.execute(event, {});
+      const reply = await alexaSkill.execute(event);
       expect(reply.response.card).to.deep.equal({
         image: {
           largeImageUrl: "https://example.com/large.jpg",
@@ -209,7 +209,7 @@ describe("Alexa directives", () => {
         to: "die",
       }));
 
-      const reply = await alexaSkill.execute(event, {});
+      const reply = await alexaSkill.execute(event);
       expect(reply.response.card).to.be.undefined;
       expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
         "An unrecoverable error",
@@ -229,7 +229,7 @@ describe("Alexa directives", () => {
         );
       });
 
-      const reply = await alexaSkill.execute(event, {});
+      const reply = await alexaSkill.execute(event);
       if (!reply.response.outputSpeech) {
         throw new Error("response missing");
       }
@@ -253,7 +253,7 @@ describe("Alexa directives", () => {
         to: "entry",
       }));
 
-      const reply = await alexaSkill.execute(event, {});
+      const reply = await alexaSkill.execute(event);
 
       expect(reply.response.card).to.deep.equal({
         image: {

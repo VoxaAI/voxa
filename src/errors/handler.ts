@@ -20,24 +20,15 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import * as debug from "debug";
 import { IVoxaEvent } from "../VoxaEvent";
 import { IVoxaReply } from "../VoxaReply";
-
-const log: debug.IDebugger = debug("voxa");
 
 export function errorHandler(
   voxaEvent: IVoxaEvent,
   error: Error,
   reply: IVoxaReply,
 ): IVoxaReply {
-  console.error("onError");
-  console.error(error.message ? error.message : error);
-  if (error.stack) {
-    console.error(error.stack);
-  }
-
-  log(error);
+  voxaEvent.log.error(error);
 
   reply.clear();
   reply.addStatement("An unrecoverable error occurred.");

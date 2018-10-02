@@ -1,4 +1,5 @@
 import { Button, Image, MediaObject } from "actions-on-google";
+import { DialogflowConversation } from "actions-on-google";
 import { expect } from "chai";
 import * as i18n from "i18next";
 import * as _ from "lodash";
@@ -44,7 +45,7 @@ describe("DialogFlow Directives", () => {
         to: "die",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(reply.outputContexts).to.deep.equal([
         {
           lifespanCount: 5,
@@ -81,7 +82,7 @@ describe("DialogFlow Directives", () => {
         to: "die",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
 
       expect(reply.payload.google.richResponse).to.deep.equal({
         items: [
@@ -101,7 +102,7 @@ describe("DialogFlow Directives", () => {
         to: "die",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
 
       expect(reply.payload.google.richResponse).to.deep.equal({
         items: [
@@ -129,8 +130,12 @@ describe("DialogFlow Directives", () => {
     });
 
     it("should throw an error if trying to add a MediaResponse without a simpleResponse first", async () => {
-      const reply = new DialogFlowReply();
-      const dialogFlowEvent = new DialogFlowEvent(event, {});
+      const conv = new DialogflowConversation({
+        body: event,
+        headers: {},
+      });
+      const reply = new DialogFlowReply(conv);
+      const dialogFlowEvent = new DialogFlowEvent(event);
       const mediaResponse = new MediaResponse(mediaObject);
 
       let error: Error | null = null;
@@ -140,7 +145,7 @@ describe("DialogFlow Directives", () => {
         error = e;
       }
 
-      expect(error).to.be.an("Error");
+      expect(error).to.be.an("error");
       if (error == null) {
         throw expect(error).to.not.be.null;
       }
@@ -171,7 +176,7 @@ describe("DialogFlow Directives", () => {
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.be.undefined;
     });
 
@@ -194,7 +199,7 @@ describe("DialogFlow Directives", () => {
         to: "die",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
@@ -225,7 +230,7 @@ describe("DialogFlow Directives", () => {
         to: "die",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
@@ -257,7 +262,7 @@ describe("DialogFlow Directives", () => {
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.be.undefined;
     });
 
@@ -267,7 +272,7 @@ describe("DialogFlow Directives", () => {
         to: "die",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
@@ -309,7 +314,7 @@ describe("DialogFlow Directives", () => {
         to: "die",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
@@ -351,7 +356,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.DateTimeValueSpec",
@@ -375,7 +380,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type":
@@ -401,7 +406,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.PlaceValueSpec",
@@ -431,7 +436,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.PermissionValueSpec",
@@ -457,7 +462,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.LinkValueSpec",
@@ -491,7 +496,7 @@ describe("DialogFlow Directives", () => {
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(reply.hasDirective("BasicCard")).to.be.false;
     });
 
@@ -503,7 +508,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(
         _.get(reply, "payload.google.richResponse.items[1]"),
       ).to.deep.equal({
@@ -545,7 +550,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(
         _.get(reply, "payload.google.richResponse.items[1]"),
       ).to.deep.equal({
@@ -577,7 +582,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(
         _.get(reply, "payload.google.richResponse.suggestions"),
       ).to.deep.equal([
@@ -597,7 +602,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.SignInValueSpec",
@@ -638,7 +643,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
         data: _.merge(
           {
@@ -675,7 +680,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
         data: _.merge(
           {
@@ -703,7 +708,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
         data: {
           "@type":
@@ -740,7 +745,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.PermissionValueSpec",
@@ -811,7 +816,7 @@ describe("DialogFlow Directives", () => {
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(reply.hasDirective("Table")).to.be.false;
     });
 
@@ -823,7 +828,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(
         _.get(reply, "payload.google.richResponse.items[1]"),
       ).to.deep.equal({
@@ -921,7 +926,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.NewSurfaceValueSpec",
@@ -944,7 +949,7 @@ describe("DialogFlow Directives", () => {
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(reply.hasDirective("BrowseCarousel")).to.be.false;
     });
 
@@ -956,7 +961,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event, {});
+      const reply = await dialogFlowAgent.execute(event);
       expect(
         _.get(reply, "payload.google.richResponse.items[1]"),
       ).to.deep.equal({

@@ -20,23 +20,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-"use strict";
+import { Context as AzureContext } from "azure-functions-ts-essentials";
 
-import * as _ from "lodash";
-import { VoxaApp } from "../VoxaApp";
-import { IVoxaEvent } from "../VoxaEvent";
+export function isAzureContext(context: any): context is AzureContext {
+  if (!context) {
+    return false;
+  }
 
-const defaultConfig: any = {
-  regex: /(.*)OnlyIntent$/,
-  replace: "$1Intent",
-};
-
-export function register(app: VoxaApp, config?: any): void {
-  const pluginConfig = _.merge({}, defaultConfig, config);
-  app.onIntentRequest((voxaEvent: IVoxaEvent) => {
-    if (voxaEvent.intent) {
-      const intentName = voxaEvent.intent.name;
-      voxaEvent.intent.name = intentName.replace(pluginConfig.regex, pluginConfig.replace);
-    }
-  });
+  return context.log !== undefined && context.bindings !== undefined;
 }

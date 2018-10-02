@@ -238,7 +238,7 @@ Media responses let your app play audio content with a playback duration longer 
 
 
 User Information
-----------
+----------------
 
 `Actions on Google Documentation <https://developers.google.com/actions/assistant/helpers#user_information>`_
 
@@ -264,7 +264,7 @@ You can obtain the following user information with this helper:
 
 
 Date and Time
----------
+-------------
 
 `Actions on Google Documentation <https://developers.google.com/actions/assistant/helpers#date_and_time>`
 

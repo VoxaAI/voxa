@@ -1,9 +1,6 @@
-import * as debug from "debug";
 import * as _ from "lodash";
 import { VoxaApp } from "../VoxaApp";
 import { IVoxaEvent } from "../VoxaEvent";
-
-const log: debug.IDebugger = debug("voxa:plugins:autoload");
 
 let defaultConfig: any = {};
 
@@ -22,17 +19,18 @@ export function autoLoad(skill: VoxaApp, config: any) {
 
   defaultConfig = _.merge(defaultConfig, config);
 
-  skill.onSessionStarted(async (voxaEvent: IVoxaEvent): Promise<IVoxaEvent> => {
-    try {
-      const data = await defaultConfig.adapter.get(voxaEvent.user);
+  skill.onSessionStarted(
+    async (voxaEvent: IVoxaEvent): Promise<IVoxaEvent> => {
+      try {
+        const data = await defaultConfig.adapter.get(voxaEvent.user);
 
-      log("Data fetched:");
-      log(data);
-      voxaEvent.model.user = data;
-      return voxaEvent;
-    } catch (error) {
-      log(`Error getting data: ${error}`);
-      throw error;
-    }
-  });
+        voxaEvent.log.debug("Data fetched:", { data });
+        voxaEvent.model.user = data;
+        return voxaEvent;
+      } catch (error) {
+        voxaEvent.log.error(error);
+        throw error;
+      }
+    },
+  );
 }

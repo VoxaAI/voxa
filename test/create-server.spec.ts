@@ -1,6 +1,5 @@
 import { expect, use } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
-import * as debug from "debug";
 import * as http from "http";
 import * as portfinder from "portfinder";
 import * as rp from "request-promise";
@@ -10,7 +9,6 @@ import { createServer } from "../src/platforms/create-server";
 import { VoxaApp } from "../src/VoxaApp";
 import { views } from "./views";
 
-const log: debug.IDebugger = debug("voxa");
 use(chaiAsPromised);
 
 describe("createServer", () => {
@@ -30,20 +28,23 @@ describe("createServer", () => {
   it("should return 404 on GET", async () => {
     server = createServer(adapter);
     port = await portfinder.getPortPromise();
-    server.listen(port, () => log(`Listening on ${port}`));
+    server.listen(port, () => console.log(`Listening on ${port}`));
     const options = {
       json: true,
       method: "GET",
       uri: `http://localhost:${port}/`,
     };
 
-    await expect(rp(options)).to.eventually.be.rejectedWith(StatusCodeError, "404");
+    await expect(rp(options)).to.eventually.be.rejectedWith(
+      StatusCodeError,
+      "404",
+    );
   });
 
   it("should return json response on POST", async () => {
     server = createServer(adapter);
     port = await portfinder.getPortPromise();
-    server.listen(port, () => log(`Listening on ${port}`));
+    server.listen(port, () => console.log(`Listening on ${port}`));
 
     const options = {
       body: {
@@ -59,14 +60,13 @@ describe("createServer", () => {
     expect(response).to.deep.equal({
       response: {
         outputSpeech: {
-          ssml: "<speak>An unrecoverable error occurred.</speak>", type: "SSML",
+          ssml: "<speak>An unrecoverable error occurred.</speak>",
+          type: "SSML",
         },
         shouldEndSession: true,
       },
       sessionAttributes: {},
       version: "1.0",
     });
-
   });
-
 });

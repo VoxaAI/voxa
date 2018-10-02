@@ -20,9 +20,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { RequestEnvelope } from "ask-sdk-model";
+import { RequestEnvelope, User as IAlexaUser } from "ask-sdk-model";
+import { Context as AWSLambdaContext } from "aws-lambda";
+import { Context as AzureContext } from "azure-functions-ts-essentials";
+import { LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
-
 import { IVoxaEvent, IVoxaIntent, IVoxaSession } from "../../VoxaEvent";
 import { AlexaIntent } from "./AlexaIntent";
 import {
@@ -34,7 +36,6 @@ import {
 } from "./apis";
 
 export class AlexaEvent extends IVoxaEvent {
-  public platform: "alexa" = "alexa";
   public intent!: IVoxaIntent;
   public alexa!: {
     customerContact: CustomerContact;
@@ -66,25 +67,38 @@ export class AlexaEvent extends IVoxaEvent {
       "PlaybackController.PreviousCommandIssued",
   };
 
-  constructor(event: RequestEnvelope, context?: any) {
-    super(event, context);
+  constructor(
+    rawEvent: RequestEnvelope,
+    logOptions?: LambdaLogOptions,
+    executionContext?: AWSLambdaContext | AzureContext,
+  ) {
+    super(rawEvent, logOptions, executionContext);
 
     this.request = {
-      locale: event.request.locale,
-      type: event.request.type,
+      locale: rawEvent.request.locale,
+      type: rawEvent.request.type,
     };
 
-    this.initSession();
     this.initIntents();
     this.mapRequestToIntent();
     this.initApis();
+    this.initUser();
   }
 
-  get user() {
-    return (
+  protected initUser() {
+    const user: IAlexaUser =
       _.get(this.rawEvent, "session.user") ||
-      _.get(this.rawEvent, "context.System.user")
-    );
+      _.get(this.rawEvent, "context.System.user");
+
+    if (!user) {
+      return;
+    }
+
+    this.user = {
+      accessToken: user.accessToken,
+      id: user.userId,
+      userId: user.userId,
+    };
   }
 
   get token() {
@@ -102,11 +116,11 @@ export class AlexaEvent extends IVoxaEvent {
 
   protected initApis() {
     this.alexa = {
-      customerContact: new CustomerContact(this.rawEvent),
-      deviceAddress: new DeviceAddress(this.rawEvent),
-      deviceSettings: new DeviceSettings(this.rawEvent),
-      isp: new InSkillPurchase(this.rawEvent),
-      lists: new Lists(this.rawEvent),
+      customerContact: new CustomerContact(this.rawEvent, this.log),
+      deviceAddress: new DeviceAddress(this.rawEvent, this.log),
+      deviceSettings: new DeviceSettings(this.rawEvent, this.log),
+      isp: new InSkillPurchase(this.rawEvent, this.log),
+      lists: new Lists(this.rawEvent, this.log),
     };
   }
 
@@ -120,11 +134,12 @@ export class AlexaEvent extends IVoxaEvent {
   }
 
   protected initIntents() {
-    if (this.request.type === "IntentRequest") {
-      this.intent = new AlexaIntent(this.rawEvent.request.intent);
-    }
-
-    if (this.request.type === "CanFulfillIntentRequest") {
+    if (
+      _.includes(
+        ["IntentRequest", "CanFulfillIntentRequest"],
+        this.request.type,
+      )
+    ) {
       this.intent = new AlexaIntent(this.rawEvent.request.intent);
     }
   }

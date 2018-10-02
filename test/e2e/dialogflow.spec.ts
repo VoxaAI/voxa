@@ -20,8 +20,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import { GoogleCloudDialogflowV2WebhookRequest } from "actions-on-google";
 import { expect } from "chai";
 import { Server } from "http";
+import * as _ from "lodash";
 import * as portfinder from "portfinder";
 // import { VirtualGoogleAssistant } from "virtual-google-assistant";
 
@@ -36,6 +38,7 @@ const views = require("../../hello-world/views.json");
 describe("Hello World Google Assistant", () => {
   let googleAssistant: any;
   let server: Server;
+  let reply: any;
 
   beforeEach(async () => {
     const port = await portfinder.getPortPromise();
@@ -53,7 +56,7 @@ describe("Hello World Google Assistant", () => {
   });
 
   it("Runs the dialogFlowAction and like's voxa", async () => {
-    let reply = await googleAssistant.launch();
+    reply = await googleAssistant.launch();
     expect(reply.fulfillmentText).to.include(
       "Welcome to this voxa app, are you enjoying voxa so far?",
     );
@@ -63,7 +66,7 @@ describe("Hello World Google Assistant", () => {
   });
 
   it("Runs the dialogFlowAction and does not like voxa", async () => {
-    let reply = await googleAssistant.launch();
+    reply = await googleAssistant.launch();
     expect(reply.fulfillmentText).to.include(
       "Welcome to this voxa app, are you enjoying voxa so far?",
     );

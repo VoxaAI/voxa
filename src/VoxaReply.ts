@@ -67,7 +67,7 @@ export interface IVoxaReply {
    *  under `event.session.attributes`. In this way, devs can use the session carry data forward
    *  through the conversation.
    */
-  saveSession: (attributes: IBag, event: IVoxaEvent) => void;
+  saveSession: (attributes: IBag, event: IVoxaEvent) => Promise<void>;
 }
 
 export function addToSSML(ssml: string, statement: string): string {
