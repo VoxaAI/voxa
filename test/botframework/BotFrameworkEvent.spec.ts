@@ -1,5 +1,5 @@
 import("mocha");
-import { IBotStorageData, MemoryBotStorage } from "botbuilder";
+import { IBotStorageData } from "botbuilder";
 import { expect } from "chai";
 import * as _ from "lodash";
 import { BotFrameworkEvent } from "../../src/platforms/botframework/BotFrameworkEvent";

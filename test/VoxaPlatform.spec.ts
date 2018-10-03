@@ -37,7 +37,6 @@ import {
   AlexaReply,
   DialogFlowPlatform,
   DialogFlowReply,
-  IVoxaEvent,
   VoxaApp,
 } from "../src";
 import {
@@ -158,6 +157,7 @@ describe("VoxaPlatform", () => {
 
       const context: AzureContext = {
         done: (error?: Error | null, result?: any) => {}, // tslint:disable-line no-empty
+        invocationId: "Invocation ID",
       };
 
       await handler(context, event);

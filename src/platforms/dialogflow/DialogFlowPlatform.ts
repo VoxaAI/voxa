@@ -72,7 +72,6 @@ export class DialogFlowPlatform extends VoxaPlatform {
     const { conv } = (voxaEvent as DialogFlowEvent).google;
     const dialogFlowReply = reply as DialogFlowReply;
 
-    dialogFlowReply.payload.google.userStorage = "{}";
     if (_.isEmpty(conv.user.storage)) {
       dialogFlowReply.payload.google.resetUserStorage = true;
       delete dialogFlowReply.payload.google.userStorage;

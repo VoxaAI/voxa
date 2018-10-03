@@ -221,9 +221,7 @@ export abstract class VoxaPlatform {
     return v1();
   }
 
-  protected getDirectiveHandlers(): IDirectiveClass[] {
-    return [];
-  }
+  protected abstract getDirectiveHandlers(): IDirectiveClass[];
 
   protected getPlatformRequests(): string[] {
     return [];
