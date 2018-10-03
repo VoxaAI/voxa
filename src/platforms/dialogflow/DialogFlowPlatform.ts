@@ -20,9 +20,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { GoogleCloudDialogflowV2WebhookRequest } from "actions-on-google";
-import { Context as AWSLambdaContext } from "aws-lambda";
-import { Context as AzureContext } from "azure-functions-ts-essentials";
 import * as _ from "lodash";
 import { IDirectiveClass } from "../../directives";
 import { ITransition } from "../../StateMachine";
