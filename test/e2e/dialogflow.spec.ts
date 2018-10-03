@@ -54,6 +54,11 @@ describe("Hello World Google Assistant", () => {
   });
 
   it("Runs the dialogFlowAction and like's voxa", async () => {
+    googleAssistant.addFilter((request: any) => {
+      request.originalDetectIntentRequest.payload.user.userStorage =
+        '{"data": {"voxa": {"userId": "123"}}}';
+    });
+
     reply = await googleAssistant.launch();
     expect(reply.fulfillmentText).to.include(
       "Welcome to this voxa app, are you enjoying voxa so far?",

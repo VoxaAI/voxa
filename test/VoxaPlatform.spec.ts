@@ -39,6 +39,7 @@ import {
   DialogFlowReply,
   VoxaApp,
 } from "../src";
+import { azureLog } from "../src/azure";
 import {
   AlexaRequestBuilder,
   getAPIGatewayProxyEvent,
@@ -156,8 +157,10 @@ describe("VoxaPlatform", () => {
       };
 
       const context: AzureContext = {
+        bindings: {},
         done: (error?: Error | null, result?: any) => {}, // tslint:disable-line no-empty
         invocationId: "Invocation ID",
+        log: azureLog(),
       };
 
       await handler(context, event);

@@ -29,3 +29,26 @@ export function isAzureContext(context: any): context is AzureContext {
 
   return context.log !== undefined && context.bindings !== undefined;
 }
+
+interface IAzureLog {
+  (...message: any[]): void;
+  error(...message: any[]): void;
+  warn(...message: any[]): void;
+  info(...message: any[]): void;
+  verbose(...message: any[]): void;
+  metric(...message: any[]): void;
+}
+
+export function azureLog(): IAzureLog {
+  const log: any = (...message: any[]): void => {
+    console.log(message);
+  };
+
+  log.error = console.error;
+  log.warn = console.warn;
+  log.info = console.info;
+  log.verbose = console.log;
+  log.metric = console.log;
+
+  return log;
+}
