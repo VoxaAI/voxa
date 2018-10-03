@@ -28,7 +28,7 @@ import { OnSessionEndedError } from "../../errors";
 import { VoxaApp } from "../../VoxaApp";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
-import { VoxaPlatform } from "../VoxaPlatform";
+import { IVoxaPlatformConfig, VoxaPlatform } from "../VoxaPlatform";
 import { AlexaEvent } from "./AlexaEvent";
 import { AlexaReply } from "./AlexaReply";
 import {
@@ -70,7 +70,7 @@ const AlexaRequests = [
   "GameEngine.InputHandlerEvent",
 ];
 
-export interface IAlexaPlatformConfig {
+export interface IAlexaPlatformConfig extends IVoxaPlatformConfig {
   appIds?: string | string[];
   defaultFulfillIntents?: string[];
 }

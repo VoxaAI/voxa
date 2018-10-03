@@ -30,15 +30,9 @@ export function isAzureContext(context: any): context is AzureContext {
   return context.log !== undefined && context.bindings !== undefined;
 }
 
-interface IAzureLog {
-  (...message: any[]): void;
-  error(...message: any[]): void;
-  warn(...message: any[]): void;
-  info(...message: any[]): void;
-  verbose(...message: any[]): void;
-  metric(...message: any[]): void;
-}
-
+/**
+ * This is just a helper for some azure specific tests
+ */
 export function azureLog(): IAzureLog {
   const log: any = (...message: any[]): void => {
     console.log(message);
@@ -51,4 +45,13 @@ export function azureLog(): IAzureLog {
   log.metric = console.log;
 
   return log;
+}
+
+interface IAzureLog {
+  (...message: any[]): void;
+  error(...message: any[]): void;
+  warn(...message: any[]): void;
+  info(...message: any[]): void;
+  verbose(...message: any[]): void;
+  metric(...message: any[]): void;
 }

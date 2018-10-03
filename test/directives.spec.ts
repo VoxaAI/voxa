@@ -81,6 +81,13 @@ describe("directives", () => {
       ]).to.include(response.speech);
       expect(response.hasTerminated).to.be.true;
     });
+
+    it("should always use the first response if platform is configured as test", async () => {
+      event.platform.config.test = true;
+      await new Tell("TellRandom").writeToReply(response, event, {});
+      expect("<speak>tell1</speak>").to.equal(response.speech);
+      expect(response.hasTerminated).to.be.true;
+    });
   });
 
   describe("ask", () => {
