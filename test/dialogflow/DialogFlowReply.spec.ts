@@ -20,6 +20,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import { BasicCard, RichResponse, SignIn } from "actions-on-google";
 import { expect } from "chai";
 import * as _ from "lodash";
 import { DialogFlowReply } from "../../src/platforms/dialogflow";
@@ -37,6 +38,45 @@ describe("DialogFlowReply", () => {
       headers: {},
     });
     reply = new DialogFlowReply(conv);
+  });
+
+  describe("hasTerminated", () => {
+    it("should return false for a new reply", () => {
+      expect(reply.hasTerminated).to.be.false;
+    });
+
+    it("should return true after a call to reply.terminate", () => {
+      reply.terminate();
+      expect(reply.hasTerminated).to.be.true;
+    });
+  });
+
+  describe("hasDirectives", () => {
+    it("should return false for a new reply", () => {
+      expect(reply.hasDirectives).to.be.false;
+    });
+
+    it("should return false for a reply with just a simple response", () => {
+      reply.addStatement("Hello World");
+      expect(reply.hasDirectives).to.be.false;
+    });
+
+    it("should return true for a reply with a card", () => {
+      const card = new BasicCard({});
+      const richResponse = new RichResponse();
+      richResponse.add(card);
+      reply.payload.google.richResponse = richResponse;
+      expect(reply.hasDirectives).to.be.true;
+    });
+
+    it("should return true for a reply with an AccountLinkingCard", () => {
+      const signIn = new SignIn();
+      reply.payload.google.systemIntent = {
+        data: signIn.inputValueData,
+        intent: signIn.intent,
+      };
+      expect(reply.hasDirectives).to.be.true;
+    });
   });
 
   describe("addStatement", () => {

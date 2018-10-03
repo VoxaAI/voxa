@@ -575,13 +575,8 @@ export class VoxaApp {
 
   public async transformRequest(voxaEvent: IVoxaEvent): Promise<void> {
     await this.i18nextPromise;
-    let model: Model;
     const data = voxaEvent.session.attributes.model as IBag;
-    if (this.config.Model) {
-      model = await this.config.Model.deserialize(data, voxaEvent);
-    } else {
-      model = await Model.deserialize(data, voxaEvent);
-    }
+    const model = await this.config.Model.deserialize(data, voxaEvent);
 
     voxaEvent.model = model;
     voxaEvent.log.debug("Initialized model ", { model: voxaEvent.model });

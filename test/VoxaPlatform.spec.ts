@@ -184,7 +184,12 @@ describe("VoxaPlatform", () => {
     let alexaLaunch: any;
     let dialogFlowLaunch: any;
 
+    afterEach(() => {
+      delete process.env.DEBUG;
+    });
+
     beforeEach(() => {
+      process.env.DEBUG = "voxa";
       app.onIntent("LaunchIntent", {
         flow: "continue",
         to: "someState",

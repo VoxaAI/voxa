@@ -128,29 +128,28 @@ export abstract class VoxaPlatform {
 
   public azureFunction() {
     return async (context: AzureContext, req: AzureHttpRequest) => {
-      try {
-        if (req.method !== AzureHttpMethod.Post) {
-          context.res = {
-            body: {
-              error: {
-                message: `Method ${req.method} not supported.`,
-                type: "not_supported",
-              },
-            },
-            status: AzureHttpStatusCode.MethodNotAllowed,
-          };
-        } else {
+      context.res = {
+        body: {
+          error: {
+            message: `Method ${req.method} not supported.`,
+            type: "not_supported",
+          },
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+          },
+        },
+        status: AzureHttpStatusCode.MethodNotAllowed,
+      };
+
+      if (req.method === AzureHttpMethod.Post) {
+        try {
           const body = await this.execute(req.body, context);
-          context.res = {
-            body,
-            headers: {
-              "Content-Type": "application/json; charset=utf-8",
-            },
-            status: AzureHttpStatusCode.OK,
-          };
+          context.res.body = body;
+          context.res.status = AzureHttpStatusCode.OK;
+        } catch (error) {
+          context.res.body = error;
+          context.res.status = AzureHttpStatusCode.InternalServerError;
         }
-      } catch (error) {
-        context.res = error;
       }
     };
   }
