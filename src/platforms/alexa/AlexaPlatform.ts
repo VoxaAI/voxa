@@ -79,6 +79,8 @@ export class AlexaPlatform extends VoxaPlatform {
   public name: string = "alexa";
   public config: IAlexaPlatformConfig;
 
+  protected EventClass = AlexaEvent;
+
   constructor(voxaApp: VoxaApp, config: IAlexaPlatformConfig = {}) {
     super(voxaApp, config);
     this.config = config;
@@ -132,21 +134,6 @@ export class AlexaPlatform extends VoxaPlatform {
     } catch (error) {
       return this.app.handleErrors(alexaEvent, error, alexaReply);
     }
-  }
-
-  protected async getEvent(
-    rawEvent: RequestEnvelope,
-    context?: AWSLambdaContext | AzureContext,
-  ): Promise<IVoxaEvent> {
-    const alexaEvent = new AlexaEvent(
-      rawEvent,
-      this.getLogOptions(context),
-      context,
-    );
-
-    alexaEvent.platform = this;
-
-    return alexaEvent;
   }
 
   protected getReply(event: IVoxaEvent): IVoxaReply {

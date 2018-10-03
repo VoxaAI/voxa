@@ -41,7 +41,7 @@ import { IDirectiveClass } from "../directives";
 import { isLambdaContext } from "../lambda";
 import { ITransition } from "../StateMachine";
 import { IStateHandler, VoxaApp } from "../VoxaApp";
-import { IVoxaEvent } from "../VoxaEvent";
+import { IVoxaEvent, IVoxaEventClass } from "../VoxaEvent";
 import { IVoxaReply } from "../VoxaReply";
 import { createServer } from "./create-server";
 
@@ -53,6 +53,8 @@ export interface IVoxaPlatformConfig {
 
 export abstract class VoxaPlatform {
   public name!: string;
+
+  protected abstract EventClass: IVoxaEventClass;
 
   constructor(public app: VoxaApp, public config: IVoxaPlatformConfig = {}) {
     _.forEach(this.getDirectiveHandlers(), (directive) =>
@@ -168,10 +170,20 @@ export abstract class VoxaPlatform {
     this.app.onState(stateName, handler, intents, this.name);
   }
 
-  protected abstract async getEvent(
+  protected async getEvent(
     rawEvent: any,
     context?: AWSLambdaContext | AzureContext,
-  ): Promise<IVoxaEvent>;
+  ): Promise<IVoxaEvent> {
+    const event = new this.EventClass(
+      rawEvent,
+      this.getLogOptions(context),
+      context,
+    );
+
+    event.platform = this;
+
+    return event;
+  }
 
   protected abstract getReply(event: IVoxaEvent): IVoxaReply;
 

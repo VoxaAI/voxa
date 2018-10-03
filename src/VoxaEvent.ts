@@ -38,6 +38,10 @@ export interface IVoxaRequest {
   type: string;
 }
 
+export interface IVoxaEventClass {
+  new(rawEvent: any, logOptions: LambdaLogOptions, context: any): IVoxaEvent;
+}
+
 export abstract class IVoxaEvent {
   public abstract get supportedInterfaces(): string[];
   public rawEvent: any; // the raw event as sent by the service

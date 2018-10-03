@@ -84,6 +84,8 @@ export class BotFrameworkPlatform extends VoxaPlatform {
   public applicationId?: string;
   public applicationPassword?: string;
 
+  protected EventClass = BotFrameworkEvent;
+
   constructor(voxaApp: VoxaApp, config: IBotframeworkPlatformConfig) {
     super(voxaApp, config);
 

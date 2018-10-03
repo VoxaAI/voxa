@@ -56,24 +56,11 @@ import {
 
 export class DialogFlowPlatform extends VoxaPlatform {
   public name = "dialogflow";
+  protected EventClass = DialogFlowEvent;
+
   constructor(app: VoxaApp, config: IVoxaPlatformConfig = {}) {
     super(app, config);
     app.onBeforeReplySent(this.saveStorage, true, this.name);
-  }
-
-  protected async getEvent(
-    rawEvent: GoogleCloudDialogflowV2WebhookRequest,
-    context?: AWSLambdaContext | AzureContext,
-  ): Promise<DialogFlowEvent> {
-    const event = new DialogFlowEvent(
-      rawEvent,
-      this.getLogOptions(context),
-      context,
-    );
-
-    event.platform = this;
-
-    return event;
   }
 
   protected getReply(event: DialogFlowEvent) {
