@@ -25,13 +25,7 @@
 import { RequestEnvelope } from "ask-sdk-model";
 import { expect } from "chai";
 import * as simple from "simple-mock";
-import {
-  AlexaEvent,
-  AlexaPlatform,
-  AlexaReply,
-  plugins,
-  VoxaApp,
-} from "../../src";
+import { AlexaPlatform, plugins, VoxaApp } from "../../src";
 import { AlexaRequestBuilder } from "../tools";
 import { variables } from "../variables";
 import { views } from "../views";
