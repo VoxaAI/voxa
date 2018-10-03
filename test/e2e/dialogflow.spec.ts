@@ -20,10 +20,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { GoogleCloudDialogflowV2WebhookRequest } from "actions-on-google";
 import { expect } from "chai";
 import { Server } from "http";
-import * as _ from "lodash";
 import * as portfinder from "portfinder";
 // import { VirtualGoogleAssistant } from "virtual-google-assistant";
 

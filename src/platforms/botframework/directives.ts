@@ -11,7 +11,6 @@ import { IDirective, IDirectiveClass } from "../../directives";
 import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
-import { BotFrameworkEvent } from "./BotFrameworkEvent";
 import { BotFrameworkReply } from "./BotFrameworkReply";
 
 export interface ISignInCardOptions {

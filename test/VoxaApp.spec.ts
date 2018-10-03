@@ -423,7 +423,6 @@ describe("VoxaApp", () => {
     const alexaEvent = new AlexaEvent(event);
     alexaEvent.platform = platform;
 
-    const launchEvent = rb.getIntentRequest("LaunchIntent");
     statesDefinition.entry = simple.stub().resolveWith({
       to: "die",
     });

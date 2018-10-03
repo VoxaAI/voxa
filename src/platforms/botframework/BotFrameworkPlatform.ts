@@ -40,7 +40,7 @@ import { IVoxaIntent } from "../../VoxaEvent";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
 import { VoxaPlatform } from "../VoxaPlatform";
-import { BotFrameworkEvent, IBotframeworkPayload } from "./BotFrameworkEvent";
+import { BotFrameworkEvent } from "./BotFrameworkEvent";
 import { BotFrameworkReply } from "./BotFrameworkReply";
 import {
   AttachmentLayout,

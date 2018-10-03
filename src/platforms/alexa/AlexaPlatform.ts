@@ -20,7 +20,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { RequestEnvelope, ResponseEnvelope } from "ask-sdk-model";
+import { RequestEnvelope } from "ask-sdk-model";
 import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
 import * as _ from "lodash";

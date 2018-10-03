@@ -23,9 +23,10 @@
 import { GoogleCloudDialogflowV2WebhookRequest } from "actions-on-google";
 import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
+import * as _ from "lodash";
 import { IDirectiveClass } from "../../directives";
 import { ITransition } from "../../StateMachine";
-import { IVoxaAppConfig, VoxaApp } from "../../VoxaApp";
+import { VoxaApp } from "../../VoxaApp";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
 import { IVoxaPlatformConfig, VoxaPlatform } from "../VoxaPlatform";
@@ -88,7 +89,7 @@ export class DialogFlowPlatform extends VoxaPlatform {
     const dialogFlowReply = reply as DialogFlowReply;
 
     dialogFlowReply.payload.google.userStorage = "{}";
-    if (conv.user.storage === {}) {
+    if (_.isEmpty(conv.user.storage)) {
       dialogFlowReply.payload.google.resetUserStorage = true;
       delete dialogFlowReply.payload.google.userStorage;
     } else {

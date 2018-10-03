@@ -24,7 +24,7 @@ import("mocha");
 
 import { expect } from "chai";
 import * as simple from "simple-mock";
-import { AlexaEvent, AlexaPlatform, AlexaReply, VoxaApp } from "../../src";
+import { AlexaPlatform, AlexaReply, VoxaApp } from "../../src";
 
 import { register as replaceIntent } from "../../src/plugins/replace-intent";
 import { AlexaRequestBuilder } from "../tools";

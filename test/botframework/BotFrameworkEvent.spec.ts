@@ -5,8 +5,6 @@ import * as _ from "lodash";
 import { BotFrameworkEvent } from "../../src/platforms/botframework/BotFrameworkEvent";
 import { prepIncomingMessage } from "../../src/platforms/botframework/BotFrameworkPlatform";
 
-const storage = new MemoryBotStorage();
-
 describe("BotFrameworkEvent", () => {
   const stateData: IBotStorageData = {};
   it("should map a webchat conversationUpdate to a LaunchIntent", () => {

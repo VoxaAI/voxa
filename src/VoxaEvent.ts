@@ -22,7 +22,6 @@
 
 import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
-import { Console } from "console";
 import * as i18n from "i18next";
 import { LambdaLog, LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";

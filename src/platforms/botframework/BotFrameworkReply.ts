@@ -19,7 +19,6 @@ import { IAuthorizationResponse } from "./BotFrameworkInterfaces";
 import { BotFrameworkPlatform } from "./BotFrameworkPlatform";
 
 export class BotFrameworkReply implements IVoxaReply {
-
   public get hasMessages(): boolean {
     return !!this.speak || !!this.text;
   }
@@ -204,7 +203,6 @@ export class BotFrameworkReply implements IVoxaReply {
 
   public async saveSession(attributes: IBag, event: IVoxaEvent): Promise<void> {
     const storage = (event.platform as BotFrameworkPlatform).storage;
-    const rawEvent = event.rawEvent as IBotframeworkPayload;
     const conversationId = encodeURIComponent(event.session.sessionId);
     const userId = event.rawEvent.message.address.bot.id;
     const context: IBotStorageContext = {

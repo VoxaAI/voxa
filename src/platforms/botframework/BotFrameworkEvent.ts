@@ -1,7 +1,6 @@
 import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
 import {
-  IBotStorage,
   IBotStorageData,
   IConversationUpdate,
   IEvent,
@@ -11,7 +10,6 @@ import {
 import { LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
 import { ITypeMap, IVoxaEvent, IVoxaIntent, IVoxaUser } from "../../VoxaEvent";
-import { BotFrameworkPlatform } from "./BotFrameworkPlatform";
 
 const MicrosoftCortanaIntents: ITypeMap = {
   "Microsoft.Launch": "LaunchIntent",
