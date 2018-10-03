@@ -128,7 +128,7 @@ describe("Hello World", () => {
 
       expect(lambdaCallbackResult).to.deep.equal({
         body:
-          '{"outputContexts":[{"name":"projects/project/agent/sessions/1525973454075/contexts/attributes","lifespanCount":10000,"parameters":{"attributes":"{\\"model\\":{},\\"state\\":\\"likesVoxa?\\"}"}}],"fulfillmentText":"<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>","source":"google","payload":{"google":{"expectUserResponse":true,"isSsml":true,"richResponse":{"items":[{"simpleResponse":{"textToSpeech":"<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>"}}]}}}}',
+          '{"outputContexts":[{"name":"projects/project/agent/sessions/1525973454075/contexts/attributes","lifespanCount":10000,"parameters":{"attributes":"{\\"model\\":{},\\"state\\":\\"likesVoxa?\\"}"}}],"fulfillmentText":"<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>","source":"google","payload":{"google":{"expectUserResponse":true,"isSsml":true,"userStorage":"{\\"data\\":{\\"voxa\\":{\\"userId\\":\\"ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y\\"}}}","richResponse":{"items":[{"simpleResponse":{"textToSpeech":"<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>"}}]}}}}',
         headers: {
           "Content-Type": "application/json; charset=utf-8"
         },
