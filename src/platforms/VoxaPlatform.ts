@@ -181,20 +181,11 @@ export abstract class VoxaPlatform {
     const logOptions: any = _.merge(
       {
         meta: {
-          requestId: v1(),
+          requestId: this.getRequestId(executionContext),
         },
       },
       this.app.config.logOptions,
     );
-
-    if (isLambdaContext(executionContext)) {
-      logOptions.meta.requestId = executionContext.awsRequestId;
-    } else if (isAzureContext(executionContext)) {
-      logOptions.meta.requestId =
-        executionContext.invocationId || logOptions.meta.requestId;
-    } else {
-      logOptions.dev = true;
-    }
 
     if (_.includes(process.env.DEBUG, "voxa")) {
       logOptions.debug = true;
@@ -202,6 +193,20 @@ export abstract class VoxaPlatform {
     }
 
     return logOptions;
+  }
+
+  protected getRequestId(
+    executionContext?: AWSLambdaContext | AzureContext,
+  ): string {
+    if (isLambdaContext(executionContext)) {
+      return executionContext.awsRequestId;
+    }
+
+    if (isAzureContext(executionContext) && executionContext.invocationId) {
+      return executionContext.invocationId;
+    }
+
+    return v1();
   }
 
   protected getDirectiveHandlers(): IDirectiveClass[] {
