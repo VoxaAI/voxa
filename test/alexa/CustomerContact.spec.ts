@@ -95,8 +95,8 @@ describe("CustomerContact", () => {
     nock("https://api.amazonalexa.com", { reqheaders })
       .get("/v2/accounts/~current/settings/Profile.givenName")
       .replyWithError({
-        message: "Access to this resource cannot be requested",
         code: 403,
+        message: "Access to this resource cannot be requested",
       });
 
     alexaSkill.onIntent("InformationIntent", async (voxaEvent) => {
@@ -129,8 +129,8 @@ describe("CustomerContact", () => {
       .replyWithError("Access to this resource cannot be requested")
       .get("/v2/accounts/~current/settings/Profile.name")
       .replyWithError({
-        message: "Access to this resource cannot be requested",
         code: 500,
+        message: "Access to this resource cannot be requested",
       });
 
     alexaSkill.onIntent("InformationIntent", async (voxaEvent) => {

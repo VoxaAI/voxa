@@ -60,6 +60,11 @@ export class Reprompt implements IDirective {
   }
 }
 
+export interface IAskStatement {
+  ask: string;
+  reprompt?: string;
+}
+
 export class Ask implements IDirective {
   public static key: string = "ask";
   public static platform: string = "core";
@@ -82,12 +87,20 @@ export class Ask implements IDirective {
       if (!statement.ask) {
         reply.addStatement(sampleOrItem(statement, event.platform));
       } else {
-        reply.addStatement(sampleOrItem(statement.ask, event.platform));
-
-        if (statement.reprompt) {
-          reply.addReprompt(sampleOrItem(statement.reprompt, event.platform));
-        }
+        this.addSttementToReply(statement, reply, event);
       }
+    }
+  }
+
+  private addSttementToReply(
+    statement: IAskStatement,
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+  ) {
+    reply.addStatement(sampleOrItem(statement.ask, event.platform));
+
+    if (statement.reprompt) {
+      reply.addReprompt(sampleOrItem(statement.reprompt, event.platform));
     }
   }
 }

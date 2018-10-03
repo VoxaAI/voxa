@@ -147,8 +147,8 @@ describe("Lists", () => {
       .reply(200, JSON.stringify(listCreatedMock))
       .persist()
       .post("/v2/householdlists/listId/items", {
-        value: "milk",
         status: "active",
+        value: "milk",
       })
       .reply(200, JSON.stringify(itemCreatedMock));
 
@@ -225,8 +225,8 @@ describe("Lists", () => {
       .reply(200, JSON.stringify(listByIdMock))
       .persist()
       .put("/v2/householdlists/listId/items/1", {
-        value,
         status: "active",
+        value,
         version: 1,
       })
       .reply(200, JSON.stringify(customItemCreatedMock));
@@ -365,8 +365,8 @@ describe("Lists", () => {
       .reply(200, JSON.stringify(listByIdMock))
       .persist()
       .put("/v2/householdlists/listId/items/1", {
-        value,
         status: "active",
+        value,
         version: 1,
       })
       .reply(200, JSON.stringify(customItemCreatedMock))

@@ -92,8 +92,8 @@ describe("DeviceSettings", () => {
     nock("https://api.amazonalexa.com", { reqheaders })
       .get("/v2/devices/deviceId/settings/System.distanceUnits")
       .replyWithError({
-        message: "Could not find resource for URI",
         code: 204,
+        message: "Could not find resource for URI",
       });
 
     alexaSkill.onIntent("SettingsIntent", async (voxaEvent) => {
