@@ -1,9 +1,32 @@
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 import {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
   Callback as AWSLambdaCallback,
   Context as AWSLambdaContext,
 } from "aws-lambda";
+import { Context as AzureContext } from "azure-functions-ts-essentials";
 import {
   IBotStorage,
   IBotStorageContext,
@@ -11,9 +34,11 @@ import {
   IChatConnectorAddress,
   IMessage,
 } from "botbuilder";
-import * as debug from "debug";
+import { IDirectiveClass } from "../../directives";
 import { VoxaApp } from "../../VoxaApp";
 import { IVoxaIntent } from "../../VoxaEvent";
+import { IVoxaEvent } from "../../VoxaEvent";
+import { IVoxaReply } from "../../VoxaReply";
 import { VoxaPlatform } from "../VoxaPlatform";
 import { BotFrameworkEvent } from "./BotFrameworkEvent";
 import { BotFrameworkReply } from "./BotFrameworkReply";
@@ -27,8 +52,6 @@ import {
   Text,
   TextP,
 } from "./directives";
-
-const botframeworklog: debug.IDebugger = debug("voxa:botframework");
 
 const CortanaRequests = [
   "conversationUpdate",
@@ -45,7 +68,7 @@ const toAddress = {
   serviceUrl: "serviceUrl",
 };
 
-export type IRecognize = (msg: IMessage) => Promise<IVoxaIntent | void>;
+export type IRecognize = (msg: IMessage) => Promise<IVoxaIntent | undefined>;
 export interface IBotframeworkPlatformConfig {
   applicationId?: string;
   applicationPassword?: string;
@@ -55,10 +78,13 @@ export interface IBotframeworkPlatformConfig {
 }
 
 export class BotFrameworkPlatform extends VoxaPlatform {
+  public name = "botframework";
   public recognize: IRecognize;
   public storage: IBotStorage;
   public applicationId?: string;
   public applicationPassword?: string;
+
+  protected EventClass = BotFrameworkEvent;
 
   constructor(voxaApp: VoxaApp, config: IBotframeworkPlatformConfig) {
     super(voxaApp, config);
@@ -116,36 +142,48 @@ export class BotFrameworkPlatform extends VoxaPlatform {
     };
   }
 
-  public async execute(msg: any, context: any) {
-    msg = prepIncomingMessage(msg);
+  public async execute(
+    rawEvent: any,
+    context?: AWSLambdaContext | AzureContext,
+  ) {
+    const reply = await super.execute(rawEvent, context);
+    await reply.send();
+    return {};
+  }
 
-    const stateData: IBotStorageData | undefined = await this.getStateData(msg);
-    const intent = await this.recognize(msg);
+  protected getReply(event: BotFrameworkEvent): IVoxaReply {
+    return new BotFrameworkReply(event);
+  }
+
+  protected async getEvent(
+    rawEvent: any,
+    context?: AWSLambdaContext | AzureContext,
+  ): Promise<IVoxaEvent> {
+    const message = prepIncomingMessage(rawEvent);
+
+    const stateData: IBotStorageData = await this.getStateData(rawEvent);
+    const intent = await this.recognize(rawEvent);
 
     const event = new BotFrameworkEvent(
-      msg,
+      {
+        intent,
+        message,
+        stateData,
+      },
+      this.getLogOptions(context),
       context,
-      stateData,
-      this.storage,
-      intent,
     );
 
-    event.applicationId = this.applicationId;
-    event.applicationPassword = this.applicationPassword;
+    event.platform = this;
 
     if (!event.request.locale) {
       event.request.locale = this.config.defaultLocale;
     }
 
-    const reply = (await this.app.execute(
-      event,
-      new BotFrameworkReply(event),
-    )) as BotFrameworkReply;
-    await reply.send(event);
-    return {};
+    return event as IVoxaEvent;
   }
 
-  protected getDirectiveHandlers() {
+  protected getDirectiveHandlers(): IDirectiveClass[] {
     return [
       HeroCard,
       SuggestedActions,
@@ -182,8 +220,6 @@ export class BotFrameworkPlatform extends VoxaPlatform {
           return reject(err);
         }
 
-        botframeworklog("got stateData");
-        botframeworklog(result, context);
         return resolve(result);
       });
     });

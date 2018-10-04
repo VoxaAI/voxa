@@ -1,3 +1,25 @@
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 import {
   IAttachment,
   IBotStorageContext,
@@ -7,7 +29,6 @@ import {
   IIdentity,
   ISuggestedActions,
 } from "botbuilder";
-import * as debug from "debug";
 import * as _ from "lodash";
 import * as rp from "request-promise";
 import * as urljoin from "url-join";
@@ -17,10 +38,28 @@ import { IBag, IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 import { BotFrameworkEvent } from "./BotFrameworkEvent";
 import { IAuthorizationResponse } from "./BotFrameworkInterfaces";
-
-const botframeworklog: debug.IDebugger = debug("voxa:botframework");
+import { BotFrameworkPlatform } from "./BotFrameworkPlatform";
 
 export class BotFrameworkReply implements IVoxaReply {
+  public get hasMessages(): boolean {
+    return !!this.speak || !!this.text;
+  }
+
+  public get hasDirectives(): boolean {
+    return !!this.attachments || !!this.suggestedActions;
+  }
+
+  public get hasTerminated(): boolean {
+    return this.inputHint === "acceptingInput";
+  }
+
+  public get speech(): string {
+    if (!this.speak) {
+      return "";
+    }
+
+    return this.speak;
+  }
   // IMessage
   public channelId: string;
   public conversation: IIdentity;
@@ -39,14 +78,14 @@ export class BotFrameworkReply implements IVoxaReply {
   public suggestedActions?: ISuggestedActions;
   public attachmentLayout?: string;
 
-  constructor(event: BotFrameworkEvent) {
-    this.channelId = event.rawEvent.address.channelId;
+  constructor(private event: BotFrameworkEvent) {
+    this.channelId = event.rawEvent.message.address.channelId;
     if (!event.session) {
       throw new Error("event.session is missing");
     }
 
     this.conversation = { id: event.session.sessionId };
-    this.from = { id: event.rawEvent.address.bot.id };
+    this.from = { id: event.rawEvent.message.address.bot.id };
     this.inputHint = "ignoringInput";
     this.locale = event.request.locale;
 
@@ -61,20 +100,13 @@ export class BotFrameworkReply implements IVoxaReply {
       this.recipient.name = event.user.name;
     }
 
-    this.replyToId = (event.rawEvent.address as IChatConnectorAddress).id;
+    this.replyToId = (event.rawEvent.message
+      .address as IChatConnectorAddress).id;
     this.timestamp = new Date().toISOString();
   }
 
-  public get hasMessages(): boolean {
-    return !!this.speak || !!this.text;
-  }
-
-  public get hasDirectives(): boolean {
-    return !!this.attachments || !!this.suggestedActions;
-  }
-
-  public get hasTerminated(): boolean {
-    return this.inputHint === "acceptingInput";
+  public toJSON() {
+    return _.omit(this, "event");
   }
 
   public clear() {
@@ -86,14 +118,6 @@ export class BotFrameworkReply implements IVoxaReply {
 
   public terminate() {
     this.inputHint = "acceptingInput";
-  }
-
-  public get speech(): string {
-    if (!this.speak) {
-      return "";
-    }
-
-    return this.speak;
   }
 
   public addStatement(statement: string, isPlain: boolean = false) {
@@ -116,9 +140,8 @@ export class BotFrameworkReply implements IVoxaReply {
     return;
   }
 
-  public async send(event: BotFrameworkEvent) {
-    botframeworklog("partialReply");
-    botframeworklog({
+  public async send() {
+    this.event.log.debug("partialReply", {
       hasDirectives: this.hasDirectives,
       hasMessages: this.hasMessages,
       sendingPartialReply: !(!this.hasMessages && !this.hasDirectives),
@@ -128,9 +151,9 @@ export class BotFrameworkReply implements IVoxaReply {
       return;
     }
 
-    const uri = this.getReplyUri(event.rawEvent);
+    const uri = this.getReplyUri(this.event.rawEvent.message);
     this.id = uuid.v1();
-    await this.botApiRequest("POST", uri, _.clone(this), event);
+    await this.botApiRequest("POST", uri, _.clone(this), this.event);
     this.clear();
   }
 
@@ -142,9 +165,10 @@ export class BotFrameworkReply implements IVoxaReply {
     attempts: number = 0,
   ): Promise<any> {
     let authorization: IAuthorizationResponse;
+    const platform = event.platform as BotFrameworkPlatform;
     authorization = await this.getAuthorization(
-      event.applicationId,
-      event.applicationPassword,
+      platform.applicationId,
+      platform.applicationPassword,
     );
     const requestOptions: rp.Options = {
       auth: {
@@ -156,8 +180,7 @@ export class BotFrameworkReply implements IVoxaReply {
       uri,
     };
 
-    botframeworklog("botApiRequest");
-    botframeworklog(JSON.stringify(requestOptions, null, 2));
+    event.log.debug("botApiRequest", { requestOptions });
     return rp(requestOptions);
   }
 
@@ -196,23 +219,20 @@ export class BotFrameworkReply implements IVoxaReply {
       method: "POST",
       url,
     };
-    botframeworklog("getAuthorization");
-    botframeworklog(requestOptions);
 
     return (await rp(requestOptions)) as IAuthorizationResponse;
   }
 
   public async saveSession(attributes: IBag, event: IVoxaEvent): Promise<void> {
+    const storage = (event.platform as BotFrameworkPlatform).storage;
     const conversationId = encodeURIComponent(event.session.sessionId);
-    const userId = event.rawEvent.address.bot.id;
+    const userId = event.rawEvent.message.address.bot.id;
     const context: IBotStorageContext = {
       conversationId,
       persistConversationData: false,
       persistUserData: false,
       userId,
     };
-
-    const storage = (event as BotFrameworkEvent).storage;
 
     const data: IBotStorageData = {
       conversationData: {},
@@ -229,8 +249,7 @@ export class BotFrameworkReply implements IVoxaReply {
           return reject(error);
         }
 
-        botframeworklog("savedStateData");
-        botframeworklog(data, context);
+        event.log.debug("savedStateData", { data, context });
         return resolve();
       });
     });

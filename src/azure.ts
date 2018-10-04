@@ -20,35 +20,38 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import * as _ from "lodash";
-import { VoxaApp } from "../VoxaApp";
-import { IVoxaEvent } from "../VoxaEvent";
+import { Context as AzureContext } from "azure-functions-ts-essentials";
 
-let defaultConfig: any = {};
-
-export function autoLoad(skill: VoxaApp, config: any) {
-  if (!config.adapter) {
-    throw Error("Missing adapter");
+export function isAzureContext(context: any): context is AzureContext {
+  if (!context) {
+    return false;
   }
 
-  if (!_.isFunction(config.adapter.get)) {
-    throw Error("No get method to fetch data from");
-  }
+  return context.log !== undefined && context.bindings !== undefined;
+}
 
-  defaultConfig = _.merge(defaultConfig, config);
+/**
+ * This is just a helper for some azure specific tests
+ */
+export function azureLog(): IAzureLog {
+  const log: any = (...message: any[]): void => {
+    console.log(message);
+  };
 
-  skill.onSessionStarted(
-    async (voxaEvent: IVoxaEvent): Promise<IVoxaEvent> => {
-      try {
-        const data = await defaultConfig.adapter.get(voxaEvent.user);
+  log.error = console.error;
+  log.warn = console.warn;
+  log.info = console.info;
+  log.verbose = console.log;
+  log.metric = console.log;
 
-        voxaEvent.log.debug("Data fetched:", { data });
-        voxaEvent.model.user = data;
-        return voxaEvent;
-      } catch (error) {
-        voxaEvent.log.error(error);
-        throw error;
-      }
-    },
-  );
+  return log;
+}
+
+interface IAzureLog {
+  (...message: any[]): void;
+  error(...message: any[]): void;
+  warn(...message: any[]): void;
+  info(...message: any[]): void;
+  verbose(...message: any[]): void;
+  metric(...message: any[]): void;
 }

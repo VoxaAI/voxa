@@ -1,3 +1,25 @@
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 import { expect } from "chai";
 import * as _ from "lodash";
 import * as nock from "nock";
@@ -8,7 +30,8 @@ import { AlexaRequestBuilder, isAlexaEvent } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";
 
-const LIST_ID = "YW16bjEuYWNjb3VudC5BRkdDNTRFVFI1MkxIS1JMMjZQUkdEM0FYWkdBLVNIT1BQSU5HX0lURU0=";
+const LIST_ID =
+  "YW16bjEuYWNjb3VudC5BRkdDNTRFVFI1MkxIS1JMMjZQUkdEM0FYWkdBLVNIT1BQSU5HX0lURU0=";
 const LIST_NAME = "MY CUSTOM LIST";
 
 const listMock = {
@@ -30,16 +53,19 @@ const listMock = {
       version: 1,
     },
     {
-      listId: "YW16bjEuYWNjb3VudC5BRkdDNTRFVFI1MkxIS1JMMjZQUkdEM0FYWkdBLVRBU0s=",
+      listId:
+        "YW16bjEuYWNjb3VudC5BRkdDNTRFVFI1MkxIS1JMMjZQUkdEM0FYWkdBLVRBU0s=",
       name: "Alexa to-do list",
       state: "active",
       statusMap: [
         {
-          href: "/v2/householdlists/YW16bjEuYWNjb3VudC5BRkdDNTRFVFI1MkxIS1JMMjZQUkdEM0FYWkdBLVRBU0s=/active",
+          href:
+            "/v2/householdlists/YW16bjEuYWNjb3VudC5BRkdDNTRFVFI1MkxIS1JMMjZQUkdEM0FYWkdBLVRBU0s=/active",
           status: "active",
         },
         {
-          href: "/v2/householdlists/YW16bjEuYWNjb3VudC5BRkdDNTRFVFI1MkxIS1JMMjZQUkdEM0FYWkdBLVRBU0s=/completed",
+          href:
+            "/v2/householdlists/YW16bjEuYWNjb3VudC5BRkdDNTRFVFI1MkxIS1JMMjZQUkdEM0FYWkdBLVRBU0s=/completed",
           status: "completed",
         },
       ],
@@ -66,10 +92,7 @@ const listCreatedMock = {
 };
 
 const listByIdMock = {
-  items: [
-    { id: "1", name: "milk" },
-    { id: "2", name: "eggs" },
-  ],
+  items: [{ id: "1", name: "milk" }, { id: "2", name: "eggs" }],
   listId: "listId",
   name: LIST_NAME,
   state: "active",
@@ -78,7 +101,8 @@ const listByIdMock = {
 
 const itemCreatedMock = {
   createdTime: "Thu Aug 16 14:42:54 UTC 2018",
-  href: "/v2/householdlists/c73aa488-ba0c-433a-a8c7-33f84b8361ba/items/0701d6ee-f407-458d-87ad-41b5bb8381bf",
+  href:
+    "/v2/householdlists/c73aa488-ba0c-433a-a8c7-33f84b8361ba/items/0701d6ee-f407-458d-87ad-41b5bb8381bf",
   id: "id",
   status: "active",
   updatedTime: "Thu Aug 16 14:42:54 UTC 2018",
@@ -93,9 +117,11 @@ describe("Lists", () => {
 
   beforeEach(() => {
     const rb = new AlexaRequestBuilder();
-    app =  new VoxaApp({ views, variables });
+    app = new VoxaApp({ views, variables });
     alexaSkill = new AlexaPlatform(app);
-    event = rb.getIntentRequest("AddProductToListIntent", { productName: "milk" });
+    event = rb.getIntentRequest("AddProductToListIntent", {
+      productName: "milk",
+    });
   });
 
   afterEach(() => {
@@ -105,7 +131,9 @@ describe("Lists", () => {
   it("should create a custom list and create an item", async () => {
     const reqheaders = {
       "accept": "application/json",
-      "authorization": `Bearer ${event.context.System.user.permissions.consentToken}`,
+      "authorization": `Bearer ${
+        event.context.System.user.permissions.consentToken
+      }`,
       "content-type": "application/json",
       "host": "api.amazonalexa.com",
     };
@@ -118,7 +146,10 @@ describe("Lists", () => {
       .post("/v2/householdlists/", { name: LIST_NAME, state: "active" })
       .reply(200, JSON.stringify(listCreatedMock))
       .persist()
-      .post("/v2/householdlists/listId/items", { value: "milk", status: "active" })
+      .post("/v2/householdlists/listId/items", {
+        status: "active",
+        value: "milk",
+      })
       .reply(200, JSON.stringify(itemCreatedMock));
 
     alexaSkill.onIntent("AddProductToListIntent", async (voxaEvent) => {
@@ -136,7 +167,10 @@ describe("Lists", () => {
       }
 
       if (isAlexaEvent(voxaEvent)) {
-        listItem = await voxaEvent.alexa.lists.createItem(listInfo.listId, productName);
+        listItem = await voxaEvent.alexa.lists.createItem(
+          listInfo.listId,
+          productName,
+        );
       }
 
       if (listItem) {
@@ -146,9 +180,11 @@ describe("Lists", () => {
       return { tell: "Lists.AlreadyCreated" };
     });
 
-    const reply = await alexaSkill.execute(event, {});
+    const reply = await alexaSkill.execute(event);
 
-    expect(_.get(reply, "response.outputSpeech.ssml")).to.include("Product has been successfully created");
+    expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
+      "Product has been successfully created",
+    );
     expect(reply.response.reprompt).to.be.undefined;
     expect(_.get(reply, "sessionAttributes.state")).to.equal("die");
     expect(reply.response.shouldEndSession).to.equal(true);
@@ -157,7 +193,9 @@ describe("Lists", () => {
   it("should modify custom list, and modify an item", async () => {
     const reqheaders = {
       "accept": "application/json",
-      "authorization": `Bearer ${event.context.System.user.permissions.consentToken}`,
+      "authorization": `Bearer ${
+        event.context.System.user.permissions.consentToken
+      }`,
       "content-type": "application/json",
       "host": "api.amazonalexa.com",
     };
@@ -179,10 +217,18 @@ describe("Lists", () => {
       .get("/v2/householdlists/listId/active")
       .reply(200, JSON.stringify(listByIdMock))
       .persist()
-      .put("/v2/householdlists/listId", { name: newListName, state: "active", version: 1 })
+      .put("/v2/householdlists/listId", {
+        name: newListName,
+        state: "active",
+        version: 1,
+      })
       .reply(200, JSON.stringify(listByIdMock))
       .persist()
-      .put("/v2/householdlists/listId/items/1", { value, status: "active", version: 1 })
+      .put("/v2/householdlists/listId/items/1", {
+        status: "active",
+        value,
+        version: 1,
+      })
       .reply(200, JSON.stringify(customItemCreatedMock));
 
     event.request.intent.name = "ModifyProductInListIntent";
@@ -194,19 +240,34 @@ describe("Lists", () => {
         const listInfo = await voxaEvent.alexa.lists.getOrCreateList(LIST_NAME);
         listInfo.listId = listInfo.listId || "";
 
-        await voxaEvent.alexa.lists.updateList(listInfo.listId, newListName, "active", 1);
+        await voxaEvent.alexa.lists.updateList(
+          listInfo.listId,
+          newListName,
+          "active",
+          1,
+        );
 
-        const listItem: any = _.find(_.get(listInfo, "items"), { name: productName });
+        const listItem: any = _.find(_.get(listInfo, "items"), {
+          name: productName,
+        });
 
-        await voxaEvent.alexa.lists.updateItem(listInfo.listId, listItem.id, value, "active", 1);
+        await voxaEvent.alexa.lists.updateItem(
+          listInfo.listId,
+          listItem.id,
+          value,
+          "active",
+          1,
+        );
       }
 
       return { tell: "Lists.ProductModified" };
     });
 
-    const reply = await alexaSkill.execute(event, {});
+    const reply = await alexaSkill.execute(event);
 
-    expect(_.get(reply, "response.outputSpeech.ssml")).to.include("Product has been successfully modified");
+    expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
+      "Product has been successfully modified",
+    );
     expect(reply.response.reprompt).to.be.undefined;
     expect(_.get(reply, "sessionAttributes.state")).to.equal("die");
     expect(reply.response.shouldEndSession).to.equal(true);
@@ -215,7 +276,9 @@ describe("Lists", () => {
   it("should delete item from list, and delete list", async () => {
     const reqheaders = {
       "accept": "application/json",
-      "authorization": `Bearer ${event.context.System.user.permissions.consentToken}`,
+      "authorization": `Bearer ${
+        event.context.System.user.permissions.consentToken
+      }`,
       "content-type": "application/json",
       "host": "api.amazonalexa.com",
     };
@@ -237,15 +300,18 @@ describe("Lists", () => {
 
     alexaSkill.onIntent("DeleteIntent", (voxaEvent) => {
       if (isAlexaEvent(voxaEvent)) {
-        return voxaEvent.alexa.lists.deleteItem("listId", "1")
+        return voxaEvent.alexa.lists
+          .deleteItem("listId", "1")
           .then(() => voxaEvent.alexa.lists.deleteList("listId"))
           .then(() => ({ tell: "Lists.ListDeleted" }));
       }
     });
 
-    const reply = await alexaSkill.execute(event, {});
+    const reply = await alexaSkill.execute(event);
 
-    expect(_.get(reply, "response.outputSpeech.ssml")).to.include("List has been successfully deleted");
+    expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
+      "List has been successfully deleted",
+    );
     expect(reply.response.reprompt).to.be.undefined;
     expect(_.get(reply, "sessionAttributes.state")).to.equal("die");
     expect(reply.response.shouldEndSession).to.equal(true);
@@ -254,7 +320,9 @@ describe("Lists", () => {
   it("should show the lists with at least 1 item", async () => {
     const reqheaders = {
       "accept": "application/json",
-      "authorization": `Bearer ${event.context.System.user.permissions.consentToken}`,
+      "authorization": `Bearer ${
+        event.context.System.user.permissions.consentToken
+      }`,
       "content-type": "application/json",
       "host": "api.amazonalexa.com",
     };
@@ -279,16 +347,28 @@ describe("Lists", () => {
       .get("/v2/householdlists/listId/active")
       .reply(200, JSON.stringify(listByIdMock))
       .persist()
-      .get("/v2/householdlists/YW16bjEuYWNjb3VudC5BRkdDNTRFVFI1MkxIS1JMMjZQUkdEM0FYWkdBLVNIT1BQSU5HX0lURU0=/active")
+      .get(
+        "/v2/householdlists/YW16bjEuYWNjb3VudC5BRkdDNTRFVFI1MkxIS1JMMjZQUkdEM0FYWkdBLVNIT1BQSU5HX0lURU0=/active",
+      )
       .reply(200, JSON.stringify(shoppintListMock))
       .persist()
-      .get("/v2/householdlists/YW16bjEuYWNjb3VudC5BRkdDNTRFVFI1MkxIS1JMMjZQUkdEM0FYWkdBLVRBU0s=/active")
+      .get(
+        "/v2/householdlists/YW16bjEuYWNjb3VudC5BRkdDNTRFVFI1MkxIS1JMMjZQUkdEM0FYWkdBLVRBU0s=/active",
+      )
       .reply(200, JSON.stringify(toDoListMock))
       .persist()
-      .put("/v2/householdlists/listId", { name: newListName, state: "active", version: 1 })
+      .put("/v2/householdlists/listId", {
+        name: newListName,
+        state: "active",
+        version: 1,
+      })
       .reply(200, JSON.stringify(listByIdMock))
       .persist()
-      .put("/v2/householdlists/listId/items/1", { value, status: "active", version: 1 })
+      .put("/v2/householdlists/listId/items/1", {
+        status: "active",
+        value,
+        version: 1,
+      })
       .reply(200, JSON.stringify(customItemCreatedMock))
       .persist()
       .get("/v2/householdlists/listId/items/1")
@@ -303,7 +383,9 @@ describe("Lists", () => {
         const listMetadataInfo = await voxaEvent.alexa.lists.getDefaultShoppingList();
         listMetadataInfo.listId = listMetadataInfo.listId || "";
 
-        let listInfo = await voxaEvent.alexa.lists.getListById(listMetadataInfo.listId);
+        let listInfo = await voxaEvent.alexa.lists.getListById(
+          listMetadataInfo.listId,
+        );
 
         if (!_.isEmpty(listInfo.items)) {
           listsWithItems.push(listInfo.name);
@@ -333,10 +415,16 @@ describe("Lists", () => {
           version: 1,
         };
 
-        listInfo = await voxaEvent.alexa.lists.updateList(listInfo.listId, data);
+        listInfo = await voxaEvent.alexa.lists.updateList(
+          listInfo.listId,
+          data,
+        );
         listInfo.listId = listInfo.listId || "";
 
-        const itemInfo = await voxaEvent.alexa.lists.getListItem(listInfo.listId, "1");
+        const itemInfo = await voxaEvent.alexa.lists.getListItem(
+          listInfo.listId,
+          "1",
+        );
 
         data = {
           status: itemInfo.status,
@@ -350,7 +438,7 @@ describe("Lists", () => {
       return { tell: "Lists.WithItems" };
     });
 
-    const reply = await alexaSkill.execute(event, {});
+    const reply = await alexaSkill.execute(event);
     const outputSpeech = `Lists with items are: Alexa shopping list, Alexa to-do list, and ${LIST_NAME}`;
 
     expect(_.get(reply, "response.outputSpeech.ssml")).to.include(outputSpeech);

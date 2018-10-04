@@ -1,10 +1,10 @@
 "use strict";
 import { expect } from "chai";
 import * as simple from "simple-mock";
-import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
-import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
+import { AlexaEvent, AlexaPlatform, AlexaReply, VoxaApp } from "../src";
 import { isState, StateMachine } from "../src/StateMachine";
 import { AlexaRequestBuilder } from "./tools";
+import { views } from "./views";
 
 const rb = new AlexaRequestBuilder();
 
@@ -12,15 +12,25 @@ describe("StateMachine", () => {
   let states: any;
   let voxaEvent: AlexaEvent;
   let reply: AlexaReply;
+  let app: VoxaApp;
+  let skill: AlexaPlatform;
 
   beforeEach(() => {
+    app = new VoxaApp({ views });
+    skill = new AlexaPlatform(app);
     voxaEvent = new AlexaEvent(rb.getIntentRequest("AMAZON.YesIntent"));
+    voxaEvent.platform = skill;
+
     reply = new AlexaReply();
     states = {
       core: {
         entry: {
           enter: {
-            entry: () => ({ tell: "ExitIntent.Farewell", to: "die", flow: "terminate" }),
+            entry: () => ({
+              flow: "terminate",
+              tell: "ExitIntent.Farewell",
+              to: "die",
+            }),
           },
           name: "entry",
         },
@@ -49,29 +59,42 @@ describe("StateMachine", () => {
   });
 
   it("should fail if there's no entry state", () => {
-    expect(() => new StateMachine({ states: {} })).to.throw("State machine must have a `entry` state.");
+    expect(() => new StateMachine({ states: {} })).to.throw(
+      "State machine must have a `entry` state.",
+    );
   });
 
   describe("runTransition", () => {
     it("should transition to die", async () => {
       const stateMachine = new StateMachine({ states });
-      const response = await stateMachine.runTransition("initState", voxaEvent, reply);
+      const response = await stateMachine.runTransition(
+        "initState",
+        voxaEvent,
+        reply,
+      );
       if (isState(response.to)) {
-        expect(response.to.name).to.equal(states.core.die.name);
+        expect(response.to.name).to.equal("die");
       }
     });
 
     it("should transition more than one state", async () => {
       const stateMachine = new StateMachine({ states });
-      const response = await stateMachine.runTransition("secondState", voxaEvent, reply);
+      const response = await stateMachine.runTransition(
+        "secondState",
+        voxaEvent,
+        reply,
+      );
       if (isState(response.to)) {
-        expect(response.to.name).to.equal(states.core.die.name);
+        expect(response.to.name).to.equal("die");
       }
     });
 
     it("should call onBeforeStateChangedCallbacks", async () => {
       const onBeforeStateChanged = simple.stub();
-      const stateMachine = new StateMachine({ onBeforeStateChanged: [onBeforeStateChanged], states });
+      const stateMachine = new StateMachine({
+        onBeforeStateChanged: [onBeforeStateChanged],
+        states,
+      });
       await stateMachine.runTransition("secondState", voxaEvent, reply);
       expect(onBeforeStateChanged.called).to.be.true;
       expect(onBeforeStateChanged.callCount).to.equal(2);
@@ -79,9 +102,13 @@ describe("StateMachine", () => {
 
     it("should transition on promises change", async () => {
       const stateMachine = new StateMachine({ states });
-      const response = await stateMachine.runTransition("thirdState", voxaEvent, reply);
+      const response = await stateMachine.runTransition(
+        "thirdState",
+        voxaEvent,
+        reply,
+      );
       if (isState(response.to)) {
-        expect(response.to.name).to.equal(states.core.die.name);
+        expect(response.to.name).to.equal("die");
       }
     });
 
@@ -89,63 +116,97 @@ describe("StateMachine", () => {
       states.core.entry = { to: { TestIntent: "die" }, name: "entry" };
       const stateMachine = new StateMachine({ states });
       voxaEvent.intent.name = "TestIntent";
-      const response = await stateMachine.runTransition("entry", voxaEvent, reply);
+      const response = await stateMachine.runTransition(
+        "entry",
+        voxaEvent,
+        reply,
+      );
       if (isState(response.to)) {
-        expect(response.to.name).to.equal(states.core.die.name);
+        expect(response.to.name).to.equal("die");
       }
     });
 
     it("should transition to die if result is not an object", async () => {
-      states.core.thirdState.enter = { entry: () => "LaunchIntent.OpenResponse" };
+      states.core.thirdState.enter = {
+        entry: () => "LaunchIntent.OpenResponse",
+      };
 
       const stateMachine = new StateMachine({ states });
-      const response = await stateMachine.runTransition("thirdState", voxaEvent, reply);
+      const response = await stateMachine.runTransition(
+        "thirdState",
+        voxaEvent,
+        reply,
+      );
       if (isState(response.to)) {
-        expect(response.to.name).to.equal(states.core.die.name);
+        expect(response.to.name).to.equal("die");
       }
     });
 
     it("should throw an error if there's no transition and no intent", (done) => {
       delete voxaEvent.intent;
       const stateMachine = new StateMachine({ states });
-      stateMachine.runTransition("thirdState", voxaEvent, reply)
-        .then(() => done("Should have thrown"), (error) => {
-          expect(error.message).to.equal("Running the state machine without an intent");
+      stateMachine.runTransition("thirdState", voxaEvent, reply).then(
+        () => done("Should have thrown"),
+        (error) => {
+          expect(error.message).to.equal(
+            "Running the state machine without an intent",
+          );
           done();
-        });
+        },
+      );
     });
 
     describe("UnhandledState", () => {
       it("should throw UnhandledState on a falsey response from the state transition", (done) => {
         states.core.entry.enter = { entry: () => null };
         const stateMachine = new StateMachine({ states });
-        const launchIntent = new AlexaEvent(rb.getIntentRequest("LaunchIntent"));
-        stateMachine.runTransition("entry", launchIntent, reply).then(() => done("should have thrown"), (error) => {
-          expect(error.message).to.equal("LaunchIntent went unhandled on entry state");
-          done();
-        });
+        const launchIntent = new AlexaEvent(
+          rb.getIntentRequest("LaunchIntent"),
+        );
+        launchIntent.platform = skill;
+
+        stateMachine.runTransition("entry", launchIntent, reply).then(
+          () => done("should have thrown"),
+          (error) => {
+            expect(error.message).to.equal(
+              "LaunchIntent went unhandled on entry state",
+            );
+            done();
+          },
+        );
       });
 
       it("should throw an exception on invalid transition from pojo controller", (done) => {
         states.core.entry = { to: { TestIntent: "die" }, name: "entry" };
         const stateMachine = new StateMachine({ states });
         voxaEvent.intent.name = "OtherIntent";
-        stateMachine.runTransition("entry", voxaEvent, reply).then(() => done("should have thrown"), (error) => {
-          expect(error.message).to.equal("OtherIntent went unhandled on entry state");
-          done();
-        });
+        stateMachine.runTransition("entry", voxaEvent, reply).then(
+          () => done("should have thrown"),
+          (error) => {
+            expect(error.message).to.equal(
+              "OtherIntent went unhandled on entry state",
+            );
+            done();
+          },
+        );
       });
 
       it("should execute the onUnhandledState callbacks on invalid transition from pojo controller", async () => {
         states.entry = { to: { TestIntent: "die" }, name: "entry" };
-        const onUnhandledState = simple.stub().returnWith(Promise.resolve({ to: "die" }));
+        const onUnhandledState = simple
+          .stub()
+          .returnWith(Promise.resolve({ to: "die" }));
         const stateMachine = new StateMachine({
           onUnhandledState: [onUnhandledState],
           states,
         });
 
         voxaEvent.intent.name = "OtherIntent";
-        const response = await stateMachine.runTransition("entry", voxaEvent, reply);
+        const response = await stateMachine.runTransition(
+          "entry",
+          voxaEvent,
+          reply,
+        );
         return expect(response).to.deep.equal({
           flow: "terminate",
           isTerminal: true,
@@ -159,23 +220,35 @@ describe("StateMachine", () => {
       });
     });
     it("should throw UnknownState when transition.to goes to an undefined state from simple transition", (done) => {
-      states.core.entry = { to: { LaunchIntent: "undefinedState" }, name: "entry" };
+      states.core.entry = {
+        name: "entry",
+        to: { LaunchIntent: "undefinedState" },
+      };
       const stateMachine = new StateMachine({ states });
       voxaEvent.intent.name = "LaunchIntent";
-      stateMachine.runTransition("entry", voxaEvent, reply).then(() => done("Should have thrown"), (error) => {
-        expect(error.message).to.equal("Unknown state undefinedState");
-        done();
-      });
+      stateMachine.runTransition("entry", voxaEvent, reply).then(
+        () => done("Should have thrown"),
+        (error) => {
+          expect(error.message).to.equal("Unknown state undefinedState");
+          done();
+        },
+      );
     });
 
     it("should throw UnknownState when transition.to goes to an undefined state", (done) => {
-      states.core.someState = { enter: { entry: () => ({ to: "undefinedState" }) }, name: "someState" };
+      states.core.someState = {
+        enter: { entry: () => ({ to: "undefinedState" }) },
+        name: "someState",
+      };
       const stateMachine = new StateMachine({ states });
 
-      stateMachine.runTransition("someState", voxaEvent, reply).then(() => done("should have thrown"), (error) => {
-        expect(error.message).to.equal("Unknown state undefinedState");
-        done();
-      });
+      stateMachine.runTransition("someState", voxaEvent, reply).then(
+        () => done("should have thrown"),
+        (error) => {
+          expect(error.message).to.equal("Unknown state undefinedState");
+          done();
+        },
+      );
     });
 
     it("should fallback to entry on no response", async () => {
@@ -189,7 +262,11 @@ describe("StateMachine", () => {
       const stateMachine = new StateMachine({ states });
       voxaEvent.intent.name = "LaunchIntent";
 
-      const transition =  await stateMachine.runTransition("someState", voxaEvent, reply);
+      const transition = await stateMachine.runTransition(
+        "someState",
+        voxaEvent,
+        reply,
+      );
       // expect(states.someState.enter.entry.called).to.be.true;
       expect(transition).to.deep.equal({
         flow: "terminate",
@@ -208,10 +285,15 @@ describe("StateMachine", () => {
     it("should throw an error if run without an intent", (done) => {
       delete voxaEvent.intent;
       const stateMachine = new StateMachine({ states });
-      stateMachine.runCurrentState(voxaEvent, reply).then(() => "should have thrown", (error) => {
-        expect(error.message).to.equal("Running the state machine without an intent");
-        done();
-      });
+      stateMachine.runCurrentState(voxaEvent, reply).then(
+        () => "should have thrown",
+        (error) => {
+          expect(error.message).to.equal(
+            "Running the state machine without an intent",
+          );
+          done();
+        },
+      );
     });
 
     it("should run the specific intent enter function", async () => {

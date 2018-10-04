@@ -1,18 +1,21 @@
-import { AudioCard, ICardMediaUrl, SuggestedActions } from "botbuilder";
-import { AzureBotStorage, AzureTableClient } from "botbuilder-azure";
+import {
+  AudioCard,
+  IBotStorageData,
+  ICardMediaUrl,
+  MemoryBotStorage,
+  SuggestedActions,
+} from "botbuilder";
 import { expect } from "chai";
 import * as _ from "lodash";
 import * as simple from "simple-mock";
-import {
-  BotFrameworkEvent,
-  BotFrameworkReply,
-} from "../../src/";
+import { BotFrameworkEvent, BotFrameworkReply } from "../../src/";
 import { prepIncomingMessage } from "../../src/platforms/botframework/BotFrameworkPlatform";
 
 describe("BotFrameworkReply", () => {
   let reply: BotFrameworkReply;
   let event: BotFrameworkEvent;
   let audioCard: AudioCard;
+  const stateData: IBotStorageData = {};
 
   afterEach(() => {
     simple.restore();
@@ -26,14 +29,12 @@ describe("BotFrameworkReply", () => {
     };
     audioCard.media([cardMedia]);
 
-    const azureTableClient = new AzureTableClient("", "", "");
-    const storage = new AzureBotStorage({ gzipData: false }, azureTableClient);
-
+    const storage = new MemoryBotStorage();
     const rawEvent = prepIncomingMessage(
       _.cloneDeep(require("../requests/botframework/conversationUpdate.json")),
     );
 
-    event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
+    event = new BotFrameworkEvent({ message: rawEvent, stateData });
     reply = new BotFrameworkReply(event);
 
     simple.mock(storage, "saveData").callbackWith(null, {});

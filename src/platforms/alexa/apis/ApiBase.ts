@@ -21,18 +21,16 @@
  */
 
 import { RequestEnvelope } from "ask-sdk-model";
-import * as debug from "debug";
+import { LambdaLog } from "lambda-log";
 import * as _ from "lodash";
 import * as rp from "request-promise";
-
-const alexalog: debug.IDebugger = debug("voxa:alexa");
 
 export class ApiBase {
   public errorCodeSafeToIgnore: number = 0; // the code error to ignore on checkError function
   public tag: string = ""; // the class reference for error logging
   public rawEvent: RequestEnvelope; // the event as sent by the service
 
-  constructor(event: RequestEnvelope) {
+  constructor(event: RequestEnvelope, public log: LambdaLog) {
     this.rawEvent = _.cloneDeep(event);
   }
 
@@ -50,17 +48,20 @@ export class ApiBase {
     return Promise.resolve(rp(options));
   }
 
-  protected checkError(err: any) {
-    alexalog(`${this.tag} Error %s`, JSON.stringify(err, null, 2));
+  protected checkError(error: any) {
+    this.log.debug("error", {
+      error,
+      tag: this.tag,
+    });
 
     if (
-      err.statusCode === this.errorCodeSafeToIgnore ||
-      err.error.code === this.errorCodeSafeToIgnore
+      error.statusCode === this.errorCodeSafeToIgnore ||
+      error.error.code === this.errorCodeSafeToIgnore
     ) {
       return undefined;
     }
 
-    throw err;
+    throw error;
   }
 
   protected getToken() {

@@ -45,6 +45,12 @@ app.onIntent("LaunchIntent", {
   flow: "yield"
 });
 
+app.onBeforeReplySent(request => {
+  if (request.platform.name === "dialogflow") {
+    request.google.conv.user.storage = {};
+  }
+});
+
 app.onState("likesVoxa?", request => {
   if (!request.intent) {
     throw new Error("Not an intent request");

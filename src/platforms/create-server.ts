@@ -13,7 +13,7 @@ export function createServer(skill: VoxaPlatform): http.Server {
     req.on("end", async () => {
       const data = JSON.parse(Buffer.concat(chunks).toString());
       try {
-        const reply = await skill.execute(data, {});
+        const reply = await skill.execute(data);
         res.end(JSON.stringify(reply));
       } catch (error) {
         console.error(error);

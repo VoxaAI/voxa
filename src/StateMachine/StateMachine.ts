@@ -21,7 +21,6 @@
  */
 
 import * as bluebird from "bluebird";
-import * as debug from "debug";
 import * as _ from "lodash";
 
 import { UnhandledState, UnknownState } from "../errors";
@@ -34,8 +33,6 @@ import {
   ITransition,
   SystemTransition,
 } from "./transitions";
-
-const log: debug.IDebugger = debug("voxa");
 
 export type IStateMachineCb = (
   event: IVoxaEvent,
@@ -69,7 +66,7 @@ export class StateMachine {
 
   constructor(config: IStateMachineConfig) {
     this.validateConfig(config);
-    this.states = config.states;
+    this.states = _.cloneDeep(config.states);
     this.onBeforeStateChangedCallbacks = config.onBeforeStateChanged || [];
     this.onAfterStateChangeCallbacks = config.onAfterStateChanged || [];
     this.onUnhandledStateCallbacks = config.onUnhandledState || [];
@@ -92,6 +89,11 @@ export class StateMachine {
     }
   }
 
+  /**
+   * If the state didn't return a transition and
+   * there's no global handler for the intent
+   * we use the onUnhandledState handler
+   */
   public async checkOnUnhandledState(
     voxaEvent: IVoxaEvent,
     voxaReply: IVoxaReply,
@@ -102,7 +104,7 @@ export class StateMachine {
     }
 
     if (!transition || _.isEmpty(transition)) {
-      log("Running onUnhandledStateCallbacks");
+      voxaEvent.log.debug("Running onUnhandledStateCallbacks");
       const onUnhandledStateTransitions = await bluebird.mapSeries(
         this.onUnhandledStateCallbacks,
         (fn: IUnhandledStateCb) => this.runCallbacks(fn, voxaEvent),
@@ -133,7 +135,7 @@ export class StateMachine {
     reply: IVoxaReply,
     transition: ITransition,
   ): Promise<ITransition> {
-    log("Checking entry fallback");
+    voxaEvent.log.debug("Checking entry fallback");
     if (!isState(this.currentState)) {
       throw new Error("this.currentState is not a state");
     }
@@ -144,7 +146,7 @@ export class StateMachine {
         throw new Error("Running the state machine without an intent");
       }
 
-      log(
+      voxaEvent.log.debug(
         `No reply for ${voxaEvent.intent.name} in [${
           this.currentState.name
         }]. Trying [entry].`,
@@ -169,13 +171,15 @@ export class StateMachine {
       throw new Error("this.currentState is not a state");
     }
 
-    log(`${this.currentState.name} transition resulted in`, transition);
-    log("Running onAfterStateChangeCallbacks");
+    voxaEvent.log.debug(`${this.currentState.name} transition resulted in`, {
+      transition,
+    });
+    voxaEvent.log.debug("Running onAfterStateChangeCallbacks");
     await bluebird.mapSeries(this.onAfterStateChangeCallbacks, (fn) => {
       return fn(voxaEvent, reply, transition);
     });
 
-    log("Transition is now", transition);
+    voxaEvent.log.debug("Transition is now", { transition });
     return transition;
   }
 
@@ -186,7 +190,7 @@ export class StateMachine {
   ): Promise<ITransition> {
     this.currentState = this.getCurrentState(
       currentStateName,
-      voxaEvent.platform,
+      voxaEvent.platform.name,
     );
     this.runOnBeforeStateChanged(voxaEvent, reply);
 
@@ -197,9 +201,21 @@ export class StateMachine {
       reply.terminate();
     }
 
-    transition = await this.checkForEntryFallback(voxaEvent, reply, transition);
-    transition = await this.checkOnUnhandledState(voxaEvent, reply, transition);
-    transition = await this.onAfterStateChanged(voxaEvent, reply, transition);
+    transition = await this.checkForEntryFallback(
+      voxaEvent,
+      reply,
+      _.cloneDeep(transition),
+    );
+    transition = await this.checkOnUnhandledState(
+      voxaEvent,
+      reply,
+      _.cloneDeep(transition),
+    );
+    transition = await this.onAfterStateChanged(
+      voxaEvent,
+      reply,
+      _.cloneDeep(transition),
+    );
     const sysTransition = new SystemTransition(transition);
     const to = this.getFinalTransition(sysTransition, voxaEvent, reply);
 
@@ -249,12 +265,14 @@ export class StateMachine {
       return fromState.to;
     }
 
-    log(`Running simpleTransition for ${this.currentState.name}`);
+    voxaEvent.log.debug(
+      `Running simpleTransition for ${this.currentState.name}`,
+    );
     const to = this.getDestinationStateName(fromState, voxaEvent.intent.name);
     return this.simpleTransition(
       voxaEvent.intent,
       this.currentState,
-      voxaEvent.platform,
+      voxaEvent.platform.name,
       to,
     );
   }
@@ -314,7 +332,7 @@ export class StateMachine {
     reply: IVoxaReply,
   ) {
     const onBeforeState = this.onBeforeStateChangedCallbacks;
-    log("Running onBeforeStateChanged");
+    voxaEvent.log.debug("Running onBeforeStateChanged");
 
     await bluebird.mapSeries(onBeforeState, (fn: IOnBeforeStateChangedCB) => {
       if (!isState(this.currentState)) {
@@ -335,13 +353,13 @@ export class StateMachine {
     if (_.isString(sysTransition.to)) {
       if (
         !this.states.core[sysTransition.to] &&
-        !_.get(this.states, [voxaEvent.platform, sysTransition.to])
+        !_.get(this.states, [voxaEvent.platform.name, sysTransition.to])
       ) {
         throw new UnknownState(sysTransition.to);
       }
 
       to =
-        _.get(this.states, [voxaEvent.platform, sysTransition.to]) ||
+        _.get(this.states, [voxaEvent.platform.name, sysTransition.to]) ||
         this.states.core[sysTransition.to];
       Object.assign(sysTransition, { to });
 

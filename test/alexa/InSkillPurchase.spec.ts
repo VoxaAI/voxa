@@ -69,7 +69,7 @@ describe("InSkillPurchase", () => {
       return { alexaConnectionsSendRequest: buyDirective };
     });
 
-    const reply = await alexaSkill.execute(event, {});
+    const reply = await alexaSkill.execute(event);
 
     const responseDirectives = _.get(reply, "response.directives")[0];
 
@@ -102,7 +102,7 @@ describe("InSkillPurchase", () => {
       return { alexaConnectionsSendRequest: buyDirective };
     });
 
-    const reply = await alexaSkill.execute(event, {});
+    const reply = await alexaSkill.execute(event);
 
     const responseDirectives = _.get(reply, "response.directives")[0];
 
@@ -137,7 +137,7 @@ describe("InSkillPurchase", () => {
       return { alexaConnectionsSendRequest: buyDirective };
     });
 
-    const reply = await alexaSkill.execute(event, {});
+    const reply = await alexaSkill.execute(event);
 
     const responseDirectives = _.get(reply, "response.directives")[0];
 
@@ -168,7 +168,7 @@ describe("InSkillPurchase", () => {
       return { to: "entry" };
     });
 
-    const reply = await alexaSkill.execute(event, {});
+    const reply = await alexaSkill.execute(event);
     const outputSpeech =
       "To do In Skill Purchases, you need to link your Amazon account to the US market.";
 
@@ -215,7 +215,7 @@ describe("InSkillPurchase", () => {
       return { tell: "ISP.ProductNotBought" };
     });
 
-    const reply = await alexaSkill.execute(event, {});
+    const reply = await alexaSkill.execute(event);
 
     expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
       "Thanks for buying this product, do you want to try it out?",
@@ -259,7 +259,7 @@ describe("InSkillPurchase", () => {
       return { tell: "ISP.ProductNotBought" };
     });
 
-    const reply = await alexaSkill.execute(event, {});
+    const reply = await alexaSkill.execute(event);
 
     expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
       "Thanks for your interest",

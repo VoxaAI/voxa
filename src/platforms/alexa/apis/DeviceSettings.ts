@@ -21,12 +21,13 @@
  */
 
 import { RequestEnvelope } from "ask-sdk-model";
+import { LambdaLog } from "lambda-log";
 
 import { DeviceBase } from "./DeviceBase";
 
 export class DeviceSettings extends DeviceBase {
-  constructor(event: RequestEnvelope) {
-    super(event);
+  constructor(event: RequestEnvelope, log: LambdaLog) {
+    super(event, log);
 
     this.tag = "DeviceSettings";
     this.errorCodeSafeToIgnore = 204;

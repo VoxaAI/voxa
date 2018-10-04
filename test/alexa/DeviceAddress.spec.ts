@@ -1,3 +1,25 @@
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 import { expect } from "chai";
 import * as _ from "lodash";
 import * as nock from "nock";
@@ -21,7 +43,7 @@ describe("DeviceAddress", () => {
 
   beforeEach(() => {
     const rb = new AlexaRequestBuilder();
-    app =  new VoxaApp({ views, variables });
+    app = new VoxaApp({ views, variables });
     alexaSkill = new AlexaPlatform(app);
     event = rb.getIntentRequest("AddressIntent");
     _.set(event, "context.System.apiAccessToken", "apiAccessToken");
@@ -60,15 +82,19 @@ describe("DeviceAddress", () => {
 
       if (isAlexaEvent(voxaEvent)) {
         info = await voxaEvent.alexa.deviceAddress.getAddress();
-        voxaEvent.model.deviceInfo = `${info.addressLine1}, ${info.city}, ${info.countryCode}`;
+        voxaEvent.model.deviceInfo = `${info.addressLine1}, ${info.city}, ${
+          info.countryCode
+        }`;
       }
 
       return { tell: "DeviceAddress.FullAddress" };
     });
 
-    const reply = await alexaSkill.execute(event, {});
+    const reply = await alexaSkill.execute(event);
 
-    expect(_.get(reply, "response.outputSpeech.ssml")).to.include("Right now your device is in: 410 Terry Ave North, Seattle, US");
+    expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
+      "Right now your device is in: 410 Terry Ave North, Seattle, US",
+    );
     expect(reply.response.reprompt).to.be.undefined;
     expect(_.get(reply, "sessionAttributes.state")).to.equal("die");
     expect(reply.response.shouldEndSession).to.equal(true);
@@ -86,9 +112,11 @@ describe("DeviceAddress", () => {
       return { tell: "DeviceAddress.PostalCode" };
     });
 
-    const reply = await alexaSkill.execute(event, {});
+    const reply = await alexaSkill.execute(event);
 
-    expect(_.get(reply, "response.outputSpeech.ssml")).to.include("Your postal code is: 98109, US");
+    expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
+      "Your postal code is: 98109, US",
+    );
     expect(reply.response.reprompt).to.be.undefined;
     expect(_.get(reply, "sessionAttributes.state")).to.equal("die");
     expect(reply.response.shouldEndSession).to.equal(true);
@@ -106,7 +134,9 @@ describe("DeviceAddress", () => {
 
         if (isAlexaEvent(voxaEvent)) {
           info = await voxaEvent.alexa.deviceAddress.getCountryRegionPostalCode();
-          voxaEvent.model.deviceInfo = `${info.postalCode}, ${info.countryCode}`;
+          voxaEvent.model.deviceInfo = `${info.postalCode}, ${
+            info.countryCode
+          }`;
         }
 
         return { tell: "DeviceAddress.PostalCode" };
@@ -115,8 +145,9 @@ describe("DeviceAddress", () => {
       }
     });
 
-    const reply = await alexaSkill.execute(event, {});
-    const outputSpeech = "To get the device's address, go to your Alexa app and grant permission to the skill.";
+    const reply = await alexaSkill.execute(event);
+    const outputSpeech =
+      "To get the device's address, go to your Alexa app and grant permission to the skill.";
 
     expect(_.get(reply, "response.outputSpeech.ssml")).to.include(outputSpeech);
     expect(reply.response.reprompt).to.be.undefined;

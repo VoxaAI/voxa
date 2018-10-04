@@ -61,7 +61,7 @@ describe("DialogFlowEvent", () => {
   it("should find users on the session", () => {
     const event = new DialogFlowEvent(launchIntent, {});
     /* tslint:disable-next-line:max-line-length */
-    expect(event.user.userId).to.equal(
+    expect(event.user.id).to.equal(
       "ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y",
     );
   });
@@ -125,7 +125,7 @@ describe("DialogFlowEvent", () => {
       PERMISSION: true,
     });
 
-    expect(event.user.permissions).to.deep.equal(["NAME"]);
+    expect(event.google.conv.user.permissions).to.deep.equal(["NAME"]);
   });
 
   it("should extract the correct parameters from a datetimeIntent", () => {

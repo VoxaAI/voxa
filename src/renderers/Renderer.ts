@@ -67,9 +67,9 @@ export class Renderer {
     view: string,
     voxaEvent: IVoxaEvent,
     variables?: any,
-  ) {
-    const locale = _.get(voxaEvent, "request.locale");
-    const platform = _.get(voxaEvent, "platform");
+  ): Promise<any> {
+    const locale = voxaEvent.request.locale;
+    const platform = voxaEvent.platform.name;
 
     let message = voxaEvent.t(view, {
       returnObjects: true,

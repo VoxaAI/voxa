@@ -3,17 +3,20 @@ import "mocha";
 import { expect } from "chai";
 import * as i18n from "i18next";
 import * as _ from "lodash";
-import { Model } from "../src/Model";
-import { Renderer } from "../src/renderers/Renderer";
-import { VoxaApp } from "../src/VoxaApp";
+import {
+  AlexaEvent,
+  AlexaPlatform,
+  AlexaReply,
+  DialogFlowEvent,
+  DialogFlowPlatform,
+  Model,
+  PlayAudio,
+  Renderer,
+  VoxaApp,
+} from "../src";
+import { AlexaRequestBuilder } from "./tools";
 import { variables } from "./variables";
 import { views } from "./views";
-
-import { AlexaEvent } from "../src/platforms/alexa/AlexaEvent";
-import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
-import { PlayAudio } from "../src/platforms/alexa/directives";
-import { DialogFlowEvent } from "../src/platforms/dialogflow/DialogFlowEvent";
-import { AlexaRequestBuilder } from "./tools";
 
 const rb = new AlexaRequestBuilder();
 
@@ -21,6 +24,7 @@ describe("Renderer", () => {
   let statesDefinition: any;
   let event: AlexaEvent;
   let renderer: Renderer;
+  let voxaApp: VoxaApp;
 
   before(() => {
     i18n.init({
@@ -31,8 +35,10 @@ describe("Renderer", () => {
   });
 
   beforeEach(() => {
+    voxaApp = new VoxaApp({ views });
     renderer = new Renderer({ views, variables });
     event = new AlexaEvent(rb.getIntentRequest("SomeIntent"));
+    event.platform = new AlexaPlatform(voxaApp);
     event.t = i18n.getFixedT("en-US");
 
     statesDefinition = {
@@ -234,6 +240,7 @@ describe("Renderer", () => {
       {},
     );
     dialogFlowEvent.t = event.t;
+    dialogFlowEvent.platform = new DialogFlowPlatform(voxaApp);
     const rendered = await renderer.renderPath(
       "LaunchIntent.OpenResponse",
       dialogFlowEvent,

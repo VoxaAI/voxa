@@ -21,11 +21,11 @@
  */
 
 import * as bluebird from "bluebird";
-import * as debug from "debug";
 import * as i18n from "i18next";
 import * as _ from "lodash";
 
 import { Context as AWSLambdaContext } from "aws-lambda";
+import { LambdaLogOptions } from "lambda-log";
 import {
   Ask,
   IDirective,
@@ -54,14 +54,12 @@ import {
 import { IBag, IVoxaEvent } from "./VoxaEvent";
 import { IVoxaReply } from "./VoxaReply";
 
-const log: debug.IDebugger = debug("voxa");
-
 export interface IVoxaAppConfig extends IRendererConfig {
-  appIds?: string[] | string;
   Model?: IModel;
   RenderClass?: IRenderer;
   views: i18n.Resource;
   variables?: any;
+  logOptions?: LambdaLogOptions;
 }
 
 export type IEventHandler = (
@@ -158,7 +156,9 @@ export class VoxaApp {
     event: IVoxaEvent,
     response: IVoxaReply,
   ): Promise<IVoxaReply> {
-    const sessionEndedHandlers = this.getOnSessionEndedHandlers(event.platform);
+    const sessionEndedHandlers = this.getOnSessionEndedHandlers(
+      event.platform.name,
+    );
     const replies = await bluebird.mapSeries(
       sessionEndedHandlers,
       (fn: IEventHandler) => fn(event, response),
@@ -180,7 +180,7 @@ export class VoxaApp {
     error: Error,
     reply: IVoxaReply,
   ): Promise<IVoxaReply> {
-    const errorHandlers = this.getOnErrorHandlers(event.platform);
+    const errorHandlers = this.getOnErrorHandlers(event.platform.name);
     const replies: IVoxaReply[] = await bluebird.map(
       errorHandlers,
       async (handler: IErrorHandler) => {
@@ -201,7 +201,8 @@ export class VoxaApp {
     voxaEvent: IVoxaEvent,
     reply: IVoxaReply,
   ): Promise<IVoxaReply> {
-    log("Received new event", JSON.stringify(voxaEvent.rawEvent, null, 2));
+    voxaEvent.log.debug("Received new event", { event: voxaEvent.rawEvent });
+
     try {
       if (!this.requestHandlers[voxaEvent.request.type]) {
         throw new UnknownRequestType(voxaEvent.request.type);
@@ -214,7 +215,7 @@ export class VoxaApp {
           case "SessionEndedRequest": {
             // call all onRequestStarted callbacks serially.
             await bluebird.mapSeries(
-              this.getOnRequestStartedHandlers(voxaEvent.platform),
+              this.getOnRequestStartedHandlers(voxaEvent.platform.name),
               (fn: IEventHandler) => {
                 return fn(voxaEvent, reply);
               },
@@ -222,7 +223,7 @@ export class VoxaApp {
 
             // call all onSessionStarted callbacks serially.
             await bluebird.mapSeries(
-              this.getOnSessionStartedHandlers(voxaEvent.platform),
+              this.getOnSessionStartedHandlers(voxaEvent.platform.name),
               (fn: IEventHandler) => fn(voxaEvent, reply),
             );
             // Route the request to the proper handler which may have been overriden.
@@ -275,7 +276,6 @@ export class VoxaApp {
       voxaEvent: IVoxaEvent,
       response: IVoxaReply,
     ): Promise<IVoxaReply> => {
-      log(eventName);
       const capitalizedEventName = _.upperFirst(_.camelCase(eventName));
 
       const runCallback = (fn: IEventHandler): IVoxaReply =>
@@ -440,16 +440,18 @@ export class VoxaApp {
 
     const stateMachine = new StateMachine({
       onAfterStateChanged: this.getOnAfterStateChangedHandlers(
-        voxaEvent.platform,
+        voxaEvent.platform.name,
       ),
       onBeforeStateChanged: this.getOnBeforeStateChangedHandlers(
-        voxaEvent.platform,
+        voxaEvent.platform.name,
       ),
-      onUnhandledState: this.getOnUnhandledStateHandlers(voxaEvent.platform),
+      onUnhandledState: this.getOnUnhandledStateHandlers(
+        voxaEvent.platform.name,
+      ),
       states: this.states,
     });
 
-    log("Starting the state machine from %s state", fromState);
+    voxaEvent.log.debug("Starting the state machine", { fromState });
 
     const transition: ITransition = await stateMachine.runTransition(
       fromState,
@@ -461,9 +463,10 @@ export class VoxaApp {
     }
 
     const onBeforeReplyHandlers = this.getOnBeforeReplySentHandlers(
-      voxaEvent.platform,
+      voxaEvent.platform.name,
     );
-    log("Running onBeforeReplySent");
+
+    voxaEvent.log.debug("Running onBeforeReplySent");
     await bluebird.mapSeries(onBeforeReplyHandlers, (fn: IEventHandler) =>
       fn(voxaEvent, response, transition),
     );
@@ -478,7 +481,7 @@ export class VoxaApp {
   ): Promise<ITransition> {
     const directiveClasses: IDirectiveClass[] = _.concat(
       _.filter(this.directiveHandlers, { platform: "core" }),
-      _.filter(this.directiveHandlers, { platform: voxaEvent.platform }),
+      _.filter(this.directiveHandlers, { platform: voxaEvent.platform.name }),
     );
 
     const directivesKeyOrder = _.map(directiveClasses, "key");
@@ -517,7 +520,10 @@ export class VoxaApp {
       .filter()
       .filter((directive) => {
         const constructor: any = directive.constructor;
-        return _.includes(["core", voxaEvent.platform], constructor.platform);
+        return _.includes(
+          ["core", voxaEvent.platform.name],
+          constructor.platform,
+        );
       })
       .value();
 
@@ -563,21 +569,17 @@ export class VoxaApp {
       model: modelData,
       state: stateName,
     };
+
     await response.saveSession(attributes, voxaEvent);
   }
 
   public async transformRequest(voxaEvent: IVoxaEvent): Promise<void> {
     await this.i18nextPromise;
-    let model: Model;
     const data = voxaEvent.session.attributes.model as IBag;
-    if (this.config.Model) {
-      model = await this.config.Model.deserialize(data, voxaEvent);
-    } else {
-      model = await Model.deserialize(data, voxaEvent);
-    }
+    const model = await this.config.Model.deserialize(data, voxaEvent);
 
     voxaEvent.model = model;
-    log("Initialized model like %s", JSON.stringify(voxaEvent.model));
+    voxaEvent.log.debug("Initialized model ", { model: voxaEvent.model });
     voxaEvent.t = this.i18n.getFixedT(voxaEvent.request.locale);
     voxaEvent.renderer = this.renderer;
   }

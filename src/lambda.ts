@@ -43,5 +43,5 @@ export function isLambdaContext(context: any): context is AWSLambdaContext {
     return false;
   }
 
-  return (context as AWSLambdaContext).getRemainingTimeInMillis !== undefined;
+  return context.getRemainingTimeInMillis !== undefined;
 }

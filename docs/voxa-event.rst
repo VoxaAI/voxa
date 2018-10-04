@@ -25,7 +25,7 @@ The ``voxaEvent`` Object
 
   .. js:attribute:: platform
 
-    A string attribute with the name of platform for the current request, it can be ``alexa``, ``dialogFlow`` or ``botframework``
+    The currently running :ref:`Voxa Platform <voxa-platforms>`
 
   .. js:attribute:: model
 
@@ -52,11 +52,24 @@ The ``voxaEvent`` Object
 
   .. js:attribute:: user
 
-    A convenience getter to obtain the user from ``session.user`` or ``context.System.user`` in alexa, and ``conv.user.id`` in dialogflow. In other platforms it's also available, you can always count on the ``voxaEvent.user.userId`` being available. If there's an ``accessToken`` it will also be available through ``voxaEvent.user.accessToken``
+    An object that contains the userId and accessToken if available
+
+    .. code-block:: json
+
+          {
+            "userId": "The platform specific userId",
+            "id": "same as userId",
+            "accessToken": "available if user has done account linking"
+          }
+    ..
 
   .. js:attribute:: model
 
     An instance of the :ref:`Voxa App Model <models>`.
+
+  .. js:attribute:: log
+
+    An instance of `lambda-log <https://www.npmjs.com/package/lambda-log>`_
 
   .. js:function:: supportedInterfaces()
 

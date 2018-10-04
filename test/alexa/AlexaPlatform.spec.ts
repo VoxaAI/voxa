@@ -1,3 +1,25 @@
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 import { expect } from "chai";
 import { AlexaPlatform } from "../../src";
 import { VoxaApp } from "../../src/VoxaApp";
@@ -15,7 +37,7 @@ describe("AlexaPlatform", () => {
     });
 
     try {
-      await alexaSkill.execute(event, {});
+      await alexaSkill.execute(event);
       throw new Error("This should fail");
     } catch (error) {
       expect(error.message).to.equal("Invalid applicationId");
@@ -32,7 +54,7 @@ describe("AlexaPlatform", () => {
     });
 
     try {
-      await alexaSkill.execute(event, {});
+      await alexaSkill.execute(event);
       throw new Error("This should fail");
     } catch (error) {
       expect(error.message).to.equal("Invalid applicationId");
@@ -48,7 +70,7 @@ describe("AlexaPlatform", () => {
       appIds: ["applicationId"],
     });
 
-    await alexaSkill.execute(event, {});
+    await alexaSkill.execute(event);
   });
 
   it("should fail with an OnSessionEndedError", async () => {
@@ -60,7 +82,7 @@ describe("AlexaPlatform", () => {
     });
     const voxaApp = new VoxaApp({ views });
     const alexaSkill = new AlexaPlatform(voxaApp, {});
-    const reply = await alexaSkill.execute(sessioneEndedRequest, {});
+    const reply = await alexaSkill.execute(sessioneEndedRequest);
     expect(reply).to.deep.equal({
       response: {
         outputSpeech: {

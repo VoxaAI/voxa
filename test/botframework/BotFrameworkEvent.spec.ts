@@ -1,19 +1,17 @@
 import("mocha");
-import { AzureBotStorage, AzureTableClient } from "botbuilder-azure";
+import { IBotStorageData } from "botbuilder";
 import { expect } from "chai";
 import * as _ from "lodash";
 import { BotFrameworkEvent } from "../../src/platforms/botframework/BotFrameworkEvent";
 import { prepIncomingMessage } from "../../src/platforms/botframework/BotFrameworkPlatform";
 
-const azureTableClient = new AzureTableClient("", "", "");
-const storage = new AzureBotStorage({ gzipData: false }, azureTableClient);
-
 describe("BotFrameworkEvent", () => {
+  const stateData: IBotStorageData = {};
   it("should map a webchat conversationUpdate to a LaunchIntent", () => {
-    const rawEvent = prepIncomingMessage(
+    const message = prepIncomingMessage(
       _.cloneDeep(require("../requests/botframework/conversationUpdate.json")),
     );
-    const event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
+    const event = new BotFrameworkEvent({ message, stateData });
     expect(event.request.type).to.equal("IntentRequest");
     if (!event.intent) {
       throw new Error("Intent should not be undefined");
@@ -22,10 +20,10 @@ describe("BotFrameworkEvent", () => {
   });
 
   it("should map a Microsoft.Launch intent to a voxa LaunchIntent", () => {
-    const rawEvent = _.cloneDeep(
+    const message = _.cloneDeep(
       require("../requests/botframework/microsoft.launch.json"),
     );
-    const event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
+    const event = new BotFrameworkEvent({ message, stateData });
     expect(event.request.type).to.equal("IntentRequest");
     if (!event.intent) {
       throw new Error("Intent should not be undefined");
@@ -34,24 +32,24 @@ describe("BotFrameworkEvent", () => {
   });
 
   it("should give display as a supportedInterface when available", () => {
-    const rawEvent = _.cloneDeep(
+    const message = _.cloneDeep(
       require("../requests/botframework/microsoft.launch.json"),
     );
-    const event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
+    const event = new BotFrameworkEvent({ message, stateData });
     expect(event.supportedInterfaces).to.deep.equal(["Display"]);
   });
 
   it("should return empty supported interfaces if the entity is not present", () => {
-    const rawEvent = _.cloneDeep(
+    const message = _.cloneDeep(
       require("../requests/botframework/StaintIntent.json"),
     );
-    const event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
+    const event = new BotFrameworkEvent({ message, stateData });
     expect(event.supportedInterfaces).to.deep.equal([]);
   });
 
   it("should map an endOfConversation request to a voxa SessionEndedRequest", () => {
-    const rawEvent = require("../requests/botframework/endOfRequest.json");
-    const event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
+    const message = require("../requests/botframework/endOfRequest.json");
+    const event = new BotFrameworkEvent({ message, stateData });
     expect(event.request.type).to.equal("SessionEndedRequest");
   });
 
@@ -68,16 +66,15 @@ describe("BotFrameworkEvent", () => {
 
   _.map(utilitiesIntentMapping, (to, from) => {
     it(`should map ${from} intento to ${to}`, () => {
-      const rawEvent = _.cloneDeep(
+      const message = _.cloneDeep(
         require("../requests/botframework/StaintIntent.json"),
       );
       const intent = {
         name: from,
         params: {},
-        rawIntent: {},
       };
 
-      const event = new BotFrameworkEvent(rawEvent, {}, {}, storage, intent);
+      const event = new BotFrameworkEvent({ message, intent, stateData });
       if (!event.intent) {
         throw new Error("Intent should not be undefined");
       }
@@ -86,20 +83,21 @@ describe("BotFrameworkEvent", () => {
   });
 
   it("should correctly map the user", () => {
-    const rawEvent = prepIncomingMessage(
+    const message = prepIncomingMessage(
       _.cloneDeep(require("../requests/botframework/StaintIntent.json")),
     );
-    const event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
+    const event = new BotFrameworkEvent({ message, stateData });
     expect(event.user).to.deep.equal({
       id: "LTSO852UtAD",
+      userId: "LTSO852UtAD",
     });
   });
 
   it("builds the session", () => {
-    const rawEvent = prepIncomingMessage(
+    const message = prepIncomingMessage(
       _.cloneDeep(require("../requests/botframework/StaintIntent.json")),
     );
-    const event = new BotFrameworkEvent(rawEvent, {}, {}, storage);
+    const event = new BotFrameworkEvent({ message, stateData });
     expect(event.session.attributes).to.be.a("object");
     expect(event.session.outputAttributes).to.be.a("object");
   });

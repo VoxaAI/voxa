@@ -7,18 +7,21 @@
 
 "use strict";
 
-const expect = require("chai").expect;
-const Voxa = require("../src/VoxaApp").VoxaApp;
-const views = require("./views").views;
-const variables = require("./variables").variables;
+const { expect } = require("chai");
+const { views } = require("./views");
+const { variables } = require("./variables");
 const _ = require("lodash");
-const AlexaEvent = require("../src/platforms/alexa/AlexaEvent").AlexaEvent;
-const AlexaReply = require("../src/platforms/alexa/AlexaReply").AlexaReply;
-const tools = require("./tools");
 
-const PlayAudio = require("../src/platforms/alexa/directives").PlayAudio;
+const {
+  AlexaEvent,
+  AlexaPlatform,
+  AlexaReply,
+  PlayAudio,
+  VoxaApp
+} = require("../src");
+const { AlexaRequestBuilder } = require("./tools");
 
-const rb = new tools.AlexaRequestBuilder();
+const rb = new AlexaRequestBuilder();
 
 const TEST_URLS = [
   "https://s3.amazonaws.com/alexa-voice-service/welcome_message.mp3",
@@ -72,12 +75,14 @@ function createToken(index, shuffle, loop) {
 }
 
 describe("VoxaApp", () => {
+  let app;
   let skill;
 
   beforeEach(() => {
-    skill = new Voxa({ views, variables });
+    app = new VoxaApp({ views, variables });
+    skill = new AlexaPlatform(app);
     _.map(states, (state, name) => {
-      skill.onState(name, state);
+      app.onState(name, state);
     });
   });
 
@@ -92,14 +97,14 @@ describe("VoxaApp", () => {
 
   function itIs(intentName, cb) {
     it(intentName, () => {
-      const event = new AlexaEvent(rb.getIntentRequest(intentName));
-      event.rawEvent.context.AudioPlayer = {
+      const event = rb.getIntentRequest(intentName);
+      event.context.AudioPlayer = {
         offsetInMilliseconds: 353160,
         token: '{"index":1,"shuffle":1,"loop":0}',
         playerActivity: "STOPPED"
       };
 
-      return skill.execute(event, new AlexaReply()).then(cb);
+      return skill.execute(event).then(cb);
     });
   }
 });
