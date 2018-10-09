@@ -102,7 +102,6 @@ describe("VoxaPlatform", () => {
         tmpError?: Error | null | string,
         tmpResult?: any,
       ): void => {
-        console.log({ counter, tmpError, tmpResult });
         counter += 1;
         error = tmpError;
         result = tmpResult;

@@ -2,8 +2,7 @@ import { expect } from "chai";
 import * as _ from "lodash";
 import * as nock from "nock";
 
-import { AlexaPlatform } from "../../src/platforms/alexa/AlexaPlatform";
-import { VoxaApp } from "../../src/VoxaApp";
+import { AlexaPlatform, VoxaApp } from "../../src";
 import { AlexaRequestBuilder, isAlexaEvent } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";
@@ -200,10 +199,6 @@ describe("InSkillPurchase", () => {
       status,
     );
 
-    app.onSessionStarted((voxaEvent: any) => {
-      voxaEvent.model.flag = 1;
-    });
-
     alexaSkill.onState("firstState", () => ({}));
     alexaSkill.onIntent("Connections.Response", (voxaEvent) => {
       if (voxaEvent.rawEvent.request.payload.purchaseResult === "ACCEPTED") {
@@ -216,6 +211,7 @@ describe("InSkillPurchase", () => {
     });
 
     const reply = await alexaSkill.execute(event);
+    console.log(reply);
 
     expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
       "Thanks for buying this product, do you want to try it out?",
@@ -223,7 +219,7 @@ describe("InSkillPurchase", () => {
     expect(_.get(reply, "response.reprompt.outputSpeech.ssml")).to.include(
       "Do you want to try it out?",
     );
-    expect(_.get(reply, "sessionAttributes.model.flag")).to.equal(1);
+
     expect(_.get(reply, "sessionAttributes.state")).to.equal("firstState");
     expect(reply.response.shouldEndSession).to.equal(false);
   });
@@ -247,10 +243,6 @@ describe("InSkillPurchase", () => {
       status,
     );
 
-    app.onSessionStarted((voxaEvent: any) => {
-      voxaEvent.model.flag = 1;
-    });
-
     alexaSkill.onIntent("Connections.Response", (voxaEvent) => {
       if (voxaEvent.rawEvent.request.payload.purchaseResult === "ACCEPTED") {
         return { ask: "ISP.ProductBought" };
@@ -265,7 +257,6 @@ describe("InSkillPurchase", () => {
       "Thanks for your interest",
     );
     expect(reply.response.reprompt).to.be.undefined;
-    expect(_.get(reply, "sessionAttributes.model.flag")).to.equal(1);
     expect(_.get(reply, "sessionAttributes.state")).to.equal("die");
     expect(reply.response.shouldEndSession).to.equal(true);
   });

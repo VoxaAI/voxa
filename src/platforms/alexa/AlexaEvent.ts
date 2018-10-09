@@ -20,12 +20,22 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { RequestEnvelope, User as IAlexaUser } from "ask-sdk-model";
+import {
+  canfulfill,
+  IntentRequest,
+  RequestEnvelope,
+  User as IAlexaUser,
+} from "ask-sdk-model";
 import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
 import { LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
-import { IVoxaEvent, IVoxaIntent, IVoxaSession } from "../../VoxaEvent";
+import {
+  IVoxaEvent,
+  IVoxaIntent,
+  IVoxaSession,
+  VoxaEvent,
+} from "../../VoxaEvent";
 import { AlexaIntent } from "./AlexaIntent";
 import {
   CustomerContact,
@@ -35,8 +45,9 @@ import {
   Lists,
 } from "./apis";
 
-export class AlexaEvent extends IVoxaEvent {
-  public intent!: IVoxaIntent;
+export class AlexaEvent extends VoxaEvent {
+  public intent?: IVoxaIntent;
+  public rawEvent!: RequestEnvelope;
   public alexa!: {
     customerContact: CustomerContact;
     deviceAddress: DeviceAddress;
@@ -46,25 +57,10 @@ export class AlexaEvent extends IVoxaEvent {
   };
 
   public requestToIntent: any = {
-    "AlexaSkillEvent.SkillDisabled": "AlexaSkillEvent.SkillDisabled",
-    "AlexaSkillEvent.SkillEnabled": "AlexaSkillEvent.SkillEnabled",
-    "AudioPlayer.PlaybackFailed": "AudioPlayer.PlaybackFailed",
-    "AudioPlayer.PlaybackFinished": "AudioPlayer.PlaybackFinished",
-    "AudioPlayer.PlaybackNearlyFinished": "AudioPlayer.PlaybackNearlyFinished",
-    "AudioPlayer.PlaybackStarted": "AudioPlayer.PlaybackStarted",
-    "AudioPlayer.PlaybackStopped": "AudioPlayer.PlaybackStopped",
     "Connections.Response": "Connections.Response",
     "Display.ElementSelected": "Display.ElementSelected",
     "GameEngine.InputHandlerEvent": "GameEngine.InputHandlerEvent",
     "LaunchRequest": "LaunchIntent",
-    "PlaybackController.NextCommandIssued":
-      "PlaybackController.NextCommandIssued",
-    "PlaybackController.PauseCommandIssued":
-      "PlaybackController.PauseCommandIssued",
-    "PlaybackController.PlayCommandIssued":
-      "PlaybackController.PlayCommandIssued",
-    "PlaybackController.PreviousCommandIssued":
-      "PlaybackController.PreviousCommandIssued",
   };
 
   constructor(
@@ -134,13 +130,18 @@ export class AlexaEvent extends IVoxaEvent {
   }
 
   protected initIntents() {
-    if (
-      _.includes(
-        ["IntentRequest", "CanFulfillIntentRequest"],
-        this.request.type,
-      )
-    ) {
-      this.intent = new AlexaIntent(this.rawEvent.request.intent);
+    const { request } = this.rawEvent;
+    if (isIntentRequest(request)) {
+      this.intent = new AlexaIntent(request.intent);
     }
   }
+}
+
+function isIntentRequest(
+  request: any,
+): request is IntentRequest | canfulfill.CanFulfillIntentRequest {
+  return (
+    request.type === "IntentRequest" ||
+    request.type === "CanFulfillIntentRequest"
+  );
 }

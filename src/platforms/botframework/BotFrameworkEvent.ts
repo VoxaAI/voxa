@@ -9,7 +9,13 @@ import {
 } from "botbuilder";
 import { LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
-import { ITypeMap, IVoxaEvent, IVoxaIntent, IVoxaUser } from "../../VoxaEvent";
+import {
+  ITypeMap,
+  IVoxaEvent,
+  IVoxaIntent,
+  IVoxaUser,
+  VoxaEvent,
+} from "../../VoxaEvent";
 
 const MicrosoftCortanaIntents: ITypeMap = {
   "Microsoft.Launch": "LaunchIntent",
@@ -23,7 +29,7 @@ export interface IBotframeworkPayload {
   intent?: IVoxaIntent;
 }
 
-export class BotFrameworkEvent extends IVoxaEvent {
+export class BotFrameworkEvent extends VoxaEvent {
   public rawEvent!: IBotframeworkPayload;
 
   public requestToRequest: ITypeMap = {

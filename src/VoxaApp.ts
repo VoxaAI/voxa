@@ -51,7 +51,7 @@ import {
   ITransition,
   StateMachine,
 } from "./StateMachine";
-import { IBag, IVoxaEvent } from "./VoxaEvent";
+import { IBag, IVoxaEvent, IVoxaIntentEvent } from "./VoxaEvent";
 import { IVoxaReply } from "./VoxaReply";
 
 export interface IVoxaAppConfig extends IRendererConfig {
@@ -153,7 +153,7 @@ export class VoxaApp {
   }
 
   public async handleOnSessionEnded(
-    event: IVoxaEvent,
+    event: IVoxaIntentEvent,
     response: IVoxaReply,
   ): Promise<IVoxaReply> {
     const sessionEndedHandlers = this.getOnSessionEndedHandlers(
@@ -221,11 +221,13 @@ export class VoxaApp {
               },
             );
 
-            // call all onSessionStarted callbacks serially.
-            await bluebird.mapSeries(
-              this.getOnSessionStartedHandlers(voxaEvent.platform.name),
-              (fn: IEventHandler) => fn(voxaEvent, reply),
-            );
+            if (voxaEvent.session.new) {
+              // call all onSessionStarted callbacks serially.
+              await bluebird.mapSeries(
+                this.getOnSessionStartedHandlers(voxaEvent.platform.name),
+                (fn: IEventHandler) => fn(voxaEvent, reply),
+              );
+            }
             // Route the request to the proper handler which may have been overriden.
             return await requestHandler(voxaEvent, reply);
           }
@@ -428,7 +430,7 @@ export class VoxaApp {
   }
 
   public async runStateMachine(
-    voxaEvent: IVoxaEvent,
+    voxaEvent: IVoxaIntentEvent,
     response: IVoxaReply,
   ): Promise<IVoxaReply> {
     let fromState = voxaEvent.session.new
@@ -487,9 +489,10 @@ export class VoxaApp {
     const directivesKeyOrder = _.map(directiveClasses, "key");
     if (transition.reply) {
       // special handling for `transition.reply`
-      const reply = await voxaEvent.t(transition.reply, {
-        returnObjects: true,
-      });
+      const reply = await voxaEvent.renderer.renderPath(
+        transition.reply,
+        voxaEvent,
+      );
       const replyKeys = _.keys(reply);
       const replyTransition = _(replyKeys)
         .map((key) => {
@@ -497,6 +500,7 @@ export class VoxaApp {
         })
         .fromPairs()
         .value();
+
       transition = _.merge({}, transition, replyTransition);
     }
 

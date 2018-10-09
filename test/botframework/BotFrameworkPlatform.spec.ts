@@ -118,7 +118,6 @@ describe("BotFrameworkPlatform", () => {
           throw err;
         }
 
-        console.log(result);
         expect(result).to.be.ok;
       };
       const context = getLambdaContext(callback);

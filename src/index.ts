@@ -7,7 +7,7 @@
 
 export { Tell, Say, SayP, Ask, Reprompt } from "./directives";
 export { VoxaPlatform } from "./platforms";
-export { IVoxaEvent, IVoxaIntent } from "./VoxaEvent";
+export { IVoxaEvent, IVoxaIntentEvent, IVoxaIntent } from "./VoxaEvent";
 export { IVoxaReply } from "./VoxaReply";
 export {
   AlexaReply,
