@@ -30,12 +30,7 @@ import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
 import { LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
-import {
-  IVoxaEvent,
-  IVoxaIntent,
-  IVoxaSession,
-  VoxaEvent,
-} from "../../VoxaEvent";
+import { IVoxaIntent, VoxaEvent } from "../../VoxaEvent";
 import { AlexaIntent } from "./AlexaIntent";
 import {
   CustomerContact,

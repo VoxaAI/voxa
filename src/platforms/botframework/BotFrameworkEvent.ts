@@ -9,13 +9,7 @@ import {
 } from "botbuilder";
 import { LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
-import {
-  ITypeMap,
-  IVoxaEvent,
-  IVoxaIntent,
-  IVoxaUser,
-  VoxaEvent,
-} from "../../VoxaEvent";
+import { ITypeMap, IVoxaIntent, IVoxaUser, VoxaEvent } from "../../VoxaEvent";
 
 const MicrosoftCortanaIntents: ITypeMap = {
   "Microsoft.Launch": "LaunchIntent",

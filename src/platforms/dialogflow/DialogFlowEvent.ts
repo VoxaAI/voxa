@@ -29,7 +29,7 @@ import { Context as AzureContext } from "azure-functions-ts-essentials";
 import { LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
 import { v1 } from "uuid";
-import { IVoxaEvent, VoxaEvent } from "../../VoxaEvent";
+import { VoxaEvent } from "../../VoxaEvent";
 import { DialogFlowIntent } from "./DialogFlowIntent";
 import { DialogFlowSession } from "./DialogFlowSession";
 
