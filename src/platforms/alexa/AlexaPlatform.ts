@@ -26,7 +26,7 @@ import { Context as AzureContext } from "azure-functions-ts-essentials";
 import * as _ from "lodash";
 import { OnSessionEndedError } from "../../errors";
 import { VoxaApp } from "../../VoxaApp";
-import { IVoxaEvent } from "../../VoxaEvent";
+import { IVoxaEvent, IVoxaIntentEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
 import { IVoxaPlatformConfig, VoxaPlatform } from "../VoxaPlatform";
 import { AlexaEvent } from "./AlexaEvent";
@@ -86,7 +86,7 @@ export class AlexaPlatform extends VoxaPlatform {
     this.config = config;
 
     this.app.onCanFulfillIntentRequest(
-      (event: AlexaEvent, reply: AlexaReply) => {
+      (event: IVoxaIntentEvent, reply: AlexaReply) => {
         if (_.includes(this.config.defaultFulfillIntents, event.intent.name)) {
           reply.fulfillIntent("YES");
 
@@ -141,13 +141,9 @@ export class AlexaPlatform extends VoxaPlatform {
   }
 
   protected checkSessionEndedRequest(alexaEvent: AlexaEvent): void {
-    if (
-      alexaEvent.request.type === "SessionEndedRequest" &&
-      alexaEvent.rawEvent.request.reason === "ERROR"
-    ) {
-      throw new OnSessionEndedError(
-        _.get(alexaEvent.rawEvent, "request.error"),
-      );
+    const { request } = alexaEvent.rawEvent;
+    if (request.type === "SessionEndedRequest" && request.reason === "ERROR") {
+      throw new OnSessionEndedError(request.error);
     }
   }
 

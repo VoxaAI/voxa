@@ -1,7 +1,13 @@
 "use strict";
 import { expect } from "chai";
 import * as simple from "simple-mock";
-import { AlexaEvent, AlexaPlatform, AlexaReply, VoxaApp } from "../src";
+import {
+  AlexaEvent,
+  AlexaPlatform,
+  AlexaReply,
+  IVoxaIntentEvent,
+  VoxaApp,
+} from "../src";
 import { isState, StateMachine } from "../src/StateMachine";
 import { AlexaRequestBuilder } from "./tools";
 import { views } from "./views";
@@ -10,7 +16,7 @@ const rb = new AlexaRequestBuilder();
 
 describe("StateMachine", () => {
   let states: any;
-  let voxaEvent: AlexaEvent;
+  let voxaEvent: IVoxaIntentEvent;
   let reply: AlexaReply;
   let app: VoxaApp;
   let skill: AlexaPlatform;
@@ -18,7 +24,9 @@ describe("StateMachine", () => {
   beforeEach(() => {
     app = new VoxaApp({ views });
     skill = new AlexaPlatform(app);
-    voxaEvent = new AlexaEvent(rb.getIntentRequest("AMAZON.YesIntent"));
+    voxaEvent = new AlexaEvent(
+      rb.getIntentRequest("AMAZON.YesIntent"),
+    ) as IVoxaIntentEvent;
     voxaEvent.platform = skill;
 
     reply = new AlexaReply();
@@ -162,7 +170,7 @@ describe("StateMachine", () => {
         const stateMachine = new StateMachine({ states });
         const launchIntent = new AlexaEvent(
           rb.getIntentRequest("LaunchIntent"),
-        );
+        ) as IVoxaIntentEvent;
         launchIntent.platform = skill;
 
         stateMachine.runTransition("entry", launchIntent, reply).then(

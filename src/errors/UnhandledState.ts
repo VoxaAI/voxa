@@ -20,14 +20,14 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { IVoxaEvent } from "../VoxaEvent";
+import { IVoxaIntentEvent } from "../VoxaEvent";
 
 export class UnhandledState extends Error {
-  public voxaEvent: IVoxaEvent;
+  public voxaEvent: IVoxaIntentEvent;
   public fromState: string;
   public transition: any;
 
-  constructor(voxaEvent: IVoxaEvent, transition: any, fromState: string) {
+  constructor(voxaEvent: IVoxaIntentEvent, transition: any, fromState: string) {
     let message: string;
     if (voxaEvent.intent) {
       message = `${voxaEvent.intent.name} went unhandled on ${fromState} state`;

@@ -52,10 +52,6 @@ app.onBeforeReplySent(request => {
 });
 
 app.onState("likesVoxa?", request => {
-  if (!request.intent) {
-    throw new Error("Not an intent request");
-  }
-
   if (request.intent.name === "YesIntent") {
     return { tell: "doesLikeVoxa" };
   }

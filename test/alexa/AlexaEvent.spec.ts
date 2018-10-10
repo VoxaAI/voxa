@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import * as _ from "lodash";
-import { AlexaEvent } from "../../src/platforms/alexa/AlexaEvent";
+import { AlexaEvent, IVoxaIntentEvent } from "../../src/";
 import { AlexaRequestBuilder } from "../tools";
 
 describe("AlexaEvent", () => {
@@ -15,7 +15,7 @@ describe("AlexaEvent", () => {
     const rawEvent = rb.getIntentRequest("SomeIntent", {
       Dish: "Fried Chicken",
     });
-    const alexaEvent = new AlexaEvent(rawEvent);
+    const alexaEvent = new AlexaEvent(rawEvent) as IVoxaIntentEvent;
     expect(alexaEvent.intent.params).to.deep.equal({ Dish: "Fried Chicken" });
   });
 
@@ -65,7 +65,7 @@ describe("AlexaEvent", () => {
     const rawEvent = rb.getDisplayElementSelectedRequest(
       "SleepSingleIntent@2018-09-13T00:40:16.047Z",
     );
-    const alexaEvent = new AlexaEvent(rawEvent);
+    const alexaEvent = new AlexaEvent(rawEvent) as IVoxaIntentEvent;
     expect(alexaEvent.intent.params).to.be.ok;
   });
 });

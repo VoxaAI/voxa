@@ -24,7 +24,7 @@ import * as bluebird from "bluebird";
 import * as _ from "lodash";
 
 import { UnhandledState, UnknownState } from "../errors";
-import { IVoxaEvent, IVoxaIntent } from "../VoxaEvent";
+import { IVoxaIntent, IVoxaIntentEvent } from "../VoxaEvent";
 import { IVoxaReply } from "../VoxaReply";
 import {
   isState,
@@ -35,18 +35,18 @@ import {
 } from "./transitions";
 
 export type IStateMachineCb = (
-  event: IVoxaEvent,
+  event: IVoxaIntentEvent,
   reply: IVoxaReply,
   transition: ITransition,
 ) => Promise<ITransition>;
 
 export type IUnhandledStateCb = (
-  event: IVoxaEvent,
+  event: IVoxaIntentEvent,
   stateName: string,
 ) => Promise<ITransition>;
 
 export type IOnBeforeStateChangedCB = (
-  event: IVoxaEvent,
+  event: IVoxaIntentEvent,
   reply: IVoxaReply,
   state: IState,
 ) => Promise<void>;
@@ -95,7 +95,7 @@ export class StateMachine {
    * we use the onUnhandledState handler
    */
   public async checkOnUnhandledState(
-    voxaEvent: IVoxaEvent,
+    voxaEvent: IVoxaIntentEvent,
     voxaReply: IVoxaReply,
     transition: ITransition,
   ): Promise<ITransition> {
@@ -131,7 +131,7 @@ export class StateMachine {
    * in the entry controller
    */
   public async checkForEntryFallback(
-    voxaEvent: IVoxaEvent,
+    voxaEvent: IVoxaIntentEvent,
     reply: IVoxaReply,
     transition: ITransition,
   ): Promise<ITransition> {
@@ -142,10 +142,6 @@ export class StateMachine {
 
     if (!transition && this.currentState.name !== "entry") {
       // If no response try falling back to entry
-      if (!voxaEvent.intent) {
-        throw new Error("Running the state machine without an intent");
-      }
-
       voxaEvent.log.debug(
         `No reply for ${voxaEvent.intent.name} in [${
           this.currentState.name
@@ -159,7 +155,7 @@ export class StateMachine {
   }
 
   public async onAfterStateChanged(
-    voxaEvent: IVoxaEvent,
+    voxaEvent: IVoxaIntentEvent,
     reply: IVoxaReply,
     transition: ITransition,
   ): Promise<ITransition> {
@@ -185,7 +181,7 @@ export class StateMachine {
 
   public async runTransition(
     currentStateName: string,
-    voxaEvent: IVoxaEvent,
+    voxaEvent: IVoxaIntentEvent,
     reply: IVoxaReply,
   ): Promise<ITransition> {
     this.currentState = this.getCurrentState(
@@ -231,7 +227,7 @@ export class StateMachine {
   }
 
   public async runCurrentState(
-    voxaEvent: IVoxaEvent,
+    voxaEvent: IVoxaIntentEvent,
     reply: IVoxaReply,
   ): Promise<ITransition> {
     if (!voxaEvent.intent) {
@@ -307,7 +303,7 @@ export class StateMachine {
     return { to: dest };
   }
 
-  protected runCallbacks(fn: IUnhandledStateCb, voxaEvent: IVoxaEvent) {
+  protected runCallbacks(fn: IUnhandledStateCb, voxaEvent: IVoxaIntentEvent) {
     if (!isState(this.currentState)) {
       throw new Error("this.currentState is not a state");
     }
@@ -328,7 +324,7 @@ export class StateMachine {
   }
 
   protected async runOnBeforeStateChanged(
-    voxaEvent: IVoxaEvent,
+    voxaEvent: IVoxaIntentEvent,
     reply: IVoxaReply,
   ) {
     const onBeforeState = this.onBeforeStateChangedCallbacks;
@@ -345,7 +341,7 @@ export class StateMachine {
 
   protected getFinalTransition(
     sysTransition: SystemTransition,
-    voxaEvent: IVoxaEvent,
+    voxaEvent: IVoxaIntentEvent,
     reply: IVoxaReply,
   ) {
     let to;

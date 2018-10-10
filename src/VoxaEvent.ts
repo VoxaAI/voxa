@@ -39,10 +39,29 @@ export interface IVoxaRequest {
 }
 
 export interface IVoxaEventClass {
-  new(rawEvent: any, logOptions: LambdaLogOptions, context: any): IVoxaEvent;
+  new (rawEvent: any, logOptions: LambdaLogOptions, context: any): IVoxaEvent;
 }
 
-export abstract class IVoxaEvent {
+export interface IVoxaIntentEvent extends IVoxaEvent {
+  intent: IVoxaIntent;
+}
+
+export interface IVoxaEvent {
+  rawEvent: any; // the raw event as sent by the service
+  session: IVoxaSession;
+  intent?: IVoxaIntent;
+  request: IVoxaRequest;
+  model: Model;
+  t: i18n.TranslationFunction;
+  log: LambdaLog;
+  renderer: Renderer;
+  user: IVoxaUser;
+  platform: VoxaPlatform;
+  supportedInterfaces: string[];
+  executionContext?: AWSLambdaContext | AzureContext;
+}
+
+export abstract class VoxaEvent implements IVoxaEvent {
   public abstract get supportedInterfaces(): string[];
   public rawEvent: any; // the raw event as sent by the service
   public session!: IVoxaSession;
