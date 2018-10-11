@@ -37,7 +37,6 @@ import {
 } from "./directives";
 import {
   errorHandler,
-  InvalidTransitionError,
   OnSessionEndedError,
   TimeoutError,
   UnknownRequestType,
@@ -46,7 +45,6 @@ import { isLambdaContext, timeout } from "./lambda";
 import { IModel, Model } from "./Model";
 import { IRenderer, IRendererConfig, Renderer } from "./renderers/Renderer";
 import {
-  getStateName,
   IStateHandler,
   ITransition,
   IUnhandledStateCb,

@@ -28,10 +28,6 @@ export interface ITransition {
   flow?: string;
 }
 
-export function isTransition(object: any): object is ITransition {
-  return object && "to" in object;
-}
-
 export function getStateName(transition: ITransition): string {
   if (_.isString(transition.to)) {
     return transition.to;

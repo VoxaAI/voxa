@@ -22,7 +22,7 @@
 
 import { expect } from "chai";
 import * as _ from "lodash";
-import { AlexaEvent, AlexaPlatform, AlexaReply, VoxaApp } from "../src/";
+import { AlexaPlatform, AlexaReply, VoxaApp } from "../src/";
 import { AlexaRequestBuilder } from "./tools";
 import { variables } from "./variables";
 import { views } from "./views";

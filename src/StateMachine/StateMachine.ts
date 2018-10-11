@@ -22,11 +22,11 @@
 
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
-import { UnhandledState, UnknownState } from "../errors";
-import { IVoxaIntent, IVoxaIntentEvent } from "../VoxaEvent";
+import { UnknownState } from "../errors";
+import { IVoxaIntentEvent } from "../VoxaEvent";
 import { IVoxaReply } from "../VoxaReply";
 import { State } from "./State";
-import { isTransition, ITransition, SystemTransition } from "./transitions";
+import { ITransition, SystemTransition } from "./transitions";
 
 export type IStateMachineCb = (
   event: IVoxaIntentEvent,
@@ -203,7 +203,7 @@ export class StateMachine {
       .value();
 
     if (states.length === 0) {
-      throw new Error(`Missing State ${currentStateName}`);
+      throw new UnknownState(currentStateName);
     }
 
     // Sometimes a user might have defined more than one controller for the same state,
