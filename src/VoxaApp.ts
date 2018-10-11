@@ -35,11 +35,7 @@ import {
   SayP,
   Tell,
 } from "./directives";
-import {
-  errorHandler,
-  TimeoutError,
-  UnknownRequestType,
-} from "./errors";
+import { errorHandler, UnknownRequestType } from "./errors";
 import { isLambdaContext, timeout } from "./lambda";
 import { IModel, Model } from "./Model";
 import { IRenderer, IRendererConfig, Renderer } from "./renderers/Renderer";
