@@ -57,11 +57,9 @@ export { ITransition } from "./StateMachine";
 export {
   TimeoutError,
   OnSessionEndedError,
-  UnhandledState,
   UnknownState,
   UnknownRequestType,
   NotImplementedError,
-  InvalidTransitionError,
 } from "./errors";
 export { Model } from "./Model";
 
