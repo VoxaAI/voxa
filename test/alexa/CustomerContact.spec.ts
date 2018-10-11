@@ -24,8 +24,7 @@ import { expect } from "chai";
 import * as _ from "lodash";
 import * as nock from "nock";
 
-import { AlexaPlatform } from "../../src/platforms/alexa/AlexaPlatform";
-import { VoxaApp } from "../../src/VoxaApp";
+import { AlexaPlatform, IVoxaIntentEvent, VoxaApp } from "../../src";
 import { AlexaRequestBuilder, isAlexaEvent } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";
@@ -69,16 +68,19 @@ describe("CustomerContact", () => {
       .get("/v2/accounts/~current/settings/Profile.givenName")
       .reply(200, "John");
 
-    alexaSkill.onIntent("InformationIntent", async (voxaEvent) => {
-      let info;
+    alexaSkill.onIntent(
+      "InformationIntent",
+      async (voxaEvent: IVoxaIntentEvent) => {
+        let info;
 
-      if (isAlexaEvent(voxaEvent)) {
-        info = await voxaEvent.alexa.customerContact.getFullUserInformation();
-      }
+        if (isAlexaEvent(voxaEvent)) {
+          info = await voxaEvent.alexa.customerContact.getFullUserInformation();
+        }
 
-      voxaEvent.model.info = info;
-      return { tell: "CustomerContact.FullInfo" };
-    });
+        voxaEvent.model.info = info;
+        return { tell: "CustomerContact.FullInfo" };
+      },
+    );
 
     const reply = await alexaSkill.execute(event);
     const outputSpeech =
@@ -99,16 +101,19 @@ describe("CustomerContact", () => {
         message: "Access to this resource cannot be requested",
       });
 
-    alexaSkill.onIntent("InformationIntent", async (voxaEvent) => {
-      let info;
+    alexaSkill.onIntent(
+      "InformationIntent",
+      async (voxaEvent: IVoxaIntentEvent) => {
+        let info;
 
-      if (isAlexaEvent(voxaEvent)) {
-        info = await voxaEvent.alexa.customerContact.getFullUserInformation();
-      }
+        if (isAlexaEvent(voxaEvent)) {
+          info = await voxaEvent.alexa.customerContact.getFullUserInformation();
+        }
 
-      voxaEvent.model.info = info;
-      return { tell: "CustomerContact.FullInfo" };
-    });
+        voxaEvent.model.info = info;
+        return { tell: "CustomerContact.FullInfo" };
+      },
+    );
 
     const reply = await alexaSkill.execute(event);
     const outputSpeech =
@@ -133,20 +138,23 @@ describe("CustomerContact", () => {
         message: "Access to this resource cannot be requested",
       });
 
-    alexaSkill.onIntent("InformationIntent", async (voxaEvent) => {
-      try {
-        let info;
+    alexaSkill.onIntent(
+      "InformationIntent",
+      async (voxaEvent: IVoxaIntentEvent) => {
+        try {
+          let info;
 
-        if (isAlexaEvent(voxaEvent)) {
-          info = await voxaEvent.alexa.customerContact.getFullUserInformation();
+          if (isAlexaEvent(voxaEvent)) {
+            info = await voxaEvent.alexa.customerContact.getFullUserInformation();
+          }
+
+          voxaEvent.model.info = info;
+          return { tell: "CustomerContact.FullInfo" };
+        } catch (err) {
+          return { tell: "CustomerContact.PermissionNotGranted" };
         }
-
-        voxaEvent.model.info = info;
-        return { tell: "CustomerContact.FullInfo" };
-      } catch (err) {
-        return { tell: "CustomerContact.PermissionNotGranted" };
-      }
-    });
+      },
+    );
 
     const reply = await alexaSkill.execute(event);
     const outputSpeech =

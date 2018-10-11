@@ -1,5 +1,6 @@
 import "mocha";
 
+import { RequestEnvelope } from "ask-sdk-model";
 import { expect } from "chai";
 import * as i18n from "i18next";
 import * as _ from "lodash";
@@ -22,6 +23,7 @@ const rb = new AlexaRequestBuilder();
 
 describe("Renderer", () => {
   let statesDefinition: any;
+  let rawEvent: RequestEnvelope;
   let event: AlexaEvent;
   let renderer: Renderer;
   let voxaApp: VoxaApp;
@@ -37,14 +39,17 @@ describe("Renderer", () => {
   beforeEach(() => {
     voxaApp = new VoxaApp({ views });
     renderer = new Renderer({ views, variables });
-    event = new AlexaEvent(rb.getIntentRequest("SomeIntent"));
+    rawEvent = rb.getIntentRequest("SomeIntent");
+    event = new AlexaEvent(rawEvent);
     event.platform = new AlexaPlatform(voxaApp);
     event.t = i18n.getFixedT("en-US");
 
     statesDefinition = {
-      entry: () => ({ ask: "ExitIntent.Farewell", to: "die" }),
-      initState: () => ({ to: "endState" }),
-      secondState: () => ({ to: "initState" }),
+      LaunchIntent: { to: "endState" },
+      SomeIntent: { to: "endState" },
+      endState: { ask: "ExitIntent.Farewell", to: "die" },
+      initState: { to: "endState" },
+      secondState: { to: "initState" },
       thirdState: () => Promise.resolve({ to: "endState" }),
     };
   });
@@ -83,21 +88,20 @@ describe("Renderer", () => {
 
   _.forEach(locales, (translations, locale) => {
     describe(locale, () => {
-      let skill: VoxaApp;
+      let app: VoxaApp;
+      let skill: AlexaPlatform;
 
       beforeEach(() => {
-        skill = new VoxaApp({ variables, views });
+        app = new VoxaApp({ variables, views });
+        skill = new AlexaPlatform(app);
       });
 
       it(`should return the correct translation for ${locale}`, async () => {
         _.map(statesDefinition, (state, name: string) =>
           skill.onState(name, state),
         );
-        event.request.locale = locale;
-        const reply = (await skill.execute(
-          event,
-          new AlexaReply(),
-        )) as AlexaReply;
+        rawEvent.request.locale = locale;
+        const reply = await skill.execute(rawEvent);
         expect(reply.speech).to.equal(`<speak>${translations.site}</speak>`);
         expect(reply.response.directives).to.be.undefined;
       });
@@ -108,11 +112,8 @@ describe("Renderer", () => {
           say: "Say",
           to: "entry",
         }));
-        event.request.locale = locale;
-        const reply = (await skill.execute(
-          event,
-          new AlexaReply(),
-        )) as AlexaReply;
+        rawEvent.request.locale = locale;
+        const reply = await skill.execute(rawEvent);
         expect(reply.speech).to.deep.equal(
           `<speak>${translations.say}</speak>`,
         );
@@ -121,11 +122,8 @@ describe("Renderer", () => {
 
       it("should have the locale available in variables", async () => {
         skill.onIntent("SomeIntent", () => ({ tell: "Number.One" }));
-        event.request.locale = locale;
-        const reply = (await skill.execute(
-          event,
-          new AlexaReply(),
-        )) as AlexaReply;
+        rawEvent.request.locale = locale;
+        const reply = await skill.execute(rawEvent);
         expect(reply.speech).to.equal(`<speak>${translations.number}</speak>`);
         expect(reply.response.directives).to.be.undefined;
       });
@@ -138,11 +136,8 @@ describe("Renderer", () => {
           directives: [playAudio],
           to: "entry",
         }));
-        event.request.locale = locale;
-        const reply = (await skill.execute(
-          event,
-          new AlexaReply(),
-        )) as AlexaReply;
+        rawEvent.request.locale = locale;
+        const reply = await skill.execute(rawEvent);
         expect(reply.speech).to.equal(
           `<speak>${translations.question}</speak>`,
         );

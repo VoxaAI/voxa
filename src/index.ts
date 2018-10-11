@@ -53,15 +53,13 @@ export {
 } from "./platforms/dialogflow";
 export { Renderer } from "./renderers/Renderer";
 export { VoxaApp } from "./VoxaApp";
-export { ITransition } from "./StateMachine";
+export { ITransition, State } from "./StateMachine";
 export {
   TimeoutError,
   OnSessionEndedError,
-  UnhandledState,
   UnknownState,
   UnknownRequestType,
   NotImplementedError,
-  InvalidTransitionError,
 } from "./errors";
 export { Model } from "./Model";
 

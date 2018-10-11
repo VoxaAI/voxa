@@ -20,7 +20,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-require("source-map-support").install();
 let voxa;
 try {
   voxa = require("voxa");
@@ -51,15 +50,21 @@ app.onBeforeReplySent(request => {
   }
 });
 
-app.onState("likesVoxa?", request => {
-  if (request.intent.name === "YesIntent") {
-    return { tell: "doesLikeVoxa" };
-  }
+app.onState(
+  "likesVoxa?",
+  {
+    tell: "doesLikeVoxa"
+  },
+  "YesIntent"
+);
 
-  if (request.intent.name === "NoIntent") {
-    return { ask: "doesNotLikeVoxa" };
-  }
-});
+app.onState(
+  "likesVoxa?",
+  {
+    tell: "doesNotLikeVoxa"
+  },
+  "NoIntent"
+);
 
 const alexaSkill = new AlexaPlatform(app);
 

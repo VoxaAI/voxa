@@ -23,9 +23,7 @@
 import { expect } from "chai";
 import * as _ from "lodash";
 import * as nock from "nock";
-
-import { AlexaPlatform } from "../../src/platforms/alexa/AlexaPlatform";
-import { VoxaApp } from "../../src/VoxaApp";
+import { AlexaPlatform, IVoxaIntentEvent, VoxaApp } from "../../src";
 import { AlexaRequestBuilder, isAlexaEvent } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";
@@ -152,33 +150,36 @@ describe("Lists", () => {
       })
       .reply(200, JSON.stringify(itemCreatedMock));
 
-    alexaSkill.onIntent("AddProductToListIntent", async (voxaEvent) => {
-      const { productName } = _.get(voxaEvent, "intent.params");
-      let listInfo: any;
+    alexaSkill.onIntent(
+      "AddProductToListIntent",
+      async (voxaEvent: IVoxaIntentEvent) => {
+        const { productName } = _.get(voxaEvent, "intent.params");
+        let listInfo: any;
 
-      if (isAlexaEvent(voxaEvent)) {
-        listInfo = await voxaEvent.alexa.lists.getOrCreateList(LIST_NAME);
-      }
+        if (isAlexaEvent(voxaEvent)) {
+          listInfo = await voxaEvent.alexa.lists.getOrCreateList(LIST_NAME);
+        }
 
-      let listItem: any = _.find(listInfo.items, { name: productName });
+        let listItem: any = _.find(listInfo.items, { name: productName });
 
-      if (listItem) {
-        return false;
-      }
+        if (listItem) {
+          return false;
+        }
 
-      if (isAlexaEvent(voxaEvent)) {
-        listItem = await voxaEvent.alexa.lists.createItem(
-          listInfo.listId,
-          productName,
-        );
-      }
+        if (isAlexaEvent(voxaEvent)) {
+          listItem = await voxaEvent.alexa.lists.createItem(
+            listInfo.listId,
+            productName,
+          );
+        }
 
-      if (listItem) {
-        return { tell: "Lists.ProductCreated" };
-      }
+        if (listItem) {
+          return { tell: "Lists.ProductCreated" };
+        }
 
-      return { tell: "Lists.AlreadyCreated" };
-    });
+        return { tell: "Lists.AlreadyCreated" };
+      },
+    );
 
     const reply = await alexaSkill.execute(event);
 
@@ -233,35 +234,40 @@ describe("Lists", () => {
 
     event.request.intent.name = "ModifyProductInListIntent";
 
-    alexaSkill.onIntent("ModifyProductInListIntent", async (voxaEvent) => {
-      const { productName } = _.get(voxaEvent, "intent.params");
+    alexaSkill.onIntent(
+      "ModifyProductInListIntent",
+      async (voxaEvent: IVoxaIntentEvent) => {
+        const { productName } = _.get(voxaEvent, "intent.params");
 
-      if (isAlexaEvent(voxaEvent)) {
-        const listInfo = await voxaEvent.alexa.lists.getOrCreateList(LIST_NAME);
-        listInfo.listId = listInfo.listId || "";
+        if (isAlexaEvent(voxaEvent)) {
+          const listInfo = await voxaEvent.alexa.lists.getOrCreateList(
+            LIST_NAME,
+          );
+          listInfo.listId = listInfo.listId || "";
 
-        await voxaEvent.alexa.lists.updateList(
-          listInfo.listId,
-          newListName,
-          "active",
-          1,
-        );
+          await voxaEvent.alexa.lists.updateList(
+            listInfo.listId,
+            newListName,
+            "active",
+            1,
+          );
 
-        const listItem: any = _.find(_.get(listInfo, "items"), {
-          name: productName,
-        });
+          const listItem: any = _.find(_.get(listInfo, "items"), {
+            name: productName,
+          });
 
-        await voxaEvent.alexa.lists.updateItem(
-          listInfo.listId,
-          listItem.id,
-          value,
-          "active",
-          1,
-        );
-      }
+          await voxaEvent.alexa.lists.updateItem(
+            listInfo.listId,
+            listItem.id,
+            value,
+            "active",
+            1,
+          );
+        }
 
-      return { tell: "Lists.ProductModified" };
-    });
+        return { tell: "Lists.ProductModified" };
+      },
+    );
 
     const reply = await alexaSkill.execute(event);
 
@@ -298,7 +304,7 @@ describe("Lists", () => {
 
     event.request.intent.name = "DeleteIntent";
 
-    alexaSkill.onIntent("DeleteIntent", (voxaEvent) => {
+    alexaSkill.onIntent("DeleteIntent", (voxaEvent: IVoxaIntentEvent) => {
       if (isAlexaEvent(voxaEvent)) {
         return voxaEvent.alexa.lists
           .deleteItem("listId", "1")
@@ -376,7 +382,7 @@ describe("Lists", () => {
 
     event.request.intent.name = "ShowIntent";
 
-    alexaSkill.onIntent("ShowIntent", async (voxaEvent) => {
+    alexaSkill.onIntent("ShowIntent", async (voxaEvent: IVoxaIntentEvent) => {
       const listsWithItems = [];
 
       if (isAlexaEvent(voxaEvent)) {

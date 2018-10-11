@@ -20,14 +20,40 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export class InvalidTransitionError extends Error {
-  public transition: any;
+import * as _ from "lodash";
+import { ITransition } from "../StateMachine";
+import { IVoxaIntentEvent } from "../VoxaEvent";
 
-  constructor(transition: any, details: string) {
-    const message = `Transition was not valid ${details}. ${JSON.stringify(
-      transition,
-    )}`;
-    super(message);
-    this.transition = transition;
+export type IStateHandler = (event: IVoxaIntentEvent) => Promise<ITransition>;
+
+export class State {
+  public intents: string[] = [];
+  private handler: IStateHandler;
+
+  constructor(
+    public name: string,
+    handler: IStateHandler | ITransition,
+    intents: string | string[] = [],
+    public platform: string = "core",
+  ) {
+    if (_.isFunction(handler)) {
+      this.handler = handler;
+    } else {
+      this.handler = this.getSimpleTransitionHandler(handler);
+    }
+
+    if (_.isString(intents)) {
+      this.intents = [intents];
+    } else {
+      this.intents = intents;
+    }
+  }
+
+  public async handle(voxaEvent: IVoxaIntentEvent): Promise<ITransition> {
+    return this.handler(voxaEvent);
+  }
+
+  protected getSimpleTransitionHandler(transition: ITransition): IStateHandler {
+    return async (voxaEvent: IVoxaIntentEvent) => _.cloneDeep(transition);
   }
 }

@@ -20,32 +20,53 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import { expect } from "chai";
 import * as _ from "lodash";
-import { IBag, IVoxaEvent } from "./VoxaEvent";
+import { AlexaPlatform, AlexaReply, VoxaApp } from "../src/";
+import { AlexaRequestBuilder } from "./tools";
+import { variables } from "./variables";
+import { views } from "./views";
 
-export class Model {
-  [key: string]: any;
+const rb = new AlexaRequestBuilder();
 
-  public static deserialize(
-    data: IBag,
-    voxaEvent: IVoxaEvent,
-  ): Promise<Model> | Model {
-    return new this(data);
+const states = {
+  CancelIntent: {
+    to: "exit",
+  },
+  HelpIntent: {
+    to: "help",
+  },
+  LaunchIntent: {
+    to: "launch",
+  },
+  StopIntent: {
+    to: "exit",
+  },
+  exit: () => ({ tell: "ExitIntent.Farewell", to: "die" }),
+  help: () => ({ ask: "HelpIntent.HelpAboutSkill", to: "die" }),
+  launch: () => ({ ask: "LaunchIntent.OpenResponse", to: "die" }),
+};
+
+describe("StateMachineSkill Help test", () => {
+  let app: VoxaApp;
+  let skill: AlexaPlatform;
+
+  beforeEach(() => {
+    app = new VoxaApp({ views, variables });
+    skill = new AlexaPlatform(app);
+    _.map(states, (state, name) => {
+      skill.onState(name, state);
+    });
+  });
+
+  itIs("AMAZON.HelpIntent", (reply: AlexaReply) => {
+    expect(reply.speech).to.include("For more help visit");
+  });
+
+  function itIs(intentName: string, cb: any) {
+    it(intentName, () => {
+      const event = rb.getIntentRequest(intentName);
+      return skill.execute(event).then(cb);
+    });
   }
-
-  public state?: string;
-
-  constructor(data: any = {}) {
-    _.assign(this, data);
-  }
-
-  public async serialize(): Promise<any> {
-    return this;
-  }
-}
-
-export interface IModel {
-  new (data?: any): Model;
-  deserialize(data: IBag, event: IVoxaEvent): Model | Promise<Model>;
-  serialize(): Promise<any>;
-}
+});
