@@ -225,11 +225,6 @@ export class StateMachine {
       throw new UnknownState(currentStateName);
     }
 
-    // if (states.length > 1) {
-    // states = _(states)
-    // .value();
-    // }
-
     return states[0];
   }
 }
