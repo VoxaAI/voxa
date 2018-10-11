@@ -25,15 +25,7 @@ import * as _ from "lodash";
 export interface ITransition {
   [propname: string]: any;
   to?: string; // default to 'entry'
-  flow?: string;
-}
-
-export function getStateName(transition: ITransition): string {
-  if (_.isString(transition.to)) {
-    return transition.to;
-  }
-
-  return "";
+  flow?: string; // default to continue
 }
 
 /**
@@ -43,13 +35,11 @@ export function getStateName(transition: ITransition): string {
  */
 export class SystemTransition implements ITransition {
   [propname: string]: any;
-  public to!: string; // default to 'entry'
-  public flow!: string;
+  public to: string = "die"; // default to 'entry'
+  public flow!: string; // default to continue
 
   constructor(transition: ITransition) {
     Object.assign(this, transition);
-    this.to = this.to || "die";
-
     if (!this.flow) {
       this.flow = this.to === "die" ? "terminate" : "continue";
     }

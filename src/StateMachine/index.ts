@@ -1,3 +1,3 @@
 export { StateMachine, IUnhandledStateCb } from "./StateMachine";
-export { ITransition, getStateName } from "./transitions";
+export { ITransition } from "./transitions";
 export { State, IStateHandler } from "./State";
