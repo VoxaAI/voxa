@@ -21,10 +21,8 @@
  */
 
 export { OnSessionEndedError } from "./OnSessionEndedError";
-export { UnhandledState } from "./UnhandledState";
 export { NotImplementedError } from "./NotImplementedError";
 export { TimeoutError } from "./TimeoutError";
-export { InvalidTransitionError } from "./InvalidTransitionError";
 export { errorHandler } from "./handler";
 
 function createError(messageTemplate: string, key: string) {
