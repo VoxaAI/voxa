@@ -20,8 +20,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import * as _ from "lodash";
-
 export interface ITransition {
   [propname: string]: any;
   to?: string; // default to 'entry'
