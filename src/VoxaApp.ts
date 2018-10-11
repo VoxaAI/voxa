@@ -37,7 +37,6 @@ import {
 } from "./directives";
 import {
   errorHandler,
-  OnSessionEndedError,
   TimeoutError,
   UnknownRequestType,
 } from "./errors";
