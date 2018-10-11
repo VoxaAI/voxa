@@ -139,7 +139,7 @@ export class StateMachine {
       );
     }
 
-    this.runOnBeforeStateChanged(voxaEvent, reply);
+    await this.runOnBeforeStateChanged(voxaEvent, reply);
 
     let transition: ITransition = await this.currentState.handle(voxaEvent);
 

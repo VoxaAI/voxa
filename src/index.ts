@@ -53,7 +53,7 @@ export {
 } from "./platforms/dialogflow";
 export { Renderer } from "./renderers/Renderer";
 export { VoxaApp } from "./VoxaApp";
-export { ITransition } from "./StateMachine";
+export { ITransition, State } from "./StateMachine";
 export {
   TimeoutError,
   OnSessionEndedError,

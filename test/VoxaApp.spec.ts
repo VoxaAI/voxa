@@ -32,7 +32,10 @@ import {
   AlexaPlatform,
   AlexaReply,
   IVoxaEvent,
+  IVoxaIntentEvent,
+  IVoxaReply,
   Model,
+  State,
   VoxaApp,
 } from "../src";
 import { AlexaRequestBuilder } from "./tools";
@@ -175,9 +178,34 @@ describe("VoxaApp", () => {
     expect(called).to.be.true;
   });
 
-  it("should accept onBeforeStateChanged callbacks", () => {
-    const voxaApp = new VoxaApp({ variables, views });
-    voxaApp.onBeforeStateChanged(simple.stub());
+  describe("onBeforeStateChanged", () => {
+    it("should accept onBeforeStateChanged callbacks", () => {
+      const voxaApp = new VoxaApp({ variables, views });
+      voxaApp.onBeforeStateChanged(simple.stub());
+    });
+
+    it("should execute handlers before each state", async () => {
+      const voxaApp = new VoxaApp({ variables, views });
+      const platform = new AlexaPlatform(voxaApp);
+      voxaApp.onBeforeStateChanged(
+        (voxaEvent: IVoxaEvent, voxaReply: IVoxaReply, state: State) => {
+          voxaEvent.model.previousState = state.name;
+        },
+      );
+
+      voxaApp.onIntent("SomeIntent", (voxaEvent: IVoxaIntentEvent) => {
+        console.log(voxaEvent.model);
+        expect(voxaEvent.model.previousState).to.equal("SomeIntent");
+        return {
+          flow: "terminate",
+          sayp: "done",
+        };
+      });
+
+      const reply = await platform.execute(event);
+
+      expect(reply.speech).to.equal("<speak>done</speak>");
+    });
   });
 
   it("should set properties on request and have those available in the state callbacks", async () => {
@@ -454,6 +482,22 @@ describe("VoxaApp", () => {
   });
 
   describe("onUnhandledState", () => {
+    it("should crash if there's an unhandled state", async () => {
+      const voxaApp = new VoxaApp({ Model, views, variables });
+      const platform = new AlexaPlatform(voxaApp);
+      const launchEvent = rb.getIntentRequest("LaunchIntent");
+
+      statesDefinition.LaunchIntent = simple.stub().resolveWith(null);
+
+      _.map(statesDefinition, (state: any, name: string) =>
+        voxaApp.onState(name, state),
+      );
+      const reply = await platform.execute(launchEvent);
+      expect(reply.speech).to.equal(
+        "<speak>An unrecoverable error occurred.</speak>",
+      );
+    });
+
     it(
       "should call onUnhandledState callbacks when the state" +
         " machine transition throws a UnhandledState error",
