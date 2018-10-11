@@ -60,60 +60,6 @@ describe("VoxaApp", () => {
     };
   });
 
-  // describe("onState", () => {
-  // it("should accept new states", () => {
-  // const voxaApp = new VoxaApp({ variables, views });
-  // const fourthState = () => ({ to: "endState" });
-  // voxaApp.onState("fourthState", fourthState);
-  // expect(voxaApp.states.core.fourthState.enter.entry).to.equal(fourthState);
-  // });
-
-  // it("should register simple states", () => {
-  // const voxaApp = new VoxaApp({ variables, views });
-  // const stateFn = simple.stub();
-  // voxaApp.onState("init", stateFn);
-
-  // expect(voxaApp.states.core.init).to.deep.equal({
-  // enter: {
-  // entry: stateFn,
-  // },
-  // name: "init",
-  // });
-  // });
-
-  // it("should register states for specific intents", () => {
-  // const voxaApp = new VoxaApp({ variables, views });
-  // const stateFn = simple.stub();
-  // voxaApp.onState("init", stateFn, "AMAZON.NoIntent");
-
-  // expect(voxaApp.states.core.init).to.deep.equal({
-  // enter: { "AMAZON.NoIntent": stateFn },
-  // name: "init",
-  // });
-  // });
-
-  // it("should register states for intent lists", () => {
-  // const voxaApp = new VoxaApp({ variables, views });
-  // const stateFn = simple.stub();
-  // const stateFn2 = simple.stub();
-
-  // voxaApp.onState("init", stateFn, [
-  // "AMAZON.NoIntent",
-  // "AMAZON.StopIntent",
-  // ]);
-  // voxaApp.onState("init", stateFn2, "AMAZON.YesIntent");
-
-  // expect(voxaApp.states.core.init).to.deep.equal({
-  // enter: {
-  // "AMAZON.NoIntent": stateFn,
-  // "AMAZON.StopIntent": stateFn,
-  // "AMAZON.YesIntent": stateFn2,
-  // },
-  // name: "init",
-  // });
-  // });
-  // });
-
   it("should include the state in the session attributes", async () => {
     const voxaApp = new VoxaApp({ variables, views });
     const platform = new AlexaPlatform(voxaApp);
