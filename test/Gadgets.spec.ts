@@ -1,18 +1,16 @@
 import { interfaces, services } from "ask-sdk-model";
 import { expect } from "chai";
 import * as _ from "lodash";
-
-import { AlexaPlatform } from "../src/platforms/alexa/AlexaPlatform";
 import {
-  GadgetController,
-  TRIGGER_EVENT_ENUM,
-} from "../src/platforms/alexa/GadgetController";
-import {
+  AlexaPlatform,
   ANCHOR_ENUM,
   EVENT_REPORT_ENUM,
+  GadgetController,
   GameEngine,
-} from "../src/platforms/alexa/GameEngine";
-import { VoxaApp } from "../src/VoxaApp";
+  IVoxaIntentEvent,
+  TRIGGER_EVENT_ENUM,
+  VoxaApp,
+} from "../src";
 import { AlexaRequestBuilder } from "./tools";
 import { variables } from "./variables";
 import { views } from "./views";
@@ -92,84 +90,87 @@ describe("Gadgets", () => {
   it("should recognize 2 buttons, send a SetLight directive and ask to recognize buttons again", async () => {
     event = rb.getGameEngineInputHandlerEventRequest(2);
 
-    app.onIntent("GameEngine.InputHandlerEvent", (voxaEvent) => {
-      voxaEvent.model.originatingRequestId =
-        voxaEvent.rawEvent.request.originatingRequestId;
-      const gameEvents = voxaEvent.rawEvent.request.events[0] || [];
-      const inputEvents = _(gameEvents.inputEvents)
-        .groupBy("gadgetId")
-        .map((value) => value[0])
-        .value();
+    app.onIntent(
+      "GameEngine.InputHandlerEvent",
+      (voxaEvent: IVoxaIntentEvent) => {
+        voxaEvent.model.originatingRequestId =
+          voxaEvent.rawEvent.request.originatingRequestId;
+        const gameEvents = voxaEvent.rawEvent.request.events[0] || [];
+        const inputEvents = _(gameEvents.inputEvents)
+          .groupBy("gadgetId")
+          .map((value) => value[0])
+          .value();
 
-      const directives: interfaces.gadgetController.SetLightDirective[] = [];
-      let customId = 0;
+        const directives: interfaces.gadgetController.SetLightDirective[] = [];
+        let customId = 0;
 
-      _.forEach(inputEvents, (gadgetEvent) => {
-        customId += 1;
-        const id = `g${customId}`;
+        _.forEach(inputEvents, (gadgetEvent) => {
+          customId += 1;
+          const id = `g${customId}`;
 
-        if (!_.includes(voxaEvent.model.buttons, id)) {
-          const buttonIndex = _.size(voxaEvent.model.buttons);
-          const targetGadgets = [gadgetEvent.gadgetId];
-          let lightDirective: interfaces.gadgetController.SetLightDirective;
+          if (!_.includes(voxaEvent.model.buttons, id)) {
+            const buttonIndex = _.size(voxaEvent.model.buttons);
+            const targetGadgets = [gadgetEvent.gadgetId];
+            let lightDirective: interfaces.gadgetController.SetLightDirective;
 
-          _.set(voxaEvent.model, `buttonIds.${id}`, gadgetEvent.gadgetId);
+            _.set(voxaEvent.model, `buttonIds.${id}`, gadgetEvent.gadgetId);
 
-          voxaEvent.model.buttons = [];
-          voxaEvent.model.buttons.push(id);
+            voxaEvent.model.buttons = [];
+            voxaEvent.model.buttons.push(id);
 
-          const triggerEventTimeMs = 0;
-          const gadgetController = new GadgetController();
-          const animationBuilder = GadgetController.getAnimationsBuilder();
-          const sequenceBuilder = GadgetController.getSequenceBuilder();
+            const triggerEventTimeMs = 0;
+            const gadgetController = new GadgetController();
+            const animationBuilder = GadgetController.getAnimationsBuilder();
+            const sequenceBuilder = GadgetController.getSequenceBuilder();
 
-          sequenceBuilder
-            .duration(1000)
-            .blend(false)
-            .color(COLORS[buttonIndex].dark);
+            sequenceBuilder
+              .duration(1000)
+              .blend(false)
+              .color(COLORS[buttonIndex].dark);
 
-          animationBuilder
-            .repeat(100)
-            .targetLights(["1"])
-            .sequence([sequenceBuilder]);
+            animationBuilder
+              .repeat(100)
+              .targetLights(["1"])
+              .sequence([sequenceBuilder]);
 
-          lightDirective = gadgetController
-            .setAnimations(animationBuilder)
-            .setTriggerEvent(TRIGGER_EVENT_ENUM.NONE)
-            .setLight(targetGadgets, triggerEventTimeMs);
+            lightDirective = gadgetController
+              .setAnimations(animationBuilder)
+              .setTriggerEvent(TRIGGER_EVENT_ENUM.NONE)
+              .setLight(targetGadgets, triggerEventTimeMs);
 
-          directives.push(lightDirective);
+            directives.push(lightDirective);
 
-          const otherAnimationBuilder = GadgetController.getAnimationsBuilder();
-          const otherSequenceBuilder = GadgetController.getSequenceBuilder();
+            const otherAnimationBuilder = GadgetController.getAnimationsBuilder();
+            const otherSequenceBuilder = GadgetController.getSequenceBuilder();
 
-          otherSequenceBuilder
-            .duration(500)
-            .blend(false)
-            .color(COLORS[buttonIndex].hex);
+            otherSequenceBuilder
+              .duration(500)
+              .blend(false)
+              .color(COLORS[buttonIndex].hex);
 
-          otherAnimationBuilder
-            .repeat(1)
-            .targetLights(["1"])
-            .sequence([otherSequenceBuilder.build()]);
+            otherAnimationBuilder
+              .repeat(1)
+              .targetLights(["1"])
+              .sequence([otherSequenceBuilder.build()]);
 
-          lightDirective = gadgetController
-            .setAnimations(otherAnimationBuilder.build())
-            .setTriggerEvent(TRIGGER_EVENT_ENUM.BUTTON_DOWN)
-            .setLight(targetGadgets, triggerEventTimeMs);
+            lightDirective = gadgetController
+              .setAnimations(otherAnimationBuilder.build())
+              .setTriggerEvent(TRIGGER_EVENT_ENUM.BUTTON_DOWN)
+              .setLight(targetGadgets, triggerEventTimeMs);
 
-          directives.push(lightDirective);
-        }
-      });
+            directives.push(lightDirective);
+          }
+        });
 
-      const alexaGameEngineStartInputHandler = rollCall(true);
+        const alexaGameEngineStartInputHandler = rollCall(true);
 
-      return {
-        alexaGadgetControllerLightDirective: directives,
-        alexaGameEngineStartInputHandler,
-        tell: "Buttons.Next",
-      };
-    });
+        return {
+          alexaGadgetControllerLightDirective: directives,
+          alexaGameEngineStartInputHandler,
+          tell: "Buttons.Next",
+        };
+      },
+    );
 
     const reply = await alexaSkill.execute(event);
     const responseDirectives = _.get(reply, "response.directives");
@@ -214,7 +215,7 @@ describe("Gadgets", () => {
     event = rb.getIntentRequest("ExitIntent");
     event.session.attributes.originatingRequestId = "originatingRequestId";
 
-    app.onIntent("ExitIntent", (voxaEvent) => {
+    app.onIntent("ExitIntent", (voxaEvent: IVoxaIntentEvent) => {
       const { originatingRequestId } = voxaEvent.model;
 
       return {

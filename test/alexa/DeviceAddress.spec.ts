@@ -24,8 +24,7 @@ import { expect } from "chai";
 import * as _ from "lodash";
 import * as nock from "nock";
 
-import { AlexaPlatform } from "../../src/platforms/alexa/AlexaPlatform";
-import { VoxaApp } from "../../src/VoxaApp";
+import { AlexaPlatform, IVoxaIntentEvent, VoxaApp } from "../../src";
 import { AlexaRequestBuilder, isAlexaEvent } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";
@@ -77,7 +76,7 @@ describe("DeviceAddress", () => {
   });
 
   it("should get full address", async () => {
-    alexaSkill.onIntent("AddressIntent", async (voxaEvent) => {
+    alexaSkill.onIntent("AddressIntent", async (voxaEvent: IVoxaIntentEvent) => {
       let info;
 
       if (isAlexaEvent(voxaEvent)) {
@@ -101,7 +100,7 @@ describe("DeviceAddress", () => {
   });
 
   it("should get coutry/region and postal code", async () => {
-    alexaSkill.onIntent("AddressIntent", async (voxaEvent) => {
+    alexaSkill.onIntent("AddressIntent", async (voxaEvent: IVoxaIntentEvent) => {
       let info;
 
       if (isAlexaEvent(voxaEvent)) {
@@ -128,7 +127,7 @@ describe("DeviceAddress", () => {
       .get("/v1/devices/deviceId/settings/address/countryAndPostalCode")
       .replyWithError("Access to this resource cannot be requested");
 
-    alexaSkill.onIntent("AddressIntent", async (voxaEvent) => {
+    alexaSkill.onIntent("AddressIntent", async (voxaEvent: IVoxaIntentEvent) => {
       try {
         let info;
 

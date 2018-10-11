@@ -47,19 +47,22 @@ import { IModel, Model } from "./Model";
 import { IRenderer, IRendererConfig, Renderer } from "./renderers/Renderer";
 import {
   getStateName,
-  isState,
+  IStateHandler,
   ITransition,
+  IUnhandledStateCb,
+  State,
   StateMachine,
 } from "./StateMachine";
 import { IBag, IVoxaEvent, IVoxaIntentEvent } from "./VoxaEvent";
 import { IVoxaReply } from "./VoxaReply";
 
 export interface IVoxaAppConfig extends IRendererConfig {
-  Model?: IModel;
-  RenderClass?: IRenderer;
+  Model: IModel;
+  RenderClass: IRenderer;
   views: i18n.Resource;
   variables?: any;
   logOptions?: LambdaLogOptions;
+  onUnhandledState?: IUnhandledStateCb;
 }
 
 export type IEventHandler = (
@@ -67,26 +70,26 @@ export type IEventHandler = (
   response: IVoxaReply,
   transition?: ITransition,
 ) => IVoxaReply | void;
+
 export type IErrorHandler = (
   event: IVoxaEvent,
   error: Error,
   ReplyClass: IVoxaReply,
 ) => IVoxaReply;
-export type IStateHandler = (event: IVoxaEvent) => ITransition;
 
 export class VoxaApp {
   [key: string]: any;
   public eventHandlers: any;
   public requestHandlers: any;
 
-  public config: any;
+  public config: IVoxaAppConfig;
   public renderer: Renderer;
   public i18nextPromise: PromiseLike<i18n.TranslationFunction>;
   public i18n: i18n.i18n;
-  public states: any;
+  public states: State[] = [];
   public directiveHandlers: IDirectiveClass[];
 
-  constructor(config: IVoxaAppConfig) {
+  constructor(config: any) {
     this.i18n = i18n.createInstance();
     this.config = config;
     this.eventHandlers = {};
@@ -100,10 +103,6 @@ export class VoxaApp {
     );
     this.registerEvents();
     this.onError(errorHandler, true);
-
-    this.states = {
-      core: {},
-    };
     this.config = _.assign(
       {
         Model,
@@ -324,8 +323,10 @@ export class VoxaApp {
     this.registerEvent("onBeforeStateChanged");
     this.registerEvent("onAfterStateChanged");
     this.registerEvent("onBeforeReplySent");
-    // Sent when the state machine failed to return a carrect reply
-    this.registerEvent("onUnhandledState");
+  }
+
+  public onUnhandledState(fn: IUnhandledStateCb) {
+    this.config.onUnhandledState = fn;
   }
 
   /*
@@ -391,29 +392,8 @@ export class VoxaApp {
     intents: string[] | string = [],
     platform: string = "core",
   ): void {
-    const state = _.get(this.states[platform], stateName, { name: stateName });
-    const stateEnter = _.get(state, "enter", {});
-
-    if (_.isFunction(handler)) {
-      if (intents.length === 0) {
-        stateEnter.entry = handler;
-      } else if (_.isString(intents)) {
-        stateEnter[intents] = handler;
-      } else if (_.isArray(intents)) {
-        _.merge(
-          stateEnter,
-          _(intents)
-            .map((intentName) => [intentName, handler])
-            .fromPairs()
-            .value(),
-        );
-      }
-      state.enter = stateEnter;
-      _.set(this.states, [platform, stateName], state);
-    } else {
-      state.to = handler;
-      _.set(this.states, [platform, stateName], state);
-    }
+    const state = new State(stateName, handler, intents, platform);
+    this.states.push(state);
   }
 
   public onIntent(
@@ -421,12 +401,7 @@ export class VoxaApp {
     handler: IStateHandler | ITransition,
     platform: string = "core",
   ): void {
-    if (!_.get(this.states, [platform, "entry"])) {
-      _.set(this.states, [platform, "entry"], { to: {}, name: "entry" });
-    }
-
-    this.states[platform].entry.to[intentName] = intentName;
-    this.onState(intentName, handler, [], platform);
+    this.onState(intentName, handler, intentName, platform);
   }
 
   public async runStateMachine(
@@ -447,20 +422,19 @@ export class VoxaApp {
       onBeforeStateChanged: this.getOnBeforeStateChangedHandlers(
         voxaEvent.platform.name,
       ),
-      onUnhandledState: this.getOnUnhandledStateHandlers(
-        voxaEvent.platform.name,
-      ),
+      onUnhandledState: this.config.onUnhandledState,
       states: this.states,
     });
 
     voxaEvent.log.debug("Starting the state machine", { fromState });
 
-    const transition: ITransition = await stateMachine.runTransition(
+    const transition = await stateMachine.runTransition(
       fromState,
       voxaEvent,
       response,
     );
-    if (!_.isString(transition.to) && _.get(transition, "to.isTerminal")) {
+
+    if (transition.shouldTerminate) {
       await this.handleOnSessionEnded(voxaEvent, response);
     }
 
@@ -553,18 +527,7 @@ export class VoxaApp {
       voxaEvent.model = new this.config.Model();
     }
 
-    if (!transition.to) {
-      throw new InvalidTransitionError(transition, "Missing transition.to");
-    }
-
-    const stateName = getStateName(transition);
-
-    if (!stateName) {
-      throw new InvalidTransitionError(
-        transition,
-        "Expected transition to transition to something",
-      );
-    }
+    const stateName = transition.to;
 
     // We save off the state so that we know where to resume from when the conversation resumes
     const modelData = await voxaEvent.model.serialize();

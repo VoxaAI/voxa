@@ -25,26 +25,6 @@ Or they can be a function that gets a :ref:`voxaEvent <voxa-event>` object.
 
 Your state should respond with a :ref:`transition <transition>`. The transition is a plain object that can take  ``directives``, ``to`` and ``flow`` keys.
 
-The ``entry`` controller
---------------------------
-
-The ``entry`` controller is special in that it's the default state to go to at the beginning of your session and if your state returns no response.
-
-For example in the next snipped there's a ``waiting`` state that expects an ``AMAZON.NextIntent`` or an ``AMAZON.PreviousIntent``, in the case the users says something unexpected like an ``AMAZON.HelpIntent`` the state returns undefined, the State Machine framework handles this situations by redirecting to the ``entry`` state
-
-.. code-block:: javascript
-
-  app.onState('waiting', (voxaEvent) => {
-    if (voxaEvent.intent.name === 'AMAZON.NextIntent') {
-      voxaEvent.model.index += 1;
-      return { ask: 'Ingredients.Describe', to: 'waiting' }
-    } else if (voxaEvent.intent.name === 'AMAZON.PreviousIntent') {
-      voxaEvent.model.index -= 1;
-      return { ask: 'Ingredients.Describe', to: 'waiting' }
-    }
-  });
-
-
 The ``onIntent`` helper
 -----------------------
 

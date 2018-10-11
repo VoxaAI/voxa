@@ -20,61 +20,40 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-let voxa;
-try {
-  voxa = require("voxa");
-} catch (err) {
-  voxa = require("../src");
-}
+import * as _ from "lodash";
+import { ITransition } from "../StateMachine";
+import { IVoxaIntentEvent } from "../VoxaEvent";
 
-const VoxaApp = voxa.VoxaApp;
-const DialogFlowPlatform = voxa.DialogFlowPlatform;
-const AlexaPlatform = voxa.AlexaPlatform;
+export type IStateHandler = (event: IVoxaIntentEvent) => Promise<ITransition>;
 
-const views = require("./views.json");
+export class State {
+  public intents: string[] = [];
+  private handler: IStateHandler;
 
-const app = new VoxaApp({ views });
-app.onIntent("input.welcome", {
-  to: "LaunchIntent"
-});
+  constructor(
+    public name: string,
+    handler: IStateHandler | ITransition,
+    intents: string | string[] = [],
+    public platform: string = "core",
+  ) {
+    if (_.isFunction(handler)) {
+      this.handler = handler;
+    } else {
+      this.handler = this.getSimpleTransitionHandler(handler);
+    }
 
-app.onIntent("LaunchIntent", {
-  ask: "launch",
-  to: "likesVoxa?",
-  flow: "yield"
-});
-
-app.onBeforeReplySent(request => {
-  if (request.platform.name === "dialogflow") {
-    request.google.conv.user.storage = {};
+    if (_.isString(intents)) {
+      this.intents = [intents];
+    } else {
+      this.intents = intents;
+    }
   }
-});
 
-app.onState(
-  "likesVoxa?",
-  {
-    tell: "doesLikeVoxa"
-  },
-  "YesIntent"
-);
+  public async handle(voxaEvent: IVoxaIntentEvent): Promise<ITransition> {
+    return this.handler(voxaEvent);
+  }
 
-app.onState(
-  "likesVoxa?",
-  {
-    tell: "doesNotLikeVoxa"
-  },
-  "NoIntent"
-);
-
-const alexaSkill = new AlexaPlatform(app);
-
-const dialogFlowAction = new DialogFlowPlatform(app);
-
-module.exports = {
-  alexaSkill,
-  alexaLambdaHandler: alexaSkill.lambda(),
-  alexaLambdaHTTPHandler: alexaSkill.lambdaHTTP(),
-  dialogFlowAction: dialogFlowAction,
-  dialogFlowActionLambdaHandler: dialogFlowAction.lambda(),
-  dialogFlowActionLambdaHTTPHandler: dialogFlowAction.lambdaHTTP()
-};
+  protected getSimpleTransitionHandler(transition: ITransition): IStateHandler {
+    return async (voxaEvent: IVoxaIntentEvent) => _.cloneDeep(transition);
+  }
+}

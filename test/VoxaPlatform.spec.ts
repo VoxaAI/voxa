@@ -30,6 +30,7 @@ import {
   HttpMethod as AzureHttpMethod,
 } from "azure-functions-ts-essentials";
 import { expect } from "chai";
+import * as _ from "lodash";
 import * as portfinder from "portfinder";
 import * as rp from "request-promise";
 import {
@@ -182,12 +183,14 @@ describe("VoxaPlatform", () => {
   describe("onState", () => {
     let alexaLaunch: any;
     let dialogFlowLaunch: any;
+    let processData: any;
 
     afterEach(() => {
-      delete process.env.DEBUG;
+      process.env = processData;
     });
 
     beforeEach(() => {
+      processData = _.clone(process.env);
       process.env.DEBUG = "voxa";
       app.onIntent("LaunchIntent", {
         flow: "continue",

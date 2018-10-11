@@ -24,8 +24,7 @@ import { expect } from "chai";
 import * as _ from "lodash";
 import * as nock from "nock";
 
-import { AlexaPlatform } from "../../src/platforms/alexa/AlexaPlatform";
-import { VoxaApp } from "../../src/VoxaApp";
+import { AlexaPlatform, IVoxaIntentEvent, VoxaApp } from "../../src";
 import { AlexaRequestBuilder, isAlexaEvent } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";
@@ -65,18 +64,21 @@ describe("DeviceSettings", () => {
       .get("/v2/devices/deviceId/settings/System.distanceUnits")
       .reply(200, "METRIC");
 
-    alexaSkill.onIntent("SettingsIntent", async (voxaEvent) => {
-      let info;
+    alexaSkill.onIntent(
+      "SettingsIntent",
+      async (voxaEvent: IVoxaIntentEvent) => {
+        let info;
 
-      if (isAlexaEvent(voxaEvent)) {
-        info = await voxaEvent.alexa.deviceSettings.getSettings();
-        voxaEvent.model.settingsInfo = `${info.distanceUnits}, ${
-          info.temperatureUnits
-        }, ${info.timezone}`;
-      }
+        if (isAlexaEvent(voxaEvent)) {
+          info = await voxaEvent.alexa.deviceSettings.getSettings();
+          voxaEvent.model.settingsInfo = `${info.distanceUnits}, ${
+            info.temperatureUnits
+          }, ${info.timezone}`;
+        }
 
-      return { tell: "DeviceSettings.FullSettings" };
-    });
+        return { tell: "DeviceSettings.FullSettings" };
+      },
+    );
 
     const reply = await alexaSkill.execute(event);
 
@@ -96,18 +98,21 @@ describe("DeviceSettings", () => {
         message: "Could not find resource for URI",
       });
 
-    alexaSkill.onIntent("SettingsIntent", async (voxaEvent) => {
-      let info;
+    alexaSkill.onIntent(
+      "SettingsIntent",
+      async (voxaEvent: IVoxaIntentEvent) => {
+        let info;
 
-      if (isAlexaEvent(voxaEvent)) {
-        info = await voxaEvent.alexa.deviceSettings.getSettings();
-        voxaEvent.model.settingsInfo = `${info.temperatureUnits}, ${
-          info.timezone
-        }`;
-      }
+        if (isAlexaEvent(voxaEvent)) {
+          info = await voxaEvent.alexa.deviceSettings.getSettings();
+          voxaEvent.model.settingsInfo = `${info.temperatureUnits}, ${
+            info.timezone
+          }`;
+        }
 
-      return { tell: "DeviceSettings.FullSettings" };
-    });
+        return { tell: "DeviceSettings.FullSettings" };
+      },
+    );
 
     const reply = await alexaSkill.execute(event);
 
@@ -130,22 +135,25 @@ describe("DeviceSettings", () => {
       .get("/v2/devices/deviceId/settings/System.timeZone")
       .replyWithError("Could not find resource for URI");
 
-    alexaSkill.onIntent("SettingsIntent", async (voxaEvent) => {
-      try {
-        let info;
+    alexaSkill.onIntent(
+      "SettingsIntent",
+      async (voxaEvent: IVoxaIntentEvent) => {
+        try {
+          let info;
 
-        if (isAlexaEvent(voxaEvent)) {
-          info = await voxaEvent.alexa.deviceSettings.getSettings();
-          voxaEvent.model.settingsInfo = `${info.distanceUnits}, ${
-            info.temperatureUnits
-          }, ${info.timezone}`;
+          if (isAlexaEvent(voxaEvent)) {
+            info = await voxaEvent.alexa.deviceSettings.getSettings();
+            voxaEvent.model.settingsInfo = `${info.distanceUnits}, ${
+              info.temperatureUnits
+            }, ${info.timezone}`;
+          }
+
+          return { tell: "DeviceSettings.FullSettings" };
+        } catch (err) {
+          return { tell: "DeviceSettings.Error" };
         }
-
-        return { tell: "DeviceSettings.FullSettings" };
-      } catch (err) {
-        return { tell: "DeviceSettings.Error" };
-      }
-    });
+      },
+    );
 
     const reply = await alexaSkill.execute(event);
 

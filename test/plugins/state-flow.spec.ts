@@ -44,11 +44,12 @@ describe("StateFlow plugin", () => {
         state: "secondState",
       },
       new: false,
-      outputAttributes: {},
     };
 
     states = {
-      entry: { SomeIntent: "intent" },
+      SomeIntent: {
+        to: "intent",
+      },
       fourthState: () => undefined,
       initState: () => ({ tell: "ExitIntent.Farewell", to: "die" }),
       intent: () => ({ tell: "ExitIntent.Farewell", to: "die" }),

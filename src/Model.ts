@@ -2,9 +2,12 @@ import * as _ from "lodash";
 import { IBag, IVoxaEvent } from "./VoxaEvent";
 
 export class Model {
-  [key: string]: any
+  [key: string]: any;
 
-  public static deserialize(data: IBag, voxaEvent: IVoxaEvent): Promise<Model>|Model {
+  public static deserialize(
+    data: IBag,
+    voxaEvent: IVoxaEvent,
+  ): Promise<Model> | Model {
     return new this(data);
   }
 
@@ -14,12 +17,13 @@ export class Model {
     _.assign(this, data);
   }
 
-  public serialize(): any|Promise<any> {
+  public async serialize(): Promise<any> {
     return this;
   }
 }
 
 export interface IModel {
   new (data?: any): Model;
-  deserialize(data: IBag, event: IVoxaEvent): Model|Promise<Model>;
+  deserialize(data: IBag, event: IVoxaEvent): Model | Promise<Model>;
+  serialize(): Promise<any>;
 }

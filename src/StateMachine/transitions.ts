@@ -24,30 +24,17 @@ import * as _ from "lodash";
 
 export interface ITransition {
   [propname: string]: any;
-  to?: string | IState | ITransition; // default to 'entry'
+  to?: string; // default to 'entry'
   flow?: string;
-}
-
-export interface IState {
-  name: string;
-  enter: any;
-  to?: IState | string;
-  isTerminal: boolean;
 }
 
 export function isTransition(object: any): object is ITransition {
   return object && "to" in object;
 }
 
-export function isState(object: any): object is IState {
-  return object && "name" in object;
-}
-
 export function getStateName(transition: ITransition): string {
   if (_.isString(transition.to)) {
     return transition.to;
-  } else if (isState(transition.to)) {
-    return transition.to.name;
   }
 
   return "";
@@ -60,26 +47,23 @@ export function getStateName(transition: ITransition): string {
  */
 export class SystemTransition implements ITransition {
   [propname: string]: any;
-  public to?: string | IState | ITransition; // default to 'entry'
-  public flow?: string;
+  public to!: string; // default to 'entry'
+  public flow!: string;
 
   constructor(transition: ITransition) {
     Object.assign(this, transition);
-    this.flow = this.flow || "continue";
+    this.to = this.to || "die";
+
+    if (!this.flow) {
+      this.flow = this.to === "die" ? "terminate" : "continue";
+    }
   }
 
   get shouldTerminate(): boolean {
-    return (
-      this.flow === "terminate" || (isState(this.to) && this.to.isTerminal)
-    );
+    return this.flow === "terminate" || this.to === "die";
   }
 
   get shouldContinue(): boolean {
-    return !!(
-      this.flow === "continue" &&
-      this.to &&
-      isState(this.to) &&
-      !this.to.isTerminal
-    );
+    return !!(this.flow === "continue" && this.to !== "die");
   }
 }

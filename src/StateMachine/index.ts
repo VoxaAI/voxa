@@ -1,8 +1,3 @@
-export { StateMachine } from "./StateMachine";
-export {
-  ITransition,
-  IState,
-  isTransition,
-  isState,
-  getStateName,
-} from "./transitions";
+export { StateMachine, IUnhandledStateCb } from "./StateMachine";
+export { ITransition, isTransition, getStateName } from "./transitions";
+export { State, IStateHandler } from "./State";

@@ -22,17 +22,11 @@
 
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
-
 import { UnhandledState, UnknownState } from "../errors";
 import { IVoxaIntent, IVoxaIntentEvent } from "../VoxaEvent";
 import { IVoxaReply } from "../VoxaReply";
-import {
-  isState,
-  IState,
-  isTransition,
-  ITransition,
-  SystemTransition,
-} from "./transitions";
+import { State } from "./State";
+import { isTransition, ITransition, SystemTransition } from "./transitions";
 
 export type IStateMachineCb = (
   event: IVoxaIntentEvent,
@@ -48,128 +42,112 @@ export type IUnhandledStateCb = (
 export type IOnBeforeStateChangedCB = (
   event: IVoxaIntentEvent,
   reply: IVoxaReply,
-  state: IState,
+  state: State,
 ) => Promise<void>;
 
 export interface IStateMachineConfig {
-  states: any;
+  states: State[];
   onBeforeStateChanged?: IOnBeforeStateChangedCB[];
   onAfterStateChanged?: IStateMachineCb[];
-  onUnhandledState?: IUnhandledStateCb[];
+  onUnhandledState?: IUnhandledStateCb;
 }
 export class StateMachine {
-  public states: any;
-  public currentState?: IState;
+  public states: State[];
+  public currentState!: State;
   public onBeforeStateChangedCallbacks: IOnBeforeStateChangedCB[];
   public onAfterStateChangeCallbacks: IStateMachineCb[];
-  public onUnhandledStateCallbacks: IUnhandledStateCb[];
+  public onUnhandledStateCallback?: IUnhandledStateCb;
 
   constructor(config: IStateMachineConfig) {
     this.validateConfig(config);
     this.states = _.cloneDeep(config.states);
     this.onBeforeStateChangedCallbacks = config.onBeforeStateChanged || [];
     this.onAfterStateChangeCallbacks = config.onAfterStateChanged || [];
-    this.onUnhandledStateCallbacks = config.onUnhandledState || [];
+    this.onUnhandledStateCallback = config.onUnhandledState;
 
-    // If die event does not exist auto complete it.
-    if (!_.has(this.states, "core.die")) {
-      _.assign(this.states.core, {
-        die: { isTerminal: true, name: "die" },
-      });
-    }
+    this.states.push(new State("die", { flow: "terminate" }));
   }
 
-  public validateConfig(config: IStateMachineConfig): void {
-    if (!_.has(config, "states")) {
-      throw new Error("State machine must have a `states` definition.");
-    }
-
-    if (!_.filter(config.states, "entry").length) {
-      throw new Error("State machine must have a `entry` state.");
-    }
-  }
-
-  /**
-   * If the state didn't return a transition and
-   * there's no global handler for the intent
-   * we use the onUnhandledState handler
-   */
-  public async checkOnUnhandledState(
-    voxaEvent: IVoxaIntentEvent,
-    voxaReply: IVoxaReply,
-    transition: ITransition,
-  ): Promise<ITransition> {
-    if (!isState(this.currentState)) {
-      throw new Error("this.currentState is not a state");
-    }
-
-    if (!transition || _.isEmpty(transition)) {
-      voxaEvent.log.debug("Running onUnhandledStateCallbacks");
-      const onUnhandledStateTransitions = await bluebird.mapSeries(
-        this.onUnhandledStateCallbacks,
-        (fn: IUnhandledStateCb) => this.runCallbacks(fn, voxaEvent),
-      );
-      const onUnhandledStateTransition = _.last(onUnhandledStateTransitions);
-
-      if (!onUnhandledStateTransition) {
-        throw new UnhandledState(
-          voxaEvent,
-          onUnhandledStateTransition,
-          this.currentState.name,
-        );
-      }
-
-      return onUnhandledStateTransition;
-    }
-
-    return transition;
-  }
-
-  /**
-   * If the state controller didn't return a transition
-   * the state machine tries to find a handler for the intent
-   * in the entry controller
-   */
-  public async checkForEntryFallback(
+  public async runTransition(
+    fromState: string,
     voxaEvent: IVoxaIntentEvent,
     reply: IVoxaReply,
-    transition: ITransition,
-  ): Promise<ITransition> {
-    voxaEvent.log.debug("Checking entry fallback");
-    if (!isState(this.currentState)) {
-      throw new Error("this.currentState is not a state");
+    recursions: number = 0,
+  ): Promise<SystemTransition> {
+    if (recursions > 10) {
+      throw new Error("State Machine Recursion Error");
     }
 
-    if (!transition && this.currentState.name !== "entry") {
-      // If no response try falling back to entry
-      voxaEvent.log.debug(
-        `No reply for ${voxaEvent.intent.name} in [${
-          this.currentState.name
-        }]. Trying [entry].`,
+    if (fromState === "entry") {
+      this.currentState = this.getCurrentState(
+        voxaEvent.intent.name,
+        voxaEvent.intent.name,
+        voxaEvent.platform.name,
       );
-      this.currentState = this.states.core.entry;
-      return this.runCurrentState(voxaEvent, reply);
+    } else {
+      this.currentState = this.getCurrentState(
+        fromState,
+        voxaEvent.intent.name,
+        voxaEvent.platform.name,
+      );
     }
 
-    return transition;
-  }
+    this.runOnBeforeStateChanged(voxaEvent, reply);
 
-  public async onAfterStateChanged(
-    voxaEvent: IVoxaIntentEvent,
-    reply: IVoxaReply,
-    transition: ITransition,
-  ): Promise<ITransition> {
-    if (transition && !transition.to) {
-      _.merge(transition, { to: "die" });
-    }
+    let transition: ITransition = await this.currentState.handle(voxaEvent);
+    if (!transition && fromState !== "entry") {
+      this.currentState = this.getCurrentState(
+        voxaEvent.intent.name,
+        voxaEvent.intent.name,
+        voxaEvent.platform.name,
+      );
 
-    if (!isState(this.currentState)) {
-      throw new Error("this.currentState is not a state");
+      transition = await this.currentState.handle(voxaEvent);
     }
 
     voxaEvent.log.debug(`${this.currentState.name} transition resulted in`, {
       transition,
     });
+
+    let sysTransition = await this.checkOnUnhandledState(
+      voxaEvent,
+      reply,
+      transition,
+    );
+
+    sysTransition = await this.onAfterStateChanged(
+      voxaEvent,
+      reply,
+      sysTransition,
+    );
+
+    if (sysTransition.shouldTerminate) {
+      reply.terminate();
+    }
+
+    if (sysTransition.shouldContinue) {
+      return this.runTransition(
+        sysTransition.to,
+        voxaEvent,
+        reply,
+        recursions + 1,
+      );
+    }
+
+    return sysTransition;
+  }
+
+  private validateConfig(config: IStateMachineConfig): void {
+    if (!_.has(config, "states")) {
+      throw new Error("State machine must have a `states` definition.");
+    }
+  }
+
+  private async onAfterStateChanged(
+    voxaEvent: IVoxaIntentEvent,
+    reply: IVoxaReply,
+    transition: SystemTransition,
+  ): Promise<SystemTransition> {
     voxaEvent.log.debug("Running onAfterStateChangeCallbacks");
     await bluebird.mapSeries(this.onAfterStateChangeCallbacks, (fn) => {
       return fn(voxaEvent, reply, transition);
@@ -179,151 +157,28 @@ export class StateMachine {
     return transition;
   }
 
-  public async runTransition(
-    currentStateName: string,
+  private async checkOnUnhandledState(
     voxaEvent: IVoxaIntentEvent,
     reply: IVoxaReply,
-  ): Promise<ITransition> {
-    this.currentState = this.getCurrentState(
-      currentStateName,
-      voxaEvent.platform.name,
-    );
-    this.runOnBeforeStateChanged(voxaEvent, reply);
-
-    let transition: ITransition = await this.runCurrentState(voxaEvent, reply);
-
-    if (!!transition && !_.isObject(transition)) {
-      transition = { to: "die", flow: "terminate" };
-      reply.terminate();
+    transition: ITransition,
+  ): Promise<SystemTransition> {
+    if (!_.isEmpty(transition) || transition) {
+      return new SystemTransition(transition);
     }
 
-    transition = await this.checkForEntryFallback(
+    if (!this.onUnhandledStateCallback) {
+      throw new Error(`${voxaEvent.intent.name} went unhandled`);
+    }
+
+    const tr = await this.onUnhandledStateCallback(
       voxaEvent,
-      reply,
-      _.cloneDeep(transition),
+      this.currentState.name,
     );
-    transition = await this.checkOnUnhandledState(
-      voxaEvent,
-      reply,
-      _.cloneDeep(transition),
-    );
-    transition = await this.onAfterStateChanged(
-      voxaEvent,
-      reply,
-      _.cloneDeep(transition),
-    );
-    const sysTransition = new SystemTransition(transition);
-    const to = this.getFinalTransition(sysTransition, voxaEvent, reply);
 
-    if (sysTransition.shouldTerminate) {
-      reply.terminate();
-    }
-
-    if (sysTransition.shouldContinue) {
-      return this.runTransition(to.name, voxaEvent, reply);
-    }
-
-    return _.merge({}, sysTransition, to);
+    return new SystemTransition(tr);
   }
 
-  public async runCurrentState(
-    voxaEvent: IVoxaIntentEvent,
-    reply: IVoxaReply,
-  ): Promise<ITransition> {
-    if (!voxaEvent.intent) {
-      throw new Error("Running the state machine without an intent");
-    }
-
-    if (!isState(this.currentState)) {
-      throw new Error(`${JSON.stringify(this.currentState)} is not a state`);
-    }
-
-    const currentStateHandler = this.getCurrentStateHandler(voxaEvent.intent);
-    if (currentStateHandler) {
-      return currentStateHandler(voxaEvent, reply);
-    }
-
-    const fromState = this.currentState;
-
-    // we want to allow declarative states
-    // like:
-    // app.onIntent('LaunchIntent', {
-    //   to: 'entry',
-    //   ask: 'Welcome',
-    //   Hint: 'Hint'
-    // });
-    //
-    if (!isState(fromState)) {
-      throw new UnknownState(fromState);
-    }
-
-    if (isTransition(fromState.to)) {
-      return fromState.to;
-    }
-
-    voxaEvent.log.debug(
-      `Running simpleTransition for ${this.currentState.name}`,
-    );
-    const to = this.getDestinationStateName(fromState, voxaEvent.intent.name);
-    return this.simpleTransition(
-      voxaEvent.intent,
-      this.currentState,
-      voxaEvent.platform.name,
-      to,
-    );
-  }
-
-  public simpleTransition(
-    voxaIntent: IVoxaIntent,
-    state: any,
-    platform: string,
-    dest?: string | any,
-  ): any {
-    if (!dest || !_.isString(dest)) {
-      return dest || {};
-    }
-
-    // on some ocassions a single object like state could have multiple transitions
-    // Eg:
-    // app.onState('entry', {
-    //   WelcomeIntent: 'LaunchIntent',
-    //   LaunchIntent: { reply: 'SomeReply' }
-    // });
-    if (this.isDestSameAsCurrent(dest, state)) {
-      return this.simpleTransition(voxaIntent, state, platform, state.to[dest]);
-    }
-
-    const destObj =
-      _.get(this.states, [platform, dest]) ||
-      _.get(this.states, ["core", dest]);
-    if (!destObj) {
-      throw new UnknownState(dest);
-    }
-
-    return { to: dest };
-  }
-
-  protected runCallbacks(fn: IUnhandledStateCb, voxaEvent: IVoxaIntentEvent) {
-    if (!isState(this.currentState)) {
-      throw new Error("this.currentState is not a state");
-    }
-
-    return fn(voxaEvent, this.currentState.name);
-  }
-
-  protected getDestinationStateName(
-    fromState: IState,
-    intentName: string,
-  ): string {
-    let to = _.get(fromState, ["to", intentName]);
-    if (!to) {
-      to = _.get(this.states, ["core", fromState.name, "to", intentName]);
-    }
-
-    return to;
-  }
-
-  protected async runOnBeforeStateChanged(
+  private async runOnBeforeStateChanged(
     voxaEvent: IVoxaIntentEvent,
     reply: IVoxaReply,
   ) {
@@ -331,58 +186,36 @@ export class StateMachine {
     voxaEvent.log.debug("Running onBeforeStateChanged");
 
     await bluebird.mapSeries(onBeforeState, (fn: IOnBeforeStateChangedCB) => {
-      if (!isState(this.currentState)) {
-        throw new Error("this.currentState is not a state");
-      }
-
       return fn(voxaEvent, reply, this.currentState);
     });
   }
 
-  protected getFinalTransition(
-    sysTransition: SystemTransition,
-    voxaEvent: IVoxaIntentEvent,
-    reply: IVoxaReply,
-  ) {
-    let to;
+  private getCurrentState(
+    currentStateName: string,
+    intentName: string,
+    platform: string,
+  ): State {
+    let states: State[] = _(this.states)
+      .filter({ name: currentStateName })
+      .filter((s: State) => {
+        return s.platform === platform || s.platform === "core";
+      })
+      .value();
 
-    if (_.isString(sysTransition.to)) {
-      if (
-        !this.states.core[sysTransition.to] &&
-        !_.get(this.states, [voxaEvent.platform.name, sysTransition.to])
-      ) {
-        throw new UnknownState(sysTransition.to);
-      }
-
-      to =
-        _.get(this.states, [voxaEvent.platform.name, sysTransition.to]) ||
-        this.states.core[sysTransition.to];
-      Object.assign(sysTransition, { to });
-
-      return to;
+    if (states.length === 0) {
+      throw new Error(`Missing State ${currentStateName}`);
     }
 
-    sysTransition.flow = "terminate";
-    return { name: "die" };
-  }
-
-  protected getCurrentStateHandler(intent: IVoxaIntent) {
-    const handler = _.get(this.currentState, ["enter", intent.name]);
-    if (handler) {
-      return handler;
+    // Sometimes a user might have defined more than one controller for the same state,
+    // in that case we want to get the one for the current intent
+    if (states.length > 1) {
+      states = _(states)
+        .filter((s: State) => {
+          return s.intents.length === 0 || _.includes(s.intents, intentName);
+        })
+        .value();
     }
 
-    return _.get(this.currentState, "enter.entry");
-  }
-
-  protected getCurrentState(currentStateName: string, platform: string) {
-    return (
-      _.get(this.states, [platform, currentStateName]) ||
-      _.get(this.states, ["core", currentStateName])
-    );
-  }
-
-  protected isDestSameAsCurrent(dest: any, state: any) {
-    return state.to[dest] && dest !== state.to[dest];
+    return states[0];
   }
 }
