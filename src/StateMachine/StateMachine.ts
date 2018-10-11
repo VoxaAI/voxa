@@ -59,7 +59,6 @@ export class StateMachine {
   public onUnhandledStateCallback?: IUnhandledStateCb;
 
   constructor(config: IStateMachineConfig) {
-    this.validateConfig(config);
     this.states = _.cloneDeep(config.states);
     this.onBeforeStateChangedCallbacks = config.onBeforeStateChanged || [];
     this.onAfterStateChangeCallbacks = config.onAfterStateChanged || [];
@@ -78,36 +77,7 @@ export class StateMachine {
       throw new Error("State Machine Recursion Error");
     }
 
-    if (fromState === "entry") {
-      this.currentState = this.getCurrentState(
-        voxaEvent.intent.name,
-        voxaEvent.intent.name,
-        voxaEvent.platform.name,
-      );
-    } else {
-      this.currentState = this.getCurrentState(
-        fromState,
-        voxaEvent.intent.name,
-        voxaEvent.platform.name,
-      );
-    }
-
-    this.runOnBeforeStateChanged(voxaEvent, reply);
-
-    let transition: ITransition = await this.currentState.handle(voxaEvent);
-    if (!transition && fromState !== "entry") {
-      this.currentState = this.getCurrentState(
-        voxaEvent.intent.name,
-        voxaEvent.intent.name,
-        voxaEvent.platform.name,
-      );
-
-      transition = await this.currentState.handle(voxaEvent);
-    }
-
-    voxaEvent.log.debug(`${this.currentState.name} transition resulted in`, {
-      transition,
-    });
+    const transition = await this.stateTransition(fromState, voxaEvent, reply);
 
     let sysTransition = await this.checkOnUnhandledState(
       voxaEvent,
@@ -137,10 +107,57 @@ export class StateMachine {
     return sysTransition;
   }
 
-  private validateConfig(config: IStateMachineConfig): void {
-    if (!_.has(config, "states")) {
-      throw new Error("State machine must have a `states` definition.");
+  private async stateTransition(
+    fromState: string,
+    voxaEvent: IVoxaIntentEvent,
+    reply: IVoxaReply,
+  ): Promise<ITransition> {
+    if (fromState === "entry") {
+      try {
+        this.currentState = this.getCurrentState(
+          voxaEvent.intent.name,
+          voxaEvent.intent.name,
+          voxaEvent.platform.name,
+        );
+      } catch (error) {
+        if (error instanceof UnknownState) {
+          if (!this.onUnhandledStateCallback) {
+            throw new Error(`${voxaEvent.intent.name} went unhandled`);
+          }
+
+          return this.onUnhandledStateCallback(
+            voxaEvent,
+            voxaEvent.intent.name,
+          );
+        }
+      }
+    } else {
+      this.currentState = this.getCurrentState(
+        fromState,
+        voxaEvent.intent.name,
+        voxaEvent.platform.name,
+      );
     }
+
+    this.runOnBeforeStateChanged(voxaEvent, reply);
+
+    let transition: ITransition = await this.currentState.handle(voxaEvent);
+
+    voxaEvent.log.debug(`${this.currentState.name} transition resulted in`, {
+      transition,
+    });
+
+    if (!transition && fromState !== "entry") {
+      this.currentState = this.getCurrentState(
+        voxaEvent.intent.name,
+        voxaEvent.intent.name,
+        voxaEvent.platform.name,
+      );
+
+      transition = await this.currentState.handle(voxaEvent);
+    }
+
+    return transition;
   }
 
   private async onAfterStateChanged(

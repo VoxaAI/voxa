@@ -536,6 +536,31 @@ describe("VoxaApp", () => {
         );
       },
     );
+
+    it("should call onUnhandledState for intents without a handler", async () => {
+      const voxaApp = new VoxaApp({ Model, views, variables });
+      const platform = new AlexaPlatform(voxaApp);
+      const launchEvent = rb.getIntentRequest("RandomIntent");
+      const onUnhandledState = simple.stub().returnWith(
+        Promise.resolve({
+          tell: "ExitIntent.Farewell",
+          to: "die",
+        }),
+      );
+
+      voxaApp.onUnhandledState(onUnhandledState);
+
+      statesDefinition.LaunchIntent = simple.stub().resolveWith(null);
+
+      _.map(statesDefinition, (state: any, name: string) =>
+        voxaApp.onState(name, state),
+      );
+      const reply = await platform.execute(launchEvent);
+      expect(onUnhandledState.called).to.be.true;
+      expect(reply.speech).to.equal(
+        "<speak>Ok. For more info visit example.com site.</speak>",
+      );
+    });
   });
 
   it("should include all directives in the reply", async () => {
