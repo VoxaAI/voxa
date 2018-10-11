@@ -194,7 +194,6 @@ describe("VoxaApp", () => {
       );
 
       voxaApp.onIntent("SomeIntent", (voxaEvent: IVoxaIntentEvent) => {
-        console.log(voxaEvent.model);
         expect(voxaEvent.model.previousState).to.equal("SomeIntent");
         return {
           flow: "terminate",
@@ -496,6 +495,37 @@ describe("VoxaApp", () => {
       expect(reply.speech).to.equal(
         "<speak>An unrecoverable error occurred.</speak>",
       );
+    });
+
+    it("should call onUnhandledState if state controller is for a specific intent", async () => {
+      const voxaApp = new VoxaApp({ Model, views, variables });
+      const launchEvent = rb.getIntentRequest("LaunchIntent");
+
+      const onUnhandledState = simple.stub().returnWith(
+        Promise.resolve({
+          flow: "terminate",
+          sayp: "Unhandled State",
+        }),
+      );
+
+      voxaApp.onUnhandledState(onUnhandledState);
+      voxaApp.onIntent("LaunchIntent", {
+        to: "otherState",
+      });
+
+      voxaApp.onState(
+        "otherState",
+        {
+          flow: "terminate",
+          sayp: "Other State",
+        },
+        "SomeIntent",
+      );
+
+      const platform = new AlexaPlatform(voxaApp);
+      const reply = await platform.execute(launchEvent);
+      expect(reply.speech).to.equal("<speak>Unhandled State</speak>");
+      expect(onUnhandledState.called).to.be.true;
     });
 
     it(

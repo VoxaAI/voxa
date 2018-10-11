@@ -112,31 +112,28 @@ export class StateMachine {
     voxaEvent: IVoxaIntentEvent,
     reply: IVoxaReply,
   ): Promise<ITransition> {
-    if (fromState === "entry") {
-      try {
+    try {
+      if (fromState === "entry") {
         this.currentState = this.getCurrentState(
           voxaEvent.intent.name,
           voxaEvent.intent.name,
           voxaEvent.platform.name,
         );
-      } catch (error) {
-        if (error instanceof UnknownState) {
-          if (!this.onUnhandledStateCallback) {
-            throw new Error(`${voxaEvent.intent.name} went unhandled`);
-          }
-
-          return this.onUnhandledStateCallback(
-            voxaEvent,
-            voxaEvent.intent.name,
-          );
-        }
+      } else {
+        this.currentState = this.getCurrentState(
+          fromState,
+          voxaEvent.intent.name,
+          voxaEvent.platform.name,
+        );
       }
-    } else {
-      this.currentState = this.getCurrentState(
-        fromState,
-        voxaEvent.intent.name,
-        voxaEvent.platform.name,
-      );
+    } catch (error) {
+      if (error instanceof UnknownState) {
+        if (!this.onUnhandledStateCallback) {
+          throw new Error(`${voxaEvent.intent.name} went unhandled`);
+        }
+
+        return this.onUnhandledStateCallback(voxaEvent, voxaEvent.intent.name);
+      }
     }
 
     await this.runOnBeforeStateChanged(voxaEvent, reply);
@@ -212,10 +209,15 @@ export class StateMachine {
     intentName: string,
     platform: string,
   ): State {
-    let states: State[] = _(this.states)
+    const states: State[] = _(this.states)
       .filter({ name: currentStateName })
       .filter((s: State) => {
         return s.platform === platform || s.platform === "core";
+      })
+      // Sometimes a user might have defined more than one controller for the same state,
+      // in that case we want to get the one for the current intent
+      .filter((s: State) => {
+        return s.intents.length === 0 || _.includes(s.intents, intentName);
       })
       .value();
 
@@ -223,15 +225,10 @@ export class StateMachine {
       throw new UnknownState(currentStateName);
     }
 
-    // Sometimes a user might have defined more than one controller for the same state,
-    // in that case we want to get the one for the current intent
-    if (states.length > 1) {
-      states = _(states)
-        .filter((s: State) => {
-          return s.intents.length === 0 || _.includes(s.intents, intentName);
-        })
-        .value();
-    }
+    // if (states.length > 1) {
+    // states = _(states)
+    // .value();
+    // }
 
     return states[0];
   }
