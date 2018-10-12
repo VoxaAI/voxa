@@ -5,7 +5,7 @@ Controllers
 
 Controllers in your application control the logic of your skill, they respond to alexa voxaEvents, external resources, manipulate the input and give proper responses using your :ref:`Model <models>`, :ref:`views-and-variables`.
 
-States come in one of two ways, they can be an object with a transition.
+States come in one of two ways, they can be an object with a transition:
 
 .. code-block:: javascript
 
@@ -14,7 +14,7 @@ States come in one of two ways, they can be an object with a transition.
   });
 
 
-Or they can be a function that gets a :ref:`voxaEvent <voxa-event>` object.
+Or they can be a function that gets a :ref:`voxaEvent <voxa-event>` object:
 
 .. code-block:: javascript
 
