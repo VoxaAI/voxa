@@ -34,7 +34,7 @@ export class ApiBase {
     this.rawEvent = _.cloneDeep(event);
   }
 
-  protected getResult(path = "", method = "GET", body = {}) {
+  protected getResult(path = "", method = "GET", body?: any) {
     const options = {
       body,
       headers: {
