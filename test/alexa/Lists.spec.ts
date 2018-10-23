@@ -128,7 +128,7 @@ describe("Lists", () => {
 
   it("should create a custom list and create an item", async () => {
     const reqheaders = {
-      "authorization": `Bearer ${
+      authorization: `Bearer ${
         event.context.System.user.permissions.consentToken
       }`,
     };
@@ -190,7 +190,7 @@ describe("Lists", () => {
 
   it("should modify custom list, and modify an item", async () => {
     const reqheaders = {
-      "authorization": `Bearer ${
+      authorization: `Bearer ${
         event.context.System.user.permissions.consentToken
       }`,
     };
@@ -275,7 +275,7 @@ describe("Lists", () => {
 
   it("should delete item from list, and delete list", async () => {
     const reqheaders = {
-      "authorization": `Bearer ${
+      authorization: `Bearer ${
         event.context.System.user.permissions.consentToken
       }`,
     };
@@ -316,7 +316,7 @@ describe("Lists", () => {
 
   it("should show the lists with at least 1 item", async () => {
     const reqheaders = {
-      "authorization": `Bearer ${
+      authorization: `Bearer ${
         event.context.System.user.permissions.consentToken
       }`,
     };
