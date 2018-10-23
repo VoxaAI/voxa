@@ -128,12 +128,9 @@ describe("Lists", () => {
 
   it("should create a custom list and create an item", async () => {
     const reqheaders = {
-      "accept": "application/json",
-      "authorization": `Bearer ${
+      authorization: `Bearer ${
         event.context.System.user.permissions.consentToken
       }`,
-      "content-type": "application/json",
-      "host": "api.amazonalexa.com",
     };
 
     nock("https://api.amazonalexa.com", { reqheaders })
@@ -193,12 +190,9 @@ describe("Lists", () => {
 
   it("should modify custom list, and modify an item", async () => {
     const reqheaders = {
-      "accept": "application/json",
-      "authorization": `Bearer ${
+      authorization: `Bearer ${
         event.context.System.user.permissions.consentToken
       }`,
-      "content-type": "application/json",
-      "host": "api.amazonalexa.com",
     };
 
     const value = "NEW NAME";
@@ -281,12 +275,9 @@ describe("Lists", () => {
 
   it("should delete item from list, and delete list", async () => {
     const reqheaders = {
-      "accept": "application/json",
-      "authorization": `Bearer ${
+      authorization: `Bearer ${
         event.context.System.user.permissions.consentToken
       }`,
-      "content-type": "application/json",
-      "host": "api.amazonalexa.com",
     };
 
     const value = "NEW NAME";
@@ -325,12 +316,9 @@ describe("Lists", () => {
 
   it("should show the lists with at least 1 item", async () => {
     const reqheaders = {
-      "accept": "application/json",
-      "authorization": `Bearer ${
+      authorization: `Bearer ${
         event.context.System.user.permissions.consentToken
       }`,
-      "content-type": "application/json",
-      "host": "api.amazonalexa.com",
     };
 
     const value = "NEW NAME";
