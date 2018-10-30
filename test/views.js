@@ -72,6 +72,14 @@ const views = (function views() {
         tell: 'Lists with items are: {listsWithItems}',
       },
     },
+    LWA: {
+      Information: {
+        tell: 'Hi {lwaName}, your email is {lwaEmail}, and your zip code is {lwaZipcode}',
+      },
+      Error: {
+        tell: 'There was an error trying to get your profile info.',
+      },
+    },
     ExitIntent: {
       Farewell: {
         tell: 'Ok. For more info visit {site} site.',

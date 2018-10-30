@@ -133,6 +133,7 @@ Links
   deviceSettings
   inSkillPurchases
   lists
+  lwa
   gadgetController
   gameEngine
   plugins

@@ -90,6 +90,18 @@ const variables = {
   settingsInfo: function settingsInfo(model) {
     return model.settingsInfo;
   },
+
+  lwaName: function settingsInfo(model) {
+    return model.lwaInfo.name;
+  },
+
+  lwaEmail: function settingsInfo(model) {
+    return model.lwaInfo.email;
+  },
+
+  lwaZipcode: function settingsInfo(model) {
+    return model.lwaInfo.postal_code;
+  },
 };
 
 module.exports = variables;
