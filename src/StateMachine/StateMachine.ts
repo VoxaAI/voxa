@@ -77,7 +77,12 @@ export class StateMachine {
       throw new Error("State Machine Recursion Error");
     }
 
-    const transition = await this.stateTransition(fromState, voxaEvent, reply);
+    const transition = await this.stateTransition(
+      fromState,
+      voxaEvent,
+      reply,
+      recursions,
+    );
 
     let sysTransition = await this.checkOnUnhandledState(
       voxaEvent,
@@ -111,6 +116,7 @@ export class StateMachine {
     fromState: string,
     voxaEvent: IVoxaIntentEvent,
     reply: IVoxaReply,
+    recursions: number,
   ): Promise<ITransition> {
     try {
       if (fromState === "entry") {
@@ -127,6 +133,15 @@ export class StateMachine {
         );
       }
     } catch (error) {
+      /*
+       * Returning to the global handler here only makes sense if we didn't already made that,
+       * meaning that it could only be done in the first recursion. There's tests covering this scenario
+       * in tests/States.spec.ts
+       */
+      if (fromState !== "entry" && recursions < 1) {
+        return this.stateTransition("entry", voxaEvent, reply, recursions);
+      }
+
       if (error instanceof UnknownState) {
         if (!this.onUnhandledStateCallback) {
           throw new Error(`${voxaEvent.intent.name} went unhandled`);
@@ -134,6 +149,8 @@ export class StateMachine {
 
         return this.onUnhandledStateCallback(voxaEvent, voxaEvent.intent.name);
       }
+
+      throw error;
     }
 
     await this.runOnBeforeStateChanged(voxaEvent, reply);
