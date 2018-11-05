@@ -135,7 +135,7 @@ export class StateMachine {
     } catch (error) {
       /*
        * Returning to the global handler here only makes sense if we didn't already made that,
-       * meaning that it could only be done in the first recussion. There's tests covering this scenarion
+       * meaning that it could only be done in the first recussion. There's tests covering this scenario
        * in tests/States.spec.ts
        */
       if (fromState !== "entry" && recursions < 1) {
