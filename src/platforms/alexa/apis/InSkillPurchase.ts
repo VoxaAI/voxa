@@ -40,7 +40,7 @@ export class InSkillPurchase {
 
   public static cancel(
     productId: string,
-    token: string
+    token: string,
   ): ConnectionsSendRequest {
     return this.sendConnectionSendRequest("Cancel", productId, token);
   }
@@ -48,13 +48,13 @@ export class InSkillPurchase {
   public static upsell(
     productId: string,
     upsellMessage: string,
-    token: string
+    token: string,
   ): ConnectionsSendRequest {
     return this.sendConnectionSendRequest(
       "Upsell",
       productId,
       token,
-      upsellMessage
+      upsellMessage,
     );
   }
 
@@ -62,7 +62,7 @@ export class InSkillPurchase {
     method: string,
     productId: string,
     token: string,
-    upsellMessage?: string
+    upsellMessage?: string,
   ): ConnectionsSendRequest {
     const payload = this.formatPayload(productId, upsellMessage);
     return new ConnectionsSendRequest(method, payload, token);
@@ -70,13 +70,13 @@ export class InSkillPurchase {
 
   protected static formatPayload(
     productId: string,
-    upsellMessage?: string
+    upsellMessage?: string,
   ): IPurchasePayload {
     return {
       InSkillProduct: {
-        productId
+        productId,
       },
-      upsellMessage
+      upsellMessage,
     };
   }
 
@@ -88,7 +88,7 @@ export class InSkillPurchase {
 
   public isAllowed() {
     const ALLOWED_ISP_ENDPOINTS = {
-      "en-US": "https://api.amazonalexa.com"
+      "en-US": "https://api.amazonalexa.com",
     };
 
     const locale: string = _.get(this.rawEvent.request, "locale");
@@ -99,7 +99,7 @@ export class InSkillPurchase {
 
   public async buyByReferenceName(
     referenceName: string,
-    token: string
+    token: string,
   ): Promise<ConnectionsSendRequest> {
     const product:
       | services.monetization.InSkillProduct
@@ -110,7 +110,7 @@ export class InSkillPurchase {
 
   public async cancelByReferenceName(
     referenceName: string,
-    token: string
+    token: string,
   ): Promise<ConnectionsSendRequest> {
     const product:
       | services.monetization.InSkillProduct
@@ -122,7 +122,7 @@ export class InSkillPurchase {
   public async upsellByReferenceName(
     referenceName: string,
     upsellMessage: string,
-    token: string
+    token: string,
   ): Promise<ConnectionsSendRequest> {
     const product:
       | services.monetization.InSkillProduct
@@ -131,12 +131,12 @@ export class InSkillPurchase {
     return InSkillPurchase.upsell(
       _.get(product, "productId"),
       upsellMessage,
-      token
+      token,
     );
   }
 
   public async getProductByReferenceName(
-    referenceName: string
+    referenceName: string,
   ): Promise<services.monetization.InSkillProduct | object> {
     const result: services.monetization.InSkillProductsResponse = await this.getProductList();
 
@@ -149,12 +149,12 @@ export class InSkillPurchase {
     const options: any = {
       headers: {
         "Accept-Language": _.get(this.rawEvent.request, "locale"),
-        Authorization: `Bearer ${apiAccessToken}`,
-        "Content-Type": "application/json"
+        "Authorization": `Bearer ${apiAccessToken}`,
+        "Content-Type": "application/json",
       },
       json: true,
       method: "GET",
-      uri: `${apiEndpoint}/v1/users/~current/skills/~current/inSkillProducts`
+      uri: `${apiEndpoint}/v1/users/~current/skills/~current/inSkillProducts`,
     };
 
     return rp(options);

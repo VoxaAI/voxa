@@ -23,7 +23,7 @@
 import {
   IntentRequest,
   RequestEnvelope,
-  User as IAlexaUser
+  User as IAlexaUser,
 } from "ask-sdk-model";
 import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
@@ -36,7 +36,7 @@ import {
   DeviceAddress,
   DeviceSettings,
   InSkillPurchase,
-  Lists
+  Lists,
 } from "./apis";
 
 export class AlexaEvent extends VoxaEvent {
@@ -54,19 +54,19 @@ export class AlexaEvent extends VoxaEvent {
     "Connections.Response": "Connections.Response",
     "Display.ElementSelected": "Display.ElementSelected",
     "GameEngine.InputHandlerEvent": "GameEngine.InputHandlerEvent",
-    LaunchRequest: "LaunchIntent"
+    "LaunchRequest": "LaunchIntent",
   };
 
   constructor(
     rawEvent: RequestEnvelope,
     logOptions?: LambdaLogOptions,
-    executionContext?: AWSLambdaContext | AzureContext
+    executionContext?: AWSLambdaContext | AzureContext,
   ) {
     super(rawEvent, logOptions, executionContext);
 
     this.request = {
       locale: _.get(rawEvent, "request.locale"),
-      type: rawEvent.request.type
+      type: rawEvent.request.type,
     };
 
     this.initIntents();
@@ -87,7 +87,7 @@ export class AlexaEvent extends VoxaEvent {
     this.user = {
       accessToken: user.accessToken,
       id: user.userId,
-      userId: user.userId
+      userId: user.userId,
     };
   }
 
@@ -99,7 +99,7 @@ export class AlexaEvent extends VoxaEvent {
     const interfaces = _.get(
       this.rawEvent,
       "context.System.device.supportedInterfaces",
-      {}
+      {},
     );
     return _.keys(interfaces);
   }
@@ -110,7 +110,7 @@ export class AlexaEvent extends VoxaEvent {
       deviceAddress: new DeviceAddress(this.rawEvent, this.log),
       deviceSettings: new DeviceSettings(this.rawEvent, this.log),
       isp: new InSkillPurchase(this.rawEvent, this.log),
-      lists: new Lists(this.rawEvent, this.log)
+      lists: new Lists(this.rawEvent, this.log),
     };
   }
 
@@ -119,7 +119,7 @@ export class AlexaEvent extends VoxaEvent {
       attributes: _.get(this.rawEvent, "session.attributes", {}),
       new: _.get(this.rawEvent, "session.new", false),
       outputAttributes: {},
-      sessionId: _.get(this.rawEvent, "session.sessionId", "")
+      sessionId: _.get(this.rawEvent, "session.sessionId", ""),
     };
   }
 

@@ -24,16 +24,16 @@ import { Response, ResponseEnvelope } from "ask-sdk-model";
 import * as _ from "lodash";
 import { IBag, IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, IVoxaReply } from "../../VoxaReply";
-import { canfulfill } from "./CanFullfillintent";
+import * as canfulfill from "./CanFullfillintent";
 
 function isCanFullfillIntentResponse(
-  response: any
+  response: any,
 ): response is canfulfill.CanFulfillResponse {
   return !_.isUndefined(response.canFulfillIntent);
 }
 
 function isCanFullfillIntentRequest(
-  request: any
+  request: any,
 ): request is canfulfill.CanFulfillIntentRequest {
   if (_.isUndefined(request)) {
     return false;
@@ -121,12 +121,12 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
     let ssml: string = _.get(
       this.response,
       "outputSpeech.ssml",
-      "<speak></speak>"
+      "<speak></speak>",
     );
     ssml = addToSSML(ssml, statement);
     this.response.outputSpeech = {
       ssml,
-      type: "SSML"
+      type: "SSML",
     };
   }
 
@@ -139,14 +139,14 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
     let ssml: string = _.get(
       this.response.reprompt,
       "outputSpeech.ssml",
-      "<speak></speak>"
+      "<speak></speak>",
     );
     ssml = addToSSML(ssml, statement);
     this.response.reprompt = {
       outputSpeech: {
         ssml,
-        type
-      }
+        type,
+      },
     };
   }
 
@@ -180,14 +180,14 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
     }
 
     this.response.canFulfillIntent = this.response.canFulfillIntent || {
-      canFulfill: "NO"
+      canFulfill: "NO",
     };
     this.response.canFulfillIntent.slots =
       this.response.canFulfillIntent.slots || {};
 
     this.response.canFulfillIntent.slots[slotName] = {
       canFulfill,
-      canUnderstand
+      canUnderstand,
     };
   }
 
@@ -208,7 +208,7 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
     if (this.response.card) {
       allDirectives = _.concat(allDirectives, {
         card: this.response.card,
-        type: "card"
+        type: "card",
       });
     }
 
@@ -222,7 +222,7 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
       }
 
       throw new Error(
-        `Do not know how to use a ${typeof type} to find a directive`
+        `Do not know how to use a ${typeof type} to find a directive`,
       );
     });
   }
