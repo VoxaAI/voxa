@@ -24,17 +24,51 @@ import { Response, ResponseEnvelope } from "ask-sdk-model";
 import * as _ from "lodash";
 import { IBag, IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, IVoxaReply } from "../../VoxaReply";
+import { canfulfill } from './CanFullfillintent';
+
+function isCanFullfillIntentResponse(
+  response: any,
+): response is canfulfill.CanFulfillResponse {
+  return (
+    !_.isUndefined(response.canFulfillIntent)
+  );
+}
+
+function isCanFullfillIntentRequest(
+  request: any,
+): request is canfulfill.CanFulfillIntentRequest {
+  if (_.isUndefined(request)) {
+    return false;
+  }
+
+  return (
+    request.request.type === "CanFulfillIntentRequest"
+  );
+}
 
 export class AlexaReply implements IVoxaReply, ResponseEnvelope {
   public version = "1.0";
-  public response: Response = {};
+  public response: any = {};
   public sessionAttributes: IBag = {};
 
+  constructor(voxaEvent?: IVoxaEvent) {
+    if (isCanFullfillIntentRequest(voxaEvent)) {
+      this.response.canFulfillIntent = {};
+    }
+  }
+
   get hasMessages() {
+    if (isCanFullfillIntentResponse(this.response)) {
+      return false;
+    }
     return !!this.response.outputSpeech;
   }
 
   get hasDirectives() {
+    if (isCanFullfillIntentResponse(this.response)) {
+      return false;
+    }
+
     if (this.response.card) {
       return true;
     }
@@ -47,6 +81,9 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
   }
 
   get hasTerminated() {
+    if (isCanFullfillIntentResponse(this.response)) {
+      return true;
+    }
     return !!this.response && !!this.response.shouldEndSession;
   }
 
@@ -61,7 +98,8 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
 
     if (
       !this.hasDirective("VideoApp.Launch") &&
-      !this.hasDirective("GameEngine.StartInputHandler")
+      !this.hasDirective("GameEngine.StartInputHandler") &&
+      !isCanFullfillIntentResponse(this.response)
     ) {
       this.response.shouldEndSession = true;
     }
@@ -76,6 +114,10 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
   }
 
   public addStatement(statement: string, isPlain: boolean = false) {
+    if (isCanFullfillIntentResponse(this.response)) {
+      return;
+    }
+
     if (!("shouldEndSession" in this.response)) {
       this.response.shouldEndSession = false;
     }
@@ -93,6 +135,10 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
   }
 
   public addReprompt(statement: string, isPlain: boolean = false) {
+    if (isCanFullfillIntentResponse(this.response)) {
+      return;
+    }
+
     const type = "SSML";
     let ssml: string = _.get(
       this.response.reprompt,
@@ -109,9 +155,13 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
   }
 
   public fulfillIntent(canFulfill: any) {
-    this.response.card = undefined;
-    this.response.reprompt = undefined;
-    this.response.outputSpeech = undefined;
+    if (!isCanFullfillIntentResponse(this.response)) {
+      return;
+    }
+
+    _.set(this.response, 'card', undefined);
+    _.set(this.response, 'reprompt', undefined);
+    _.set(this.response, 'outputSpeech', undefined);
 
     if (!_.includes(["YES", "NO", "MAYBE"], canFulfill)) {
       this.response.canFulfillIntent = { canFulfill: "NO" };
@@ -121,6 +171,10 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
   }
 
   public fulfillSlot(slotName: string, canUnderstand: any, canFulfill: any) {
+    if (!isCanFullfillIntentResponse(this.response)) {
+      return;
+    }
+
     if (!_.includes(["YES", "NO", "MAYBE"], canUnderstand)) {
       canUnderstand = "NO";
     }
@@ -146,6 +200,10 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
   }
 
   public hasDirective(type: string | RegExp): boolean {
+    if (isCanFullfillIntentResponse(this.response)) {
+      return false;
+    }
+
     if (!this.hasDirectives) {
       return false;
     }

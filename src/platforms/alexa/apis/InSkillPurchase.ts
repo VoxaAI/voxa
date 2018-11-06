@@ -91,7 +91,7 @@ export class InSkillPurchase {
       "en-US": "https://api.amazonalexa.com",
     };
 
-    const locale: string = this.rawEvent.request.locale;
+    const locale: string = _.get(this.rawEvent.request, 'locale');
     const endpoint: string = _.get(this.rawEvent, "context.System.apiEndpoint");
 
     return _.get(ALLOWED_ISP_ENDPOINTS, locale) === endpoint;
@@ -148,7 +148,7 @@ export class InSkillPurchase {
 
     const options: any = {
       headers: {
-        "Accept-Language": this.rawEvent.request.locale,
+        "Accept-Language": _.get(this.rawEvent.request, 'locale'),
         "Authorization": `Bearer ${apiAccessToken}`,
         "Content-Type": "application/json",
       },

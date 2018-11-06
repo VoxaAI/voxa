@@ -137,7 +137,7 @@ export class AlexaPlatform extends VoxaPlatform {
   }
 
   protected getReply(event: IVoxaEvent): IVoxaReply {
-    return new AlexaReply();
+    return new AlexaReply(event);
   }
 
   protected checkSessionEndedRequest(alexaEvent: AlexaEvent): void {

@@ -21,7 +21,6 @@
  */
 
 import {
-  canfulfill,
   IntentRequest,
   RequestEnvelope,
   User as IAlexaUser,
@@ -66,7 +65,7 @@ export class AlexaEvent extends VoxaEvent {
     super(rawEvent, logOptions, executionContext);
 
     this.request = {
-      locale: rawEvent.request.locale,
+      locale: _.get(rawEvent, 'request.locale'),
       type: rawEvent.request.type,
     };
 
@@ -134,7 +133,7 @@ export class AlexaEvent extends VoxaEvent {
 
 function isIntentRequest(
   request: any,
-): request is IntentRequest | canfulfill.CanFulfillIntentRequest {
+): request is IntentRequest {
   return (
     request.type === "IntentRequest" ||
     request.type === "CanFulfillIntentRequest"
