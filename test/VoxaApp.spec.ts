@@ -22,7 +22,8 @@
 
 import "mocha";
 
-import { canfulfill, RequestEnvelope } from "ask-sdk-model";
+import { canfulfill } from '../src/platforms/alexa/CanFullfillintent';
+import { RequestEnvelope } from "ask-sdk-model";
 import { expect } from "chai";
 import * as _ from "lodash";
 import * as simple from "simple-mock";

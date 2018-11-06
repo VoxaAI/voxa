@@ -149,8 +149,8 @@ describe("AlexaReply", () => {
   it("should generate a correct alexa response for a CanFulfillIntentRequest", () => {
     const canUnderstand = "YES";
     const canFulfill = "YES";
-
-    reply = new AlexaReply();
+    const voxaEvent = new AlexaEvent(rb.getCanFulfillIntentRequestRequest('test intent'));
+    reply = new AlexaReply(voxaEvent);
     reply.fulfillIntent("YES");
     reply.fulfillSlot("slot1", canUnderstand, canFulfill);
 
