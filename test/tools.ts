@@ -64,7 +64,7 @@ export class AlexaRequestBuilder {
   public getCanFulfillIntentRequestRequest(
     intentName: string,
     slots?: any,
-  ): RequestEnvelope {
+  ): any {
     if (!slots) {
       slots = {};
     } else {
