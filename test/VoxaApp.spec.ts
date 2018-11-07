@@ -26,7 +26,7 @@ import { RequestEnvelope } from "ask-sdk-model";
 import { expect } from "chai";
 import * as _ from "lodash";
 import * as simple from "simple-mock";
-import { canfulfill } from "../src/platforms/alexa/CanFullfillintent";
+import * as canfulfill from "../src/platforms/alexa/CanFullfillintent";
 
 import {
   AlexaEvent,
