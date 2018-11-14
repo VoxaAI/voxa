@@ -1,3 +1,5 @@
+.. _alexa-apis:
+
 ==============================================
 Alexa APIs
 ==============================================
@@ -16,31 +18,31 @@ When a customer enables your Alexa skill, your skill can request the customer's 
 
   :param VoxaEvent.rawEvent alexaEvent: Alexa Event object.
 
-  .. js:method:: getEmail()
+  .. js:function:: getEmail()
 
     Gets user's email
 
     :returns string: A string with user's email address
 
-  .. js:method:: getGivenName()
+  .. js:function:: getGivenName()
 
     Gets user's given name
 
     :returns string: A string with user's given name
 
-  .. js:method:: getName()
+  .. js:function:: getName()
 
     Gets user's full name
 
     :returns string: A string with user's full name
 
-  .. js:method:: getPhoneNumber()
+  .. js:function:: getPhoneNumber()
 
     Gets user's phone number
 
     :returns object: A JSON object with user's phone number and country code
 
-  .. js:method:: getFullUserInformation()
+  .. js:function:: getFullUserInformation()
 
     Gets name or given name, phone number, and email address
 
@@ -114,13 +116,13 @@ Note that the address entered in the Alexa device may not represent the current 
 
   :param VoxaEvent.rawEvent alexaEvent: Alexa Event object.
 
-  .. js:method:: getAddress()
+  .. js:function:: getAddress()
 
     Gets full address info
 
     :returns object: A JSON object with the full address info
 
-  .. js:method:: getCountryRegionPostalCode()
+  .. js:function:: getCountryRegionPostalCode()
 
     Gets country/region and postal code
 
@@ -185,25 +187,25 @@ Alexa customers can set their timezone, distance measuring unit, and temperature
 
   :param VoxaEvent.rawEvent alexaEvent: Alexa Event object.
 
-  .. js:method:: getDistanceUnits()
+  .. js:function:: getDistanceUnits()
 
     Gets distance units
 
     :returns string: A string with the distance units
 
-  .. js:method:: getTemperatureUnits()
+  .. js:function:: getTemperatureUnits()
 
     Gets temperature units
 
     :returns string: A string with the temperature units
 
-  .. js:method:: getTimezone()
+  .. js:function:: getTimezone()
 
     Gets timezone
 
     :returns string: A string with the timezone value
 
-  .. js:method:: getSettings()
+  .. js:function:: getSettings()
 
     Gets all settings details
 
@@ -328,25 +330,25 @@ Customers can review and modify their Alexa lists using voice through a device w
 
   :param VoxaEvent.rawEvent alexaEvent: Alexa Raw Event object.
 
-  .. js:method:: getDefaultShoppingList()
+  .. js:function:: getDefaultShoppingList()
 
     Gets info for the Alexa default Shopping list
 
     :returns Object: A JSON object with the Shopping list info
 
-  .. js:method:: getDefaultToDoList()
+  .. js:function:: getDefaultToDoList()
 
     Gets info for the Alexa default To-Do list
 
     :returns Object: A JSON object with the To-Do list info
 
-  .. js:method:: getListMetadata()
+  .. js:function:: getListMetadata()
 
     Gets list metadata for all user's lists including the default list
 
     :returns Array: An object array
 
-  .. js:method:: getListById(listId, status = 'active')
+  .. js:function:: getListById(listId, status = 'active')
 
     Gets specific list by id and status
 
@@ -354,14 +356,14 @@ Customers can review and modify their Alexa lists using voice through a device w
     :param status: list status, defaults to active (only value accepted for now)
     :returns Object: A JSON object with the specific list info.
 
-  .. js:method:: getOrCreateList(name)
+  .. js:function:: getOrCreateList(name)
 
     Looks for a list by name and returns it, if it is not found, it creates a new list with that name and returns it.
 
     :param name: List name.
     :returns Object: A JSON object with the specific list info.
 
-  .. js:method:: createList(name, state = 'active')
+  .. js:function:: createList(name, state = 'active')
 
     Creates a new list with the name and state.
 
@@ -369,7 +371,7 @@ Customers can review and modify their Alexa lists using voice through a device w
     :param active: list status, defaults to active (only value accepted for now)
     :returns Object: A JSON object with the specific list info.
 
-  .. js:method:: updateList(listId, name, state = 'active', version)
+  .. js:function:: updateList(listId, name, state = 'active', version)
 
     Updates list with the name, state, and version.
 
@@ -378,14 +380,14 @@ Customers can review and modify their Alexa lists using voice through a device w
     :param version: List version.
     :returns Object: A JSON object with the specific list info.
 
-  .. js:method:: deleteList(listId)
+  .. js:function:: deleteList(listId)
 
     Deletes a list by ID.
 
     :param listId: List ID.
     :returns: undefined. HTTP response with 200 or error if any.
 
-  .. js:method:: getListItem(listId, itemId)
+  .. js:function:: getListItem(listId, itemId)
 
     Creates a new list with the name and state.
 
@@ -393,7 +395,7 @@ Customers can review and modify their Alexa lists using voice through a device w
     :param itemId: Item ID.
     :returns Object: A JSON object with the specific list info.
 
-  .. js:method:: createItem(listId, value, status = 'active')
+  .. js:function:: createItem(listId, value, status = 'active')
 
     Creates a new list with the name and state.
 
@@ -402,7 +404,7 @@ Customers can review and modify their Alexa lists using voice through a device w
     :param status: item status, defaults to active. Other values accepted: 'completed'
     :returns Object: A JSON object with the specific item info.
 
-  .. js:method:: updateItem(listId, itemId, value, status, version)
+  .. js:function:: updateItem(listId, itemId, value, status, version)
 
     Creates a new list with the name and state.
 
@@ -412,7 +414,7 @@ Customers can review and modify their Alexa lists using voice through a device w
     :param status: Item status. Values accepted: 'active | completed'
     :returns Object: A JSON object with the specific item info.
 
-  .. js:method:: deleteItem(listId, itemId)
+  .. js:function:: deleteItem(listId, itemId)
 
     Creates a new list with the name and state.
 

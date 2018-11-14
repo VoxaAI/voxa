@@ -80,26 +80,26 @@ describe("LoginWithAmazon", () => {
 
   it("should validate user information", async () => {
     const lwaResult: any = {
-      userId: "amzn1.account.K2LI23KL2LK2",
       email: "johndoe@example.com",
       name: "John Doe",
+      userId: "amzn1.account.K2LI23KL2LK2",
       zipCode: 12345,
     };
 
     nock("https://api.amazon.com")
       .get("/user/profile?access_token=accessToken")
       .reply(200, {
-        user_id: "amzn1.account.K2LI23KL2LK2",
         email: "johndoe@example.com",
         name: "John Doe",
         postal_code: 12345,
+        user_id: "amzn1.account.K2LI23KL2LK2",
       });
 
     const rawEvent = rb.getLaunchRequest();
     _.set(rawEvent, "session.user.accessToken", "accessToken");
 
     const alexaEvent = new AlexaEvent(rawEvent) as VoxaEvent;
-    const userDetails = await alexaEvent.getUserInformationWithLWA();
+    const userDetails = await alexaEvent.getUserInformation();
     expect(userDetails).to.deep.equal(lwaResult);
   });
 });

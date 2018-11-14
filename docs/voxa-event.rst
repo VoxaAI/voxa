@@ -79,7 +79,7 @@ The ``voxaEvent`` Object
 
   .. js:function:: getUserInformation()
 
-    Object with user personal information from the platform being used
+    Object with user personal information from the platform being used.
 
     .. code-block:: json
 
@@ -91,8 +91,8 @@ The ``voxaEvent`` Object
             "iat": 233366400,         // Unix timestamp of the token's creation time
             "exp": 233370000,         // Unix timestamp of the token's expiration time
             "emailVerified": true,
-            "givenName": "Jan",
-            "familyName": "Jansen",
+            "givenName": "John",
+            "familyName": "Doe",
             "locale": "en_US",
 
             // Alexa specific fields
@@ -109,7 +109,7 @@ The ``voxaEvent`` Object
 
   .. js:function:: getUserInformationWithGoogle()
 
-    Object with user personal information from Google
+    Object with user personal information from Google. Go :ref:`here <google-sign-in>` for more information.
 
     .. code-block:: json
 
@@ -131,7 +131,7 @@ The ``voxaEvent`` Object
 
   .. js:function:: getUserInformationWithLWA()
 
-    Object with user personal information from Amazon
+    Object with user personal information from Amazon. Go :ref:`here <lwa>` for more information.
 
     .. code-block:: json
 
