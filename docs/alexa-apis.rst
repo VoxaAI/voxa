@@ -18,31 +18,31 @@ When a customer enables your Alexa skill, your skill can request the customer's 
 
   :param VoxaEvent.rawEvent alexaEvent: Alexa Event object.
 
-  .. js:function:: getEmail()
+  .. js:method:: getEmail()
 
     Gets user's email
 
     :returns string: A string with user's email address
 
-  .. js:function:: getGivenName()
+  .. js:method:: getGivenName()
 
     Gets user's given name
 
     :returns string: A string with user's given name
 
-  .. js:function:: getName()
+  .. js:method:: getName()
 
     Gets user's full name
 
     :returns string: A string with user's full name
 
-  .. js:function:: getPhoneNumber()
+  .. js:method:: getPhoneNumber()
 
     Gets user's phone number
 
     :returns object: A JSON object with user's phone number and country code
 
-  .. js:function:: getFullUserInformation()
+  .. js:method:: getFullUserInformation()
 
     Gets name or given name, phone number, and email address
 
@@ -116,13 +116,13 @@ Note that the address entered in the Alexa device may not represent the current 
 
   :param VoxaEvent.rawEvent alexaEvent: Alexa Event object.
 
-  .. js:function:: getAddress()
+  .. js:method:: getAddress()
 
     Gets full address info
 
     :returns object: A JSON object with the full address info
 
-  .. js:function:: getCountryRegionPostalCode()
+  .. js:method:: getCountryRegionPostalCode()
 
     Gets country/region and postal code
 
@@ -187,25 +187,25 @@ Alexa customers can set their timezone, distance measuring unit, and temperature
 
   :param VoxaEvent.rawEvent alexaEvent: Alexa Event object.
 
-  .. js:function:: getDistanceUnits()
+  .. js:method:: getDistanceUnits()
 
     Gets distance units
 
     :returns string: A string with the distance units
 
-  .. js:function:: getTemperatureUnits()
+  .. js:method:: getTemperatureUnits()
 
     Gets temperature units
 
     :returns string: A string with the temperature units
 
-  .. js:function:: getTimezone()
+  .. js:method:: getTimezone()
 
     Gets timezone
 
     :returns string: A string with the timezone value
 
-  .. js:function:: getSettings()
+  .. js:method:: getSettings()
 
     Gets all settings details
 
@@ -330,25 +330,25 @@ Customers can review and modify their Alexa lists using voice through a device w
 
   :param VoxaEvent.rawEvent alexaEvent: Alexa Raw Event object.
 
-  .. js:function:: getDefaultShoppingList()
+  .. js:method:: getDefaultShoppingList()
 
     Gets info for the Alexa default Shopping list
 
     :returns Object: A JSON object with the Shopping list info
 
-  .. js:function:: getDefaultToDoList()
+  .. js:method:: getDefaultToDoList()
 
     Gets info for the Alexa default To-Do list
 
     :returns Object: A JSON object with the To-Do list info
 
-  .. js:function:: getListMetadata()
+  .. js:method:: getListMetadata()
 
     Gets list metadata for all user's lists including the default list
 
     :returns Array: An object array
 
-  .. js:function:: getListById(listId, status = 'active')
+  .. js:method:: getListById(listId, status = 'active')
 
     Gets specific list by id and status
 
@@ -356,14 +356,14 @@ Customers can review and modify their Alexa lists using voice through a device w
     :param status: list status, defaults to active (only value accepted for now)
     :returns Object: A JSON object with the specific list info.
 
-  .. js:function:: getOrCreateList(name)
+  .. js:method:: getOrCreateList(name)
 
     Looks for a list by name and returns it, if it is not found, it creates a new list with that name and returns it.
 
     :param name: List name.
     :returns Object: A JSON object with the specific list info.
 
-  .. js:function:: createList(name, state = 'active')
+  .. js:method:: createList(name, state = 'active')
 
     Creates a new list with the name and state.
 
@@ -371,7 +371,7 @@ Customers can review and modify their Alexa lists using voice through a device w
     :param active: list status, defaults to active (only value accepted for now)
     :returns Object: A JSON object with the specific list info.
 
-  .. js:function:: updateList(listId, name, state = 'active', version)
+  .. js:method:: updateList(listId, name, state = 'active', version)
 
     Updates list with the name, state, and version.
 
@@ -380,14 +380,14 @@ Customers can review and modify their Alexa lists using voice through a device w
     :param version: List version.
     :returns Object: A JSON object with the specific list info.
 
-  .. js:function:: deleteList(listId)
+  .. js:method:: deleteList(listId)
 
     Deletes a list by ID.
 
     :param listId: List ID.
     :returns: undefined. HTTP response with 200 or error if any.
 
-  .. js:function:: getListItem(listId, itemId)
+  .. js:method:: getListItem(listId, itemId)
 
     Creates a new list with the name and state.
 
@@ -395,7 +395,7 @@ Customers can review and modify their Alexa lists using voice through a device w
     :param itemId: Item ID.
     :returns Object: A JSON object with the specific list info.
 
-  .. js:function:: createItem(listId, value, status = 'active')
+  .. js:method:: createItem(listId, value, status = 'active')
 
     Creates a new list with the name and state.
 
@@ -404,7 +404,7 @@ Customers can review and modify their Alexa lists using voice through a device w
     :param status: item status, defaults to active. Other values accepted: 'completed'
     :returns Object: A JSON object with the specific item info.
 
-  .. js:function:: updateItem(listId, itemId, value, status, version)
+  .. js:method:: updateItem(listId, itemId, value, status, version)
 
     Creates a new list with the name and state.
 
@@ -414,7 +414,7 @@ Customers can review and modify their Alexa lists using voice through a device w
     :param status: Item status. Values accepted: 'active | completed'
     :returns Object: A JSON object with the specific item info.
 
-  .. js:function:: deleteItem(listId, itemId)
+  .. js:method:: deleteItem(listId, itemId)
 
     Creates a new list with the name and state.
 

@@ -13,7 +13,7 @@ Voxa Platforms wrap your :js:class:`VoxaApp <VoxaApp>` and allows you to define 
   :param config: The config
 
 
-  .. js:function:: lambda()
+  .. js:method:: lambda()
 
 
     :returns: A lambda handler that will call the :js:func:`app.execute <VoxaApp.execute>` method
@@ -22,7 +22,7 @@ Voxa Platforms wrap your :js:class:`VoxaApp <VoxaApp>` and allows you to define 
 
         exports.handler = alexaSkill.lambda();
 
-  .. js:function:: lambdaHTTP()
+  .. js:method:: lambdaHTTP()
 
 
     :returns: A lambda handler to use as an AWS API Gateway ProxyEvent handler that will call the :js:func:`app.execute <VoxaApp.execute>` method
@@ -31,7 +31,7 @@ Voxa Platforms wrap your :js:class:`VoxaApp <VoxaApp>` and allows you to define 
 
         exports.handler = dialogFlowAction.lambdaHTTP();
 
-  .. js:function:: azureFunction()
+  .. js:method:: azureFunction()
 
 
     :returns: An azure function handler
