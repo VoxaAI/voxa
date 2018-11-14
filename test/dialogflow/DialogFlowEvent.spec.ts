@@ -1,4 +1,7 @@
 import { expect } from "chai";
+import * as jwt from "jsonwebtoken";
+import * as _ from "lodash";
+import * as simple from "simple-mock";
 import { DialogFlowEvent } from "../../src/platforms/dialogflow/DialogFlowEvent";
 
 /* tslint:disable-next-line:no-var-requires */
@@ -169,5 +172,52 @@ describe("DialogFlowEvent", () => {
         "status": "OK",
       },
     });
+  });
+});
+
+describe("Google Sign-In", () => {
+  const googleResponse: any = {
+    aud: "1234567890-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com",
+    email: "johndoe@example.com",
+    email_verified: true,
+    exp: 1542221437,
+    family_name: "Doe",
+    given_name: "John",
+    iat: 1542217837,
+    iss: "https://accounts.google.com",
+    jti: "1234567890abcdefghijklmnopqrstuvwxyz",
+    name: "John Doe",
+    nbf: 1542217537,
+    picture: "https://abc.googleusercontent.com/-abcdefghijok/AAAAAAAAAAI/AAAAAAAACe0/123456789/s96-c/photo.jpg",
+    sub: "12345678901234567899",
+  };
+
+  beforeEach(() => {
+    const userDetailsMocked: any = _.cloneDeep(googleResponse);
+    simple.mock(jwt, "decode").returnWith(userDetailsMocked);
+  });
+
+  afterEach(() => {
+    simple.restore();
+  });
+
+  it("should validate user information", async () => {
+    const launchIntentWithIdToken = _.cloneDeep(launchIntent);
+    const pathToIdToken = "originalDetectIntentRequest.payload.user.idToken";
+    _.set(launchIntent, pathToIdToken, "idToken");
+
+    const event = new DialogFlowEvent(launchIntent, {});
+    const userInformation = await event.getUserInformation();
+
+    const detailsReworked = _.cloneDeep(googleResponse);
+    detailsReworked.emailVerified = detailsReworked.email_verified;
+    detailsReworked.familyName = detailsReworked.family_name;
+    detailsReworked.givenName = detailsReworked.given_name;
+
+    delete detailsReworked.email_verified;
+    delete detailsReworked.family_name;
+    delete detailsReworked.given_name;
+
+    expect(userInformation).to.deep.equal(detailsReworked);
   });
 });

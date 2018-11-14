@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import * as _ from "lodash";
-import { AlexaEvent, IVoxaIntentEvent } from "../../src/";
+import * as nock from "nock";
+import { AlexaEvent, IVoxaIntentEvent, VoxaEvent } from "../../src/";
 import { AlexaRequestBuilder } from "../tools";
 
 describe("AlexaEvent", () => {
@@ -67,5 +68,38 @@ describe("AlexaEvent", () => {
     );
     const alexaEvent = new AlexaEvent(rawEvent) as IVoxaIntentEvent;
     expect(alexaEvent.intent.params).to.be.ok;
+  });
+});
+
+describe("LoginWithAmazon", () => {
+  const rb = new AlexaRequestBuilder();
+
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
+  it("should validate user information", async () => {
+    const lwaResult: any = {
+      userId: "amzn1.account.K2LI23KL2LK2",
+      email: "johndoe@example.com",
+      name: "John Doe",
+      zipCode: 12345,
+    };
+
+    nock("https://api.amazon.com")
+      .get("/user/profile?access_token=accessToken")
+      .reply(200, {
+        user_id: "amzn1.account.K2LI23KL2LK2",
+        email: "johndoe@example.com",
+        name: "John Doe",
+        postal_code: 12345,
+      });
+
+    const rawEvent = rb.getLaunchRequest();
+    _.set(rawEvent, "session.user.accessToken", "accessToken");
+
+    const alexaEvent = new AlexaEvent(rawEvent) as VoxaEvent;
+    const userDetails = await alexaEvent.getUserInformationWithLWA();
+    expect(userDetails).to.deep.equal(lwaResult);
   });
 });

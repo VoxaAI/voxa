@@ -47,6 +47,7 @@
     "bluebird": "^3.5.1",
     "botbuilder": "^3.13.1",
     "i18next": "^9.0.1",
+    "jsonwebtoken": "^8.4.0",
     "lambda-log": "^2.0.0",
     "lodash": "^4.13.1",
     "request": "^2.83.0",

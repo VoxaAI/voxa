@@ -23,9 +23,12 @@
 import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
 import * as i18n from "i18next";
+import * as jwt from "jsonwebtoken";
 import { LambdaLog, LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
+import * as rp from "request-promise";
 import { Model } from "./Model";
+import { DialogFlowEvent } from "./platforms/dialogflow/DialogFlowEvent";
 import { VoxaPlatform } from "./platforms/VoxaPlatform";
 import { Renderer } from "./renderers/Renderer";
 
@@ -85,6 +88,44 @@ export abstract class VoxaEvent implements IVoxaEvent {
     this.initSession();
     this.initUser();
     this.initLogger(logOptions);
+  }
+
+  public async getUserInformation(): Promise<any> {
+    if (_.has(this, "google")) {
+      return this.getUserInformationWithGoogle();
+    }
+
+    return await this.getUserInformationWithLWA();
+  }
+
+  public getUserInformationWithGoogle(): any {
+    const result: any = jwt.decode(this.user.idToken);
+    result.emailVerified = result.email_verified;
+    result.familyName = result.family_name;
+    result.givenName = result.given_name;
+
+    delete result.email_verified;
+    delete result.family_name;
+    delete result.given_name;
+
+    return result;
+  }
+
+  public async getUserInformationWithLWA(): Promise<any> {
+    const httpOptions: any = {
+      json: true,
+      method: "GET",
+      uri: `https://api.amazon.com/user/profile?access_token=${this.user.accessToken}`,
+    };
+
+    const result: any = await rp(httpOptions);
+    result.zipCode = result.postal_code;
+    result.userId = result.user_id;
+
+    delete result.postal_code;
+    delete result.user_id;
+
+    return result;
   }
 
   protected abstract initSession(): void;
