@@ -1,8 +1,11 @@
 import { expect } from "chai";
 import * as _ from "lodash";
 import * as nock from "nock";
-import { AlexaEvent, IVoxaIntentEvent, VoxaEvent } from "../../src/";
+import { AlexaEvent, AlexaPlatform, IVoxaIntentEvent, VoxaApp, VoxaEvent } from "../../src/";
+import { IVoxaAlexaUserProfile } from "../../src/VoxaEvent";
 import { AlexaRequestBuilder } from "../tools";
+import { variables } from "../variables";
+import { views } from "../views";
 
 describe("AlexaEvent", () => {
   const rb = new AlexaRequestBuilder();
@@ -73,17 +76,24 @@ describe("AlexaEvent", () => {
 
 describe("LoginWithAmazon", () => {
   const rb = new AlexaRequestBuilder();
+  let voxaApp: VoxaApp;
+  let alexaSkill: AlexaPlatform;
+
+  beforeEach(() => {
+    voxaApp = new VoxaApp({ views, variables });
+    alexaSkill = new AlexaPlatform(voxaApp);
+  });
 
   afterEach(() => {
     nock.cleanAll();
   });
 
   it("should validate user information", async () => {
-    const lwaResult: any = {
+    const lwaResult: IVoxaAlexaUserProfile = {
       email: "johndoe@example.com",
       name: "John Doe",
       userId: "amzn1.account.K2LI23KL2LK2",
-      zipCode: 12345,
+      zipCode: "12345",
     };
 
     nock("https://api.amazon.com")
@@ -91,7 +101,7 @@ describe("LoginWithAmazon", () => {
       .reply(200, {
         email: "johndoe@example.com",
         name: "John Doe",
-        postal_code: 12345,
+        postal_code: "12345",
         user_id: "amzn1.account.K2LI23KL2LK2",
       });
 
@@ -99,7 +109,21 @@ describe("LoginWithAmazon", () => {
     _.set(rawEvent, "session.user.accessToken", "accessToken");
 
     const alexaEvent = new AlexaEvent(rawEvent) as VoxaEvent;
+    alexaEvent.platform = alexaSkill;
+
     const userDetails = await alexaEvent.getUserInformation();
     expect(userDetails).to.deep.equal(lwaResult);
+  });
+
+  it("should throw an error when accessToken is empty", async () => {
+    const rawEvent = rb.getLaunchRequest();
+    const alexaEvent = new AlexaEvent(rawEvent) as VoxaEvent;
+    alexaEvent.platform = alexaSkill;
+
+    try {
+      await alexaEvent.getUserInformation();
+    } catch (err) {
+      expect(err.message).to.equal("this.user.accessToken is empty");
+    }
   });
 });

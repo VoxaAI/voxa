@@ -2,7 +2,10 @@ import { expect } from "chai";
 import * as jwt from "jsonwebtoken";
 import * as _ from "lodash";
 import * as simple from "simple-mock";
-import { DialogFlowEvent } from "../../src/platforms/dialogflow/DialogFlowEvent";
+
+import { DialogFlowEvent, DialogFlowPlatform, VoxaApp } from "../../src/";
+import { variables } from "../variables";
+import { views } from "../views";
 
 /* tslint:disable-next-line:no-var-requires */
 const launchIntent = require("../requests/dialogflow/launchIntent.json");
@@ -176,6 +179,14 @@ describe("DialogFlowEvent", () => {
 });
 
 describe("Google Sign-In", () => {
+  let voxaApp: VoxaApp;
+  let googleAction: DialogFlowPlatform;
+
+  beforeEach(() => {
+    voxaApp = new VoxaApp({ views, variables });
+    googleAction = new DialogFlowPlatform(voxaApp);
+  });
+
   const googleResponse: any = {
     aud: "1234567890-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com",
     email: "johndoe@example.com",
@@ -204,12 +215,14 @@ describe("Google Sign-In", () => {
   it("should validate user information", async () => {
     const launchIntentWithIdToken = _.cloneDeep(launchIntent);
     const pathToIdToken = "originalDetectIntentRequest.payload.user.idToken";
-    _.set(launchIntent, pathToIdToken, "idToken");
+    _.set(launchIntentWithIdToken, pathToIdToken, "idToken");
 
-    const event = new DialogFlowEvent(launchIntent, {});
+    const event = new DialogFlowEvent(launchIntentWithIdToken, {});
+    event.platform = googleAction;
+
     const userInformation = await event.getUserInformation();
 
-    const detailsReworked = _.cloneDeep(googleResponse);
+    const detailsReworked: any = _.cloneDeep(googleResponse);
     detailsReworked.emailVerified = detailsReworked.email_verified;
     detailsReworked.familyName = detailsReworked.family_name;
     detailsReworked.givenName = detailsReworked.given_name;
@@ -219,5 +232,16 @@ describe("Google Sign-In", () => {
     delete detailsReworked.given_name;
 
     expect(userInformation).to.deep.equal(detailsReworked);
+  });
+
+  it("should throw an error when idToken is empty", async () => {
+    const event = new DialogFlowEvent(launchIntent, {});
+    event.platform = googleAction;
+
+    try {
+      await event.getUserInformation();
+    } catch (err) {
+      expect(err.message).to.equal("idToken is empty");
+    }
   });
 });
