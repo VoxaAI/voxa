@@ -29,6 +29,7 @@ import * as simple from "simple-mock";
 import * as canfulfill from "../src/platforms/alexa/CanFullfillintent";
 
 import {
+  AlexaCanFullfillReply,
   AlexaEvent,
   AlexaPlatform,
   AlexaReply,
@@ -348,7 +349,7 @@ describe("VoxaApp", () => {
     const voxaApp = new VoxaApp({ views, variables });
     const alexaSkill = new AlexaPlatform(voxaApp);
     voxaApp.onCanFulfillIntentRequest(
-      (alexaEvent: AlexaEvent, alexaReply: AlexaReply) => {
+      (alexaEvent: AlexaEvent, alexaReply: AlexaCanFullfillReply) => {
         alexaReply.fulfillIntent("YES");
         alexaReply.fulfillSlot("slot1", "YES", "YES");
         return alexaReply;
@@ -358,7 +359,7 @@ describe("VoxaApp", () => {
     event = rb.getCanFulfillIntentRequestRequest("NameIntent", {
       slot1: "something",
     });
-    const reply = (await alexaSkill.execute(event)) as AlexaReply;
+    const reply = (await alexaSkill.execute(event)) as AlexaCanFullfillReply;
 
     expect(reply.response.card).to.be.undefined;
     expect(reply.response.reprompt).to.be.undefined;
@@ -384,7 +385,7 @@ describe("VoxaApp", () => {
     event = rb.getCanFulfillIntentRequestRequest("NameIntent", {
       slot1: "something",
     });
-    const reply = (await alexaSkill.execute(event)) as AlexaReply;
+    const reply = (await alexaSkill.execute(event)) as AlexaCanFullfillReply;
 
     expect(reply.response.card).to.be.undefined;
     expect(reply.response.reprompt).to.be.undefined;
@@ -406,7 +407,7 @@ describe("VoxaApp", () => {
     const voxaApp = new VoxaApp({ views, variables });
     const alexaSkill = new AlexaPlatform(voxaApp);
     voxaApp.onCanFulfillIntentRequest(
-      (alexaEvent: AlexaEvent, alexaReply: AlexaReply) => {
+      (alexaEvent: AlexaEvent, alexaReply: AlexaCanFullfillReply) => {
         alexaReply.fulfillIntent("MAYBE");
         alexaReply.fulfillSlot("slot1", "YES", "YES");
         return alexaReply;
@@ -416,7 +417,7 @@ describe("VoxaApp", () => {
     event = rb.getCanFulfillIntentRequestRequest("NameIntent", {
       slot1: "something",
     });
-    const reply = (await alexaSkill.execute(event)) as AlexaReply;
+    const reply = (await alexaSkill.execute(event)) as AlexaCanFullfillReply;
 
     expect(reply.response.card).to.be.undefined;
     expect(reply.response.reprompt).to.be.undefined;
@@ -432,7 +433,7 @@ describe("VoxaApp", () => {
     const voxaApp = new VoxaApp({ views, variables });
     const alexaSkill = new AlexaPlatform(voxaApp);
     voxaApp.onCanFulfillIntentRequest(
-      (alexaEvent: AlexaEvent, alexaReply: AlexaReply) => {
+      (alexaEvent: AlexaEvent, alexaReply: AlexaCanFullfillReply) => {
         alexaReply.fulfillIntent("NO");
         return alexaReply;
       },
@@ -441,7 +442,7 @@ describe("VoxaApp", () => {
     event = rb.getCanFulfillIntentRequestRequest("NameIntent", {
       slot1: "something",
     });
-    const reply = (await alexaSkill.execute(event)) as AlexaReply;
+    const reply = (await alexaSkill.execute(event)) as AlexaCanFullfillReply;
 
     expect(reply.response.card).to.be.undefined;
     expect(reply.response.reprompt).to.be.undefined;
@@ -463,7 +464,7 @@ describe("VoxaApp", () => {
     const voxaApp = new VoxaApp({ views, variables });
     const alexaSkill = new AlexaPlatform(voxaApp);
     voxaApp.onCanFulfillIntentRequest(
-      (alexaEvent: AlexaEvent, alexaReply: AlexaReply) => {
+      (alexaEvent: AlexaEvent, alexaReply: AlexaCanFullfillReply) => {
         alexaReply.fulfillIntent("yes");
         alexaReply.fulfillSlot("slot1", "yes", "yes");
         return alexaReply;
@@ -473,7 +474,7 @@ describe("VoxaApp", () => {
     event = rb.getCanFulfillIntentRequestRequest("NameIntent", {
       slot1: "something",
     });
-    const reply = (await alexaSkill.execute(event)) as AlexaReply;
+    const reply = (await alexaSkill.execute(event)) as AlexaCanFullfillReply;
 
     expect(reply.response.card).to.be.undefined;
     expect(reply.response.reprompt).to.be.undefined;
