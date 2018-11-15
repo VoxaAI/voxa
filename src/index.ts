@@ -10,6 +10,7 @@ export { VoxaPlatform } from "./platforms";
 export { IVoxaEvent, IVoxaIntentEvent, IVoxaIntent } from "./VoxaEvent";
 export { IVoxaReply } from "./VoxaReply";
 export {
+  AlexaCanFullfillReply,
   AlexaReply,
   AlexaPlatform,
   AccountLinkingCard as AlexaAccountLinkingCard,

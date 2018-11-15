@@ -29,6 +29,7 @@ import { VoxaApp } from "../../VoxaApp";
 import { IVoxaEvent, IVoxaIntentEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
 import { IVoxaPlatformConfig, VoxaPlatform } from "../VoxaPlatform";
+import { AlexaCanFullfillReply } from "./AlexaCanFullfillReply";
 import { AlexaEvent } from "./AlexaEvent";
 import { AlexaReply } from "./AlexaReply";
 import {
@@ -86,7 +87,7 @@ export class AlexaPlatform extends VoxaPlatform {
     this.config = config;
 
     this.app.onCanFulfillIntentRequest(
-      (event: IVoxaIntentEvent, reply: AlexaReply) => {
+      (event: IVoxaIntentEvent, reply: AlexaCanFullfillReply) => {
         if (_.includes(this.config.defaultFulfillIntents, event.intent.name)) {
           reply.fulfillIntent("YES");
 
@@ -137,7 +138,11 @@ export class AlexaPlatform extends VoxaPlatform {
   }
 
   protected getReply(event: IVoxaEvent): IVoxaReply {
-    return new AlexaReply(event);
+    if (event.request.type === "CanFulfillIntentRequest") {
+      return new AlexaCanFullfillReply();
+    }
+
+    return new AlexaReply();
   }
 
   protected checkSessionEndedRequest(alexaEvent: AlexaEvent): void {

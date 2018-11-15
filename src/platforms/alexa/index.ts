@@ -1,3 +1,4 @@
+export { AlexaCanFullfillReply } from "./AlexaCanFullfillReply";
 export { AlexaPlatform } from "./AlexaPlatform";
 export { AlexaReply } from "./AlexaReply";
 export { AlexaEvent } from "./AlexaEvent";
