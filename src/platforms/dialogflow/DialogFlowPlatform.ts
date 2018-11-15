@@ -26,7 +26,7 @@ import { ITransition } from "../../StateMachine";
 import { VoxaApp } from "../../VoxaApp";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
-import { IDialogFlowPlatformConfig, VoxaPlatform } from "../VoxaPlatform";
+import { IVoxaPlatformConfig, VoxaPlatform } from "../VoxaPlatform";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 import { DialogFlowReply } from "./DialogFlowReply";
 import {
@@ -50,6 +50,10 @@ import {
   TransactionRequirements,
   UpdatePermission,
 } from "./directives";
+
+export interface IDialogFlowPlatformConfig extends IVoxaPlatformConfig {
+  clientId?: string; // id used to verify user's identify from Google Sign-In
+}
 
 export class DialogFlowPlatform extends VoxaPlatform {
   public name = "dialogflow";

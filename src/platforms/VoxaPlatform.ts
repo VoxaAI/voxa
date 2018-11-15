@@ -52,10 +52,6 @@ export interface IVoxaPlatformConfig {
   [key: string]: any;
 }
 
-export interface IDialogFlowPlatformConfig extends IVoxaPlatformConfig {
-  clientId?: string; // id used to verify user's identify from Google Sign-In
-}
-
 export abstract class VoxaPlatform {
   public name!: string;
 

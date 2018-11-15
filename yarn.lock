@@ -244,9 +244,9 @@
   dependencies:
     "@types/node" "*"
 
-actions-on-google@2:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/actions-on-google/-/actions-on-google-2.3.0.tgz#4da4f104f1af99b08e065811bdb5e9f8ed6db31d"
+actions-on-google@^2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/actions-on-google/-/actions-on-google-2.4.1.tgz#da77155fbb429f6118c7ddcb12d944d0d4cddcd0"
   dependencies:
     "@types/aws-lambda" "^0.0.33"
     "@types/debug" "^0.0.30"
