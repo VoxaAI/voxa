@@ -23,11 +23,11 @@
 import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
 import * as i18n from "i18next";
-import * as jwt from "jsonwebtoken";
 import { LambdaLog, LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
 import * as rp from "request-promise";
 import { Model } from "./Model";
+import { DialogFlowEvent } from "./platforms/dialogflow/DialogFlowEvent";
 import { VoxaPlatform } from "./platforms/VoxaPlatform";
 import { Renderer } from "./renderers/Renderer";
 
@@ -91,20 +91,23 @@ export abstract class VoxaEvent implements IVoxaEvent {
 
   public async getUserInformation(): Promise<IVoxaUserProfile> {
     if (this.platform.name === "dialogflow") {
-      return this.getUserInformationWithGoogle();
+      return await this.getUserInformationWithGoogle();
     }
 
     return await this.getUserInformationWithLWA();
   }
 
-  public getUserInformationWithGoogle(): IVoxaGoogleUserProfile {
-    const idToken: string = _.get(this, "google.conv.user.profile.token");
+  public async getUserInformationWithGoogle(): Promise<IVoxaGoogleUserProfile> {
+    const voxaEvent: any = _.cloneDeep(this);
+    const dialogFlowEvent = voxaEvent as DialogFlowEvent;
+    const dialogFlowUser = dialogFlowEvent.google.conv.user;
 
-    if (!idToken) {
-      throw new Error("idToken is empty");
+    if (!dialogFlowUser.profile.token) {
+      throw new Error("conv.user.profile.token is empty");
     }
 
-    const result: any = jwt.decode(idToken);
+    const result: any = await dialogFlowEvent.verifyProfile();
+
     result.emailVerified = result.email_verified;
     result.familyName = result.family_name;
     result.givenName = result.given_name;

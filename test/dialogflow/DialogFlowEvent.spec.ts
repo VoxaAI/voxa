@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import * as jwt from "jsonwebtoken";
 import * as _ from "lodash";
 import * as simple from "simple-mock";
 
@@ -182,11 +181,6 @@ describe("Google Sign-In", () => {
   let voxaApp: VoxaApp;
   let googleAction: DialogFlowPlatform;
 
-  beforeEach(() => {
-    voxaApp = new VoxaApp({ views, variables });
-    googleAction = new DialogFlowPlatform(voxaApp);
-  });
-
   const googleResponse: any = {
     aud: "1234567890-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com",
     email: "johndoe@example.com",
@@ -204,8 +198,11 @@ describe("Google Sign-In", () => {
   };
 
   beforeEach(() => {
+    voxaApp = new VoxaApp({ views, variables });
+    googleAction = new DialogFlowPlatform(voxaApp, { clientId: "clientId" });
+
     const userDetailsMocked: any = _.cloneDeep(googleResponse);
-    simple.mock(jwt, "decode").returnWith(userDetailsMocked);
+    simple.mock(DialogFlowEvent.prototype, "verifyProfile").resolveWith(userDetailsMocked);
   });
 
   afterEach(() => {
@@ -244,7 +241,7 @@ describe("Google Sign-In", () => {
       await event.getUserInformation();
     } catch (err) {
       exceptionWasThrown = true;
-      expect(err.message).to.equal("idToken is empty");
+      expect(err.message).to.equal("conv.user.profile.token is empty");
     }
 
     expect(exceptionWasThrown).to.be.true;

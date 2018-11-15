@@ -81,7 +81,7 @@ The ``voxaEvent`` Object
 
     Object with user personal information from the platform being used.
 
-    .. code-block:: json
+    .. code-block:: javascript
 
           {
             // Google specific fields
@@ -111,7 +111,7 @@ The ``voxaEvent`` Object
 
     Object with user personal information from Google. Go :ref:`here <google-sign-in>` for more information.
 
-    .. code-block:: json
+    .. code-block:: javascript
 
           {
             "sub": 1234567890,        // The unique ID of the user's Google Account

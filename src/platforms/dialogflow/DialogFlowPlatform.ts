@@ -26,7 +26,7 @@ import { ITransition } from "../../StateMachine";
 import { VoxaApp } from "../../VoxaApp";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
-import { IVoxaPlatformConfig, VoxaPlatform } from "../VoxaPlatform";
+import { IDialogFlowPlatformConfig, VoxaPlatform } from "../VoxaPlatform";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 import { DialogFlowReply } from "./DialogFlowReply";
 import {
@@ -55,7 +55,7 @@ export class DialogFlowPlatform extends VoxaPlatform {
   public name = "dialogflow";
   protected EventClass = DialogFlowEvent;
 
-  constructor(app: VoxaApp, config: IVoxaPlatformConfig = {}) {
+  constructor(app: VoxaApp, config: IDialogFlowPlatformConfig = {}) {
     super(app, config);
     app.onBeforeReplySent(this.saveStorage, true, this.name);
   }
