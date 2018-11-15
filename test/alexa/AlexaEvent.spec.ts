@@ -120,10 +120,15 @@ describe("LoginWithAmazon", () => {
     const alexaEvent = new AlexaEvent(rawEvent) as VoxaEvent;
     alexaEvent.platform = alexaSkill;
 
+    let exceptionWasThrown: boolean = false;
+
     try {
       await alexaEvent.getUserInformation();
     } catch (err) {
+      exceptionWasThrown = true;
       expect(err.message).to.equal("this.user.accessToken is empty");
     }
+
+    expect(exceptionWasThrown).to.be.true;
   });
 });

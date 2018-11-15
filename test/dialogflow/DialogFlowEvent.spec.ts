@@ -238,10 +238,15 @@ describe("Google Sign-In", () => {
     const event = new DialogFlowEvent(launchIntent, {});
     event.platform = googleAction;
 
+    let exceptionWasThrown: boolean = false;
+
     try {
       await event.getUserInformation();
     } catch (err) {
+      exceptionWasThrown = true;
       expect(err.message).to.equal("idToken is empty");
     }
+
+    expect(exceptionWasThrown).to.be.true;
   });
 });
