@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mediarain/voxa.git"
+    "url": "git+https://github.com/VoxaAI/voxa.git"
   },
   "keywords": [
     "alexa",
@@ -82,7 +82,7 @@
     "virtual-google-assistant": "^0.2.5"
   },
   "bugs": {
-    "url": "https://github.com/mediarain/voxa/issues"
+    "url": "https://github.com/VoxaAI/voxa/issues"
   },
-  "homepage": "https://github.com/mediarain/voxa#readme"
+  "homepage": "https://github.com/VoxaAI/voxa#readme"
 }
