@@ -588,6 +588,35 @@ describe("VoxaApp", () => {
       );
     });
 
+    it("should call onUnhandledState when UnknownState is thrown", async () => {
+      const voxaApp = new VoxaApp({ Model, views, variables });
+      const platform = new AlexaPlatform(voxaApp);
+      const launchEvent = rb.getIntentRequest("RandomIntent");
+
+      voxaApp.onUnhandledState((voxaEvent: IVoxaEvent, stateName: string): any => {
+        expect(stateName).to.equal("RandomIntent");
+
+        return {
+          tell: "ExitIntent.Farewell",
+          to: "die",
+        };
+      });
+
+      voxaApp.onError((voxaEvent: IVoxaEvent, err: Error) => {
+        expect(err.message).to.equal("RandomIntent went unhandled");
+      });
+
+      statesDefinition.LaunchIntent = simple.stub().resolveWith(null);
+
+      _.map(statesDefinition, (state: any, name: string) =>
+        voxaApp.onState(name, state),
+      );
+      const reply = await platform.execute(launchEvent);
+      expect(reply.speech).to.equal(
+        "<speak>Ok. For more info visit example.com site.</speak>",
+      );
+    });
+
     it("should crash with an UnknownState Error", async () => {
       simple.mock(StateMachine.prototype, "getCurrentState").throwWith(new UnknownState("RandomIntent"));
 
