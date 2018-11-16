@@ -1,5 +1,10 @@
 import { expect } from "chai";
-import { DialogFlowEvent } from "../../src/platforms/dialogflow/DialogFlowEvent";
+import * as _ from "lodash";
+import * as simple from "simple-mock";
+
+import { DialogFlowEvent, DialogFlowPlatform, VoxaApp } from "../../src/";
+import { variables } from "../variables";
+import { views } from "../views";
 
 /* tslint:disable-next-line:no-var-requires */
 const launchIntent = require("../requests/dialogflow/launchIntent.json");
@@ -169,5 +174,76 @@ describe("DialogFlowEvent", () => {
         "status": "OK",
       },
     });
+  });
+});
+
+describe("Google Sign-In", () => {
+  let voxaApp: VoxaApp;
+  let googleAction: DialogFlowPlatform;
+
+  const googleResponse: any = {
+    aud: "1234567890-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com",
+    email: "johndoe@example.com",
+    email_verified: true,
+    exp: 1542221437,
+    family_name: "Doe",
+    given_name: "John",
+    iat: 1542217837,
+    iss: "https://accounts.google.com",
+    jti: "1234567890abcdefghijklmnopqrstuvwxyz",
+    name: "John Doe",
+    nbf: 1542217537,
+    picture: "https://abc.googleusercontent.com/-abcdefghijok/AAAAAAAAAAI/AAAAAAAACe0/123456789/s96-c/photo.jpg",
+    sub: "12345678901234567899",
+  };
+
+  beforeEach(() => {
+    voxaApp = new VoxaApp({ views, variables });
+    googleAction = new DialogFlowPlatform(voxaApp, { clientId: "clientId" });
+
+    const userDetailsMocked: any = _.cloneDeep(googleResponse);
+    simple.mock(DialogFlowEvent.prototype, "verifyProfile").resolveWith(userDetailsMocked);
+  });
+
+  afterEach(() => {
+    simple.restore();
+  });
+
+  it("should validate user information", async () => {
+    const launchIntentWithIdToken = _.cloneDeep(launchIntent);
+    const pathToIdToken = "originalDetectIntentRequest.payload.user.idToken";
+    _.set(launchIntentWithIdToken, pathToIdToken, "idToken");
+
+    const event = new DialogFlowEvent(launchIntentWithIdToken, {});
+    event.platform = googleAction;
+
+    const userInformation = await event.getUserInformation();
+
+    const detailsReworked: any = _.cloneDeep(googleResponse);
+    detailsReworked.emailVerified = detailsReworked.email_verified;
+    detailsReworked.familyName = detailsReworked.family_name;
+    detailsReworked.givenName = detailsReworked.given_name;
+
+    delete detailsReworked.email_verified;
+    delete detailsReworked.family_name;
+    delete detailsReworked.given_name;
+
+    expect(userInformation).to.deep.equal(detailsReworked);
+  });
+
+  it("should throw an error when idToken is empty", async () => {
+    const event = new DialogFlowEvent(launchIntent, {});
+    event.platform = googleAction;
+
+    let exceptionWasThrown: boolean = false;
+
+    try {
+      await event.getUserInformation();
+    } catch (err) {
+      exceptionWasThrown = true;
+      expect(err.message).to.equal("conv.user.profile.token is empty");
+    }
+
+    expect(exceptionWasThrown).to.be.true;
   });
 });

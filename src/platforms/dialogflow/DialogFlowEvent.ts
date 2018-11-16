@@ -26,6 +26,8 @@ import {
 } from "actions-on-google";
 import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
+import { OAuth2Client } from "google-auth-library";
+import { TokenPayload } from "google-auth-library/build/src/auth/loginticket";
 import { LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
 import { v1 } from "uuid";
@@ -52,6 +54,14 @@ export class DialogFlowEvent extends VoxaEvent {
     };
 
     this.intent = new DialogFlowIntent(this.google.conv);
+  }
+
+  public async verifyProfile(): Promise<TokenPayload|undefined> {
+    const client = new OAuth2Client(this.platform.config.clientId);
+    const payload: TokenPayload|undefined = await this.google.conv.user._verifyProfile(
+      client, this.platform.config.clientId);
+
+    return payload;
   }
 
   protected initSession(): void {

@@ -51,11 +51,15 @@ import {
   UpdatePermission,
 } from "./directives";
 
+export interface IDialogFlowPlatformConfig extends IVoxaPlatformConfig {
+  clientId?: string; // id used to verify user's identify from Google Sign-In
+}
+
 export class DialogFlowPlatform extends VoxaPlatform {
   public name = "dialogflow";
   protected EventClass = DialogFlowEvent;
 
-  constructor(app: VoxaApp, config: IVoxaPlatformConfig = {}) {
+  constructor(app: VoxaApp, config: IDialogFlowPlatformConfig = {}) {
     super(app, config);
     app.onBeforeReplySent(this.saveStorage, true, this.name);
   }

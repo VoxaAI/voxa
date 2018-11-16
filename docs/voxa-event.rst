@@ -77,6 +77,74 @@ The ``voxaEvent`` Object
 
     :returns Array: A string array of the platform's supported interfaces
 
+  .. js:function:: getUserInformation()
+
+    Object with user personal information from the platform being used.
+
+    .. code-block:: javascript
+
+          {
+            // Google specific fields
+            "sub": 1234567890,        // The unique ID of the user's Google Account
+            "iss": "https://accounts.google.com",        // The token's issuer
+            "aud": "123-abc.apps.googleusercontent.com", // Client ID assigned to your Actions project
+            "iat": 233366400,         // Unix timestamp of the token's creation time
+            "exp": 233370000,         // Unix timestamp of the token's expiration time
+            "emailVerified": true,
+            "givenName": "John",
+            "familyName": "Doe",
+            "locale": "en_US",
+
+            // Alexa specific fields
+            "zipCode": "98101",
+            "userId": "amzn1.account.K2LI23KL2LK2",
+
+            // Platforms common fields
+            "email": "johndoe@gmail.com",
+            "name": "John Doe"
+          }
+    ..
+
+    :returns object: A object with user's information
+
+  .. js:function:: getUserInformationWithGoogle()
+
+    Object with user personal information from Google. Go :ref:`here <google-sign-in>` for more information.
+
+    .. code-block:: javascript
+
+          {
+            "sub": 1234567890,        // The unique ID of the user's Google Account
+            "iss": "https://accounts.google.com",        // The token's issuer
+            "aud": "123-abc.apps.googleusercontent.com", // Client ID assigned to your Actions project
+            "iat": 233366400,         // Unix timestamp of the token's creation time
+            "exp": 233370000,         // Unix timestamp of the token's expiration time
+            "givenName": "John",
+            "familyName": "Doe",
+            "locale": "en_US",
+            "email": "johndoe@gmail.com",
+            "name": "John Doe"
+          }
+    ..
+
+    :returns object: A object with user's information
+
+  .. js:function:: getUserInformationWithLWA()
+
+    Object with user personal information from Amazon. Go :ref:`here <lwa>` for more information.
+
+    .. code-block:: json
+
+          {
+            "email": "johndoe@gmail.com",
+            "name": "John Doe",
+            "zipCode": "98101",
+            "userId": "amzn1.account.K2LI23KL2LK2"
+          }
+    ..
+
+    :returns object: A object with user's information
+
 ``IVoxaEvent`` is an interface that inherits its attributes and function to the specific platforms, for more information about each platform's own methods visit:
 
 - :ref:`AlexaEvent <alexa-event>`
