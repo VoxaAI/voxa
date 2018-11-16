@@ -15,6 +15,7 @@ import {
   Renderer,
   VoxaApp,
 } from "../src";
+import { isLocalizedRequest } from "../src/platforms/alexa/utils";
 import { AlexaRequestBuilder } from "./tools";
 import { variables } from "./variables";
 import { views } from "./views";
@@ -100,7 +101,9 @@ describe("Renderer", () => {
         _.map(statesDefinition, (state, name: string) =>
           skill.onState(name, state),
         );
-        rawEvent.request.locale = locale;
+        if (isLocalizedRequest(rawEvent.request)) {
+          rawEvent.request.locale = locale;
+        }
         const reply = await skill.execute(rawEvent);
         expect(reply.speech).to.equal(`<speak>${translations.site}</speak>`);
         expect(reply.response.directives).to.be.undefined;
@@ -112,7 +115,9 @@ describe("Renderer", () => {
           say: "Say",
           to: "entry",
         }));
-        rawEvent.request.locale = locale;
+        if (isLocalizedRequest(rawEvent.request)) {
+          rawEvent.request.locale = locale;
+        }
         const reply = await skill.execute(rawEvent);
         expect(reply.speech).to.deep.equal(
           `<speak>${translations.say}</speak>`,
@@ -122,7 +127,9 @@ describe("Renderer", () => {
 
       it("should have the locale available in variables", async () => {
         skill.onIntent("SomeIntent", () => ({ tell: "Number.One" }));
-        rawEvent.request.locale = locale;
+        if (isLocalizedRequest(rawEvent.request)) {
+          rawEvent.request.locale = locale;
+        }
         const reply = await skill.execute(rawEvent);
         expect(reply.speech).to.equal(`<speak>${translations.number}</speak>`);
         expect(reply.response.directives).to.be.undefined;
@@ -136,7 +143,9 @@ describe("Renderer", () => {
           directives: [playAudio],
           to: "entry",
         }));
-        rawEvent.request.locale = locale;
+        if (isLocalizedRequest(rawEvent.request)) {
+          rawEvent.request.locale = locale;
+        }
         const reply = await skill.execute(rawEvent);
         expect(reply.speech).to.equal(
           `<speak>${translations.question}</speak>`,

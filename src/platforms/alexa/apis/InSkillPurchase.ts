@@ -24,6 +24,7 @@ import { interfaces, RequestEnvelope, services } from "ask-sdk-model";
 import { LambdaLog } from "lambda-log";
 import * as _ from "lodash";
 import * as rp from "request-promise";
+import { isLocalizedRequest } from "../utils";
 
 import { ConnectionsSendRequest } from "../directives";
 
@@ -91,7 +92,7 @@ export class InSkillPurchase {
       "en-US": "https://api.amazonalexa.com",
     };
 
-    const locale: string = this.rawEvent.request.locale;
+    const locale: string = isLocalizedRequest(this.rawEvent.request) ? this.rawEvent.request.locale : "en-us";
     const endpoint: string = _.get(this.rawEvent, "context.System.apiEndpoint");
 
     return _.get(ALLOWED_ISP_ENDPOINTS, locale) === endpoint;
@@ -148,7 +149,7 @@ export class InSkillPurchase {
 
     const options: any = {
       headers: {
-        "Accept-Language": this.rawEvent.request.locale,
+        "Accept-Language": isLocalizedRequest(this.rawEvent.request) ? this.rawEvent.request.locale : "en-us",
         "Authorization": `Bearer ${apiAccessToken}`,
         "Content-Type": "application/json",
       },
