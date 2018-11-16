@@ -42,7 +42,9 @@ import { AlexaRequestBuilder } from "./tools";
 import { variables } from "./variables";
 import { views } from "./views";
 
+import { UnknownState } from "../src/errors";
 import { PlayAudio } from "../src/platforms/alexa/directives";
+import { StateMachine } from "../src/StateMachine/StateMachine";
 
 const rb = new AlexaRequestBuilder();
 
@@ -481,6 +483,10 @@ describe("VoxaApp", () => {
   });
 
   describe("onUnhandledState", () => {
+    afterEach(() => {
+      simple.restore();
+    });
+
     it("should crash if there's an unhandled state", async () => {
       const voxaApp = new VoxaApp({ Model, views, variables });
       const platform = new AlexaPlatform(voxaApp);
@@ -579,6 +585,52 @@ describe("VoxaApp", () => {
       expect(onUnhandledState.called).to.be.true;
       expect(reply.speech).to.equal(
         "<speak>Ok. For more info visit example.com site.</speak>",
+      );
+    });
+
+    it("should crash with an UnknownState Error", async () => {
+      simple.mock(StateMachine.prototype, "getCurrentState").throwWith(new UnknownState("RandomIntent"));
+
+      const voxaApp = new VoxaApp({ Model, views, variables });
+      const platform = new AlexaPlatform(voxaApp);
+      const launchEvent = rb.getIntentRequest("RandomIntent");
+
+      statesDefinition.LaunchIntent = simple.stub().resolveWith(null);
+
+      _.map(statesDefinition, (state: any, name: string) =>
+        voxaApp.onState(name, state),
+      );
+
+      voxaApp.onError((voxaEvent: IVoxaEvent, err: Error) => {
+        expect(err.message).to.equal("RandomIntent went unhandled");
+      });
+
+      const reply = await platform.execute(launchEvent);
+      expect(reply.speech).to.equal(
+        "<speak>An unrecoverable error occurred.</speak>",
+      );
+    });
+
+    it("should crash with a generic Error", async () => {
+      simple.mock(StateMachine.prototype, "getCurrentState").throwWith(new Error("Common Error"));
+
+      const voxaApp = new VoxaApp({ Model, views, variables });
+      const platform = new AlexaPlatform(voxaApp);
+      const launchEvent = rb.getIntentRequest("LaunchIntent");
+
+      statesDefinition.LaunchIntent = simple.stub().resolveWith(null);
+
+      _.map(statesDefinition, (state: any, name: string) =>
+        voxaApp.onState(name, state),
+      );
+
+      voxaApp.onError((voxaEvent: IVoxaEvent, err: Error) => {
+        expect(err.message).to.equal("Common Error");
+      });
+
+      const reply = await platform.execute(launchEvent);
+      expect(reply.speech).to.equal(
+        "<speak>An unrecoverable error occurred.</speak>",
       );
     });
   });
