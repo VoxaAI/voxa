@@ -26,12 +26,13 @@ export { TimeoutError } from "./TimeoutError";
 export { errorHandler } from "./handler";
 
 function createError(messageTemplate: string, key: string) {
-  return class extends Error {
+  return class implements Error {
+    public name: string = key;
+    public message: string;
     [key: string]: any;
 
     constructor(value: string) {
-      const message = messageTemplate.replace("{" + key + "}", value);
-      super(message);
+      this.message = messageTemplate.replace("{" + key + "}", value);
       this[key] = value;
     }
   };
