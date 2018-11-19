@@ -4,13 +4,15 @@ type LocalizedAlexaRequest = interfaces.audioplayer.PlaybackFinishedRequest | in
 
 export function isLocalizedRequest(request: any): request is LocalizedAlexaRequest {
   return (
-    request.type.includes("AudioPlayer.") ||
-    request.type.includes("PlaybackController.") ||
-    request.type.includes("Connections.") ||
-    request.type.includes("GameEngine.") ||
-    request.type.includes("System.") ||
-    request.type === "Display.ElementSelected" ||
-    request.type === "SessionEndedRequest" ||
-    request.type === "IntentRequest"
+    request.type && (
+      request.type.includes("AudioPlayer.") ||
+      request.type.includes("PlaybackController.") ||
+      request.type.includes("Connections.") ||
+      request.type.includes("GameEngine.") ||
+      request.type.includes("System.") ||
+      request.type === "Display.ElementSelected" ||
+      request.type === "SessionEndedRequest" ||
+      request.type === "IntentRequest"
+    )
   );
 }
