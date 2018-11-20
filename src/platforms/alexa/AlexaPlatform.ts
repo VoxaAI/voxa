@@ -68,6 +68,7 @@ const AlexaRequests = [
   "Display.ElementSelected",
   "CanFulfillIntentRequest",
   "GameEngine.InputHandlerEvent",
+  "Alexa.Presentation.APL.UserEvent",
 ];
 
 export interface IAlexaPlatformConfig extends IVoxaPlatformConfig {
