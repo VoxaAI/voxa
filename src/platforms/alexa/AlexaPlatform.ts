@@ -33,6 +33,7 @@ import { AlexaEvent } from "./AlexaEvent";
 import { AlexaReply } from "./AlexaReply";
 import {
   AccountLinkingCard,
+  APLTemplate,
   ConnectionsSendRequest,
   DialogDelegate,
   GadgetControllerLightDirective,
@@ -104,6 +105,7 @@ export class AlexaPlatform extends VoxaPlatform {
   public getDirectiveHandlers() {
     return [
       AccountLinkingCard,
+      APLTemplate,
       ConnectionsSendRequest,
       DialogDelegate,
       GadgetControllerLightDirective,

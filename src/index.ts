@@ -22,6 +22,7 @@ export {
   AlexaPlatform,
   AccountLinkingCard as AlexaAccountLinkingCard,
   AlexaEvent,
+  APLTemplate,
   ANCHOR_ENUM,
   ConnectionsSendRequest,
   DialogDelegate,

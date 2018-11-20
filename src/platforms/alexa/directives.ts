@@ -229,6 +229,50 @@ export class RenderTemplate extends AlexaDirective implements IDirective {
   }
 }
 
+export class APLTemplate extends AlexaDirective implements IDirective {
+  public static key: string = "alexaAPLTemplate";
+  public static platform: string = "alexa";
+
+  public viewPath?: string;
+  public directive?: interfaces.alexa.presentation.apl.RenderDocumentDirective;
+
+  constructor(viewPath: string | interfaces.alexa.presentation.apl.RenderDocumentDirective) {
+    super();
+
+    if (_.isString(viewPath)) {
+      this.viewPath = viewPath;
+    } else {
+      this.directive = viewPath;
+    }
+  }
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    this.validateReply(reply);
+
+    if (!_.includes(event.supportedInterfaces, "Alexa.Presentation.APL")) {
+      return;
+    }
+
+    if (this.viewPath) {
+      this.directive = await event.renderer.renderPath(this.viewPath, event);
+    }
+
+    this.addDirective(reply);
+  }
+
+  private validateReply(reply: IVoxaReply) {
+    if (reply.hasDirective("Alexa.Presentation.APL.RenderDocument")) {
+      throw new Error(
+        "At most one Alexa.Presentation.APL.RenderDocument directive can be specified in a response",
+      );
+    }
+  }
+}
+
 export class AccountLinkingCard implements IDirective {
   public static key: string = "alexaAccountLinkingCard";
   public static platform: string = "alexa";
