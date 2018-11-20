@@ -5,6 +5,7 @@ export { DisplayTemplate } from "./DisplayTemplateBuilder";
 export { ANCHOR_ENUM, EVENT_REPORT_ENUM, GameEngine } from "./GameEngine";
 export {
   AccountLinkingCard,
+  APLCommand,
   APLTemplate,
   ConnectionsSendRequest,
   DialogDelegate,
