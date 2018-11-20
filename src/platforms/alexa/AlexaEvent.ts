@@ -39,6 +39,7 @@ import {
   InSkillPurchase,
   Lists,
 } from "./apis";
+import { isLocalizedRequest } from "./utils";
 
 export class AlexaEvent extends VoxaEvent {
   public intent?: IVoxaIntent;
@@ -65,8 +66,10 @@ export class AlexaEvent extends VoxaEvent {
   ) {
     super(rawEvent, logOptions, executionContext);
 
+    const locale: string = isLocalizedRequest(rawEvent.request) ? rawEvent.request.locale : "en-us";
+
     this.request = {
-      locale: rawEvent.request.locale,
+      locale,
       type: rawEvent.request.type,
     };
 
