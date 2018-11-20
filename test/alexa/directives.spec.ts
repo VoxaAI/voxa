@@ -6,6 +6,7 @@ import "mocha";
 import {
   AlexaEvent,
   AlexaPlatform,
+  APLTemplate,
   DisplayTemplate,
   HomeCard,
   VoxaApp,
@@ -100,6 +101,37 @@ describe("Alexa directives", () => {
             type: "BodyTemplate1",
           },
           type: "Display.RenderTemplate",
+        },
+      ]);
+    });
+  });
+
+  describe("APLRenderTemplate", () => {
+    it("should only add the template if request supports it", async () => {
+      app.onIntent("YesIntent", {
+        alexaAPLTemplate: "APLTemplate",
+        to: "die",
+      });
+
+      event.context.System.device.supportedInterfaces = {};
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.be.undefined;
+    });
+
+    it("should add to the directives", async () => {
+      app.onIntent("YesIntent", {
+        alexaAPLTemplate: "APLTemplate",
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.not.be.undefined;
+      expect(reply.response.directives).to.deep.equal([
+        {
+          datasources: {},
+          document: {},
+          token: "SkillTemplateToken",
+          type: "Alexa.Presentation.APL.RenderDocument",
         },
       ]);
     });

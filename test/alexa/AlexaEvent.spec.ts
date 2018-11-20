@@ -60,6 +60,7 @@ describe("AlexaEvent", () => {
     const rawEvent = rb.getLaunchRequest();
     const alexaEvent = new AlexaEvent(rawEvent);
     expect(alexaEvent.supportedInterfaces).to.deep.equal([
+      "Alexa.Presentation.APL",
       "AudioPlayer",
       "Display",
     ]);

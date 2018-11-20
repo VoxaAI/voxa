@@ -1,6 +1,12 @@
 export const views = {
   "de-DE": {
     translation: {
+      APLTemplate: {
+        datasources: {},
+        document: {},
+        token: "SkillTemplateToken",
+        type: "Alexa.Presentation.APL.RenderDocument",
+      },
       Ask: "wie spät ist es?",
       ExitIntent: {
         Farewell: "Ok für weitere Infos besuchen {site} Website",
@@ -23,6 +29,12 @@ export const views = {
   },
   "en-US": {
     translation: {
+      APLTemplate: {
+        datasources: {},
+        document: {},
+        token: "SkillTemplateToken",
+        type: "Alexa.Presentation.APL.RenderDocument",
+      },
       AccountLinking: "Please Log in",
       Ask: {
         ask: "What time is it?",

@@ -127,8 +127,9 @@ export class AlexaRequestBuilder {
         device: {
           deviceId: this.deviceId,
           supportedInterfaces: {
-            AudioPlayer: {},
-            Display: {},
+            "Alexa.Presentation.APL": {},
+            "AudioPlayer": {},
+            "Display": {},
           },
         },
         user: {
