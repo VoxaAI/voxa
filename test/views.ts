@@ -1,6 +1,18 @@
 export const views = {
   "de-DE": {
     translation: {
+      APLKaraokeCommand: {
+        commands: [
+          {
+            align: "center",
+            componentId: "textComponent",
+            highlightMode: "line",
+            type: "SpeakItem",
+          },
+        ],
+        token: "SkillTemplateToken",
+        type: "Alexa.Presentation.APL.ExecuteCommands",
+      },
       APLTemplate: {
         datasources: {},
         document: {},
@@ -29,6 +41,18 @@ export const views = {
   },
   "en-US": {
     translation: {
+      APLKaraokeCommand: {
+        commands: [
+          {
+            align: "center",
+            componentId: "textComponent",
+            highlightMode: "line",
+            type: "SpeakItem",
+          },
+        ],
+        token: "SkillTemplateToken",
+        type: "Alexa.Presentation.APL.ExecuteCommands",
+      },
       APLTemplate: {
         datasources: {},
         document: {},

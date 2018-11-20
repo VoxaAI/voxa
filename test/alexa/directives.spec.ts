@@ -137,6 +137,43 @@ describe("Alexa directives", () => {
     });
   });
 
+  describe("APLCommand", () => {
+    it("should only add the command if request supports it", async () => {
+      app.onIntent("YesIntent", {
+        alexaAPLCommand: "APLKaraokeCommand",
+        to: "die",
+      });
+
+      event.context.System.device.supportedInterfaces = {};
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.be.undefined;
+    });
+
+    it("should add to the directives", async () => {
+      app.onIntent("YesIntent", {
+        alexaAPLCommand: "APLKaraokeCommand",
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.not.be.undefined;
+      expect(reply.response.directives).to.deep.equal([
+        {
+          commands: [
+            {
+              align: "center",
+              componentId: "textComponent",
+              highlightMode: "line",
+              type: "SpeakItem",
+            },
+          ],
+          token: "SkillTemplateToken",
+          type: "Alexa.Presentation.APL.ExecuteCommands",
+        },
+      ]);
+    });
+  });
+
   describe("Hint", () => {
     it("should render a Hint directive", async () => {
       app.onIntent("YesIntent", {
