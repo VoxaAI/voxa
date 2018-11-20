@@ -73,6 +73,12 @@ describe("AlexaEvent", () => {
     const alexaEvent = new AlexaEvent(rawEvent) as IVoxaIntentEvent;
     expect(alexaEvent.intent.params).to.be.ok;
   });
+
+  it("should add AlexaPresentationAPLUserEvent intent params", () => {
+    const rawEvent = rb.getAlexaPresentationAPLUserEvent();
+    const alexaEvent = new AlexaEvent(rawEvent) as IVoxaIntentEvent;
+    expect(alexaEvent.intent.params).to.be.ok;
+  });
 });
 
 describe("LoginWithAmazon", () => {

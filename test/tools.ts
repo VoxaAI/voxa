@@ -61,6 +61,20 @@ export class AlexaRequestBuilder {
     };
   }
 
+  public getAlexaPresentationAPLUserEvent(): RequestEnvelope {
+    return {
+      context: this.getContextData(),
+      request: {
+        arguments: [],
+        requestId: `EdwRequestId.${v1()}`,
+        timestamp: new Date().toISOString(),
+        type: "Alexa.Presentation.APL.UserEvent",
+      },
+      session: this.getSessionData(),
+      version: this.version,
+    };
+  }
+
   public getCanFulfillIntentRequestRequest(
     intentName: string,
     slots?: any,
