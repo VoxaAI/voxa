@@ -74,7 +74,7 @@ RenderTemplate
 
 `Alexa Documentation <https://developer.amazon.com/docs/custom-skills/display-interface-reference.html>`_
 
-Voxa provides a `DisplayTemplate` builder that can be used with the `alexaRenderTemplate` controller key to create Displa templates for the echo show and echo spot.
+Voxa provides a `DisplayTemplate` builder that can be used with the `alexaRenderTemplate` controller key to create Display templates for the echo show and echo spot.
 
 .. code-block:: javascript
 
