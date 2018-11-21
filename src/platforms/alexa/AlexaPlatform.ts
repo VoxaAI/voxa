@@ -106,8 +106,6 @@ export class AlexaPlatform extends VoxaPlatform {
   public getDirectiveHandlers() {
     return [
       AccountLinkingCard,
-      APLTemplate,
-      APLCommand,
       ConnectionsSendRequest,
       DialogDelegate,
       GadgetControllerLightDirective,
@@ -117,6 +115,8 @@ export class AlexaPlatform extends VoxaPlatform {
       HomeCard,
       PlayAudio,
       RenderTemplate,
+      APLTemplate,
+      APLCommand,
       StopAudio,
     ];
   }
