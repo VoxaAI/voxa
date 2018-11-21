@@ -135,6 +135,49 @@ describe("Alexa directives", () => {
         },
       ]);
     });
+
+    it("should be in the directives array after the RenderTemplate", async () => {
+      app.onIntent("YesIntent", {
+        alexaAPLTemplate: "APLTemplate",
+        alexaRenderTemplate: "RenderTemplate",
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.not.be.undefined;
+      expect(reply.response.directives).to.deep.equal([
+        {
+          template: {
+            backButton: "VISIBLE",
+            backgroundImage: "Image",
+            textContent: {
+              primaryText: {
+                text: "string",
+                type: "string",
+              },
+              secondaryText: {
+                text: "string",
+                type: "string",
+              },
+              tertiaryText: {
+                text: "string",
+                type: "string",
+              },
+            },
+            title: "string",
+            token: "string",
+            type: "BodyTemplate1",
+          },
+          type: "Display.RenderTemplate",
+        },
+        {
+          datasources: {},
+          document: {},
+          token: "SkillTemplateToken",
+          type: "Alexa.Presentation.APL.RenderDocument",
+        },
+      ]);
+    });
   });
 
   describe("APLCommand", () => {
