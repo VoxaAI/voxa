@@ -45,6 +45,7 @@ import {
   IUnhandledStateCb,
   State,
   StateMachine,
+  SystemTransition,
 } from "./StateMachine";
 import { IBag, IVoxaEvent, IVoxaIntentEvent } from "./VoxaEvent";
 import { IVoxaReply } from "./VoxaReply";
@@ -446,7 +447,7 @@ export class VoxaApp {
   public async renderDirectives(
     voxaEvent: IVoxaEvent,
     response: IVoxaReply,
-    transition: ITransition,
+    transition: SystemTransition,
   ): Promise<ITransition> {
     const directiveClasses: IDirectiveClass[] = _.concat(
       _.filter(this.directiveHandlers, { platform: "core" }),
@@ -468,37 +469,48 @@ export class VoxaApp {
         .fromPairs()
         .value();
 
-      transition = _.merge({}, transition, replyTransition);
+      console.log({ replyTransition });
+      console.log({ transition });
+      transition = _.merge(transition, replyTransition);
+      console.log({ transition });
     }
 
-    transition.directives = _(transition)
+    const directives: IDirective[] = _(transition)
       .toPairs()
       .sortBy((pair) => {
         const [key, value] = pair;
         return _.indexOf(directivesKeyOrder, key);
       })
       .map(
-        _.spread((key, value) => {
-          const handlers = _.filter(directiveClasses, { key });
-          return _.map(
-            handlers,
-            (Directive: IDirectiveClass) => new Directive(value),
-          );
-        }),
+        _.spread(
+          (key, value): IDirective[] => {
+            const handlers: IDirectiveClass[] = _.filter(
+              directiveClasses,
+              (classObject: IDirectiveClass) => classObject.key === key,
+            );
+            return _.map(
+              handlers,
+              (Directive: IDirectiveClass) => new Directive(value),
+            ) as IDirective[];
+          },
+        ),
       )
       .flatten()
-      .concat(transition.directives)
+
+      .concat(transition.directives || [])
       .filter()
-      .filter((directive) => {
-        const constructor: any = directive.constructor;
-        return _.includes(
-          ["core", voxaEvent.platform.name],
-          constructor.platform,
-        );
-      })
+      .filter(
+        (directive: IDirective): boolean => {
+          const constructor: any = directive.constructor;
+          return _.includes(
+            ["core", voxaEvent.platform.name],
+            constructor.platform,
+          );
+        },
+      )
       .value();
 
-    for (const handler of transition.directives) {
+    for (const handler of directives) {
       await handler.writeToReply(response, voxaEvent, transition);
     }
 
