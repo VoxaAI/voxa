@@ -469,10 +469,7 @@ export class VoxaApp {
         .fromPairs()
         .value();
 
-      console.log({ replyTransition });
-      console.log({ transition });
       transition = _.merge(transition, replyTransition);
-      console.log({ transition });
     }
 
     const directives: IDirective[] = _(transition)
