@@ -33,6 +33,8 @@ import { AlexaEvent } from "./AlexaEvent";
 import { AlexaReply } from "./AlexaReply";
 import {
   AccountLinkingCard,
+  APLCommand,
+  APLTemplate,
   ConnectionsSendRequest,
   DialogDelegate,
   GadgetControllerLightDirective,
@@ -68,6 +70,7 @@ const AlexaRequests = [
   "Display.ElementSelected",
   "CanFulfillIntentRequest",
   "GameEngine.InputHandlerEvent",
+  "Alexa.Presentation.APL.UserEvent",
 ];
 
 export interface IAlexaPlatformConfig extends IVoxaPlatformConfig {
@@ -112,6 +115,8 @@ export class AlexaPlatform extends VoxaPlatform {
       HomeCard,
       PlayAudio,
       RenderTemplate,
+      APLTemplate,
+      APLCommand,
       StopAudio,
     ];
   }

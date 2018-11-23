@@ -22,6 +22,8 @@ export {
   AlexaPlatform,
   AccountLinkingCard as AlexaAccountLinkingCard,
   AlexaEvent,
+  APLCommand,
+  APLTemplate,
   ANCHOR_ENUM,
   ConnectionsSendRequest,
   DialogDelegate,

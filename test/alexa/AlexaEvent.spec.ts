@@ -60,6 +60,7 @@ describe("AlexaEvent", () => {
     const rawEvent = rb.getLaunchRequest();
     const alexaEvent = new AlexaEvent(rawEvent);
     expect(alexaEvent.supportedInterfaces).to.deep.equal([
+      "Alexa.Presentation.APL",
       "AudioPlayer",
       "Display",
     ]);
@@ -69,6 +70,12 @@ describe("AlexaEvent", () => {
     const rawEvent = rb.getDisplayElementSelectedRequest(
       "SleepSingleIntent@2018-09-13T00:40:16.047Z",
     );
+    const alexaEvent = new AlexaEvent(rawEvent) as IVoxaIntentEvent;
+    expect(alexaEvent.intent.params).to.be.ok;
+  });
+
+  it("should add AlexaPresentationAPLUserEvent intent params", () => {
+    const rawEvent = rb.getAlexaPresentationAPLUserEvent();
     const alexaEvent = new AlexaEvent(rawEvent) as IVoxaIntentEvent;
     expect(alexaEvent.intent.params).to.be.ok;
   });

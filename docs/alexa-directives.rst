@@ -74,7 +74,7 @@ RenderTemplate
 
 `Alexa Documentation <https://developer.amazon.com/docs/custom-skills/display-interface-reference.html>`_
 
-Voxa provides a `DisplayTemplate` builder that can be used with the `alexaRenderTemplate` controller key to create Displa templates for the echo show and echo spot.
+Voxa provides a `DisplayTemplate` builder that can be used with the `alexaRenderTemplate` controller key to create Display templates for the echo show and echo spot.
 
 .. code-block:: javascript
 
@@ -93,6 +93,121 @@ Voxa provides a `DisplayTemplate` builder that can be used with the `alexaRender
         alexaRenderTemplate: template,
       };
     });
+
+
+Alexa Presentation Language (APL) Templates
+--------------
+
+`Alexa Documentation <https://developer.amazon.com/docs/alexa-presentation-language/apl-overview.html>`_
+
+An APL Template is sent with the `alexaAPLTemplate` key in your controller. You can pass the directive object directly or a view name with the directive object.
+
+One important thing to know is that is you sent a Render Template and a APL Template in the same response but the APL Template will be the one being rendered if the device supports it; if not, the Render Template will be one being rendered.
+
+.. code-block:: javascript
+
+  // variables.js
+
+    exports.MyAPLTemplate = (voxaEvent) => {
+      // Do something with the voxaEvent, or not...
+
+      return {
+        datasources: {},
+        document: {},
+        token: "SkillTemplateToken",
+        type: "Alexa.Presentation.APL.RenderDocument",
+      };
+    });
+
+  // views.js
+
+    const views = {
+      "en-US": {
+        translation: {
+          MyAPLTemplate: "{MyAPLTemplate}"
+        },
+      };
+    };
+
+  // state.js
+
+    app.onState('someState', () => {
+      return {
+        alexaAPLTemplate: "MyAPLTemplate",
+      };
+    });
+
+    // Or you can do it directly...
+
+    app.onState('someState', () => {
+      return {
+        alexaAPLTemplate: {
+          datasources: {},
+          document: {},
+          token: "SkillTemplateToken",
+          type: "Alexa.Presentation.APL.RenderDocument",
+        },
+      };
+    });
+
+
+Alexa Presentation Language (APL) Commands
+--------------
+
+`Alexa Documentation <https://developer.amazon.com/docs/alexa-presentation-language/apl-commands.html>`_
+
+An APL Command is sent with the `alexaAPLCommand` key in your controller. Just like the APL Template, you can pass the directive object directly or a view name with the directive object.
+
+.. code-block:: javascript
+
+  // variables.js
+
+    exports.MyAPLCommand = (voxaEvent) => {
+      // Do something with the voxaEvent, or not...
+
+      return {
+        token: "SkillTemplateToken",
+        type: "Alexa.Presentation.APL.ExecuteCommands";
+        commands: [{
+          type: "SpeakItem", // Karaoke type command
+          componentId: "someAPLComponent";
+        }],
+      };
+    });
+
+  // views.js
+
+    const views = {
+      "en-US": {
+        translation: {
+          MyAPLCommand: "{MyAPLCommand}"
+        },
+      };
+    };
+
+  // state.js
+
+    app.onState('someState', () => {
+      return {
+        alexaAPLCommand: "MyAPLCommand",
+      };
+    });
+
+    // Or you can do it directly...
+
+    app.onState('someState', () => {
+      return {
+        alexaAPLCommand: {
+          token: "SkillTemplateToken",
+          type: "Alexa.Presentation.APL.ExecuteCommands";
+          commands: [{
+            type: "SpeakItem", // Karaoke type command
+            componentId: "someAPLComponent";
+          }],
+        },
+      };
+    });
+
 
 
 PlayAudio

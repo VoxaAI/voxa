@@ -65,6 +65,18 @@ describe("VoxaApp", () => {
     };
   });
 
+  it("should have the APL Template directive before the APL Command directive in the Alexa Platform", () => {
+    // The APL Template should always be before the APL Command in the directives array in order to work.
+    // Don't ask why, that's how Amazon likes it.
+    const voxaApp = new VoxaApp({ variables, views });
+    const platform = new AlexaPlatform(voxaApp);
+
+    const APLTemplateIndex = voxaApp.directiveHandlers.findIndex(((directive) => directive.key === "alexaAPLTemplate"));
+    const APLCommandIndex = voxaApp.directiveHandlers.findIndex(((directive) => directive.key === "alexaAPLCommand"));
+
+    expect(APLTemplateIndex).to.be.lessThan(APLCommandIndex);
+  });
+
   it("should include the state in the session attributes", async () => {
     const voxaApp = new VoxaApp({ variables, views });
     const platform = new AlexaPlatform(voxaApp);
