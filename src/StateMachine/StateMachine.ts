@@ -161,14 +161,22 @@ export class StateMachine {
       transition,
     });
 
-    if (!transition && fromState !== "entry") {
-      this.currentState = this.getCurrentState(
-        voxaEvent.intent.name,
-        voxaEvent.intent.name,
-        voxaEvent.platform.name,
-      );
+    try {
+      if (!transition && fromState !== "entry") {
+        this.currentState = this.getCurrentState(
+          voxaEvent.intent.name,
+          voxaEvent.intent.name,
+          voxaEvent.platform.name,
+        );
 
-      transition = await this.currentState.handle(voxaEvent);
+        transition = await this.currentState.handle(voxaEvent);
+      }
+    } catch (error) {
+      if (error instanceof UnknownState) {
+        return transition;
+      }
+
+      throw error;
     }
 
     return transition;

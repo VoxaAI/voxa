@@ -64,6 +64,17 @@ describe("States", () => {
       "NoIntent",
     );
 
+    voxaApp.onState("undefinedState", () => undefined);
+
+    voxaApp.onUnhandledState(
+      (voxaEvent: IVoxaEvent, stateName: string): any => {
+        return {
+          flow: "terminate",
+          sayp: "unhandled",
+        };
+      },
+    );
+
     alexaSkill = new AlexaPlatform(voxaApp);
   });
 
@@ -81,5 +92,33 @@ describe("States", () => {
       state: "entry",
     });
     expect(reply.response.outputSpeech.ssml).to.equal("<speak>Help</speak>");
+  });
+
+  it("should trigger onUnhandledState when there's no state", async () => {
+    const helpRequest = rb.getIntentRequest("AnyIntent");
+    _.set(helpRequest, "session.new", false);
+    _.set(helpRequest, "session.attributes", {
+      model: {},
+      state: "helpSettings",
+    });
+    const reply = await alexaSkill.execute(helpRequest);
+    expect(reply.response.shouldEndSession).to.be.true;
+    expect(reply.response.outputSpeech.ssml).to.equal(
+      "<speak>unhandled</speak>",
+    );
+  });
+
+  it("should trigger onUnhandledState when there's no match in the state", async () => {
+    const helpRequest = rb.getIntentRequest("AnyIntent");
+    _.set(helpRequest, "session.new", false);
+    _.set(helpRequest, "session.attributes", {
+      model: {},
+      state: "undefinedState",
+    });
+    const reply = await alexaSkill.execute(helpRequest);
+    expect(reply.response.shouldEndSession).to.be.true;
+    expect(reply.response.outputSpeech.ssml).to.equal(
+      "<speak>unhandled</speak>",
+    );
   });
 });
