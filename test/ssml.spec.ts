@@ -20,37 +20,25 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { IDirective } from "../directives";
+import { expect } from "chai";
+import * as ssml from "../src/ssml";
 
-export interface ITransition {
-  [propname: string]: any;
-  to?: string; // default to 'entry'
-  flow?: string; // default to continue
-}
+describe("ssml", () => {
+  describe("toSSML", () => {
+    it("should return undefined if empty statement", () => {
+      expect(ssml.toSSML()).to.be.undefined;
+    });
 
-/**
- * A helper class for transitions. Users can return transitions as an object with various command keys.
- * For developer flexibility we allow that transition object to be vague.
- * This object wraps the ITransition and gives defaults helps interpret what the various toggles mean.
- */
-export class SystemTransition implements ITransition {
-  [propname: string]: any;
-  public to: string = "die"; // default to 'entry'
-  public flow!: string; // default to continue
-  public directives?: IDirective[];
+    it("should not double wrap ssml with <speak /> tags", () => {
+      expect(ssml.toSSML("<speak>Some Text</speak>")).to.equal(
+        "<speak>Some Text</speak>",
+      );
+    });
 
-  constructor(transition: ITransition) {
-    Object.assign(this, transition);
-    if (!this.flow) {
-      this.flow = this.to === "die" ? "terminate" : "continue";
-    }
-  }
-
-  get shouldTerminate(): boolean {
-    return this.flow === "terminate" || this.to === "die";
-  }
-
-  get shouldContinue(): boolean {
-    return !!(this.flow === "continue" && this.to !== "die");
-  }
-}
+    it("should escape &", () => {
+      expect(ssml.toSSML("Some & Some")).to.equal(
+        "<speak>Some &amp; Some</speak>",
+      );
+    });
+  });
+});

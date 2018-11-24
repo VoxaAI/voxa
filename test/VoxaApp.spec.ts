@@ -31,6 +31,7 @@ import {
   AlexaEvent,
   AlexaPlatform,
   AlexaReply,
+  ITransition,
   IVoxaEvent,
   IVoxaIntentEvent,
   IVoxaReply,
@@ -71,8 +72,12 @@ describe("VoxaApp", () => {
     const voxaApp = new VoxaApp({ variables, views });
     const platform = new AlexaPlatform(voxaApp);
 
-    const APLTemplateIndex = voxaApp.directiveHandlers.findIndex(((directive) => directive.key === "alexaAPLTemplate"));
-    const APLCommandIndex = voxaApp.directiveHandlers.findIndex(((directive) => directive.key === "alexaAPLCommand"));
+    const APLTemplateIndex = voxaApp.directiveHandlers.findIndex(
+      (directive) => directive.key === "alexaAPLTemplate",
+    );
+    const APLCommandIndex = voxaApp.directiveHandlers.findIndex(
+      (directive) => directive.key === "alexaAPLCommand",
+    );
 
     expect(APLTemplateIndex).to.be.lessThan(APLCommandIndex);
   });
@@ -605,14 +610,16 @@ describe("VoxaApp", () => {
       const platform = new AlexaPlatform(voxaApp);
       const launchEvent = rb.getIntentRequest("RandomIntent");
 
-      voxaApp.onUnhandledState((voxaEvent: IVoxaEvent, stateName: string): any => {
-        expect(stateName).to.equal("RandomIntent");
+      voxaApp.onUnhandledState(
+        (voxaEvent: IVoxaEvent, stateName: string): any => {
+          expect(stateName).to.equal("RandomIntent");
 
-        return {
-          tell: "ExitIntent.Farewell",
-          to: "die",
-        };
-      });
+          return {
+            tell: "ExitIntent.Farewell",
+            to: "die",
+          };
+        },
+      );
 
       voxaApp.onError((voxaEvent: IVoxaEvent, err: Error) => {
         expect(err.message).to.equal("RandomIntent went unhandled");
@@ -630,7 +637,9 @@ describe("VoxaApp", () => {
     });
 
     it("should crash with an UnknownState Error", async () => {
-      simple.mock(StateMachine.prototype, "getCurrentState").throwWith(new UnknownState("RandomIntent"));
+      simple
+        .mock(StateMachine.prototype, "getCurrentState")
+        .throwWith(new UnknownState("RandomIntent"));
 
       const voxaApp = new VoxaApp({ Model, views, variables });
       const platform = new AlexaPlatform(voxaApp);
@@ -653,7 +662,9 @@ describe("VoxaApp", () => {
     });
 
     it("should crash with a generic Error", async () => {
-      simple.mock(StateMachine.prototype, "getCurrentState").throwWith(new Error("Common Error"));
+      simple
+        .mock(StateMachine.prototype, "getCurrentState")
+        .throwWith(new Error("Common Error"));
 
       const voxaApp = new VoxaApp({ Model, views, variables });
       const platform = new AlexaPlatform(voxaApp);
@@ -869,6 +880,32 @@ describe("VoxaApp", () => {
           type: "PlainText",
         },
         type: "Hint",
+      });
+    });
+
+    it("should add reply keys to the transiiton", async () => {
+      const voxaApp = new VoxaApp({ views, variables });
+      const launchEvent = rb.getIntentRequest("LaunchIntent");
+
+      voxaApp.onIntent("LaunchIntent", {
+        flow: "yield",
+        reply: "Reply.Say",
+        to: "entry",
+      });
+
+      voxaApp.onBeforeReplySent(
+        (voxaEvent: IVoxaEvent, reply: IVoxaReply, transition: ITransition) => {
+          voxaEvent.model.transition = transition;
+        },
+      );
+      const platform = new AlexaPlatform(voxaApp);
+      const response = await platform.execute(launchEvent);
+      expect(response.sessionAttributes.model.transition).to.deep.equal({
+        flow: "yield",
+        reply: "Reply.Say",
+        reprompt: "Reply.Say.reprompt",
+        say: "Reply.Say.say",
+        to: "entry",
       });
     });
   });
