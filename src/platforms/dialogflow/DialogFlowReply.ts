@@ -1,11 +1,13 @@
 import {
+  GoogleActionsV2SimpleResponse,
   GoogleCloudDialogflowV2Context,
   RichResponse,
+  SimpleResponse,
 } from "actions-on-google";
 import { DialogflowConversation } from "actions-on-google";
 import * as _ from "lodash";
 import { IBag, IVoxaEvent } from "../../VoxaEvent";
-import { addToSSML, IVoxaReply } from "../../VoxaReply";
+import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 
 export interface IDialogFlowPayload {
@@ -87,10 +89,40 @@ export class DialogFlowReply implements IVoxaReply {
     this.payload.google.expectUserResponse = false;
   }
 
-  public addStatement(statement: string) {
+  public addStatement(statement: string, isPlain: boolean = false) {
     this.fulfillmentText = addToSSML(this.fulfillmentText, statement);
     const richResponse = this.payload.google.richResponse || new RichResponse();
-    richResponse.add(addToSSML("", statement));
+    const simpleResponseItem = _.find(
+      richResponse.items,
+      (item) => !!item.simpleResponse,
+    );
+    let text: string;
+    let speech: string;
+
+    if (!simpleResponseItem) {
+      speech = addToSSML("", statement);
+      if (isPlain) {
+        text = statement;
+        richResponse.add(new SimpleResponse({ speech, text }));
+      } else {
+        richResponse.add(speech);
+      }
+    } else if (simpleResponseItem.simpleResponse) {
+      const simpleResponse: GoogleActionsV2SimpleResponse =
+        simpleResponseItem.simpleResponse;
+
+      if (isPlain) {
+        simpleResponse.displayText = addToText(
+          simpleResponse.displayText,
+          statement,
+        );
+      } else {
+        simpleResponse.textToSpeech = addToSSML(
+          simpleResponse.textToSpeech,
+          statement,
+        );
+      }
+    }
 
     this.payload.google.richResponse = richResponse;
   }

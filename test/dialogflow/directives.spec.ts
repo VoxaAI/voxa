@@ -1000,4 +1000,27 @@ describe("DialogFlow Directives", () => {
       });
     });
   });
+
+  describe("TextDirective", () => {
+    it("should add a LinkOutSuggestion", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        sayp: "Say!",
+        textp: "Text!",
+        to: "entry",
+      });
+
+      const reply = await dialogFlowAgent.execute(event);
+      expect(reply.payload.google.richResponse).to.deep.equal({
+        items: [
+          {
+            simpleResponse: {
+              displayText: "Text!",
+              textToSpeech: "<speak>Say!</speak>",
+            },
+          },
+        ],
+      });
+    });
+  });
 });
