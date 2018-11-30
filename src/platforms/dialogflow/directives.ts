@@ -278,32 +278,3 @@ export class Context implements IDirective {
     );
   }
 }
-
-export class Text implements IDirective {
-  public static key: string = "text";
-  public static platform: string = "dialogflow";
-
-  constructor(public viewPath: string) {}
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const text = await event.renderer.renderPath(this.viewPath, event);
-    reply.addStatement(text, true);
-  }
-}
-
-export class TextP implements IDirective {
-  public static key: string = "textp";
-  public static platform: string = "dialogflow";
-
-  constructor(public text: string) {}
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    reply.addStatement(this.text, true);
-  }
-}
