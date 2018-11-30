@@ -307,13 +307,13 @@ export function getAPIGatewayProxyEvent(
   return {
     body,
     headers: {},
-    multiValueHeaders: {},
     httpMethod: method,
     isBase64Encoded: false,
+    multiValueHeaders: {},
+    multiValueQueryStringParameters: {},
     path: "/",
     pathParameters: null,
     queryStringParameters: null,
-    multiValueQueryStringParameters: {},
     requestContext: {
       accountId: "",
       apiId: "",
