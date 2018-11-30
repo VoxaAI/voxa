@@ -244,9 +244,10 @@
   dependencies:
     "@types/node" "*"
 
-actions-on-google@^2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/actions-on-google/-/actions-on-google-2.4.1.tgz#da77155fbb429f6118c7ddcb12d944d0d4cddcd0"
+actions-on-google@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/actions-on-google/-/actions-on-google-2.5.0.tgz#72105cff2bc1274630fd0e255918c579844b97a1"
+  integrity sha512-lbDHkPAloJPyOKeIUQm42Qbctw1mt5D9Rppk989PuGHP9i7f2sctE1428aHIRSPlMh3cNsFP0NAL24xvUkrDaQ==
   dependencies:
     "@types/aws-lambda" "^0.0.33"
     "@types/debug" "^0.0.30"

@@ -147,6 +147,18 @@ Whenever possible, you should incorporate one key suggestion as part of the chat
   });
 
 
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      dialogFlowLinkOutSuggestion: {
+        name: "Suggestion Link",
+        url: 'https://assistant.google.com/',
+      }
+    }
+  });
+
+
 BasicCard
 ----------
 

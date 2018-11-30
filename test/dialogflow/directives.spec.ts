@@ -971,4 +971,33 @@ describe("DialogFlow Directives", () => {
       });
     });
   });
+
+  describe("LinkOutSuggestionDirective", () => {
+    it("should add a LinkOutSuggestion", async () => {
+      app.onIntent("LaunchIntent", {
+        dialogFlowLinkOutSuggestion: {
+          name: "Example",
+          url: "https://example.com",
+        },
+        flow: "yield",
+        sayp: "Hello!",
+        to: "entry",
+      });
+
+      const reply = await dialogFlowAgent.execute(event);
+      expect(reply.payload.google.richResponse).to.deep.equal({
+        items: [
+          {
+            simpleResponse: {
+              textToSpeech: "<speak>Hello!</speak>",
+            },
+          },
+        ],
+        linkOutSuggestion: {
+          destinationName: "Example",
+          url: "https://example.com",
+        },
+      });
+    });
+  });
 });
