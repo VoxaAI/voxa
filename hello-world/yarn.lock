@@ -65,14 +65,23 @@
   dependencies:
     "@types/node" "*"
 
-"@types/i18next@^8.4.2":
-  version "8.4.3"
-  resolved "https://registry.yarnpkg.com/@types/i18next/-/i18next-8.4.3.tgz#9136a9551bf5bf7169aa9f3125c1743f1f8dd6de"
+"@types/i18next@^12.1.0":
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/@types/i18next/-/i18next-12.1.0.tgz#7c3fd3dbe03f9531147033773bbd0ca4f474a180"
+  integrity sha512-qLyqTkp3ZKHsSoX8CNVYcTyTkxlm0aRCUpaUVetgkSlSpiNCdWryOgaYwgbO04tJIfLgBXPcy0tJ3Nl/RagllA==
 
 "@types/jsonwebtoken@^7.2.6":
   version "7.2.7"
   resolved "https://registry.yarnpkg.com/@types/jsonwebtoken/-/jsonwebtoken-7.2.7.tgz#5dd62e0c0a0c6f211c3c1d13d322360894625b47"
   dependencies:
+    "@types/node" "*"
+
+"@types/lambda-log@^2.0.0":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@types/lambda-log/-/lambda-log-2.0.1.tgz#dfd3eecbb18bd7d229ab444ba1f97b9bd7e5bd1d"
+  integrity sha512-cb8rYFwiXfQ1Dj/Icdyg440CDzw32Ewb4Dr6DHaOHzDXoSEiYVHT1aclcqj4qswUzGuTL7xZdtRtwNuQovP4cA==
+  dependencies:
+    "@types/events" "*"
     "@types/node" "*"
 
 "@types/lodash@^4.14.88":
@@ -87,9 +96,10 @@
   version "10.5.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.5.1.tgz#d578446f4abff5c0b49ade9b4e5274f6badaadfc"
 
-"@types/node@^8.0.58":
-  version "8.10.20"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.20.tgz#fe674ea52e13950ab10954433a7824438aabbcac"
+"@types/node@^10.12.11":
+  version "10.12.11"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.11.tgz#715c476c99a5f6898a1ae61caf9825e43c03912e"
+  integrity sha512-3iIOhNiPGTdcUNVCv9e5G7GotfvJJe2pc9w2UgDXlUwnxSZ3RgcUocIU+xYm+rTU54jIKih998QE4dMOyMN1NQ==
 
 "@types/node@^9.4.6", "@types/node@^9.6.1":
   version "9.6.22"
@@ -126,9 +136,10 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@types/sprintf-js/-/sprintf-js-1.1.0.tgz#6850a98382b517c4a4d0401c63f2b0be76cee092"
 
-"@types/tedious@^1.8.32":
-  version "1.8.33"
-  resolved "https://registry.yarnpkg.com/@types/tedious/-/tedious-1.8.33.tgz#eb53a6815c1887fe720668d733698ec5ec2749e8"
+"@types/tedious@^2.6.1":
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/@types/tedious/-/tedious-2.6.1.tgz#7eb4191d68578d48883eaa54054124e17389aaf9"
+  integrity sha512-4vLlW2JC+YEmzsUgRPlSo036QVJ4aMSefYbT92N64fWgXVKTpg/hBg92v95ttCokr8LsQudCFHZD4JKfrjylyg==
   dependencies:
     "@types/events" "*"
     "@types/node" "*"
@@ -147,9 +158,10 @@
   dependencies:
     "@types/node" "*"
 
-actions-on-google@2:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/actions-on-google/-/actions-on-google-2.2.0.tgz#73a1b0ba9c2d8f3f4f25400a2c8e1fbde71b92d5"
+actions-on-google@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/actions-on-google/-/actions-on-google-2.5.0.tgz#72105cff2bc1274630fd0e255918c579844b97a1"
+  integrity sha512-lbDHkPAloJPyOKeIUQm42Qbctw1mt5D9Rppk989PuGHP9i7f2sctE1428aHIRSPlMh3cNsFP0NAL24xvUkrDaQ==
   dependencies:
     "@types/aws-lambda" "^0.0.33"
     "@types/debug" "^0.0.30"
@@ -184,9 +196,10 @@ asap@~2.0.3:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
 
-ask-sdk-model@^1.4.0-beta.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/ask-sdk-model/-/ask-sdk-model-1.4.1.tgz#cbc3e071ac720336ee289dd0a57e6bbdf5c9d0f9"
+ask-sdk-model@1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/ask-sdk-model/-/ask-sdk-model-1.9.0.tgz#9f2ed68d2593d4c4064f92d42792d70fee47ec09"
+  integrity sha512-2oJgVTTtUacpngbKiLlq4hCV1d8rmsl0zN+AEbffUkNWngtaxQEdKJiEABHQhuk5PwVWCx7ZvNMc7/xyx11vJg==
 
 asn1@~0.2.3:
   version "0.2.3"
@@ -196,9 +209,10 @@ assert-plus@1.0.0, assert-plus@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/assert-plus/-/assert-plus-1.0.0.tgz#f12e0f3c5d77b0b1cdd9146942e4e96c1e4dd525"
 
-assertion-error@^1.0.1:
+assertion-error@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/assertion-error/-/assertion-error-1.1.0.tgz#e60b6b0e8f301bd97e5375215bda406c85118c0b"
+  integrity sha512-jgsaNduz+ndvGyFt3uSuWqvy4lCnIJiovtouQN5JZHOKCS2QuhEdbcQHFhVksz2N2U9hXJo8odG7ETyWlEeuDw==
 
 async@^1.5.2:
   version "1.5.2"
@@ -227,9 +241,10 @@ axios@^0.18.0:
     follow-redirects "^1.3.0"
     is-buffer "^1.1.5"
 
-azure-functions-core-tools@^2.0.1-beta.38:
-  version "2.0.1-beta.38"
-  resolved "https://registry.yarnpkg.com/azure-functions-core-tools/-/azure-functions-core-tools-2.0.1-beta.38.tgz#2903b1871b10a4f206669f1b9f03a2614ca04343"
+azure-functions-core-tools@^2.2.70:
+  version "2.2.70"
+  resolved "https://registry.yarnpkg.com/azure-functions-core-tools/-/azure-functions-core-tools-2.2.70.tgz#e2ba5d7e66858b59e574aaa30d21dbef6ba24cf4"
+  integrity sha512-ma1oa15k0gDkyq0w80k//DY5aNA22Rsos6qA47kb9GpS0Ij+A7jJpcljbu3S10RxGcUEUGs4phM1tkyP37mihQ==
   dependencies:
     chalk "^2.1.0"
     command-exists "^1.2.2"
@@ -277,9 +292,10 @@ bluebird@~3.4.1:
   version "3.4.7"
   resolved "http://registry.npmjs.org/bluebird/-/bluebird-3.4.7.tgz#f72d760be09b7f76d08ed8fae98b289a8d05fab3"
 
-botbuilder@^3.13.1:
+botbuilder@3:
   version "3.15.0"
   resolved "https://registry.yarnpkg.com/botbuilder/-/botbuilder-3.15.0.tgz#394e7abd35a0781c0365df62ee953fcedfa6d50c"
+  integrity sha512-KH5GTskHvTSozRPLdn8EQtg34zc71VUo+wXYzcoafRCkGVqqxB4AitUqow8y8ENiHgJW3oY2Pvhd8glcZiraOA==
   dependencies:
     "@types/async" "^2.0.48"
     "@types/express" "^4.11.1"
@@ -330,16 +346,17 @@ caseless@~0.12.0:
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
 
-chai@^4.1.2:
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/chai/-/chai-4.1.2.tgz#0f64584ba642f0f2ace2806279f4f06ca23ad73c"
+chai@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/chai/-/chai-4.2.0.tgz#760aa72cf20e3795e84b12877ce0e83737aa29e5"
+  integrity sha512-XQU3bhBukrOsQCuwZndwGcCVQHyZi53fQ6Ys1Fym7E4olpIqqZZhhoFJoaKVvV17lWQoXYwgWN2nF5crA8J2jw==
   dependencies:
-    assertion-error "^1.0.1"
-    check-error "^1.0.1"
-    deep-eql "^3.0.0"
+    assertion-error "^1.1.0"
+    check-error "^1.0.2"
+    deep-eql "^3.0.1"
     get-func-name "^2.0.0"
-    pathval "^1.0.0"
-    type-detect "^4.0.0"
+    pathval "^1.1.0"
+    type-detect "^4.0.5"
 
 chainsaw@~0.1.0:
   version "0.1.0"
@@ -355,9 +372,10 @@ chalk@^2.1.0:
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
 
-check-error@^1.0.1:
+check-error@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/check-error/-/check-error-1.0.2.tgz#574d312edd88bb5dd8912e9286dd6c0aed4aac82"
+  integrity sha1-V00xLt2Iu13YkS6Sht1sCu1KrII=
 
 chrono-node@^1.1.3:
   version "1.3.5"
@@ -419,9 +437,10 @@ debug@^2.2.0:
   dependencies:
     ms "2.0.0"
 
-deep-eql@^3.0.0:
+deep-eql@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/deep-eql/-/deep-eql-3.0.1.tgz#dfc9404400ad1c8fe023e7da1df1c147c4b444df"
+  integrity sha512-+QeIQyN5ZuO+3Uk5DYh6/1eKO0m0YmJFGNmFHGACpf1ClL1nmlV/p4gNgbl2pJGxgXb4faqo6UE+M5ACEMyVcw==
   dependencies:
     type-detect "^4.0.0"
 
@@ -433,9 +452,10 @@ diff@3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.5.0.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"
 
-docker-lambda@^0.15.2:
-  version "0.15.2"
-  resolved "https://registry.yarnpkg.com/docker-lambda/-/docker-lambda-0.15.2.tgz#8f67203d7453533c85c0071d5bf8346a255b6dbe"
+docker-lambda@^0.15.3:
+  version "0.15.3"
+  resolved "https://registry.yarnpkg.com/docker-lambda/-/docker-lambda-0.15.3.tgz#b95a9093ac7d87691e3b90cef8076047d6a15278"
+  integrity sha512-/YI2dnMrW5WcHBtU1lJLhmtr1hgd3UK+QiKbT/EdbQaUMmwoH11DBM0yC5LZgR2p+VEpOtaGgBvdKHRnXBxfpg==
 
 duplexer2@~0.1.4:
   version "0.1.4"
@@ -564,9 +584,10 @@ glob@^7.0.5, glob@^7.1.2:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-google-auth-library@^1.3.1, google-auth-library@^1.3.2:
+google-auth-library@1, google-auth-library@^1.3.1, google-auth-library@^1.3.2:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/google-auth-library/-/google-auth-library-1.6.1.tgz#9c73d831ad720c0c3048ab89d0ffdec714d07dd2"
+  integrity sha512-jYiWC8NA9n9OtQM7ANn0Tk464do9yhKEtaJ72pKcaBiEwn4LwcGYIYOfwtfsSm3aur/ed3tlSxbmg24IAT6gAg==
   dependencies:
     axios "^0.18.0"
     gcp-metadata "^0.6.3"
@@ -656,9 +677,10 @@ https-proxy-agent@^2.2.1:
     agent-base "^4.1.0"
     debug "^3.1.0"
 
-i18next@^9.0.1:
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/i18next/-/i18next-9.1.0.tgz#408005fe262a990c8d93946a6de0c77bba11667b"
+i18next@^12.1.0:
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-12.1.0.tgz#387bf4b94d05b0160b6a41d001a6b360e384bdb1"
+  integrity sha512-AexmwGkKxwKfo5fGeXTWEY4xqzRPigQ1S/0InOUUVziGO54cd4fKyYK8ED1Thx9fd+WA3fRSZ+1iekvFQMbsFw==
 
 inflight@^1.0.4:
   version "1.0.6"
@@ -712,7 +734,7 @@ json-schema@0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/json-schema/-/json-schema-0.2.3.tgz#b480c892e59a2f05954ce727bd3f2a4e882f9e13"
 
-json-stringify-safe@~5.0.1:
+json-stringify-safe@^5.0.1, json-stringify-safe@~5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
 
@@ -749,6 +771,13 @@ jws@^3.1.4, jws@^3.1.5:
   dependencies:
     jwa "^1.1.5"
     safe-buffer "^5.0.1"
+
+lambda-log@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/lambda-log/-/lambda-log-2.0.0.tgz#8a5a89d6ef0ededd95a1b08351783c410ff2806d"
+  integrity sha512-Zbk6td4GbBC1vA2o3KOFfTv+rTD4am6w6PPGCDfEGqEtDkvUKwDwMRgLeoOCMsBLvPoOfmr9tf5wHNJtKOuVeQ==
+  dependencies:
+    json-stringify-safe "^5.0.1"
 
 listenercount@~1.0.1:
   version "1.0.1"
@@ -871,9 +900,10 @@ path-is-absolute@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/path-is-absolute/-/path-is-absolute-1.0.1.tgz#174b9268735534ffbc7ace6bf53a5a9e1b5c5f5f"
 
-pathval@^1.0.0:
+pathval@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/pathval/-/pathval-1.1.0.tgz#b942e6d4bde653005ef6b71361def8727d0645e0"
+  integrity sha1-uULm1L3mUwBe9rcTYd74cn0GReA=
 
 performance-now@^2.1.0:
   version "2.1.0"
@@ -883,9 +913,10 @@ pify@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/pify/-/pify-3.0.0.tgz#e5a4acd2c101fdf3d9a4d07f0dbc4db49dd28176"
 
-portfinder@^1.0.17:
-  version "1.0.17"
-  resolved "https://registry.yarnpkg.com/portfinder/-/portfinder-1.0.17.tgz#a8a1691143e46c4735edefcf4fbcccedad26456a"
+portfinder@^1.0.19:
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/portfinder/-/portfinder-1.0.19.tgz#07e87914a55242dcda5b833d42f018d6875b595f"
+  integrity sha512-23aeQKW9KgHe6citUrG3r9HjeX6vls0h713TAa+CwTKZwNIr/pD2ApaxYF4Um3ZZyq4ar+Siv3+fhoHaIwSOSw==
   dependencies:
     async "^1.5.2"
     debug "^2.2.0"
@@ -1123,9 +1154,10 @@ tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
 
-type-detect@^4.0.0:
+type-detect@^4.0.0, type-detect@^4.0.5:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/type-detect/-/type-detect-4.0.8.tgz#7646fb5f18871cfbb7749e69bd39a6388eb7450c"
+  integrity sha512-0fr/mIH1dlO+x7TlcMy+bIDqKPsw/70tVyeHW787goQjhmqaZe10uwLujubK9q9Lg6Fiho1KUKDYz0Z7k7g5/g==
 
 unzipper@^0.9.2:
   version "0.9.3"
@@ -1145,9 +1177,10 @@ url-join@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/url-join/-/url-join-1.1.0.tgz#741c6c2f4596c4830d6718460920d0c92202dc78"
 
-url-join@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/url-join/-/url-join-3.0.0.tgz#26e8113ace195ea30d0fc38186e45400f9cea672"
+url-join@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/url-join/-/url-join-4.0.0.tgz#4d3340e807d3773bda9991f8305acdcc2a665d2a"
+  integrity sha1-TTNA6AfTdzvamZH4MFrNzCpmXSo=
 
 util-deprecate@~1.0.1:
   version "1.0.2"
@@ -1166,30 +1199,31 @@ verror@1.10.0:
     extsprintf "^1.2.0"
 
 "voxa@file:..":
-  version "3.0.0-alpha31"
+  version "3.0.0-alpha38"
   dependencies:
     "@types/aws-lambda" "^8.10.6"
     "@types/bluebird" "^3.5.18"
-    "@types/debug" "^0.0.30"
-    "@types/i18next" "^8.4.2"
+    "@types/i18next" "^12.1.0"
+    "@types/lambda-log" "^2.0.0"
     "@types/lodash" "^4.14.88"
-    "@types/node" "^8.0.58"
+    "@types/node" "^10.12.11"
     "@types/request-promise" "^4.1.39"
-    "@types/tedious" "^1.8.32"
+    "@types/tedious" "^2.6.1"
     "@types/url-join" "^0.8.2"
     "@types/uuid" "^3.4.3"
-    actions-on-google "2"
-    ask-sdk-model "^1.4.0-beta.1"
+    actions-on-google "^2.5.0"
+    ask-sdk-model "1.9.0"
     azure-functions-ts-essentials "^1.3.2"
     bluebird "^3.5.1"
-    botbuilder "^3.13.1"
-    debug "^3.1.0"
-    i18next "^9.0.1"
+    botbuilder "3"
+    google-auth-library "1"
+    i18next "^12.1.0"
+    lambda-log "^2.0.0"
     lodash "^4.13.1"
     request "^2.83.0"
     request-promise "^4.2.2"
     striptags "^3.1.1"
-    url-join "^3.0.0"
+    url-join "^4.0.0"
     uuid "^3.1.0"
 
 wrappy@1:

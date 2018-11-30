@@ -12,6 +12,8 @@ import {
   DialogflowConversation,
   GoogleActionsV2TransactionDecisionValueSpec,
   GoogleActionsV2TransactionRequirementsCheckSpec,
+  LinkOutSuggestion as ActionsOnGoogleLinkOutSuggestion,
+  LinkOutSuggestionOptions,
   List as ActionsOnGoogleList,
   ListOptions,
   MediaResponse as ActionsOnGoogleMediaResponse,
@@ -81,7 +83,7 @@ function createSystemIntentDirective<IOptions>(
         return;
       }
 
-      const google: any = (reply as DialogFlowReply).payload.google;
+      const google = (reply as DialogFlowReply).payload.google;
       const question = await this.getQuestion(QuestionClass, event);
 
       google.systemIntent = {
@@ -114,7 +116,7 @@ function createRichResponseDirective<IOptions>(
         return;
       }
 
-      const google: any = (reply as DialogFlowReply).payload.google;
+      const google = (reply as DialogFlowReply).payload.google;
       if (!google.richResponse) {
         throw new Error(`A simple response is required before a ${key}`);
       }
@@ -124,6 +126,10 @@ function createRichResponseDirective<IOptions>(
     }
   };
 }
+
+export const LinkOutSuggestion = createRichResponseDirective<
+  LinkOutSuggestionOptions
+>(ActionsOnGoogleLinkOutSuggestion, "dialogFlowLinkOutSuggestion");
 
 export const NewSurface = createSystemIntentDirective<NewSurfaceOptions>(
   ActionsOnGoogleNewSurface,

@@ -309,6 +309,8 @@ export function getAPIGatewayProxyEvent(
     headers: {},
     httpMethod: method,
     isBase64Encoded: false,
+    multiValueHeaders: {},
+    multiValueQueryStringParameters: {},
     path: "/",
     pathParameters: null,
     queryStringParameters: null,

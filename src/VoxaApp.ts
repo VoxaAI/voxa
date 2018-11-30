@@ -273,7 +273,7 @@ export class VoxaApp {
     ): Promise<IVoxaReply> => {
       const capitalizedEventName = _.upperFirst(_.camelCase(eventName));
 
-      const runCallback = (fn: IEventHandler): IVoxaReply =>
+      const runCallback = (fn: IEventHandler): IVoxaReply | void =>
         fn.call(this, voxaEvent, response);
       const result = await bluebird.mapSeries(
         this[`get${capitalizedEventName}Handlers`](),
