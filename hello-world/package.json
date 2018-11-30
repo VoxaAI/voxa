@@ -9,11 +9,11 @@
     "voxa": "file:.."
   },
   "devDependencies": {
-    "azure-functions-core-tools": "^2.0.1-beta.38",
-    "chai": "^4.1.2",
-    "docker-lambda": "^0.15.2",
+    "azure-functions-core-tools": "^2.2.70",
+    "chai": "^4.2.0",
+    "docker-lambda": "^0.15.3",
     "mocha": "^5.2.0",
-    "portfinder": "^1.0.17",
+    "portfinder": "^1.0.19",
     "request": "^2.88.0",
     "request-promise": "^4.2.2"
   }
