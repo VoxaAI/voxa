@@ -1,3 +1,25 @@
+/*
+ * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 import {
   GoogleActionsV2SimpleResponse,
   GoogleCloudDialogflowV2Context,
@@ -91,40 +113,19 @@ export class DialogFlowReply implements IVoxaReply {
 
   public addStatement(statement: string, isPlain: boolean = false) {
     this.fulfillmentText = addToSSML(this.fulfillmentText, statement);
-    const richResponse = this.payload.google.richResponse || new RichResponse();
-    const simpleResponseItem = _.find(
-      richResponse.items,
-      (item) => !!item.simpleResponse,
-    );
-    let text: string;
-    let speech: string;
+    const simpleResponse: GoogleActionsV2SimpleResponse = this.getSimpleResponse();
 
-    if (!simpleResponseItem) {
-      speech = addToSSML("", statement);
-      if (isPlain) {
-        text = statement;
-        richResponse.add(new SimpleResponse({ speech, text }));
-      } else {
-        richResponse.add(speech);
-      }
-    } else if (simpleResponseItem.simpleResponse) {
-      const simpleResponse: GoogleActionsV2SimpleResponse =
-        simpleResponseItem.simpleResponse;
-
-      if (isPlain) {
-        simpleResponse.displayText = addToText(
-          simpleResponse.displayText,
-          statement,
-        );
-      } else {
-        simpleResponse.textToSpeech = addToSSML(
-          simpleResponse.textToSpeech,
-          statement,
-        );
-      }
+    if (isPlain) {
+      simpleResponse.displayText = addToText(
+        simpleResponse.displayText,
+        statement,
+      );
+    } else {
+      simpleResponse.textToSpeech = addToSSML(
+        simpleResponse.textToSpeech,
+        statement,
+      );
     }
-
-    this.payload.google.richResponse = richResponse;
   }
 
   public hasDirective(type: string | RegExp): boolean {
@@ -167,5 +168,25 @@ export class DialogFlowReply implements IVoxaReply {
       .flatten()
       .map((item) => item.constructor.name)
       .value();
+  }
+
+  protected getSimpleResponse(): GoogleActionsV2SimpleResponse {
+    const richResponse = this.payload.google.richResponse || new RichResponse();
+    this.payload.google.richResponse = richResponse;
+
+    const simpleResponseItem = _.find(
+      richResponse.items,
+      (item) => !!item.simpleResponse,
+    );
+
+    if (simpleResponseItem && simpleResponseItem.simpleResponse) {
+      return simpleResponseItem.simpleResponse;
+    }
+
+    const simpleResponse = new SimpleResponse("");
+
+    richResponse.add(simpleResponse);
+
+    return simpleResponse;
   }
 }
