@@ -47,14 +47,27 @@ The ``flow`` key can take one of three values:
 ``say``
 -------
 
-Used to render a view and add the result to the response
+Renders a view and adds it as SSML to the response
 
+``sayp``
+---------
+
+Adds the passed value as SSML to the response
+
+``text``
+---------
+
+Renders a view and adds it as plain text to the response
+
+``textp``
+----------
+
+Adds the passed value as plain text to the response
 
 ``reprompt``
 ------------
 
 Used to render a view and add the result to the response as a reprompt
-
 
 ``reply``
 ---------
@@ -65,4 +78,3 @@ Used to render a view and add the result to the response as a reprompt
 
   const reply = new Reply(voxaEvent, { tell: 'Hi there!' });
   return { reply };
-
