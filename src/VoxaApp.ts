@@ -34,6 +34,8 @@ import {
   Say,
   SayP,
   Tell,
+  Text,
+  TextP,
 } from "./directives";
 import { errorHandler, UnknownRequestType } from "./errors";
 import { isLambdaContext, timeout } from "./lambda";
@@ -121,7 +123,7 @@ export class VoxaApp {
     this.onAfterStateChanged(this.renderDirectives);
     this.onBeforeReplySent(this.saveSession, true);
 
-    this.directiveHandlers = [Say, SayP, Ask, Reprompt, Tell];
+    this.directiveHandlers = [Say, SayP, Ask, Reprompt, Tell, Text, TextP];
   }
 
   public validateConfig() {

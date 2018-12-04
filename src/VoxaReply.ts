@@ -70,7 +70,8 @@ export interface IVoxaReply {
   saveSession: (attributes: IBag, event: IVoxaEvent) => Promise<void>;
 }
 
-export function addToSSML(ssml: string, statement: string): string {
+export function addToSSML(ssml: string|undefined, statement: string): string {
+  ssml = ssml || "";
   const base = ssml.replace(/^<speak>([\s\S]*)<\/speak>$/g, "$1");
   if (!base) {
     return `<speak>${statement}</speak>`;
@@ -79,7 +80,7 @@ export function addToSSML(ssml: string, statement: string): string {
   return `<speak>${base}\n${statement}</speak>`;
 }
 
-export function addToText(text: string, statement: string): string {
+export function addToText(text: string|undefined, statement: string): string {
   if (!text) {
     return statement;
   }

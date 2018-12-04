@@ -49,8 +49,6 @@ import {
   HeroCard,
   SigninCard,
   SuggestedActions,
-  Text,
-  TextP,
 } from "./directives";
 
 const CortanaRequests = [
@@ -189,8 +187,6 @@ export class BotFrameworkPlatform extends VoxaPlatform {
       SuggestedActions,
       AudioCard,
       SigninCard,
-      Text,
-      TextP,
       Attachments,
       AttachmentLayout,
     ];
