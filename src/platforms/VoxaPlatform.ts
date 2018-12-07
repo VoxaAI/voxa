@@ -67,8 +67,10 @@ export abstract class VoxaPlatform {
     );
   }
 
-  public startServer(port: number): Promise<http.Server> {
-    port = port || 3000;
+  public startServer(port?: number): Promise<http.Server> {
+    if (!port) {
+      port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+    }
 
     return new Promise<http.Server>((resolve, reject) => {
       const server = createServer(this);
