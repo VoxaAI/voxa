@@ -126,13 +126,43 @@ describe("Hello World", () => {
         handler: "hello-world.dialogFlowActionLambdaHTTPHandler"
       });
 
-      expect(lambdaCallbackResult).to.deep.equal({
-        body:
-          '{"outputContexts":[{"name":"projects/project/agent/sessions/1525973454075/contexts/attributes","lifespanCount":10000,"parameters":{"attributes":"{\\"model\\":{},\\"state\\":\\"likesVoxa?\\"}"}}],"fulfillmentText":"<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>","source":"google","payload":{"google":{"expectUserResponse":true,"isSsml":true,"richResponse":{"items":[{"simpleResponse":{"textToSpeech":"<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>"}}]},"resetUserStorage":true}}}',
-        headers: {
-          "Content-Type": "application/json; charset=utf-8"
-        },
-        statusCode: 200
+      expect(lambdaCallbackResult.headers).to.deep.equal({
+        "Content-Type": "application/json; charset=utf-8"
+      });
+      expect(lambdaCallbackResult.statusCode).to.equal(200);
+      expect(JSON.parse(lambdaCallbackResult.body)).to.deep.equal({
+        outputContexts: [
+          {
+            name:
+              "projects/project/agent/sessions/1525973454075/contexts/attributes",
+            lifespanCount: 10000,
+            parameters: {
+              attributes: '{"model":{},"state":"likesVoxa?"}'
+            }
+          }
+        ],
+        fulfillmentText:
+          "Welcome to this voxa app, are you enjoying voxa so far?",
+        source: "google",
+        payload: {
+          google: {
+            expectUserResponse: true,
+            isSsml: true,
+            richResponse: {
+              items: [
+                {
+                  simpleResponse: {
+                    textToSpeech:
+                      "<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>",
+                    displayText:
+                      "Welcome to this voxa app, are you enjoying voxa so far?"
+                  }
+                }
+              ]
+            },
+            resetUserStorage: true
+          }
+        }
       });
     });
   });
