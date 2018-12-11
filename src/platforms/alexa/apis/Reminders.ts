@@ -163,9 +163,7 @@ export class ReminderBuilder {
   public build(): any {
     return {
       alertInfo: {
-        spokenInfo: {
-          content: this.content,
-        },
+        spokenInfo: { content: this.content },
       },
       createdTime: this.createdTime,
       pushNotification: {

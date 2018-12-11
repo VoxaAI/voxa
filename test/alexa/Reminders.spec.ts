@@ -103,11 +103,12 @@ describe("Reminders", () => {
   it("should update a reminder", async () => {
     const reminder: ReminderBuilder = new ReminderBuilder()
       .setRequestTime("2018-12-11T14:05:38.811")
-      .setTriggerAbsolute("2018-12-12T12:00:00.000")
+      .setTriggerRelative(3000)
       .setTimeZoneId("America/Denver")
-      .setRecurrenceFreqDaily()
+      .setRecurrenceFreqWeekly()
+      .setRecurrenceInterval(1)
       .addContent("en-US", "UPDATE REMINDER TEST")
-      .enablePushNotification();
+      .disablePushNotification();
 
     nock("https://api.amazonalexa.com", { reqheaders })
       .put(`/v1/alerts/reminders/${response.alertToken}`, JSON.stringify(reminder.build()))
