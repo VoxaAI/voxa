@@ -106,6 +106,7 @@ describe("Reminders", () => {
       .setTriggerRelative(3000)
       .setTimeZoneId("America/Denver")
       .setRecurrenceFreqWeekly()
+      .setRecurrenceByDay(["MO"])
       .setRecurrenceInterval(1)
       .addContent("en-US", "UPDATE REMINDER TEST")
       .disablePushNotification();
