@@ -195,6 +195,13 @@ export const views = {
         },
       },
       RandomResponse: ["Random 1", "Random 2", "Random 3", "Random 4"],
+      Reminder: {
+        Created: "Reminder created with ID: {reminderId}",
+        Deleted: "Reminder deleted",
+        Get: "Reminder content: {reminderContent}",
+        GetAllReminders: "Reminder content: {reminderAllContent}",
+        Updated: "Reminder updated with ID: {reminderId}",
+      },
       RenderTemplate: {
         template: {
           backButton: "VISIBLE",

@@ -540,3 +540,216 @@ To send a card requesting user the permission to read/write Alexa lists, you can
       ],
     },
   },
+
+
+.. _alexa-reminders:
+
+-----------------------------
+Alexa Reminders API Reference
+-----------------------------
+
+Use the Alexa Reminders API to create and manage reminders from your skill. This reference describes the available operations for the Alexa Reminders API.
+
+Note that you need to modify your skill manifest by adding the reminder permission:
+
+.. code-block:: json
+  ...
+  "permissions": [
+    {
+      "name": "alexa::alerts:reminders:skill:readwrite"
+    }
+  ],
+  ...
+
+.. js:class:: Reminders(alexaEvent)
+
+  :param VoxaEvent.rawEvent alexaEvent: Alexa Event object.
+
+  .. js:method:: getReminder()
+
+    Gets a reminder
+
+    :param alertToken: Reminder's ID.
+
+    :returns object: A JSON object with the reminder's details
+
+  .. js:method:: getAllReminders()
+
+    Gets all reminders
+
+    :returns object: A JSON object with an array of the reminder's details
+
+  .. js:method:: createReminder(reminder)
+
+    Creates a reminder
+
+    :param reminder: Reminder Builder Object.
+
+    :returns object: A JSON object with the details of reminder's creation
+
+  .. js:method:: updateReminder(alertToken, reminder)
+
+    Updates a reminder
+
+    :param alertToken: Reminder's ID.
+    :param reminder: Reminder Builder Object.
+
+    :returns object: A JSON object with the details of reminder's update
+
+  .. js:method:: deleteReminder(alertToken)
+
+    Deletes a reminder
+
+    :param alertToken: Reminder's ID.
+
+    :returns object: A JSON object with the details of reminder's deletion
+
+.. js:class:: ReminderBuilder()
+
+  .. js:method:: setCreatedTime(createdTime)
+
+    Sets created time
+
+    :param createdTime: Reminder's creation time.
+
+    :returns object: A ReminderBuilder object
+
+  .. js:method:: setRequestTime(requestTime)
+
+    Sets request time
+
+    :param requestTime: Reminder's request time.
+
+    :returns object: A ReminderBuilder object
+
+  .. js:method:: setTriggerAbsolute(scheduledTime)
+
+    Sets the reminder trigger as absolute
+
+    :param scheduledTime: Reminder's scheduled time.
+
+    :returns object: A ReminderBuilder object
+
+  .. js:method:: setTriggerRelative(offsetInSeconds)
+
+    Sets the reminder trigger as relative
+
+    :param offsetInSeconds: Reminder's offset in seconds.
+
+    :returns object: A ReminderBuilder object
+
+  .. js:method:: setTimeZoneId(timeZoneId)
+
+    Sets time zone Id
+
+    :param timeZoneId: Reminder's time zone.
+
+    :returns object: A ReminderBuilder object
+
+  .. js:method:: setRecurrenceFreqDaily()
+
+    Sets reminder's recurrence frequence to "DAILY"
+
+    :returns object: A ReminderBuilder object
+
+  .. js:method:: setRecurrenceFreqWeekly()
+
+    Sets reminder's recurrence frequence to "WEEKLY"
+
+    :returns object: A ReminderBuilder object
+
+  .. js:method:: setRecurrenceByDay(recurrenceByDay)
+
+    Sets frequency by day
+
+    :param recurrenceByDay: Array of frequency by day.
+
+    :returns object: A ReminderBuilder object
+
+  .. js:method:: setRecurrenceInterval(interval)
+
+    Sets reminder's interval
+
+    :param interval: Reminder's interval
+
+    :returns object: A ReminderBuilder object
+
+  .. js:method:: addContent(locale, text)
+
+    Sets reminder's content
+
+    :param locale: Reminder's locale
+    :param text: Reminder's text
+
+    :returns object: A ReminderBuilder object
+
+  .. js:method:: enablePushNotification()
+
+    Sets reminder's push notification status to "ENABLED"
+
+    :returns object: A ReminderBuilder object
+
+  .. js:method:: disablePushNotification()
+
+    Sets reminder's push notification status to "DISABLED"
+
+    :returns object: A ReminderBuilder object
+
+With Voxa, you can create, update, delete and get reminders like this:
+
+.. code-block:: javascript
+
+  const { ReminderBuilder } = require("voxa");
+
+  app.onIntent('CreateReminderIntent', async (voxaEvent) => {
+    const reminder = new ReminderBuilder()
+      .setCreatedTime("2018-12-11T14:05:38.811")
+      .setTriggerAbsolute("2018-12-12T12:00:00.000")
+      .setTimeZoneId("America/Denver")
+      .setRecurrenceFreqDaily()
+      .addContent("en-US", "CREATION REMINDER TEST")
+      .enablePushNotification();
+
+    const reminderResponse = await voxaEvent.alexa.reminders.createReminder(reminder);
+
+    voxaEvent.model.reminder = reminderResponse;
+    return { tell: "Reminder.Created" };
+  });
+
+  app.onIntent('UpdateReminderIntent', async (voxaEvent) => {
+    const alertToken = '1234-5678-9012-3456';
+    const reminder = new ReminderBuilder()
+      .setRequestTime("2018-12-11T14:05:38.811")
+      .setTriggerAbsolute("2018-12-12T12:00:00.000")
+      .setTimeZoneId("America/Denver")
+      .setRecurrenceFreqDaily()
+      .addContent("en-US", "CREATION REMINDER TEST")
+      .enablePushNotification();
+
+    const reminderResponse = await voxaEvent.alexa.reminders.updateReminder(alertToken, reminder);
+
+    voxaEvent.model.reminder = reminderResponse;
+    return { tell: "Reminder.Updated" };
+  });
+
+  app.onIntent('UpdateReminderIntent', async (voxaEvent) => {
+    const alertToken = '1234-5678-9012-3456';
+    const reminderResponse = await voxaEvent.alexa.reminders.deleteReminder(alertToken);
+
+    return { tell: "Reminder.Deleted" };
+  });
+
+  app.onIntent('GetReminderIntent', async (voxaEvent) => {
+    const alertToken = '1234-5678-9012-3456';
+    const reminderResponse = await voxaEvent.alexa.reminders.getReminder(alertToken);
+
+    voxaEvent.model.reminder = reminderResponse.alerts[0];
+    return { tell: "Reminder.Get" };
+  });
+
+  app.onIntent('GetAllRemindersIntent', async (voxaEvent) => {
+    const reminderResponse = await voxaEvent.alexa.reminders.getAllReminders();
+
+    voxaEvent.model.reminders = reminderResponse.alerts;
+    return { tell: "Reminder.Get" };
+  });

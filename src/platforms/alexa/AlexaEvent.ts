@@ -38,6 +38,7 @@ import {
   DeviceSettings,
   InSkillPurchase,
   Lists,
+  Reminders,
 } from "./apis";
 import { isLocalizedRequest } from "./utils";
 
@@ -50,6 +51,7 @@ export class AlexaEvent extends VoxaEvent {
     deviceSettings: DeviceSettings;
     isp: InSkillPurchase;
     lists: Lists;
+    reminders: Reminders;
   };
 
   public requestToIntent: any = {
@@ -116,6 +118,7 @@ export class AlexaEvent extends VoxaEvent {
       deviceSettings: new DeviceSettings(this.rawEvent, this.log),
       isp: new InSkillPurchase(this.rawEvent, this.log),
       lists: new Lists(this.rawEvent, this.log),
+      reminders: new Reminders(this.rawEvent, this.log),
     };
   }
 
