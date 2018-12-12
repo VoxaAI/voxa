@@ -246,7 +246,13 @@ export class Suggestions implements IDirective {
     event: IVoxaEvent,
     transition: ITransition,
   ): Promise<void> {
-    const suggestions = new ActionsOnGoogleSuggestions(this.suggestions);
+    let options = this.suggestions;
+
+    if (_.isString(options)) {
+      options = await event.renderer.renderPath(options, event);
+    }
+
+    const suggestions = new ActionsOnGoogleSuggestions(options);
     const google: any = (reply as DialogFlowReply).payload.google;
     const richResponse = google.richResponse;
     richResponse.addSuggestion(suggestions);
