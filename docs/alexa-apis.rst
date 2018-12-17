@@ -753,3 +753,99 @@ With Voxa, you can create, update, delete and get reminders like this:
     voxaEvent.model.reminders = reminderResponse.alerts;
     return { tell: "Reminder.Get" };
   });
+
+
+.. _alexa-messaging:
+
+-----------------------------
+Skill Messaging API Reference
+-----------------------------
+
+The Skill Messaging API is used to send message requests to skills. These methods are meant to work for out-of-session operations, so you will not likely use it in the skill code. However, you might have a separate file inside your Voxa project to work with some automated triggers like CloudWatch Events or SQS functions. In that case, your file has access to the voxa package, thus, you can take advantage of these methods.
+
+.. js:class:: Messaging()
+
+  .. js:method:: getAuthToken()
+
+    Gets new access token
+
+    :param clientId: Client ID to call Messaging API.
+    :param clientSecret: Client Secret to call Messaging API.
+
+    :returns object: A JSON object with token information with the following structure
+
+    .. code-block:: json
+
+      {
+        "access_token":"Atc|MQEWYJxEnP3I1ND03ZzbY_NxQkA7Kn7Aioev_OfMRcyVQ4NxGzJMEaKJ8f0lSOiV-yW270o6fnkI",
+        "expires_in":3600,
+        "scope":"alexa:skill_messaging",
+        "token_type":"Bearer"
+      }
+
+  .. js:method:: sendMessage()
+
+    Sends message to a skill
+
+    :param endpoint: User's endpoint.
+    :param userId: User's userId.
+    :param data: Object with key-value pairs to send to the skill.
+    :param skillMessagingToken: User's accessToken.
+    :param expiresAfterSeconds: Expiration time in milliseconds, defaults to 3600 milliseconds.
+
+    :returns: undefined
+
+In the following example, you'll see a simple code of a lambda function which calls your database to fetch users to whom you'll send a message with the Messaging API:
+
+.. code-block:: javascript
+
+  'use strict';
+
+  const Promise = require('bluebird');
+  const { Messaging } = require('voxa');
+
+  const Storage = require('./Storage');
+
+  const CLIENT_ID = 'CLIENT_ID';
+  const CLIENT_SECRET = 'CLIENT_SECRET';
+
+  exports.handler = async (event, context, callback) => {
+    const usersOptedIn = await Storage.getUsers();
+
+    await Promise.map(usersOptedIn, (user) => {
+      return Messaging.getAuthToken(CLIENT_ID, CLIENT_SECRET)
+        .then(result => Messaging.sendMessage(user.endpoint, user.userId, user.dataToSend, result.access_token))
+        .catch((err) => {
+          console.log('ERROR SENDING MESSAGE', err);
+
+          return null;
+        });
+    });
+
+    callback(undefined, "OK");
+  };
+
+This will dispatch a 'Messaging.MessageReceived' request to every user and you can handle the code in Voxa like this:
+
+.. code-block:: javascript
+
+  app.onIntent('Messaging.MessageReceived', (voxaEvent) => {
+    const dataReceived = voxaEvent.rawEvent.request.message;
+
+    // DO SOMETHING WITH THE DATA RECEIVED AND RESPOND TO THE REQUEST
+
+    return { to: "die" };
+  });
+
+The request object looks like this:
+
+.. code-block:: json
+
+  "request": {
+    "type": "Messaging.MessageReceived",
+    "requestId": "amzn1.echo-api.request.VOID",
+    "timestamp": "2018-12-17T22:06:28Z",
+    "message": {
+      "name": "John"
+    }
+  }

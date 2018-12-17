@@ -42,6 +42,7 @@ export {
   TRIGGER_EVENT_ENUM,
   Hint,
 } from "./platforms/alexa";
+export { Messaging } from "./platforms/alexa/apis";
 export {
   BotFrameworkPlatform,
   AudioCard,
