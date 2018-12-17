@@ -57,26 +57,29 @@ export class Messaging {
    * Sends message to a skill
    * https://developer.amazon.com/docs/smapi/skill-messaging-api-reference.html#skill-messaging-api-usage
    */
-  public static sendMessage(
-    endpoint: string,
-    userId: string,
-    data: any,
-    skillMessagingToken: string,
-    expiresAfterSeconds: number = 3600): Promise<any> {
+  public static sendMessage(request: IMessageRequest): Promise<any> {
     const options = {
       body: {
-        data,
-        expiresAfterSeconds,
+        data: request.data,
+        expiresAfterSeconds: request.expiresAfterSeconds || 3600,
       },
       headers: {
-        "Authorization": `Bearer ${skillMessagingToken}`,
+        "Authorization": `Bearer ${request.skillMessagingToken}`,
         "Content-Type": "application/json",
       },
       json: true, // Automatically parses the JSON string in the response
       method: "POST",
-      uri: `${endpoint}/v1/skillmessages/users/${userId}`,
+      uri: `${request.endpoint}/v1/skillmessages/users/${request.userId}`,
     };
 
     return Promise.resolve(rp(options));
   }
+}
+
+export interface IMessageRequest {
+  endpoint: string;
+  userId: string;
+  data: any;
+  skillMessagingToken: string;
+  expiresAfterSeconds?: number;
 }

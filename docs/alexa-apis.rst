@@ -787,11 +787,17 @@ The Skill Messaging API is used to send message requests to skills. These method
 
     Sends message to a skill
 
-    :param endpoint: User's endpoint.
-    :param userId: User's userId.
-    :param data: Object with key-value pairs to send to the skill.
-    :param skillMessagingToken: User's accessToken.
-    :param expiresAfterSeconds: Expiration time in milliseconds, defaults to 3600 milliseconds.
+    :param request: Message request params with the following structure:
+
+  .. code-block:: javascript
+
+    {
+      endpoint: string, // User's endpoint.
+      userId: string, // User's userId.
+      data: any, // Object with key-value pairs to send to the skill.
+      skillMessagingToken: string, // User's accessToken.
+      expiresAfterSeconds: number, // Expiration time in milliseconds, defaults to 3600 milliseconds.
+    }
 
     :returns: undefined
 
@@ -814,7 +820,16 @@ In the following example, you'll see a simple code of a lambda function which ca
 
     await Promise.map(usersOptedIn, (user) => {
       return Messaging.getAuthToken(CLIENT_ID, CLIENT_SECRET)
-        .then(result => Messaging.sendMessage(user.endpoint, user.userId, user.dataToSend, result.access_token))
+        .then((result) => {
+          const request = {
+            endpoint: user.endpoint,
+            userId: user.userId,
+            data: user.dataToSend,
+            skillMessagingToken: result.access_token,
+          };
+
+          return Messaging.sendMessage(request);
+        })
         .catch((err) => {
           console.log('ERROR SENDING MESSAGE', err);
 

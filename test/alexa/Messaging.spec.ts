@@ -25,7 +25,7 @@ import * as _ from "lodash";
 import * as nock from "nock";
 import * as querystring from "querystring";
 
-import { AlexaEvent, AlexaPlatform, Messaging, VoxaApp } from "../../src";
+import { AlexaEvent, AlexaPlatform, IMessageRequest, Messaging, VoxaApp } from "../../src";
 import { AlexaRequestBuilder } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";
@@ -85,7 +85,15 @@ describe("Messaging", () => {
       .reply(200);
 
     const tokenResponse = await Messaging.getAuthToken(bodyRequest.client_id, bodyRequest.client_secret);
-    const messageResponse = await Messaging.sendMessage(endpoint, userId, messageBody.data, tokenResponse.access_token);
+
+    const request: IMessageRequest = {
+      data: messageBody.data,
+      endpoint,
+      skillMessagingToken: tokenResponse.access_token,
+      userId,
+    };
+
+    const messageResponse = await Messaging.sendMessage(request);
 
     expect(messageResponse).to.be.undefined;
   });
