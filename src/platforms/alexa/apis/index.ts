@@ -3,3 +3,4 @@ export { DeviceAddress } from "./DeviceAddress";
 export { DeviceSettings } from "./DeviceSettings";
 export { InSkillPurchase } from "./InSkillPurchase";
 export { Lists } from "./Lists";
+export { Reminders, ReminderBuilder } from "./Reminders";

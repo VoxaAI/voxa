@@ -104,4 +104,17 @@ export const variables = {
   settingsInfo: function settingsInfo(request: IVoxaEvent) {
     return request.model.settingsInfo;
   },
+
+  reminderAllContent: function reminderAllContent(request: IVoxaEvent) {
+    const reminderContent = _.map(request.model.reminders, (x) => x.alertInfo.spokenInfo.content[0].text);
+    return reminderContent.join(", ");
+  },
+
+  reminderContent: function reminderContent(request: IVoxaEvent) {
+    return request.model.reminder.alertInfo.spokenInfo.content[0].text;
+  },
+
+  reminderId: function reminderId(request: IVoxaEvent) {
+    return request.model.reminder.alertToken;
+  },
 };

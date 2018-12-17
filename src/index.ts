@@ -36,6 +36,7 @@ export {
   GameEngineStopInputHandler,
   HomeCard,
   PlayAudio,
+  ReminderBuilder,
   RenderTemplate,
   StopAudio,
   TRIGGER_EVENT_ENUM,
