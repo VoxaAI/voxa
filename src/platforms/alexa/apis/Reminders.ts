@@ -31,7 +31,7 @@ export class Reminders extends ApiBase {
    * Gets a reminder
    * https://developer.amazon.com/docs/smapi/alexa-reminders-api-reference.html#get-a-reminder
    */
-  public getReminder(alertToken: string): Promise<string> {
+  public getReminder(alertToken: string): Promise<any> {
     return this.getResult(`v1/alerts/reminders/${alertToken}`);
   }
   /**
@@ -183,5 +183,4 @@ export class ReminderBuilder {
       },
     };
   }
-
- }
+}

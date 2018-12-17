@@ -69,7 +69,7 @@ export class AlexaEvent extends VoxaEvent {
   ) {
     super(rawEvent, logOptions, executionContext);
 
-    const locale: string = isLocalizedRequest(rawEvent.request) ? rawEvent.request.locale : "en-us";
+    const locale: string = isLocalizedRequest(rawEvent.request) ? rawEvent.request.locale as string : "en-us";
 
     this.request = {
       locale,

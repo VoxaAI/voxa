@@ -20,12 +20,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import { RequestEnvelope } from "ask-sdk-model";
 import { expect } from "chai";
 import * as _ from "lodash";
 import * as nock from "nock";
 
-import { AlexaPlatform, IVoxaIntentEvent, ReminderBuilder, VoxaApp } from "../../src";
-import { AlexaRequestBuilder, isAlexaEvent } from "./../tools";
+import { AlexaEvent, AlexaPlatform, ReminderBuilder, VoxaApp } from "../../src";
+import { AlexaRequestBuilder } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";
 
@@ -36,7 +37,7 @@ const reqheaders = {
 };
 
 describe("Reminders", () => {
-  let event: any;
+  let event: RequestEnvelope;
   let app: VoxaApp;
   let alexaSkill: AlexaPlatform;
   let rb: AlexaRequestBuilder;
@@ -79,12 +80,8 @@ describe("Reminders", () => {
 
     alexaSkill.onIntent(
       "CreateReminderIntent",
-      async (voxaEvent: IVoxaIntentEvent) => {
-        let reminderResponse;
-
-        if (isAlexaEvent(voxaEvent)) {
-          reminderResponse = await voxaEvent.alexa.reminders.createReminder(reminder);
-        }
+      async (voxaEvent: AlexaEvent) => {
+        const reminderResponse = await voxaEvent.alexa.reminders.createReminder(reminder);
 
         voxaEvent.model.reminder = reminderResponse;
         return { tell: "Reminder.Created" };
@@ -120,12 +117,8 @@ describe("Reminders", () => {
 
     alexaSkill.onIntent(
       "UpdateReminderIntent",
-      async (voxaEvent: IVoxaIntentEvent) => {
-        let reminderResponse;
-
-        if (isAlexaEvent(voxaEvent)) {
-          reminderResponse = await voxaEvent.alexa.reminders.updateReminder(response.alertToken, reminder);
-        }
+      async (voxaEvent: AlexaEvent) => {
+        const reminderResponse = await voxaEvent.alexa.reminders.updateReminder(response.alertToken, reminder);
 
         voxaEvent.model.reminder = reminderResponse;
         return { tell: "Reminder.Updated" };
@@ -151,12 +144,8 @@ describe("Reminders", () => {
 
     alexaSkill.onIntent(
       "DeleteReminderIntent",
-      async (voxaEvent: IVoxaIntentEvent) => {
-        let reminderResponse;
-
-        if (isAlexaEvent(voxaEvent)) {
-          reminderResponse = await voxaEvent.alexa.reminders.deleteReminder(response.alertToken);
-        }
+      async (voxaEvent: AlexaEvent) => {
+        const reminderResponse = await voxaEvent.alexa.reminders.deleteReminder(response.alertToken);
 
         voxaEvent.model.reminder = reminderResponse;
         return { tell: "Reminder.Deleted" };
@@ -220,12 +209,8 @@ describe("Reminders", () => {
 
     alexaSkill.onIntent(
       "GetReminderIntent",
-      async (voxaEvent: IVoxaIntentEvent) => {
-        let reminderResponse: any = {};
-
-        if (isAlexaEvent(voxaEvent)) {
-          reminderResponse = await voxaEvent.alexa.reminders.getReminder(response.alertToken);
-        }
+      async (voxaEvent: AlexaEvent) => {
+        const reminderResponse = await voxaEvent.alexa.reminders.getReminder(response.alertToken);
 
         voxaEvent.model.reminder = _.head(reminderResponse.alerts);
         return { tell: "Reminder.Get" };
@@ -320,12 +305,8 @@ describe("Reminders", () => {
 
     alexaSkill.onIntent(
       "GetAllRemindersIntent",
-      async (voxaEvent: IVoxaIntentEvent) => {
-        let reminderResponse: any = {};
-
-        if (isAlexaEvent(voxaEvent)) {
-          reminderResponse = await voxaEvent.alexa.reminders.getAllReminders();
-        }
+      async (voxaEvent: AlexaEvent) => {
+        const reminderResponse = await voxaEvent.alexa.reminders.getAllReminders();
 
         voxaEvent.model.reminders = reminderResponse.alerts;
         return { tell: "Reminder.GetAllReminders" };
