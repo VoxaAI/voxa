@@ -60,7 +60,6 @@ export class AlexaEvent extends VoxaEvent {
     "Display.ElementSelected": "Display.ElementSelected",
     "GameEngine.InputHandlerEvent": "GameEngine.InputHandlerEvent",
     "LaunchRequest": "LaunchIntent",
-    "Messaging.MessageReceived": "Messaging.MessageReceived",
   };
 
   constructor(

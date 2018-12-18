@@ -801,7 +801,7 @@ The Skill Messaging API is used to send message requests to skills. These method
 
     :returns: undefined
 
-In the following example, you'll see a simple code of a lambda function which calls your database to fetch users to whom you'll send a message with the Messaging API:
+In the following example, you'll see a simple code of a lambda function which calls your database to fetch users to whom you'll send a reminder with the Reminder API, the message is sent via Messaging API:
 
 .. code-block:: javascript
 
@@ -821,10 +821,16 @@ In the following example, you'll see a simple code of a lambda function which ca
     await Promise.map(usersOptedIn, (user) => {
       return Messaging.getAuthToken(CLIENT_ID, CLIENT_SECRET)
         .then((result) => {
+          const data = {
+            timezone: user.timezone,
+            title: user.reminderTitle,
+            when: user.reminderTime,
+          };
+
           const request = {
             endpoint: user.endpoint,
             userId: user.userId,
-            data: user.dataToSend,
+            data,
             skillMessagingToken: result.access_token,
           };
 
@@ -844,15 +850,25 @@ This will dispatch a 'Messaging.MessageReceived' request to every user and you c
 
 .. code-block:: javascript
 
-  app.onIntent('Messaging.MessageReceived', (voxaEvent) => {
-    const dataReceived = voxaEvent.rawEvent.request.message;
+  const { ReminderBuilder } = require("voxa");
 
-    // DO SOMETHING WITH THE DATA RECEIVED AND RESPOND TO THE REQUEST
+  app["onMessaging.MessageReceived"]((voxaEvent, reply) => {
+    const reminderData = voxaEvent.rawEvent.request.message;
 
-    return { to: "die" };
+    const reminder = new ReminderBuilder()
+      .setCreatedTime("2018-12-11T14:05:38.811")
+      .setTriggerAbsolute(reminderData.when)
+      .setTimeZoneId(reminderData.timezone)
+      .setRecurrenceFreqDaily()
+      .addContent("en-US", reminderData.title)
+      .enablePushNotification();
+
+    await voxaEvent.alexa.reminders.createReminder(reminder);
+
+    return reply;
   });
 
-The request object looks like this:
+The main advantage of sending a message with the Messaging API is that it generates a new access token valid for 1 hour. This is important for out-of-session operations where you don't have access to a valid access token. The event sent to your skill now has a new access token valid for 1 hour. So now, you can use it to call any Alexa API that requires an access token in the authorization headers. The request object of the event looks like this:
 
 .. code-block:: json
 

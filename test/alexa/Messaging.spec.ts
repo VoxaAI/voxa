@@ -25,7 +25,7 @@ import * as _ from "lodash";
 import * as nock from "nock";
 import * as querystring from "querystring";
 
-import { AlexaEvent, AlexaPlatform, IMessageRequest, Messaging, VoxaApp } from "../../src";
+import { AlexaEvent, AlexaPlatform, AlexaReply, IMessageRequest, Messaging, VoxaApp } from "../../src";
 import { AlexaRequestBuilder } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";
@@ -104,20 +104,18 @@ describe("Messaging", () => {
 
     const event = rb.getMessageReceivedRequest({ text: "THIS IS A TEST" });
 
-    alexaSkill.onIntent("Messaging.MessageReceived", async (voxaEvent: AlexaEvent) => {
-      const message = _.get(voxaEvent, "rawEvent.request.message");
+    app["onMessaging.MessageReceived"](
+      async (alexaEvent: AlexaEvent, alexaReply: AlexaReply) => {
+        const message = _.get(alexaEvent, "rawEvent.request.message");
 
-      voxaEvent.model.message = message.text;
+        alexaReply.sessionAttributes.message = message.text;
 
-      return { to: "die" };
-    });
+        return alexaReply;
+      },
+    );
 
     const reply = await alexaSkill.execute(event);
 
-    expect(reply.response.outputSpeech).to.be.undefined;
-    expect(reply.response.reprompt).to.be.undefined;
-    expect(_.get(reply, "sessionAttributes.model.message")).to.equal("THIS IS A TEST");
-    expect(_.get(reply, "sessionAttributes.state")).to.equal("die");
-    expect(reply.response.shouldEndSession).to.equal(true);
+    expect(_.get(reply, "sessionAttributes.message")).to.equal("THIS IS A TEST");
   });
 });
