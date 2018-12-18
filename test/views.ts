@@ -154,6 +154,9 @@ export const views = {
         ],
         title: "The list select",
       },
+      DialogFlowSuggestions: {
+        dialogFlowSuggestions: ["Suggestion 1", "Suggestion 2"],
+      },
       ExitIntent: {
         Farewell: "Ok. For more info visit {site} site.",
       },
