@@ -753,3 +753,130 @@ With Voxa, you can create, update, delete and get reminders like this:
     voxaEvent.model.reminders = reminderResponse.alerts;
     return { tell: "Reminder.Get" };
   });
+
+
+.. _alexa-messaging:
+
+-----------------------------
+Skill Messaging API Reference
+-----------------------------
+
+The Skill Messaging API is used to send message requests to skills. These methods are meant to work for out-of-session operations, so you will not likely use it in the skill code. However, you might have a separate file inside your Voxa project to work with some automated triggers like CloudWatch Events or SQS functions. In that case, your file has access to the voxa package, thus, you can take advantage of these methods.
+
+.. js:class:: Messaging()
+
+  .. js:method:: getAuthToken()
+
+    Gets new access token
+
+    :param clientId: Client ID to call Messaging API.
+    :param clientSecret: Client Secret to call Messaging API.
+
+    :returns object: A JSON object with token information with the following structure
+
+    .. code-block:: json
+
+      {
+        "access_token":"Atc|MQEWYJxEnP3I1ND03ZzbY_NxQkA7Kn7Aioev_OfMRcyVQ4NxGzJMEaKJ8f0lSOiV-yW270o6fnkI",
+        "expires_in":3600,
+        "scope":"alexa:skill_messaging",
+        "token_type":"Bearer"
+      }
+
+  .. js:method:: sendMessage()
+
+    Sends message to a skill
+
+    :param request: Message request params with the following structure:
+
+  .. code-block:: javascript
+
+    {
+      endpoint: string, // User's endpoint.
+      userId: string, // User's userId.
+      data: any, // Object with key-value pairs to send to the skill.
+      skillMessagingToken: string, // User's accessToken.
+      expiresAfterSeconds: number, // Expiration time in milliseconds, defaults to 3600 milliseconds.
+    }
+
+    :returns: undefined
+
+In the following example, you'll see a simple code of a lambda function which calls your database to fetch users to whom you'll send a reminder with the Reminder API, the message is sent via Messaging API:
+
+.. code-block:: javascript
+
+  'use strict';
+
+  const Promise = require('bluebird');
+  const { Messaging } = require('voxa');
+
+  const Storage = require('./Storage');
+
+  const CLIENT_ID = 'CLIENT_ID';
+  const CLIENT_SECRET = 'CLIENT_SECRET';
+
+  exports.handler = async (event, context, callback) => {
+    const usersOptedIn = await Storage.getUsers();
+
+    await Promise.map(usersOptedIn, (user) => {
+      return Messaging.getAuthToken(CLIENT_ID, CLIENT_SECRET)
+        .then((result) => {
+          const data = {
+            timezone: user.timezone,
+            title: user.reminderTitle,
+            when: user.reminderTime,
+          };
+
+          const request = {
+            endpoint: user.endpoint,
+            userId: user.userId,
+            data,
+            skillMessagingToken: result.access_token,
+          };
+
+          return Messaging.sendMessage(request);
+        })
+        .catch((err) => {
+          console.log('ERROR SENDING MESSAGE', err);
+
+          return null;
+        });
+    });
+
+    callback(undefined, "OK");
+  };
+
+This will dispatch a 'Messaging.MessageReceived' request to every user and you can handle the code in Voxa like this:
+
+.. code-block:: javascript
+
+  const { ReminderBuilder } = require("voxa");
+
+  app["onMessaging.MessageReceived"]((voxaEvent, reply) => {
+    const reminderData = voxaEvent.rawEvent.request.message;
+
+    const reminder = new ReminderBuilder()
+      .setCreatedTime("2018-12-11T14:05:38.811")
+      .setTriggerAbsolute(reminderData.when)
+      .setTimeZoneId(reminderData.timezone)
+      .setRecurrenceFreqDaily()
+      .addContent("en-US", reminderData.title)
+      .enablePushNotification();
+
+    await voxaEvent.alexa.reminders.createReminder(reminder);
+
+    return reply;
+  });
+
+The main advantage of sending a message with the Messaging API is that it generates a new access token valid for 1 hour. This is important for out-of-session operations where you don't have access to a valid access token. The event sent to your skill now has a new access token valid for 1 hour. So now, you can use it to call any Alexa API that requires an access token in the authorization headers. The request object of the event looks like this:
+
+.. code-block:: json
+
+  "request": {
+    "type": "Messaging.MessageReceived",
+    "requestId": "amzn1.echo-api.request.VOID",
+    "timestamp": "2018-12-17T22:06:28Z",
+    "message": {
+      "name": "John"
+    }
+  }
