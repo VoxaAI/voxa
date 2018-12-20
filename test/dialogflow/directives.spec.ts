@@ -574,9 +574,9 @@ describe("DialogFlow Directives", () => {
   });
 
   describe("Suggestions Directive", () => {
-    it("should add a DeepLink Response", async () => {
+    it("should add a Suggestions Response", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowSuggestions: "suggestion",
+        dialogFlowSuggestions: ["suggestion"],
         flow: "yield",
         sayp: "Hello!",
         to: "entry",
@@ -588,6 +588,27 @@ describe("DialogFlow Directives", () => {
       ).to.deep.equal([
         {
           title: "suggestion",
+        },
+      ]);
+    });
+
+    it("should add a Suggestions Response when using a reply view", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        reply: "DialogFlowSuggestions",
+        sayp: "Hello!",
+        to: "entry",
+      });
+
+      const reply = await dialogFlowAgent.execute(event);
+      expect(
+        _.get(reply, "payload.google.richResponse.suggestions"),
+      ).to.deep.equal([
+        {
+          title: "Suggestion 1",
+        },
+        {
+          title: "Suggestion 2",
         },
       ]);
     });

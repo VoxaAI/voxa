@@ -36,11 +36,13 @@ export {
   GameEngineStopInputHandler,
   HomeCard,
   PlayAudio,
+  ReminderBuilder,
   RenderTemplate,
   StopAudio,
   TRIGGER_EVENT_ENUM,
   Hint,
 } from "./platforms/alexa";
+export { IMessageRequest, Messaging } from "./platforms/alexa/apis";
 export {
   BotFrameworkPlatform,
   AudioCard,
