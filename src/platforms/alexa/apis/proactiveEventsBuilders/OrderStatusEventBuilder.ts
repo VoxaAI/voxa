@@ -28,6 +28,10 @@ import { EventsBuilder } from "../ProactiveEvents";
 export class OrderStatusEventBuilder extends EventsBuilder {
   public state: any = {};
 
+  constructor() {
+    super("AMAZON.OrderStatus.Updated");
+  }
+
   public setStatus(status: ORDER_STATUS, expectedArrival?: string, enterTimestamp?: string): OrderStatusEventBuilder {
     this.state = { status, enterTimestamp };
 
@@ -38,8 +42,8 @@ export class OrderStatusEventBuilder extends EventsBuilder {
     return this;
   }
 
-  public build(): OrderStatusEventBuilder {
-    const payload = {
+  public getPayload(): any {
+    return {
       order: {
         seller: {
           name: "localizedattribute:sellerName",
@@ -47,11 +51,6 @@ export class OrderStatusEventBuilder extends EventsBuilder {
       },
       state: this.state,
     };
-
-    this.setName("AMAZON.OrderStatus.Updated");
-    this.setPayload(payload);
-
-    return super.build();
   }
 }
 

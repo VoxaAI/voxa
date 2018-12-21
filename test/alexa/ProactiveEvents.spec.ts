@@ -383,11 +383,10 @@ describe("ProactiveEvents", () => {
     const userId = "userId";
     const endpoint: string = "https://api.amazonalexa.com";
 
-    const event: EventsBuilder = new EventsBuilder();
+    const event: EventsBuilder = new EventsBuilder("MyCustomEvent");
     event
       .addContent("en-US", "source", "CNN")
       .addContent("en-GB", "source", "BBC")
-      .setName("MyCustomEvent")
       .setPayload({ customProperty: "customValue" })
       .setReferenceId("referenceId1")
       .setTimestamp("2018-12-19T21:56:24.00Z")

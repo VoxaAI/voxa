@@ -26,6 +26,12 @@ import { EventsBuilder } from "../ProactiveEvents";
  * Weather Alert Events Builder class reference
  */
 export class WeatherAlertEventsBuilder extends EventsBuilder {
+  public alertType: WEATHER_ALERT_TYPE = WEATHER_ALERT_TYPE.DEFAULT;
+
+  constructor() {
+    super("AMAZON.WeatherAlert.Activated");
+  }
+
   public setHurricane(): WeatherAlertEventsBuilder {
     this.setAlertType(WEATHER_ALERT_TYPE.HURRICANE);
 
@@ -50,22 +56,22 @@ export class WeatherAlertEventsBuilder extends EventsBuilder {
     return this;
   }
 
-  private setAlertType(alertType: WEATHER_ALERT_TYPE): WeatherAlertEventsBuilder {
-    const payload = {
+  public getPayload(): any {
+    return {
       weatherAlert: {
-        alertType,
+        alertType: this.alertType,
         source: "localizedattribute:source",
       },
     };
+  }
 
-    this.setName("AMAZON.WeatherAlert.Activated");
-    this.setPayload(payload);
-
-    return this;
+  private setAlertType(alertType: WEATHER_ALERT_TYPE) {
+    this.alertType = alertType;
   }
 }
 
 export enum WEATHER_ALERT_TYPE {
+  DEFAULT = "",
   HURRICANE = "HURRICANE",
   SNOW_STORM = "SNOW_STORM",
   THUNDER_STORM = "THUNDER_STORM",

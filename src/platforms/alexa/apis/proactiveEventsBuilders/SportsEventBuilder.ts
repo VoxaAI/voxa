@@ -29,6 +29,10 @@ export class SportsEventBuilder extends EventsBuilder {
   public sportsEvent: any = {};
   public update: any = {};
 
+  constructor() {
+    super("AMAZON.SportsEvent.Updated");
+  }
+
   public setAwayTeamStatistic(teamName: string, score: number): SportsEventBuilder {
     return this.setTeamStatistic("awayTeamStatistic", teamName, score);
   }
@@ -43,20 +47,15 @@ export class SportsEventBuilder extends EventsBuilder {
     return this;
   }
 
-  public build(): SportsEventBuilder {
+  public getPayload(): any {
     this.sportsEvent.eventLeague = {
       name: "localizedattribute:eventLeagueName",
     };
 
-    const payload = {
+    return {
       sportsEvent: this.sportsEvent,
       update: this.update,
     };
-
-    this.setName("AMAZON.SportsEvent.Updated");
-    this.setPayload(payload);
-
-    return super.build();
   }
 
   private setTeamStatistic(statisticType: string, teamName: string, score: number): SportsEventBuilder {

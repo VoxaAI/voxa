@@ -29,6 +29,10 @@ export class SocialGameInviteEventBuilder extends EventsBuilder {
   public game: any = {};
   public invite: any = {};
 
+  constructor() {
+    super("AMAZON.SocialGameInvite.Available");
+  }
+
   public setGame(offer: SOCIAL_GAME_OFFER): SocialGameInviteEventBuilder {
     this.game = {
       name: "localizedattribute:gameName",
@@ -53,16 +57,11 @@ export class SocialGameInviteEventBuilder extends EventsBuilder {
     return this;
   }
 
-  public build(): SocialGameInviteEventBuilder {
-    const payload = {
+  public getPayload(): any {
+    return {
       game: this.game,
       invite: this.invite,
     };
-
-    this.setName("AMAZON.SocialGameInvite.Available");
-    this.setPayload(payload);
-
-    return super.build();
   }
 }
 

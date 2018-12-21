@@ -29,6 +29,10 @@ export class MessageAlertEventBuilder extends EventsBuilder {
   public messageGroup: any = {};
   public state: any = {};
 
+  constructor() {
+    super("AMAZON.MessageAlert.Activated");
+  }
+
   public setMessageGroup(
     creatorName: string,
     count: number,
@@ -47,16 +51,11 @@ export class MessageAlertEventBuilder extends EventsBuilder {
     return this;
   }
 
-  public build(): MessageAlertEventBuilder {
-    const payload = {
+  public getPayload(): any {
+    return {
       messageGroup: this.messageGroup,
       state: this.state,
     };
-
-    this.setName("AMAZON.MessageAlert.Activated");
-    this.setPayload(payload);
-
-    return super.build();
   }
 }
 

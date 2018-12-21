@@ -29,6 +29,10 @@ export class MediaContentEventBuilder extends EventsBuilder {
   public availability: any = {};
   public content: any = {};
 
+  constructor() {
+    super("AMAZON.MediaContent.Available");
+  }
+
   public setAvailability(method: MEDIA_CONTENT_METHOD): MediaContentEventBuilder {
     this.availability = {
       method,
@@ -50,16 +54,11 @@ export class MediaContentEventBuilder extends EventsBuilder {
     return this;
   }
 
-  public build(): MediaContentEventBuilder {
-    const payload = {
+  public getPayload(): any {
+    return {
       availability: this.availability,
       content: this.content,
     };
-
-    this.setName("AMAZON.MediaContent.Available");
-    this.setPayload(payload);
-
-    return super.build();
   }
 }
 

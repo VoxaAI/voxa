@@ -29,6 +29,10 @@ export class OccasionEventBuilder extends EventsBuilder {
   public occasion: any = {};
   public state: any = {};
 
+  constructor() {
+    super("AMAZON.Occasion.Updated");
+  }
+
   public setOccasion(bookingTime: string, occasionType: OCCASION_TYPE): OccasionEventBuilder {
     this.occasion = {
       bookingTime,
@@ -51,16 +55,11 @@ export class OccasionEventBuilder extends EventsBuilder {
     return this;
   }
 
-  public build(): OccasionEventBuilder {
-    const payload = {
+  public getPayload(): any {
+    return {
       occasion: this.occasion,
       state: this.state,
     };
-
-    this.setName("AMAZON.Occasion.Updated");
-    this.setPayload(payload);
-
-    return super.build();
   }
 }
 

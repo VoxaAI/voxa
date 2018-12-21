@@ -28,6 +28,10 @@ import { EventsBuilder } from "../ProactiveEvents";
 export class TrashCollectionAlertEventBuilder extends EventsBuilder {
   public alert: any = {};
 
+  constructor() {
+    super("AMAZON.TrashCollectionAlert.Activated");
+  }
+
   public setAlert(
     collectionDayOfWeek: GARBAGE_COLLECTION_DAY,
     ...garbageTypes: GARBAGE_TYPE[]): TrashCollectionAlertEventBuilder {
@@ -39,15 +43,8 @@ export class TrashCollectionAlertEventBuilder extends EventsBuilder {
     return this;
   }
 
-  public build(): TrashCollectionAlertEventBuilder {
-    const payload = {
-      alert: this.alert,
-    };
-
-    this.setName("AMAZON.TrashCollectionAlert.Activated");
-    this.setPayload(payload);
-
-    return super.build();
+  public getPayload(): any {
+    return { alert: this.alert };
   }
 }
 

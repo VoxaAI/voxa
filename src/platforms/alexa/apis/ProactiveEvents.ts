@@ -60,10 +60,14 @@ export class EventsBuilder {
   private expiryTime: string = "";
   private timestamp: string = "";
   private localizedAttributes: any[] = [];
-  private name: string = "";
+  private name: string|undefined;
   private payload: any = {};
   private referenceId: string = "";
   private relevantAudience: any = {};
+
+  constructor(name?: string) {
+    this.name = name;
+  }
 
   public addContent(locale: string, localizedKey: string, localizedValue: string): EventsBuilder {
     this.localizedAttributes = this.localizedAttributes || [];
@@ -86,12 +90,6 @@ export class EventsBuilder {
    */
   public setExpiryTime(expiryTime: string): EventsBuilder {
     this.expiryTime = expiryTime;
-
-    return this;
-  }
-
-  public setName(name: string): EventsBuilder {
-    this.name = name;
 
     return this;
   }
@@ -135,11 +133,15 @@ export class EventsBuilder {
     return this;
   }
 
+  public getPayload() {
+    return this.payload;
+  }
+
   public build(): any {
     return {
       event: {
         name: this.name,
-        payload: this.payload,
+        payload: this.getPayload(),
       },
       expiryTime: this.expiryTime,
       localizedAttributes: this.localizedAttributes,
