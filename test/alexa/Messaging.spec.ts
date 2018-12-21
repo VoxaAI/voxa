@@ -84,16 +84,15 @@ describe("Messaging", () => {
       .post("/v1/skillmessages/users/userId", messageBody)
       .reply(200);
 
-    const tokenResponse = await Messaging.getAuthToken(bodyRequest.client_id, bodyRequest.client_secret);
+    const messaging = new Messaging(bodyRequest.client_id, bodyRequest.client_secret);
 
     const request: IMessageRequest = {
       data: messageBody.data,
       endpoint,
-      skillMessagingToken: tokenResponse.access_token,
       userId,
     };
 
-    const messageResponse = await Messaging.sendMessage(request);
+    const messageResponse = await messaging.sendMessage(request);
 
     expect(messageResponse).to.be.undefined;
   });

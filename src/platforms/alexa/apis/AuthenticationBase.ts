@@ -20,39 +20,38 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import * as querystring from "querystring";
 import * as rp from "request-promise";
 
-import { AuthenticationBase } from "./AuthenticationBase";
-
-export class Messaging extends AuthenticationBase {
+/**
+ * Messaging API class reference
+ * https://developer.amazon.com/docs/smapi/skill-messaging-api-reference.html
+ */
+export class AuthenticationBase {
+  constructor(public clientId: string, public clientSecret: string) {
+  }
   /**
-   * Sends message to a skill
-   * https://developer.amazon.com/docs/smapi/skill-messaging-api-reference.html#skill-messaging-api-usage
+   * Gets new access token
+   * https://developer.amazon.com/docs/smapi/configure-an-application-or-service-to-send-messages-to-your-skill.html
    */
-  public async sendMessage(request: IMessageRequest): Promise<any> {
-    const tokenResponse = await this.getAuthenticationToken("alexa:skill_messaging");
+  public getAuthenticationToken(scope: string): Promise<any> {
+    const bodyRequest = {
+      client_id: this.clientId,
+      client_secret: this.clientSecret,
+      grant_type: "client_credentials",
+      scope,
+    };
 
     const options = {
-      body: {
-        data: request.data,
-        expiresAfterSeconds: request.expiresAfterSeconds || 3600,
-      },
+      body: decodeURIComponent(querystring.stringify(bodyRequest)),
       headers: {
-        "Authorization": `Bearer ${tokenResponse.access_token}`,
-        "Content-Type": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
       },
       json: true, // Automatically parses the JSON string in the response
       method: "POST",
-      uri: `${request.endpoint}/v1/skillmessages/users/${request.userId}`,
+      uri: "https://api.amazon.com/auth/O2/token",
     };
 
     return Promise.resolve(rp(options));
   }
-}
-
-export interface IMessageRequest {
-  endpoint: string;
-  userId: string;
-  data: any;
-  expiresAfterSeconds?: number;
 }

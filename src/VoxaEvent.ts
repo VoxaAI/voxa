@@ -40,9 +40,7 @@ export interface IVoxaRequest {
   type: string;
 }
 
-export interface IVoxaEventClass {
-  new (rawEvent: any, logOptions: LambdaLogOptions, context: any): IVoxaEvent;
-}
+export type IVoxaEventClass = new (rawEvent: any, logOptions: LambdaLogOptions, context: any) => IVoxaEvent;
 
 export interface IVoxaIntentEvent extends IVoxaEvent {
   intent: IVoxaIntent;

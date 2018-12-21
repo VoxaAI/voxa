@@ -44,9 +44,7 @@ export interface IMessage {
   directives?: any[];
 }
 
-export interface IRenderer {
-  new (config: IRendererConfig): Renderer;
-}
+export type IRenderer = new (config: IRendererConfig) => Renderer;
 
 export class Renderer {
   public config: any;
