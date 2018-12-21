@@ -29,7 +29,7 @@ import {
   AlexaEvent,
   AlexaPlatform,
   AlexaReply,
-  EventsBuilder,
+  EventBuilder,
   GARBAGE_COLLECTION_DAY,
   GARBAGE_TYPE,
   MEDIA_CONTENT_METHOD,
@@ -53,7 +53,7 @@ import {
   TrashCollectionAlertEventBuilder,
   VoxaApp,
   WEATHER_ALERT_TYPE,
-  WeatherAlertEventsBuilder,
+  WeatherAlertEventBuilder,
 } from "../../src";
 import { AlexaRequestBuilder } from "./../tools";
 import { variables } from "./../variables";
@@ -111,7 +111,7 @@ describe("ProactiveEvents", () => {
     const userId = "userId";
     const endpoint: string = "https://api.amazonalexa.com";
 
-    const event: WeatherAlertEventsBuilder = new WeatherAlertEventsBuilder();
+    const event: WeatherAlertEventBuilder = new WeatherAlertEventBuilder();
     event
       .setHurricane()
       .setSnowStorm()
@@ -383,7 +383,7 @@ describe("ProactiveEvents", () => {
     const userId = "userId";
     const endpoint: string = "https://api.amazonalexa.com";
 
-    const event: EventsBuilder = new EventsBuilder("MyCustomEvent");
+    const event: EventBuilder = new EventBuilder("MyCustomEvent");
     event
       .addContent("en-US", "source", "CNN")
       .addContent("en-GB", "source", "BBC")

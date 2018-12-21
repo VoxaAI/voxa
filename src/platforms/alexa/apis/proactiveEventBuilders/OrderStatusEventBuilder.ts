@@ -20,58 +20,45 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { EventsBuilder } from "../ProactiveEvents";
+import { EventBuilder } from "./EventBuilder";
 
 /**
- * Trash Collection Alert Events Builder class reference
+ * Order Status Events Builder class reference
  */
-export class TrashCollectionAlertEventBuilder extends EventsBuilder {
-  public alert: any = {};
+export class OrderStatusEventBuilder extends EventBuilder {
+  public state: any = {};
 
   constructor() {
-    super("AMAZON.TrashCollectionAlert.Activated");
+    super("AMAZON.OrderStatus.Updated");
   }
 
-  public setAlert(
-    collectionDayOfWeek: GARBAGE_COLLECTION_DAY,
-    ...garbageTypes: GARBAGE_TYPE[]): TrashCollectionAlertEventBuilder {
-    this.alert = {
-      collectionDayOfWeek,
-      garbageTypes,
-    };
+  public setStatus(status: ORDER_STATUS, expectedArrival?: string, enterTimestamp?: string): OrderStatusEventBuilder {
+    this.state = { status, enterTimestamp };
+
+    if (expectedArrival) {
+      this.state.deliveryDetails = { expectedArrival };
+    }
 
     return this;
   }
 
   public getPayload(): any {
-    return { alert: this.alert };
+    return {
+      order: {
+        seller: {
+          name: "localizedattribute:sellerName",
+        },
+      },
+      state: this.state,
+    };
   }
 }
 
-export enum GARBAGE_COLLECTION_DAY {
-  MONDAY = "MONDAY",
-  TUESDAY = "TUESDAY",
-  WEDNESDAY = "WEDNESDAY",
-  THURSDAY = "THURSDAY",
-  SATURDAY = "SATURDAY",
-  SUNDAY = "SUNDAY",
-}
-
-export enum GARBAGE_TYPE {
-  BOTTLES = "BOTTLES",
-  BULKY = "BULKY",
-  BURNABLE = "BURNABLE",
-  CANS = "CANS",
-  CLOTHING = "CLOTHING",
-  COMPOSTABLE = "COMPOSTABLE",
-  CRUSHABLE = "CRUSHABLE",
-  GARDEN_WASTE = "GARDEN_WASTE",
-  GLASS = "GLASS",
-  HAZARDOUS = "HAZARDOUS",
-  HOME_APPLIANCES = "HOME_APPLIANCES",
-  KITCHEN_WASTE = "KITCHEN_WASTE",
-  LANDFILL = "LANDFILL",
-  PET_BOTTLES = "PET_BOTTLES",
-  RECYCLABLE_PLASTICS = "RECYCLABLE_PLASTICS",
-  WASTE_PAPER = "WASTE_PAPER",
+export enum ORDER_STATUS {
+  ORDER_DELIVERED = "ORDER_DELIVERED",
+  ORDER_OUT_FOR_DELIVERY = "ORDER_OUT_FOR_DELIVERY",
+  ORDER_PREPARING = "ORDER_PREPARING",
+  ORDER_RECEIVED = "ORDER_RECEIVED",
+  ORDER_SHIPPED = "ORDER_SHIPPED",
+  PREORDER_RECEIVED = "PREORDER_RECEIVED",
 }

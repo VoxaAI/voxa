@@ -5,6 +5,7 @@ export { InSkillPurchase } from "./InSkillPurchase";
 export { Lists } from "./Lists";
 export { IMessageRequest, Messaging } from "./Messaging";
 export {
+  EventBuilder,
   GARBAGE_COLLECTION_DAY,
   GARBAGE_TYPE,
   MEDIA_CONTENT_METHOD,
@@ -26,7 +27,7 @@ export {
   SportsEventBuilder,
   TrashCollectionAlertEventBuilder,
   WEATHER_ALERT_TYPE,
-  WeatherAlertEventsBuilder,
-} from "./proactiveEventsBuilders";
-export { EventsBuilder, ProactiveEvents } from "./ProactiveEvents";
+  WeatherAlertEventBuilder,
+} from "./proactiveEventBuilders";
+export { ProactiveEvents } from "./ProactiveEvents";
 export { Reminders, ReminderBuilder } from "./Reminders";

@@ -1,3 +1,4 @@
+export { EventBuilder } from "./EventBuilder";
 export {
   MEDIA_CONTENT_METHOD,
   MEDIA_CONTENT_TYPE,
@@ -27,4 +28,4 @@ export {
   GARBAGE_COLLECTION_DAY,
   GARBAGE_TYPE,
 } from "./TrashCollectionAlertEventBuilder";
-export { WEATHER_ALERT_TYPE, WeatherAlertEventsBuilder } from "./WeatherAlertEventsBuilder";
+export { WEATHER_ALERT_TYPE, WeatherAlertEventBuilder } from "./WeatherAlertEventBuilder";

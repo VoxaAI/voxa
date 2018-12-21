@@ -20,55 +20,50 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { EventsBuilder } from "../ProactiveEvents";
+import { EventBuilder } from "./EventBuilder";
 
 /**
- * Message Alert Events Builder class reference
+ * Sports Events Builder class reference
  */
-export class MessageAlertEventBuilder extends EventsBuilder {
-  public messageGroup: any = {};
-  public state: any = {};
+export class SportsEventBuilder extends EventBuilder {
+  public sportsEvent: any = {};
+  public update: any = {};
 
   constructor() {
-    super("AMAZON.MessageAlert.Activated");
+    super("AMAZON.SportsEvent.Updated");
   }
 
-  public setMessageGroup(
-    creatorName: string,
-    count: number,
-    urgency?: MESSAGE_ALERT_URGENCY): MessageAlertEventBuilder {
-    this.messageGroup = {
-      count,
-      creator: { name: creatorName },
-      urgency,
-    };
-
-    return this;
+  public setAwayTeamStatistic(teamName: string, score: number): SportsEventBuilder {
+    return this.setTeamStatistic("awayTeamStatistic", teamName, score);
   }
 
-  public setState(status: MESSAGE_ALERT_STATUS, freshness?: MESSAGE_ALERT_FRESHNESS): MessageAlertEventBuilder {
-    this.state = { status, freshness };
+  public setHomeTeamStatistic(teamName: string, score: number): SportsEventBuilder {
+    return this.setTeamStatistic("homeTeamStatistic", teamName, score);
+  }
+
+  public setUpdate(teamName: string, scoreEarned: number): SportsEventBuilder {
+    this.update = { scoreEarned, teamName };
+
     return this;
   }
 
   public getPayload(): any {
+    this.sportsEvent.eventLeague = {
+      name: "localizedattribute:eventLeagueName",
+    };
+
     return {
-      messageGroup: this.messageGroup,
-      state: this.state,
+      sportsEvent: this.sportsEvent,
+      update: this.update,
     };
   }
-}
 
-export enum MESSAGE_ALERT_FRESHNESS {
-  NEW = "NEW",
-  OVERDUE = "OVERDUE",
-}
+  private setTeamStatistic(statisticType: string, teamName: string, score: number): SportsEventBuilder {
+    this.sportsEvent[statisticType] = {
+      score,
+      team: { name: teamName },
+    };
 
-export enum MESSAGE_ALERT_STATUS {
-  FLAGGED = "FLAGGED",
-  UNREAD = "UNREAD",
-}
-
-export enum MESSAGE_ALERT_URGENCY {
-  URGENT = "URGENT",
+    return this;
+  }
 }

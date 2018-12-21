@@ -20,61 +20,55 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { EventsBuilder } from "../ProactiveEvents";
+import { EventBuilder } from "./EventBuilder";
 
 /**
- * Occasion Events Builder class reference
+ * Message Alert Events Builder class reference
  */
-export class OccasionEventBuilder extends EventsBuilder {
-  public occasion: any = {};
+export class MessageAlertEventBuilder extends EventBuilder {
+  public messageGroup: any = {};
   public state: any = {};
 
   constructor() {
-    super("AMAZON.Occasion.Updated");
+    super("AMAZON.MessageAlert.Activated");
   }
 
-  public setOccasion(bookingTime: string, occasionType: OCCASION_TYPE): OccasionEventBuilder {
-    this.occasion = {
-      bookingTime,
-      broker: {
-        name: "localizedattribute:brokerName",
-      },
-      occasionType,
-      provider: {
-        name: "localizedattribute:providerName",
-      },
-      subject: "localizedattribute:subject",
+  public setMessageGroup(
+    creatorName: string,
+    count: number,
+    urgency?: MESSAGE_ALERT_URGENCY): MessageAlertEventBuilder {
+    this.messageGroup = {
+      count,
+      creator: { name: creatorName },
+      urgency,
     };
 
     return this;
   }
 
-  public setStatus(confirmationStatus: OCCASION_CONFIRMATION_STATUS): OccasionEventBuilder {
-    this.state = { confirmationStatus };
-
+  public setState(status: MESSAGE_ALERT_STATUS, freshness?: MESSAGE_ALERT_FRESHNESS): MessageAlertEventBuilder {
+    this.state = { status, freshness };
     return this;
   }
 
   public getPayload(): any {
     return {
-      occasion: this.occasion,
+      messageGroup: this.messageGroup,
       state: this.state,
     };
   }
 }
 
-export enum OCCASION_CONFIRMATION_STATUS {
-  CANCELED = "CANCELED",
-  CONFIRMED = "CONFIRMED",
-  CREATED = "CREATED",
-  REQUESTED = "REQUESTED",
-  RESCHEDULED = "RESCHEDULED",
-  UPDATED = "UPDATED",
+export enum MESSAGE_ALERT_FRESHNESS {
+  NEW = "NEW",
+  OVERDUE = "OVERDUE",
 }
 
-export enum OCCASION_TYPE {
-  APPOINTMENT = "APPOINTMENT",
-  APPOINTMENT_REQUEST = "APPOINTMENT_REQUEST",
-  RESERVATION = "RESERVATION",
-  RESERVATION_REQUEST = "RESERVATION_REQUEST",
+export enum MESSAGE_ALERT_STATUS {
+  FLAGGED = "FLAGGED",
+  UNREAD = "UNREAD",
+}
+
+export enum MESSAGE_ALERT_URGENCY {
+  URGENT = "URGENT",
 }

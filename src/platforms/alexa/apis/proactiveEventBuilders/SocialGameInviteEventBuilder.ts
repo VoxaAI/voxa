@@ -20,50 +20,63 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { EventsBuilder } from "../ProactiveEvents";
+import { EventBuilder } from "./EventBuilder";
 
 /**
- * Sports Events Builder class reference
+ * Social Game Invite Events Builder class reference
  */
-export class SportsEventBuilder extends EventsBuilder {
-  public sportsEvent: any = {};
-  public update: any = {};
+export class SocialGameInviteEventBuilder extends EventBuilder {
+  public game: any = {};
+  public invite: any = {};
 
   constructor() {
-    super("AMAZON.SportsEvent.Updated");
+    super("AMAZON.SocialGameInvite.Available");
   }
 
-  public setAwayTeamStatistic(teamName: string, score: number): SportsEventBuilder {
-    return this.setTeamStatistic("awayTeamStatistic", teamName, score);
+  public setGame(offer: SOCIAL_GAME_OFFER): SocialGameInviteEventBuilder {
+    this.game = {
+      name: "localizedattribute:gameName",
+      offer,
+    };
+
+    return this;
   }
 
-  public setHomeTeamStatistic(teamName: string, score: number): SportsEventBuilder {
-    return this.setTeamStatistic("homeTeamStatistic", teamName, score);
-  }
-
-  public setUpdate(teamName: string, scoreEarned: number): SportsEventBuilder {
-    this.update = { scoreEarned, teamName };
+  public setInvite(
+    name: string,
+    inviteType: SOCIAL_GAME_INVITE_TYPE,
+    relationshipToInvitee: SOCIAL_GAME_RELATIONSHIP_TO_INVITEE): SocialGameInviteEventBuilder {
+    this.invite = {
+      inviteType,
+      inviter: {
+        name,
+      },
+      relationshipToInvitee,
+    };
 
     return this;
   }
 
   public getPayload(): any {
-    this.sportsEvent.eventLeague = {
-      name: "localizedattribute:eventLeagueName",
-    };
-
     return {
-      sportsEvent: this.sportsEvent,
-      update: this.update,
+      game: this.game,
+      invite: this.invite,
     };
   }
+}
 
-  private setTeamStatistic(statisticType: string, teamName: string, score: number): SportsEventBuilder {
-    this.sportsEvent[statisticType] = {
-      score,
-      team: { name: teamName },
-    };
+export enum SOCIAL_GAME_INVITE_TYPE {
+  CHALLENGE = "CHALLENGE",
+  INVITE = "INVITE",
+}
 
-    return this;
-  }
+export enum SOCIAL_GAME_OFFER {
+  GAME = "GAME",
+  MATCH = "MATCH",
+  REMATCH = "REMATCH",
+}
+
+export enum SOCIAL_GAME_RELATIONSHIP_TO_INVITEE {
+  CONTACT = "CONTACT",
+  FRIEND = "FRIEND",
 }

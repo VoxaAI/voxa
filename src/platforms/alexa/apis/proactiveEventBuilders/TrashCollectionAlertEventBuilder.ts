@@ -20,61 +20,58 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { EventsBuilder } from "../ProactiveEvents";
+import { EventBuilder } from "./EventBuilder";
 
 /**
- * Media Content Events Builder class reference
+ * Trash Collection Alert Events Builder class reference
  */
-export class MediaContentEventBuilder extends EventsBuilder {
-  public availability: any = {};
-  public content: any = {};
+export class TrashCollectionAlertEventBuilder extends EventBuilder {
+  public alert: any = {};
 
   constructor() {
-    super("AMAZON.MediaContent.Available");
+    super("AMAZON.TrashCollectionAlert.Activated");
   }
 
-  public setAvailability(method: MEDIA_CONTENT_METHOD): MediaContentEventBuilder {
-    this.availability = {
-      method,
-      provider: {
-        name: "localizedattribute:providerName",
-      },
-      startTime: new Date().toISOString(),
-    };
-
-    return this;
-  }
-
-  public setContentType(contentType: MEDIA_CONTENT_TYPE): MediaContentEventBuilder {
-    this.content = {
-      contentType,
-      name: "localizedattribute:contentName",
+  public setAlert(
+    collectionDayOfWeek: GARBAGE_COLLECTION_DAY,
+    ...garbageTypes: GARBAGE_TYPE[]): TrashCollectionAlertEventBuilder {
+    this.alert = {
+      collectionDayOfWeek,
+      garbageTypes,
     };
 
     return this;
   }
 
   public getPayload(): any {
-    return {
-      availability: this.availability,
-      content: this.content,
-    };
+    return { alert: this.alert };
   }
 }
 
-export enum MEDIA_CONTENT_METHOD {
-  AIR = "AIR",
-  DROP = "DROP",
-  PREMIERE = "PREMIERE",
-  RELEASE = "RELEASE",
-  STREAM = "STREAM",
+export enum GARBAGE_COLLECTION_DAY {
+  MONDAY = "MONDAY",
+  TUESDAY = "TUESDAY",
+  WEDNESDAY = "WEDNESDAY",
+  THURSDAY = "THURSDAY",
+  SATURDAY = "SATURDAY",
+  SUNDAY = "SUNDAY",
 }
 
-export enum MEDIA_CONTENT_TYPE {
-  ALBUM = "ALBUM",
-  BOOK = "BOOK",
-  EPISODE = "EPISODE",
-  GAME = "GAME",
-  MOVIE = "MOVIE",
-  SINGLE = "SINGLE",
+export enum GARBAGE_TYPE {
+  BOTTLES = "BOTTLES",
+  BULKY = "BULKY",
+  BURNABLE = "BURNABLE",
+  CANS = "CANS",
+  CLOTHING = "CLOTHING",
+  COMPOSTABLE = "COMPOSTABLE",
+  CRUSHABLE = "CRUSHABLE",
+  GARDEN_WASTE = "GARDEN_WASTE",
+  GLASS = "GLASS",
+  HAZARDOUS = "HAZARDOUS",
+  HOME_APPLIANCES = "HOME_APPLIANCES",
+  KITCHEN_WASTE = "KITCHEN_WASTE",
+  LANDFILL = "LANDFILL",
+  PET_BOTTLES = "PET_BOTTLES",
+  RECYCLABLE_PLASTICS = "RECYCLABLE_PLASTICS",
+  WASTE_PAPER = "WASTE_PAPER",
 }

@@ -20,60 +20,61 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { EventsBuilder } from "../ProactiveEvents";
+import { EventBuilder } from "./EventBuilder";
 
 /**
- * Weather Alert Events Builder class reference
+ * Media Content Events Builder class reference
  */
-export class WeatherAlertEventsBuilder extends EventsBuilder {
-  public alertType: WEATHER_ALERT_TYPE = WEATHER_ALERT_TYPE.DEFAULT;
+export class MediaContentEventBuilder extends EventBuilder {
+  public availability: any = {};
+  public content: any = {};
 
   constructor() {
-    super("AMAZON.WeatherAlert.Activated");
+    super("AMAZON.MediaContent.Available");
   }
 
-  public setHurricane(): WeatherAlertEventsBuilder {
-    this.setAlertType(WEATHER_ALERT_TYPE.HURRICANE);
+  public setAvailability(method: MEDIA_CONTENT_METHOD): MediaContentEventBuilder {
+    this.availability = {
+      method,
+      provider: {
+        name: "localizedattribute:providerName",
+      },
+      startTime: new Date().toISOString(),
+    };
 
     return this;
   }
 
-  public setSnowStorm(): WeatherAlertEventsBuilder {
-    this.setAlertType(WEATHER_ALERT_TYPE.SNOW_STORM);
-
-    return this;
-  }
-
-  public setThunderStorm(): WeatherAlertEventsBuilder {
-    this.setAlertType(WEATHER_ALERT_TYPE.THUNDER_STORM);
-
-    return this;
-  }
-
-  public setTornado(): WeatherAlertEventsBuilder {
-    this.setAlertType(WEATHER_ALERT_TYPE.TORNADO);
+  public setContentType(contentType: MEDIA_CONTENT_TYPE): MediaContentEventBuilder {
+    this.content = {
+      contentType,
+      name: "localizedattribute:contentName",
+    };
 
     return this;
   }
 
   public getPayload(): any {
     return {
-      weatherAlert: {
-        alertType: this.alertType,
-        source: "localizedattribute:source",
-      },
+      availability: this.availability,
+      content: this.content,
     };
-  }
-
-  private setAlertType(alertType: WEATHER_ALERT_TYPE) {
-    this.alertType = alertType;
   }
 }
 
-export enum WEATHER_ALERT_TYPE {
-  DEFAULT = "",
-  HURRICANE = "HURRICANE",
-  SNOW_STORM = "SNOW_STORM",
-  THUNDER_STORM = "THUNDER_STORM",
-  TORNADO = "TORNADO",
+export enum MEDIA_CONTENT_METHOD {
+  AIR = "AIR",
+  DROP = "DROP",
+  PREMIERE = "PREMIERE",
+  RELEASE = "RELEASE",
+  STREAM = "STREAM",
+}
+
+export enum MEDIA_CONTENT_TYPE {
+  ALBUM = "ALBUM",
+  BOOK = "BOOK",
+  EPISODE = "EPISODE",
+  GAME = "GAME",
+  MOVIE = "MOVIE",
+  SINGLE = "SINGLE",
 }

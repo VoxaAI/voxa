@@ -20,45 +20,60 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { EventsBuilder } from "../ProactiveEvents";
+import { EventBuilder } from "./EventBuilder";
 
 /**
- * Order Status Events Builder class reference
+ * Weather Alert Events Builder class reference
  */
-export class OrderStatusEventBuilder extends EventsBuilder {
-  public state: any = {};
+export class WeatherAlertEventBuilder extends EventBuilder {
+  public alertType: WEATHER_ALERT_TYPE = WEATHER_ALERT_TYPE.DEFAULT;
 
   constructor() {
-    super("AMAZON.OrderStatus.Updated");
+    super("AMAZON.WeatherAlert.Activated");
   }
 
-  public setStatus(status: ORDER_STATUS, expectedArrival?: string, enterTimestamp?: string): OrderStatusEventBuilder {
-    this.state = { status, enterTimestamp };
+  public setHurricane(): WeatherAlertEventBuilder {
+    this.setAlertType(WEATHER_ALERT_TYPE.HURRICANE);
 
-    if (expectedArrival) {
-      this.state.deliveryDetails = { expectedArrival };
-    }
+    return this;
+  }
+
+  public setSnowStorm(): WeatherAlertEventBuilder {
+    this.setAlertType(WEATHER_ALERT_TYPE.SNOW_STORM);
+
+    return this;
+  }
+
+  public setThunderStorm(): WeatherAlertEventBuilder {
+    this.setAlertType(WEATHER_ALERT_TYPE.THUNDER_STORM);
+
+    return this;
+  }
+
+  public setTornado(): WeatherAlertEventBuilder {
+    this.setAlertType(WEATHER_ALERT_TYPE.TORNADO);
 
     return this;
   }
 
   public getPayload(): any {
     return {
-      order: {
-        seller: {
-          name: "localizedattribute:sellerName",
-        },
+      weatherAlert: {
+        alertType: this.alertType,
+        source: "localizedattribute:source",
       },
-      state: this.state,
     };
+  }
+
+  private setAlertType(alertType: WEATHER_ALERT_TYPE) {
+    this.alertType = alertType;
   }
 }
 
-export enum ORDER_STATUS {
-  ORDER_DELIVERED = "ORDER_DELIVERED",
-  ORDER_OUT_FOR_DELIVERY = "ORDER_OUT_FOR_DELIVERY",
-  ORDER_PREPARING = "ORDER_PREPARING",
-  ORDER_RECEIVED = "ORDER_RECEIVED",
-  ORDER_SHIPPED = "ORDER_SHIPPED",
-  PREORDER_RECEIVED = "PREORDER_RECEIVED",
+export enum WEATHER_ALERT_TYPE {
+  DEFAULT = "",
+  HURRICANE = "HURRICANE",
+  SNOW_STORM = "SNOW_STORM",
+  THUNDER_STORM = "THUNDER_STORM",
+  TORNADO = "TORNADO",
 }

@@ -43,7 +43,7 @@ export {
   Hint,
 } from "./platforms/alexa";
 export {
-  EventsBuilder,
+  EventBuilder,
   GARBAGE_COLLECTION_DAY,
   GARBAGE_TYPE,
   IMessageRequest,
@@ -68,7 +68,7 @@ export {
   SportsEventBuilder,
   TrashCollectionAlertEventBuilder,
   WEATHER_ALERT_TYPE,
-  WeatherAlertEventsBuilder,
+  WeatherAlertEventBuilder,
 } from "./platforms/alexa/apis";
 export {
   BotFrameworkPlatform,

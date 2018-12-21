@@ -20,63 +20,61 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { EventsBuilder } from "../ProactiveEvents";
+import { EventBuilder } from "./EventBuilder";
 
 /**
- * Social Game Invite Events Builder class reference
+ * Occasion Events Builder class reference
  */
-export class SocialGameInviteEventBuilder extends EventsBuilder {
-  public game: any = {};
-  public invite: any = {};
+export class OccasionEventBuilder extends EventBuilder {
+  public occasion: any = {};
+  public state: any = {};
 
   constructor() {
-    super("AMAZON.SocialGameInvite.Available");
+    super("AMAZON.Occasion.Updated");
   }
 
-  public setGame(offer: SOCIAL_GAME_OFFER): SocialGameInviteEventBuilder {
-    this.game = {
-      name: "localizedattribute:gameName",
-      offer,
+  public setOccasion(bookingTime: string, occasionType: OCCASION_TYPE): OccasionEventBuilder {
+    this.occasion = {
+      bookingTime,
+      broker: {
+        name: "localizedattribute:brokerName",
+      },
+      occasionType,
+      provider: {
+        name: "localizedattribute:providerName",
+      },
+      subject: "localizedattribute:subject",
     };
 
     return this;
   }
 
-  public setInvite(
-    name: string,
-    inviteType: SOCIAL_GAME_INVITE_TYPE,
-    relationshipToInvitee: SOCIAL_GAME_RELATIONSHIP_TO_INVITEE): SocialGameInviteEventBuilder {
-    this.invite = {
-      inviteType,
-      inviter: {
-        name,
-      },
-      relationshipToInvitee,
-    };
+  public setStatus(confirmationStatus: OCCASION_CONFIRMATION_STATUS): OccasionEventBuilder {
+    this.state = { confirmationStatus };
 
     return this;
   }
 
   public getPayload(): any {
     return {
-      game: this.game,
-      invite: this.invite,
+      occasion: this.occasion,
+      state: this.state,
     };
   }
 }
 
-export enum SOCIAL_GAME_INVITE_TYPE {
-  CHALLENGE = "CHALLENGE",
-  INVITE = "INVITE",
+export enum OCCASION_CONFIRMATION_STATUS {
+  CANCELED = "CANCELED",
+  CONFIRMED = "CONFIRMED",
+  CREATED = "CREATED",
+  REQUESTED = "REQUESTED",
+  RESCHEDULED = "RESCHEDULED",
+  UPDATED = "UPDATED",
 }
 
-export enum SOCIAL_GAME_OFFER {
-  GAME = "GAME",
-  MATCH = "MATCH",
-  REMATCH = "REMATCH",
-}
-
-export enum SOCIAL_GAME_RELATIONSHIP_TO_INVITEE {
-  CONTACT = "CONTACT",
-  FRIEND = "FRIEND",
+export enum OCCASION_TYPE {
+  APPOINTMENT = "APPOINTMENT",
+  APPOINTMENT_REQUEST = "APPOINTMENT_REQUEST",
+  RESERVATION = "RESERVATION",
+  RESERVATION_REQUEST = "RESERVATION_REQUEST",
 }
