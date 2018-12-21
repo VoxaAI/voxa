@@ -5,7 +5,6 @@ export { InSkillPurchase } from "./InSkillPurchase";
 export { Lists } from "./Lists";
 export { IMessageRequest, Messaging } from "./Messaging";
 export {
-  EventsBuilder,
   GARBAGE_COLLECTION_DAY,
   GARBAGE_TYPE,
   MEDIA_CONTENT_METHOD,
@@ -20,7 +19,6 @@ export {
   OccasionEventBuilder,
   ORDER_STATUS,
   OrderStatusEventBuilder,
-  ProactiveEvents,
   SOCIAL_GAME_INVITE_TYPE,
   SOCIAL_GAME_OFFER,
   SOCIAL_GAME_RELATIONSHIP_TO_INVITEE,
@@ -29,5 +27,6 @@ export {
   TrashCollectionAlertEventBuilder,
   WEATHER_ALERT_TYPE,
   WeatherAlertEventsBuilder,
-} from "./ProactiveEvents";
+} from "./proactiveEventsBuilders";
+export { EventsBuilder, ProactiveEvents } from "./ProactiveEvents";
 export { Reminders, ReminderBuilder } from "./Reminders";
