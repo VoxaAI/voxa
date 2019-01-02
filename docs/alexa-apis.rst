@@ -763,25 +763,10 @@ Skill Messaging API Reference
 
 The Skill Messaging API is used to send message requests to skills. These methods are meant to work for out-of-session operations, so you will not likely use it in the skill code. However, you might have a separate file inside your Voxa project to work with some automated triggers like CloudWatch Events or SQS functions. In that case, your file has access to the voxa package, thus, you can take advantage of these methods.
 
-.. js:class:: Messaging()
+.. js:class:: Messaging(clientId, clientSecret)
 
-  .. js:method:: getAuthToken()
-
-    Gets new access token
-
-    :param clientId: Client ID to call Messaging API.
-    :param clientSecret: Client Secret to call Messaging API.
-
-    :returns object: A JSON object with token information with the following structure
-
-    .. code-block:: json
-
-      {
-        "access_token":"Atc|MQEWYJxEnP3I1ND03ZzbY_NxQkA7Kn7Aioev_OfMRcyVQ4NxGzJMEaKJ8f0lSOiV-yW270o6fnkI",
-        "expires_in":3600,
-        "scope":"alexa:skill_messaging",
-        "token_type":"Bearer"
-      }
+  :param clientId: Client ID to call Messaging API.
+  :param clientSecret: Client Secret to call Messaging API.
 
   .. js:method:: sendMessage()
 
@@ -795,7 +780,6 @@ The Skill Messaging API is used to send message requests to skills. These method
       endpoint: string, // User's endpoint.
       userId: string, // User's userId.
       data: any, // Object with key-value pairs to send to the skill.
-      skillMessagingToken: string, // User's accessToken.
       expiresAfterSeconds: number, // Expiration time in milliseconds, defaults to 3600 milliseconds.
     }
 
@@ -817,25 +801,22 @@ In the following example, you'll see a simple code of a lambda function which ca
 
   exports.handler = async (event, context, callback) => {
     const usersOptedIn = await Storage.getUsers();
+    const messaging = new Messaging(CLIENT_ID, CLIENT_SECRET);
 
     await Promise.map(usersOptedIn, (user) => {
-      return Messaging.getAuthToken(CLIENT_ID, CLIENT_SECRET)
-        .then((result) => {
-          const data = {
-            timezone: user.timezone,
-            title: user.reminderTitle,
-            when: user.reminderTime,
-          };
+      const data = {
+        timezone: user.timezone,
+        title: user.reminderTitle,
+        when: user.reminderTime,
+      };
 
-          const request = {
-            endpoint: user.endpoint,
-            userId: user.userId,
-            data,
-            skillMessagingToken: result.access_token,
-          };
+      const request = {
+        endpoint: user.endpoint,
+        userId: user.userId,
+        data,
+      };
 
-          return Messaging.sendMessage(request);
-        })
+      return messaging.sendMessage(request)
         .catch((err) => {
           console.log('ERROR SENDING MESSAGE', err);
 
@@ -852,7 +833,7 @@ This will dispatch a 'Messaging.MessageReceived' request to every user and you c
 
   const { ReminderBuilder } = require("voxa");
 
-  app["onMessaging.MessageReceived"]((voxaEvent, reply) => {
+  app["onMessaging.MessageReceived"](async (voxaEvent, reply) => {
     const reminderData = voxaEvent.rawEvent.request.message;
 
     const reminder = new ReminderBuilder()
@@ -880,3 +861,286 @@ The main advantage of sending a message with the Messaging API is that it genera
       "name": "John"
     }
   }
+
+
+.. _alexa-proactive-events:
+
+------------------------------
+Proactive Events API Reference
+------------------------------
+
+The ProactiveEvents API enables Alexa Skill Developers to send events to Alexa, which represent factual data that may interest a customer. Upon receiving an event, Alexa proactively delivers the information to customers subscribed to receive these events. This API currently supports one proactive channel, Alexa Notifications. As more proactive channels are added in the future, developers will be able to take advantage of them without requiring integration with a new API.
+
+.. js:class:: ProactiveEvents(clientId, clientSecret)
+
+  :param clientId: Client ID to call Messaging API.
+  :param clientSecret: Client Secret to call Messaging API.
+
+  .. js:method:: createEvent()
+
+    Creates proactive event
+
+    :param endpoint: User's default endpoint
+    :param body: Event's body
+    :param isDevelopment: Flag to define if the event is sent to development stage. If false, then it goes to live skill
+
+    :returns: undefined
+
+This API is meant to work as an out-of-session task, so you'd need to use the Messaging API if you want to send a notification triggered by your server. The following examples show how you can use the different schemas to send proactive events (formerly Notifications):
+
+- WeatherAlertEventsBuilder
+
+.. code-block:: javascript
+
+  const { ProactiveEvents, WeatherAlertEventsBuilder } = require("voxa");
+
+  const CLIENT_ID = 'CLIENT_ID';
+  const CLIENT_SECRET = 'CLIENT_SECRET';
+
+  app["onMessaging.MessageReceived"](async (voxaEvent, reply) => {
+    const eventData = voxaEvent.rawEvent.request.message;
+
+    const event: WeatherAlertEventsBuilder = new WeatherAlertEventsBuilder();
+    event
+      .setHurricane()
+      .addContent("en-US", "source", eventData.localizedValue)
+      .setReferenceId(eventData.referenceId)
+      .setTimestamp(eventData.timestamp)
+      .setExpiryTime(eventData.expiryTime)
+      .setUnicast(eventData.userId);
+
+    const proactiveEvents = new ProactiveEvents(CLIENT_ID, CLIENT_SECRET);
+    await proactiveEvents.createEvent(endpoint, event, true);
+
+    return reply;
+  });
+
+- SportsEventBuilder
+
+.. code-block:: javascript
+
+  const { ProactiveEvents, SportsEventBuilder } = require("voxa");
+
+  const CLIENT_ID = 'CLIENT_ID';
+  const CLIENT_SECRET = 'CLIENT_SECRET';
+
+  app["onMessaging.MessageReceived"](async (voxaEvent, reply) => {
+    const eventData = voxaEvent.rawEvent.request.message;
+
+    const event: SportsEventBuilder = new SportsEventBuilder();
+    event
+      .setAwayTeamStatistic("Boston Red Sox", 5)
+      .setHomeTeamStatistic("New York Yankees", 2)
+      .setUpdate("Boston Red Sox", 5)
+      .addContent("en-US", "eventLeagueName", eventData.localizedValue)
+      .setReferenceId(eventData.referenceId)
+      .setTimestamp(eventData.timestamp)
+      .setExpiryTime(eventData.expiryTime)
+      .setUnicast(eventData.userId);
+
+    const proactiveEvents = new ProactiveEvents(CLIENT_ID, CLIENT_SECRET);
+    await proactiveEvents.createEvent(endpoint, event, true);
+
+    return reply;
+  });
+
+- MessageAlertEventBuilder
+
+.. code-block:: javascript
+
+  const {
+    MESSAGE_ALERT_FRESHNESS,
+    MESSAGE_ALERT_STATUS,
+    MESSAGE_ALERT_URGENCY,
+    MessageAlertEventBuilder,
+    ProactiveEvents,
+  } = require("voxa");
+
+  const CLIENT_ID = 'CLIENT_ID';
+  const CLIENT_SECRET = 'CLIENT_SECRET';
+
+  app["onMessaging.MessageReceived"](async (voxaEvent, reply) => {
+    const eventData = voxaEvent.rawEvent.request.message;
+
+    const event: MessageAlertEventBuilder = new MessageAlertEventBuilder();
+    event
+      .setMessageGroup(eventData.creatorName, eventData.count, MESSAGE_ALERT_URGENCY.URGENT)
+      .setState(MESSAGE_ALERT_STATUS.UNREAD, MESSAGE_ALERT_FRESHNESS.NEW)
+      .setReferenceId(eventData.referenceId)
+      .setTimestamp(eventData.timestamp)
+      .setExpiryTime(eventData.expiryTime)
+      .setUnicast(eventData.userId);
+
+    const proactiveEvents = new ProactiveEvents(CLIENT_ID, CLIENT_SECRET);
+    await proactiveEvents.createEvent(endpoint, event, true);
+
+    return reply;
+  });
+
+- OrderStatusEventBuilder
+
+.. code-block:: javascript
+
+  const {
+    ORDER_STATUS,
+    OrderStatusEventBuilder,
+    ProactiveEvents,
+  } = require("voxa");
+
+  const CLIENT_ID = 'CLIENT_ID';
+  const CLIENT_SECRET = 'CLIENT_SECRET';
+
+  app["onMessaging.MessageReceived"](async (voxaEvent, reply) => {
+    const eventData = voxaEvent.rawEvent.request.message;
+
+    const event: OrderStatusEventBuilder = new OrderStatusEventBuilder();
+    event
+      .setStatus(ORDER_STATUS.ORDER_DELIVERED, eventData.expectedArrival, eventData.enterTimestamp)
+      .addContent("en-US", "sellerName", eventData.localizedValue)
+      .setReferenceId(eventData.referenceId)
+      .setTimestamp(eventData.timestamp)
+      .setExpiryTime(eventData.expiryTime)
+      .setUnicast(eventData.userId);
+
+    const proactiveEvents = new ProactiveEvents(CLIENT_ID, CLIENT_SECRET);
+    await proactiveEvents.createEvent(endpoint, event, true);
+
+    return reply;
+  });
+
+- OccasionEventBuilder
+
+.. code-block:: javascript
+
+  const {
+    OCCASION_CONFIRMATION_STATUS,
+    OCCASION_TYPE,
+    OccasionEventBuilder,
+    ProactiveEvents,
+  } = require("voxa");
+
+  const CLIENT_ID = 'CLIENT_ID';
+  const CLIENT_SECRET = 'CLIENT_SECRET';
+
+  app["onMessaging.MessageReceived"](async (voxaEvent, reply) => {
+    const eventData = voxaEvent.rawEvent.request.message;
+
+    const event: OccasionEventBuilder = new OccasionEventBuilder();
+    event
+      .setOccasion(eventData.bookingType, OCCASION_TYPE.APPOINTMENT)
+      .setStatus(OCCASION_CONFIRMATION_STATUS.CONFIRMED)
+      .addContent("en-US", "brokerName", eventData.brokerName)
+      .addContent("en-US", "providerName", eventData.providerName)
+      .addContent("en-US", "subject", eventData.subject)
+      .setReferenceId(eventData.referenceId)
+      .setTimestamp(eventData.timestamp)
+      .setExpiryTime(eventData.expiryTime)
+      .setUnicast(eventData.userId);
+
+    const proactiveEvents = new ProactiveEvents(CLIENT_ID, CLIENT_SECRET);
+    await proactiveEvents.createEvent(endpoint, event, true);
+
+    return reply;
+  });
+
+- TrashCollectionAlertEventBuilder
+
+.. code-block:: javascript
+
+  const {
+    GARBAGE_COLLECTION_DAY,
+    GARBAGE_TYPE,
+    TrashCollectionAlertEventBuilder,
+    ProactiveEvents,
+  } = require("voxa");
+
+  const CLIENT_ID = 'CLIENT_ID';
+  const CLIENT_SECRET = 'CLIENT_SECRET';
+
+  app["onMessaging.MessageReceived"](async (voxaEvent, reply) => {
+    const eventData = voxaEvent.rawEvent.request.message;
+
+    const event: TrashCollectionAlertEventBuilder = new TrashCollectionAlertEventBuilder();
+    event
+      .setAlert(GARBAGE_COLLECTION_DAY.MONDAY,
+        GARBAGE_TYPE.BOTTLES,
+        GARBAGE_TYPE.BULKY,
+        GARBAGE_TYPE.CANS,
+        GARBAGE_TYPE.CLOTHING)
+      .setReferenceId(eventData.referenceId)
+      .setTimestamp(eventData.timestamp)
+      .setExpiryTime(eventData.expiryTime)
+      .setUnicast(eventData.userId);
+
+    const proactiveEvents = new ProactiveEvents(CLIENT_ID, CLIENT_SECRET);
+    await proactiveEvents.createEvent(endpoint, event, true);
+
+    return reply;
+  });
+
+- MediaContentEventBuilder
+
+.. code-block:: javascript
+
+  const {
+    MEDIA_CONTENT_METHOD,
+    MEDIA_CONTENT_TYPE,
+    MediaContentEventBuilder,
+    ProactiveEvents,
+  } = require("voxa");
+
+  const CLIENT_ID = 'CLIENT_ID';
+  const CLIENT_SECRET = 'CLIENT_SECRET';
+
+  app["onMessaging.MessageReceived"](async (voxaEvent, reply) => {
+    const eventData = voxaEvent.rawEvent.request.message;
+
+    const event: MediaContentEventBuilder = new MediaContentEventBuilder();
+    event
+      .setAvailability(MEDIA_CONTENT_METHOD.AIR)
+      .setContentType(MEDIA_CONTENT_TYPE.ALBUM)
+      .addContent("en-US", "providerName", eventData.providerName)
+      .addContent("en-US", "contentName", eventData.contentName)
+      .setReferenceId(eventData.referenceId)
+      .setTimestamp(eventData.timestamp)
+      .setExpiryTime(eventData.expiryTime)
+      .setUnicast(eventData.userId);
+
+    const proactiveEvents = new ProactiveEvents(CLIENT_ID, CLIENT_SECRET);
+    await proactiveEvents.createEvent(endpoint, event, true);
+
+    return reply;
+  });
+
+- SocialGameInviteEventBuilder
+
+.. code-block:: javascript
+
+  const {
+    SOCIAL_GAME_INVITE_TYPE,
+    SOCIAL_GAME_RELATIONSHIP_TO_INVITEE,
+    SocialGameInviteEventBuilder,
+    ProactiveEvents,
+  } = require("voxa");
+
+  const CLIENT_ID = 'CLIENT_ID';
+  const CLIENT_SECRET = 'CLIENT_SECRET';
+
+  app["onMessaging.MessageReceived"](async (voxaEvent, reply) => {
+    const eventData = voxaEvent.rawEvent.request.message;
+
+    const event: SocialGameInviteEventBuilder = new SocialGameInviteEventBuilder();
+    event
+      .setGame(SOCIAL_GAME_OFFER.GAME)
+      .setInvite(eventData.name, SOCIAL_GAME_INVITE_TYPE.CHALLENGE, SOCIAL_GAME_RELATIONSHIP_TO_INVITEE.CONTACT)
+      .addContent("en-US", "gameName", eventData.localizedValue)
+      .setReferenceId(eventData.referenceId)
+      .setTimestamp(eventData.timestamp)
+      .setExpiryTime(eventData.expiryTime)
+      .setUnicast(eventData.userId);
+
+    const proactiveEvents = new ProactiveEvents(CLIENT_ID, CLIENT_SECRET);
+    await proactiveEvents.createEvent(endpoint, event, true);
+
+    return reply;
+  });

@@ -20,39 +20,55 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import * as rp from "request-promise";
+import { EventBuilder } from "./EventBuilder";
 
-import { AuthenticationBase } from "./AuthenticationBase";
+/**
+ * Message Alert Events Builder class reference
+ */
+export class MessageAlertEventBuilder extends EventBuilder {
+  public messageGroup: any = {};
+  public state: any = {};
 
-export class Messaging extends AuthenticationBase {
-  /**
-   * Sends message to a skill
-   * https://developer.amazon.com/docs/smapi/skill-messaging-api-reference.html#skill-messaging-api-usage
-   */
-  public async sendMessage(request: IMessageRequest): Promise<any> {
-    const tokenResponse = await this.getAuthenticationToken("alexa:skill_messaging");
+  constructor() {
+    super("AMAZON.MessageAlert.Activated");
+  }
 
-    const options = {
-      body: {
-        data: request.data,
-        expiresAfterSeconds: request.expiresAfterSeconds || 3600,
-      },
-      headers: {
-        "Authorization": `Bearer ${tokenResponse.access_token}`,
-        "Content-Type": "application/json",
-      },
-      json: true, // Automatically parses the JSON string in the response
-      method: "POST",
-      uri: `${request.endpoint}/v1/skillmessages/users/${request.userId}`,
+  public setMessageGroup(
+    creatorName: string,
+    count: number,
+    urgency?: MESSAGE_ALERT_URGENCY): MessageAlertEventBuilder {
+    this.messageGroup = {
+      count,
+      creator: { name: creatorName },
+      urgency,
     };
 
-    return Promise.resolve(rp(options));
+    return this;
+  }
+
+  public setState(status: MESSAGE_ALERT_STATUS, freshness?: MESSAGE_ALERT_FRESHNESS): MessageAlertEventBuilder {
+    this.state = { status, freshness };
+    return this;
+  }
+
+  public getPayload(): any {
+    return {
+      messageGroup: this.messageGroup,
+      state: this.state,
+    };
   }
 }
 
-export interface IMessageRequest {
-  endpoint: string;
-  userId: string;
-  data: any;
-  expiresAfterSeconds?: number;
+export enum MESSAGE_ALERT_FRESHNESS {
+  NEW = "NEW",
+  OVERDUE = "OVERDUE",
+}
+
+export enum MESSAGE_ALERT_STATUS {
+  FLAGGED = "FLAGGED",
+  UNREAD = "UNREAD",
+}
+
+export enum MESSAGE_ALERT_URGENCY {
+  URGENT = "URGENT",
 }

@@ -23,36 +23,32 @@
 import * as rp from "request-promise";
 
 import { AuthenticationBase } from "./AuthenticationBase";
+import { EventBuilder } from "./proactiveEventBuilders/EventBuilder";
 
-export class Messaging extends AuthenticationBase {
+export class ProactiveEvents extends AuthenticationBase {
   /**
-   * Sends message to a skill
-   * https://developer.amazon.com/docs/smapi/skill-messaging-api-reference.html#skill-messaging-api-usage
+   * Creates proactive event
+   * https://developer.amazon.com/docs/smapi/proactive-events-api.html
    */
-  public async sendMessage(request: IMessageRequest): Promise<any> {
-    const tokenResponse = await this.getAuthenticationToken("alexa:skill_messaging");
+  public async createEvent(endpoint: string, body: EventBuilder, isDevelopment?: boolean): Promise<any> {
+    const tokenResponse = await this.getAuthenticationToken("alexa::proactive_events");
+    let uri = `${endpoint}/v1/proactiveEvents`;
+
+    if (isDevelopment) {
+      uri = `${uri}/stages/development`;
+    }
 
     const options = {
-      body: {
-        data: request.data,
-        expiresAfterSeconds: request.expiresAfterSeconds || 3600,
-      },
+      body: body.build(),
       headers: {
         "Authorization": `Bearer ${tokenResponse.access_token}`,
         "Content-Type": "application/json",
       },
       json: true, // Automatically parses the JSON string in the response
       method: "POST",
-      uri: `${request.endpoint}/v1/skillmessages/users/${request.userId}`,
+      uri,
     };
 
     return Promise.resolve(rp(options));
   }
-}
-
-export interface IMessageRequest {
-  endpoint: string;
-  userId: string;
-  data: any;
-  expiresAfterSeconds?: number;
 }

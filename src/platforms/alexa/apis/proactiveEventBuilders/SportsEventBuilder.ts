@@ -20,39 +20,50 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import * as rp from "request-promise";
+import { EventBuilder } from "./EventBuilder";
 
-import { AuthenticationBase } from "./AuthenticationBase";
+/**
+ * Sports Events Builder class reference
+ */
+export class SportsEventBuilder extends EventBuilder {
+  public sportsEvent: any = {};
+  public update: any = {};
 
-export class Messaging extends AuthenticationBase {
-  /**
-   * Sends message to a skill
-   * https://developer.amazon.com/docs/smapi/skill-messaging-api-reference.html#skill-messaging-api-usage
-   */
-  public async sendMessage(request: IMessageRequest): Promise<any> {
-    const tokenResponse = await this.getAuthenticationToken("alexa:skill_messaging");
+  constructor() {
+    super("AMAZON.SportsEvent.Updated");
+  }
 
-    const options = {
-      body: {
-        data: request.data,
-        expiresAfterSeconds: request.expiresAfterSeconds || 3600,
-      },
-      headers: {
-        "Authorization": `Bearer ${tokenResponse.access_token}`,
-        "Content-Type": "application/json",
-      },
-      json: true, // Automatically parses the JSON string in the response
-      method: "POST",
-      uri: `${request.endpoint}/v1/skillmessages/users/${request.userId}`,
+  public setAwayTeamStatistic(teamName: string, score: number): SportsEventBuilder {
+    return this.setTeamStatistic("awayTeamStatistic", teamName, score);
+  }
+
+  public setHomeTeamStatistic(teamName: string, score: number): SportsEventBuilder {
+    return this.setTeamStatistic("homeTeamStatistic", teamName, score);
+  }
+
+  public setUpdate(teamName: string, scoreEarned: number): SportsEventBuilder {
+    this.update = { scoreEarned, teamName };
+
+    return this;
+  }
+
+  public getPayload(): any {
+    this.sportsEvent.eventLeague = {
+      name: "localizedattribute:eventLeagueName",
     };
 
-    return Promise.resolve(rp(options));
+    return {
+      sportsEvent: this.sportsEvent,
+      update: this.update,
+    };
   }
-}
 
-export interface IMessageRequest {
-  endpoint: string;
-  userId: string;
-  data: any;
-  expiresAfterSeconds?: number;
+  private setTeamStatistic(statisticType: string, teamName: string, score: number): SportsEventBuilder {
+    this.sportsEvent[statisticType] = {
+      score,
+      team: { name: teamName },
+    };
+
+    return this;
+  }
 }

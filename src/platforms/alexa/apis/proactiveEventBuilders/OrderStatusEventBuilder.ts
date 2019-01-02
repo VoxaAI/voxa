@@ -20,39 +20,45 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import * as rp from "request-promise";
+import { EventBuilder } from "./EventBuilder";
 
-import { AuthenticationBase } from "./AuthenticationBase";
+/**
+ * Order Status Events Builder class reference
+ */
+export class OrderStatusEventBuilder extends EventBuilder {
+  public state: any = {};
 
-export class Messaging extends AuthenticationBase {
-  /**
-   * Sends message to a skill
-   * https://developer.amazon.com/docs/smapi/skill-messaging-api-reference.html#skill-messaging-api-usage
-   */
-  public async sendMessage(request: IMessageRequest): Promise<any> {
-    const tokenResponse = await this.getAuthenticationToken("alexa:skill_messaging");
+  constructor() {
+    super("AMAZON.OrderStatus.Updated");
+  }
 
-    const options = {
-      body: {
-        data: request.data,
-        expiresAfterSeconds: request.expiresAfterSeconds || 3600,
+  public setStatus(status: ORDER_STATUS, expectedArrival?: string, enterTimestamp?: string): OrderStatusEventBuilder {
+    this.state = { status, enterTimestamp };
+
+    if (expectedArrival) {
+      this.state.deliveryDetails = { expectedArrival };
+    }
+
+    return this;
+  }
+
+  public getPayload(): any {
+    return {
+      order: {
+        seller: {
+          name: "localizedattribute:sellerName",
+        },
       },
-      headers: {
-        "Authorization": `Bearer ${tokenResponse.access_token}`,
-        "Content-Type": "application/json",
-      },
-      json: true, // Automatically parses the JSON string in the response
-      method: "POST",
-      uri: `${request.endpoint}/v1/skillmessages/users/${request.userId}`,
+      state: this.state,
     };
-
-    return Promise.resolve(rp(options));
   }
 }
 
-export interface IMessageRequest {
-  endpoint: string;
-  userId: string;
-  data: any;
-  expiresAfterSeconds?: number;
+export enum ORDER_STATUS {
+  ORDER_DELIVERED = "ORDER_DELIVERED",
+  ORDER_OUT_FOR_DELIVERY = "ORDER_OUT_FOR_DELIVERY",
+  ORDER_PREPARING = "ORDER_PREPARING",
+  ORDER_RECEIVED = "ORDER_RECEIVED",
+  ORDER_SHIPPED = "ORDER_SHIPPED",
+  PREORDER_RECEIVED = "PREORDER_RECEIVED",
 }

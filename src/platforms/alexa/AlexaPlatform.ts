@@ -58,6 +58,7 @@ const AlexaRequests = [
   "PlaybackController.PauseCommandIssued",
   "PlaybackController.PlayCommandIssued",
   "PlaybackController.PreviousCommandIssued",
+  "AlexaSkillEvent.ProactiveSubscriptionChanged",
   "AlexaSkillEvent.SkillAccountLinked",
   "AlexaSkillEvent.SkillEnabled",
   "AlexaSkillEvent.SkillDisabled",

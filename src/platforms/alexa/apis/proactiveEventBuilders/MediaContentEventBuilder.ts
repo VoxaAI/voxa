@@ -20,39 +20,61 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import * as rp from "request-promise";
+import { EventBuilder } from "./EventBuilder";
 
-import { AuthenticationBase } from "./AuthenticationBase";
+/**
+ * Media Content Events Builder class reference
+ */
+export class MediaContentEventBuilder extends EventBuilder {
+  public availability: any = {};
+  public content: any = {};
 
-export class Messaging extends AuthenticationBase {
-  /**
-   * Sends message to a skill
-   * https://developer.amazon.com/docs/smapi/skill-messaging-api-reference.html#skill-messaging-api-usage
-   */
-  public async sendMessage(request: IMessageRequest): Promise<any> {
-    const tokenResponse = await this.getAuthenticationToken("alexa:skill_messaging");
+  constructor() {
+    super("AMAZON.MediaContent.Available");
+  }
 
-    const options = {
-      body: {
-        data: request.data,
-        expiresAfterSeconds: request.expiresAfterSeconds || 3600,
+  public setAvailability(method: MEDIA_CONTENT_METHOD): MediaContentEventBuilder {
+    this.availability = {
+      method,
+      provider: {
+        name: "localizedattribute:providerName",
       },
-      headers: {
-        "Authorization": `Bearer ${tokenResponse.access_token}`,
-        "Content-Type": "application/json",
-      },
-      json: true, // Automatically parses the JSON string in the response
-      method: "POST",
-      uri: `${request.endpoint}/v1/skillmessages/users/${request.userId}`,
+      startTime: new Date().toISOString(),
     };
 
-    return Promise.resolve(rp(options));
+    return this;
+  }
+
+  public setContentType(contentType: MEDIA_CONTENT_TYPE): MediaContentEventBuilder {
+    this.content = {
+      contentType,
+      name: "localizedattribute:contentName",
+    };
+
+    return this;
+  }
+
+  public getPayload(): any {
+    return {
+      availability: this.availability,
+      content: this.content,
+    };
   }
 }
 
-export interface IMessageRequest {
-  endpoint: string;
-  userId: string;
-  data: any;
-  expiresAfterSeconds?: number;
+export enum MEDIA_CONTENT_METHOD {
+  AIR = "AIR",
+  DROP = "DROP",
+  PREMIERE = "PREMIERE",
+  RELEASE = "RELEASE",
+  STREAM = "STREAM",
+}
+
+export enum MEDIA_CONTENT_TYPE {
+  ALBUM = "ALBUM",
+  BOOK = "BOOK",
+  EPISODE = "EPISODE",
+  GAME = "GAME",
+  MOVIE = "MOVIE",
+  SINGLE = "SINGLE",
 }

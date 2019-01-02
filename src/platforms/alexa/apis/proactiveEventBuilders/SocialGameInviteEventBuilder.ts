@@ -20,39 +20,63 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import * as rp from "request-promise";
+import { EventBuilder } from "./EventBuilder";
 
-import { AuthenticationBase } from "./AuthenticationBase";
+/**
+ * Social Game Invite Events Builder class reference
+ */
+export class SocialGameInviteEventBuilder extends EventBuilder {
+  public game: any = {};
+  public invite: any = {};
 
-export class Messaging extends AuthenticationBase {
-  /**
-   * Sends message to a skill
-   * https://developer.amazon.com/docs/smapi/skill-messaging-api-reference.html#skill-messaging-api-usage
-   */
-  public async sendMessage(request: IMessageRequest): Promise<any> {
-    const tokenResponse = await this.getAuthenticationToken("alexa:skill_messaging");
+  constructor() {
+    super("AMAZON.SocialGameInvite.Available");
+  }
 
-    const options = {
-      body: {
-        data: request.data,
-        expiresAfterSeconds: request.expiresAfterSeconds || 3600,
-      },
-      headers: {
-        "Authorization": `Bearer ${tokenResponse.access_token}`,
-        "Content-Type": "application/json",
-      },
-      json: true, // Automatically parses the JSON string in the response
-      method: "POST",
-      uri: `${request.endpoint}/v1/skillmessages/users/${request.userId}`,
+  public setGame(offer: SOCIAL_GAME_OFFER): SocialGameInviteEventBuilder {
+    this.game = {
+      name: "localizedattribute:gameName",
+      offer,
     };
 
-    return Promise.resolve(rp(options));
+    return this;
+  }
+
+  public setInvite(
+    name: string,
+    inviteType: SOCIAL_GAME_INVITE_TYPE,
+    relationshipToInvitee: SOCIAL_GAME_RELATIONSHIP_TO_INVITEE): SocialGameInviteEventBuilder {
+    this.invite = {
+      inviteType,
+      inviter: {
+        name,
+      },
+      relationshipToInvitee,
+    };
+
+    return this;
+  }
+
+  public getPayload(): any {
+    return {
+      game: this.game,
+      invite: this.invite,
+    };
   }
 }
 
-export interface IMessageRequest {
-  endpoint: string;
-  userId: string;
-  data: any;
-  expiresAfterSeconds?: number;
+export enum SOCIAL_GAME_INVITE_TYPE {
+  CHALLENGE = "CHALLENGE",
+  INVITE = "INVITE",
+}
+
+export enum SOCIAL_GAME_OFFER {
+  GAME = "GAME",
+  MATCH = "MATCH",
+  REMATCH = "REMATCH",
+}
+
+export enum SOCIAL_GAME_RELATIONSHIP_TO_INVITEE {
+  CONTACT = "CONTACT",
+  FRIEND = "FRIEND",
 }
