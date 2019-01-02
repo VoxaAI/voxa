@@ -80,6 +80,10 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
       this.response.shouldEndSession = false;
     }
 
+    if (isPlain) {
+      return;
+    }
+
     let ssml: string = _.get(
       this.response,
       "outputSpeech.ssml",

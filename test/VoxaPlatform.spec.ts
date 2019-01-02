@@ -30,6 +30,7 @@ import {
   HttpMethod as AzureHttpMethod,
 } from "azure-functions-ts-essentials";
 import { expect } from "chai";
+import { LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
 import * as portfinder from "portfinder";
 import * as rp from "request-promise";
@@ -191,7 +192,6 @@ describe("VoxaPlatform", () => {
 
     beforeEach(() => {
       processData = _.clone(process.env);
-      process.env.DEBUG = "voxa";
       app.onIntent("LaunchIntent", {
         flow: "continue",
         to: "someState",
@@ -212,6 +212,25 @@ describe("VoxaPlatform", () => {
       alexaLaunch = rb.getIntentRequest("LaunchIntent");
       /* tslint:disable-next-line:no-var-requires */
       dialogFlowLaunch = require("./requests/dialogflow/launchIntent.json");
+    });
+
+    it("should enable logging when setting the DEBUG=voxa environment variable", async () => {
+      process.env.DEBUG = "voxa";
+      let options: LambdaLogOptions = {};
+      class Suit extends AlexaPlatform {
+        protected getLogOptions(
+          executionContext?: AWSLambdaContext | AzureContext,
+        ): LambdaLogOptions {
+          options = super.getLogOptions(executionContext);
+
+          return options;
+        }
+      }
+
+      const suit = new Suit(app);
+      const reply = await suit.execute(alexaLaunch);
+      expect(options.debug).to.be.true;
+      expect(options.dev).to.be.true;
     });
 
     it("should register states as platform specific", async () => {

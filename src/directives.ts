@@ -166,14 +166,21 @@ export class Text implements IDirective {
   public static key: string = "text";
   public static platform: string = "core";
 
-  constructor(public viewPath: string) {}
+  constructor(public viewPaths: string | string[]) {}
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
     transition: ITransition,
   ): Promise<void> {
-    const text = await event.renderer.renderPath(this.viewPath, event);
-    reply.addStatement(text, true);
+    let viewPaths = this.viewPaths;
+    if (_.isString(viewPaths)) {
+      viewPaths = [viewPaths];
+    }
+
+    await bluebird.mapSeries(viewPaths, async (view: string) => {
+      const statement = await event.renderer.renderPath(view, event);
+      reply.addStatement(sampleOrItem(statement, event.platform), true);
+    });
   }
 }
 

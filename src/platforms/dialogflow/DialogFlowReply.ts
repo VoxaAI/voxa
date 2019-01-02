@@ -73,12 +73,26 @@ export class DialogFlowReply implements IVoxaReply {
     this.outputContexts = dialogFlowEvent.google.conv.contexts._serialize();
   }
 
-  public get speech() {
-    return this.fulfillmentText;
+  public get speech(): string {
+    const richResponse = this.payload.google.richResponse;
+    if (!richResponse) {
+      return "";
+    }
+
+    const simpleResponseItem = _.find(
+      richResponse.items,
+      (item) => !!item.simpleResponse,
+    );
+
+    if (!simpleResponseItem) {
+      return "";
+    }
+
+    return simpleResponseItem.simpleResponse!.textToSpeech || "";
   }
 
   public get hasMessages(): boolean {
-    return this.fulfillmentText !== "";
+    return !!this.getSimpleResponse().textToSpeech;
   }
 
   public get hasDirectives(): boolean {
@@ -112,10 +126,10 @@ export class DialogFlowReply implements IVoxaReply {
   }
 
   public addStatement(statement: string, isPlain: boolean = false) {
-    this.fulfillmentText = addToSSML(this.fulfillmentText, statement);
     const simpleResponse: GoogleActionsV2SimpleResponse = this.getSimpleResponse();
 
     if (isPlain) {
+      this.fulfillmentText = addToText(this.fulfillmentText, statement);
       simpleResponse.displayText = addToText(
         simpleResponse.displayText,
         statement,

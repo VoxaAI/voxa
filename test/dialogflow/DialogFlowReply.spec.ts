@@ -20,7 +20,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { BasicCard, RichResponse, SignIn } from "actions-on-google";
+import {
+  BasicCard,
+  RichResponse,
+  SignIn,
+  Suggestions,
+} from "actions-on-google";
 import { expect } from "chai";
 import * as _ from "lodash";
 import { DialogFlowReply } from "../../src/platforms/dialogflow";
@@ -79,6 +84,27 @@ describe("DialogFlowReply", () => {
     });
   });
 
+  describe("speech", () => {
+    it("should return an empty string for a new reply", () => {
+      expect(reply.speech).to.equal("");
+    });
+
+    it("should return an empty string for a reply without a simple response", () => {
+      const suggestions = new Suggestions("suggestion");
+      const richResponse = new RichResponse();
+      richResponse.addSuggestion(suggestions);
+
+      reply.payload.google.richResponse = richResponse;
+      expect(reply.speech).to.equal("");
+    });
+  });
+
+  describe("hasMessages", () => {
+    it("should return false for a new reply", () => {
+      expect(reply.hasMessages).to.be.false;
+    });
+  });
+
   describe("addStatement", () => {
     it("should add to both the speech and richResponse", () => {
       reply.addStatement("THIS IS A TEST");
@@ -98,7 +124,7 @@ describe("DialogFlowReply", () => {
       reply.clear();
 
       expect(reply.speech).to.equal("");
-      expect(_.get(reply, "payload.google.richResponse")).to.be.undefined;
+      expect(reply.payload.google.richResponse).to.be.undefined;
       expect(reply.payload.google.noInputPrompts).to.be.empty;
     });
   });

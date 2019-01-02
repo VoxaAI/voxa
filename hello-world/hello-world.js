@@ -39,7 +39,8 @@ app.onIntent("input.welcome", {
 });
 
 app.onState("LaunchIntent", {
-  ask: "launch",
+  say: "launch",
+  text: "launch",
   to: "likesVoxa?",
   flow: "yield"
 });
@@ -53,7 +54,9 @@ app.onBeforeReplySent(request => {
 app.onState(
   "likesVoxa?",
   {
-    tell: "doesLikeVoxa"
+    flow: "terminate",
+    say: "doesLikeVoxa",
+    text: "doesLikeVoxa"
   },
   "YesIntent"
 );
@@ -61,7 +64,9 @@ app.onState(
 app.onState(
   "likesVoxa?",
   {
-    tell: "doesNotLikeVoxa"
+    flow: "terminate",
+    say: "doesNotLikeVoxa",
+    text: "doesNotLikeVoxa"
   },
   "NoIntent"
 );

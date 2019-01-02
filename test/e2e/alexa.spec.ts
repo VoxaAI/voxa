@@ -38,25 +38,21 @@ describe("Hello World Alexa", () => {
 
   it("Runs the alexa skill and like's voxa", async () => {
     let reply = await alexa.launch();
-    expect(reply.response.outputSpeech.ssml).to.include(
-      "Welcome to this voxa app, are you enjoying voxa so far?",
+    expect(reply.prompt()).to.equal(
+      "<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>",
     );
 
     reply = (await alexa.utter("yes")) as SkillResponse;
-    expect(reply.response.outputSpeech.ssml).to.include(
-      views.en.translation.doesLikeVoxa,
-    );
+    expect(reply.prompt()).to.include(views.en.translation.doesLikeVoxa);
   });
 
   it("Runs the alexa skill and does not like voxa", async () => {
     let reply = await alexa.launch();
-    expect(reply.response.outputSpeech.ssml).to.include(
-      "Welcome to this voxa app, are you enjoying voxa so far?",
+    expect(reply.prompt()).to.equal(
+      "<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>",
     );
 
     reply = (await alexa.utter("no")) as SkillResponse;
-    expect(reply.response.outputSpeech.ssml).to.include(
-      views.en.translation.doesNotLikeVoxa,
-    );
+    expect(reply.prompt()).to.include(views.en.translation.doesNotLikeVoxa);
   });
 });
