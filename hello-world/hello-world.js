@@ -39,7 +39,7 @@ app.onIntent("input.welcome", {
 });
 
 app.onState("LaunchIntent", {
-  ask: "launch",
+  say: "launch",
   text: "launch",
   to: "likesVoxa?",
   flow: "yield"
