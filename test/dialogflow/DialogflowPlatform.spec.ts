@@ -21,11 +21,11 @@
  */
 
 import { expect } from "chai";
-import { DialogFlowPlatform, DialogFlowReply } from "../../src";
+import { DialogflowPlatform, DialogflowReply } from "../../src";
 import { VoxaApp } from "../../src/VoxaApp";
 import { views } from "../views";
 
-describe("DialogFlowPlatform", () => {
+describe("DialogflowPlatform", () => {
   describe("execute", () => {
     it("should convert the voxaReply to a Dialog Flow response", async () => {
       const rawEvent = require("../requests/dialogflow/launchIntent.json");
@@ -35,10 +35,10 @@ describe("DialogFlowPlatform", () => {
         say: "LaunchIntent.OpenResponse",
       }));
 
-      const platform = new DialogFlowPlatform(voxaApp);
+      const platform = new DialogflowPlatform(voxaApp);
 
-      const reply = (await platform.execute(rawEvent)) as DialogFlowReply;
-      expect(reply.speech).to.equal("<speak>Hello from DialogFlow</speak>");
+      const reply = (await platform.execute(rawEvent)) as DialogflowReply;
+      expect(reply.speech).to.equal("<speak>Hello from Dialogflow</speak>");
     });
 
     it("should not close the session on Help Intent", async () => {
@@ -50,9 +50,9 @@ describe("DialogFlowPlatform", () => {
         to: "entry",
       });
 
-      const platform = new DialogFlowPlatform(voxaApp);
+      const platform = new DialogflowPlatform(voxaApp);
 
-      const reply = (await platform.execute(rawEvent)) as DialogFlowReply;
+      const reply = (await platform.execute(rawEvent)) as DialogflowReply;
       expect(reply.speech).to.equal("<speak>This is the help</speak>");
       expect(reply.payload.google.expectUserResponse).to.be.true;
     });

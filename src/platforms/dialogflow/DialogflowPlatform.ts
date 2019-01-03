@@ -27,8 +27,8 @@ import { VoxaApp } from "../../VoxaApp";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
 import { IVoxaPlatformConfig, VoxaPlatform } from "../VoxaPlatform";
-import { DialogFlowEvent } from "./DialogFlowEvent";
-import { DialogFlowReply } from "./DialogFlowReply";
+import { DialogflowEvent } from "./DialogflowEvent";
+import { DialogflowReply } from "./DialogflowReply";
 import {
   AccountLinkingCard,
   BasicCard,
@@ -54,21 +54,21 @@ import {
   UpdatePermission,
 } from "./directives";
 
-export interface IDialogFlowPlatformConfig extends IVoxaPlatformConfig {
+export interface IDialogflowPlatformConfig extends IVoxaPlatformConfig {
   clientId?: string; // id used to verify user's identify from Google Sign-In
 }
 
-export class DialogFlowPlatform extends VoxaPlatform {
+export class DialogflowPlatform extends VoxaPlatform {
   public name = "dialogflow";
-  protected EventClass = DialogFlowEvent;
+  protected EventClass = DialogflowEvent;
 
-  constructor(app: VoxaApp, config: IDialogFlowPlatformConfig = {}) {
+  constructor(app: VoxaApp, config: IDialogflowPlatformConfig = {}) {
     super(app, config);
     app.onBeforeReplySent(this.saveStorage, true, this.name);
   }
 
-  protected getReply(event: DialogFlowEvent) {
-    return new DialogFlowReply(event.google.conv);
+  protected getReply(event: DialogflowEvent) {
+    return new DialogflowReply(event.google.conv);
   }
 
   protected saveStorage(
@@ -76,14 +76,14 @@ export class DialogFlowPlatform extends VoxaPlatform {
     reply: IVoxaReply,
     transition: ITransition,
   ) {
-    const { conv } = (voxaEvent as DialogFlowEvent).google;
-    const dialogFlowReply = reply as DialogFlowReply;
+    const { conv } = (voxaEvent as DialogflowEvent).google;
+    const dialogflowReply = reply as DialogflowReply;
 
     if (_.isEmpty(conv.user.storage)) {
-      dialogFlowReply.payload.google.resetUserStorage = true;
-      delete dialogFlowReply.payload.google.userStorage;
+      dialogflowReply.payload.google.resetUserStorage = true;
+      delete dialogflowReply.payload.google.userStorage;
     } else {
-      dialogFlowReply.payload.google.userStorage = conv.user._serialize();
+      dialogflowReply.payload.google.userStorage = conv.user._serialize();
     }
   }
 

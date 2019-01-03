@@ -1,6 +1,6 @@
-export { DialogFlowEvent } from "./DialogFlowEvent";
-export { DialogFlowReply } from "./DialogFlowReply";
-export { DialogFlowPlatform } from "./DialogFlowPlatform";
+export { DialogflowEvent } from "./DialogflowEvent";
+export { DialogflowReply } from "./DialogflowReply";
+export { DialogflowPlatform } from "./DialogflowPlatform";
 export {
   AccountLinkingCard,
   BasicCard,

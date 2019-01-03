@@ -4,8 +4,8 @@ import { IDirective } from "../../../directives";
 import { ITransition } from "../../../StateMachine";
 import { IVoxaEvent } from "../../../VoxaEvent";
 import { IVoxaReply } from "../../../VoxaReply";
-import { DialogFlowEvent } from "../DialogFlowEvent";
-import { DialogFlowReply } from "../DialogFlowReply";
+import { DialogflowEvent } from "../DialogflowEvent";
+import { DialogflowReply } from "../DialogflowReply";
 
 export class FacebookAccountLink implements IDirective {
   public static platform: string = "dialogflow";
@@ -18,10 +18,10 @@ export class FacebookAccountLink implements IDirective {
     event: IVoxaEvent,
     transition: ITransition,
   ): Promise<void> {
-    const dialogFlowReply = (reply as DialogFlowReply);
+    const dialogflowReply = (reply as DialogflowReply);
 
-    dialogFlowReply.source = "facebook";
-    dialogFlowReply.payload.facebook = {
+    dialogflowReply.source = "facebook";
+    dialogflowReply.payload.facebook = {
       attachment: {
         payload: {
           buttons: [
@@ -31,7 +31,7 @@ export class FacebookAccountLink implements IDirective {
             },
           ],
           template_type: "button",
-          text: dialogFlowReply.fulfillmentText,
+          text: dialogflowReply.fulfillmentText,
         },
         type: "template",
       },
@@ -68,15 +68,15 @@ export class FacebookSuggestionChips implements IDirective {
       suggestionChips.push(button);
     });
 
-    const dialogFlowReply = (reply as DialogFlowReply);
+    const dialogflowReply = (reply as DialogflowReply);
 
-    dialogFlowReply.source = "facebook";
-    dialogFlowReply.payload.facebook = {
+    dialogflowReply.source = "facebook";
+    dialogflowReply.payload.facebook = {
       attachment: {
         payload: {
           buttons: suggestionChips,
           template_type: "button",
-          text: dialogFlowReply.fulfillmentText,
+          text: dialogflowReply.fulfillmentText,
         },
         type: "template",
       },

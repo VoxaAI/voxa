@@ -80,12 +80,12 @@ export {
   SuggestedActions,
 } from "./platforms/botframework";
 export {
-  DialogFlowReply,
-  DialogFlowPlatform,
-  AccountLinkingCard as DialogFlowAccountLinkingCard,
+  DialogflowReply,
+  DialogflowPlatform,
+  AccountLinkingCard as DialogflowAccountLinkingCard,
   BasicCard,
   Carousel,
-  DialogFlowEvent,
+  DialogflowEvent,
   FacebookAccountLink,
   FacebookSuggestionChips,
   List,

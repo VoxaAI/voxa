@@ -28,4 +28,4 @@ You can also get more per platform debugging information with
 
 ``DEBUG=voxa:botframework``
 
-``DEBUG=voxa:dialogFlow``
+``DEBUG=voxa:dialogflow``

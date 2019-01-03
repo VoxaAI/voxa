@@ -30,9 +30,9 @@ import { DialogflowConversation } from "actions-on-google";
 import * as _ from "lodash";
 import { IBag, IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
-import { DialogFlowEvent } from "./DialogFlowEvent";
+import { DialogflowEvent } from "./DialogflowEvent";
 
-export interface IDialogFlowPayload {
+export interface IDialogflowPayload {
   facebook?: {
     attachment: {
       payload: any;
@@ -53,11 +53,11 @@ export interface IDialogFlowPayload {
   };
 }
 
-export class DialogFlowReply implements IVoxaReply {
+export class DialogflowReply implements IVoxaReply {
   public outputContexts: GoogleCloudDialogflowV2Context[] = [];
   public fulfillmentText: string = "";
   public source: string = "google";
-  public payload: IDialogFlowPayload;
+  public payload: IDialogflowPayload;
 
   constructor(conv: DialogflowConversation) {
     this.payload = {
@@ -70,13 +70,13 @@ export class DialogFlowReply implements IVoxaReply {
   }
 
   public async saveSession(attributes: IBag, event: IVoxaEvent): Promise<void> {
-    const dialogFlowEvent = event as DialogFlowEvent;
+    const dialogflowEvent = event as DialogflowEvent;
     const serializedData = JSON.stringify(attributes);
-    dialogFlowEvent.google.conv.contexts.set("attributes", 10000, {
+    dialogflowEvent.google.conv.contexts.set("attributes", 10000, {
       attributes: serializedData,
     });
 
-    this.outputContexts = dialogFlowEvent.google.conv.contexts._serialize();
+    this.outputContexts = dialogflowEvent.google.conv.contexts._serialize();
   }
 
   public get speech(): string {
