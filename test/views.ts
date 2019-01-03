@@ -160,6 +160,10 @@ export const views = {
       ExitIntent: {
         Farewell: "Ok. For more info visit {site} site.",
       },
+      FacebookSuggestions: {
+        facebookSuggestionChips: ["Suggestion 1", "Suggestion 2"],
+        text: "Pick a suggestion",
+      },
       Help: "This is the help",
       HelpIntent: {
         HelpAboutSkill: "For more help visit www.rain.agency",
