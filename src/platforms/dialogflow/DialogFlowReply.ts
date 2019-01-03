@@ -33,6 +33,12 @@ import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 import { DialogFlowEvent } from "./DialogFlowEvent";
 
 export interface IDialogFlowPayload {
+  facebook?: {
+    attachment: {
+      payload: any;
+      type: string;
+    };
+  };
   google: {
     expectUserResponse: boolean;
     noInputPrompts?: any[];

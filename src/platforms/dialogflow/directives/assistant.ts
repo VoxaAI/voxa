@@ -35,12 +35,12 @@ import {
 } from "actions-on-google";
 import * as _ from "lodash";
 
-import { IDirective, IDirectiveClass } from "../../directives";
-import { ITransition } from "../../StateMachine";
-import { IVoxaEvent } from "../../VoxaEvent";
-import { IVoxaReply } from "../../VoxaReply";
-import { DialogFlowEvent } from "./DialogFlowEvent";
-import { DialogFlowReply } from "./DialogFlowReply";
+import { IDirective, IDirectiveClass } from "../../../directives";
+import { ITransition } from "../../../StateMachine";
+import { IVoxaEvent } from "../../../VoxaEvent";
+import { IVoxaReply } from "../../../VoxaReply";
+import { DialogFlowEvent } from "../DialogFlowEvent";
+import { DialogFlowReply } from "../DialogFlowReply";
 
 abstract class DialogFlowDirective<IOptions> {
   constructor(public options: IOptions, public requiredCapability?: string) {}

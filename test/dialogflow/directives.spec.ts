@@ -1044,4 +1044,58 @@ describe("DialogFlow Directives", () => {
       });
     });
   });
+
+  describe("FacebookAccountLink", () => {
+    it("should add a facebook account link card", async () => {
+      app.onIntent("LaunchIntent", {
+        facebookAccountLink: "https://www.messenger.com",
+        flow: "yield",
+        sayp: "Say!",
+        textp: "Text!",
+        to: "entry",
+      });
+
+      const reply = await dialogFlowAgent.execute(event);
+      expect(reply.payload.facebook.attachment.payload).to.deep.equal({
+        buttons: [
+          {
+            type: "account_link",
+            url: "https://www.messenger.com",
+          },
+        ],
+        template_type: "button",
+        text: "Text!",
+      });
+    });
+  });
+
+  describe("FacebookSuggestionChips", () => {
+    it("should add a FacebookSuggestionChips", async () => {
+      app.onIntent("LaunchIntent", {
+        facebookSuggestionChips: ["yes", "no"],
+        flow: "yield",
+        sayp: "Say!",
+        textp: "Text!",
+        to: "entry",
+      });
+
+      const reply = await dialogFlowAgent.execute(event);
+      expect(reply.payload.facebook.attachment.payload).to.deep.equal({
+        buttons: [
+          {
+            payload: "yes",
+            title: "yes",
+            type: "postback",
+          },
+          {
+            payload: "no",
+            title: "no",
+            type: "postback",
+          },
+        ],
+        template_type: "button",
+        text: "Text!",
+      });
+    });
+  });
 });

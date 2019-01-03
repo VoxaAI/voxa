@@ -86,6 +86,8 @@ export {
   BasicCard,
   Carousel,
   DialogFlowEvent,
+  FacebookAccountLink,
+  FacebookSuggestionChips,
   List,
   MediaResponse,
   Suggestions,
