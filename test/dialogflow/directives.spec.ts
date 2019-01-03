@@ -1070,6 +1070,32 @@ describe("DialogFlow Directives", () => {
   });
 
   describe("FacebookSuggestionChips", () => {
+    it("should add a FacebookSuggestionChips using a reply view", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        reply: "FacebookSuggestions",
+        to: "entry",
+      });
+
+      const reply = await dialogFlowAgent.execute(event);
+      expect(reply.payload.facebook.attachment.payload).to.deep.equal({
+        buttons: [
+          {
+            payload: "Suggestion 1",
+            title: "Suggestion 1",
+            type: "postback",
+          },
+          {
+            payload: "Suggestion 2",
+            title: "Suggestion 2",
+            type: "postback",
+          },
+        ],
+        template_type: "button",
+        text: "Pick a suggestion",
+      });
+    });
+
     it("should add a FacebookSuggestionChips", async () => {
       app.onIntent("LaunchIntent", {
         facebookSuggestionChips: ["yes", "no"],

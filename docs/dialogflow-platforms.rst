@@ -16,7 +16,7 @@ Facebook Messenger
 The ``DialogflowPlatform`` for voxa has available some of the core functionalities to send to your chatbot in responses. For now, you can integrate:
 
 - Account Linking buttons
-You need to include in your controller the following field: ``facebookAccountLink``, which takes a URL to go into the account linking flow.
+You need to include in your controller the following field: ``facebookAccountLink``, which takes a URL to go into the account linking flow. For more information about the account linking flow, check how to add a `Log In Button <https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#login>`_, and `Account Linking <https://developers.facebook.com/docs/messenger-platform/identity/account-linking>`_.
 
 .. code-block:: javascript
 
@@ -27,7 +27,7 @@ You need to include in your controller the following field: ``facebookAccountLin
   });
 
 - Postbacks buttons (Suggestion chips)
-You need to include in your controller the following field: ``facebookSuggestionChips``, which could be a simple string that the Voxa renderer will get from your views file with an array of strings, or directly an array of strings.
+You need to include in your controller the following field: ``facebookSuggestionChips``, which could be a simple string that the Voxa renderer will get from your views file with an array of strings, or directly an array of strings. For more information about this, check how to add `Postback Buttons <https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback>`_.
 
 .. code-block:: javascript
 
