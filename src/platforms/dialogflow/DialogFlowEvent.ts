@@ -40,6 +40,7 @@ export class DialogFlowEvent extends VoxaEvent {
   public session!: DialogFlowSession;
   public google!: { conv: DialogflowConversation };
   public intent: DialogFlowIntent;
+  public source: string = "";
 
   constructor(
     rawEvent: GoogleCloudDialogflowV2WebhookRequest,
@@ -84,16 +85,19 @@ export class DialogFlowEvent extends VoxaEvent {
    * After that we'll default to the userStorage value
    */
   protected initUser(): void {
+    const { originalDetectIntentRequest } = this.rawEvent;
     const { conv } = this.google;
     const storage = conv.user.storage as any;
-    let userId: string;
+    let userId: string = "";
+
+    this.source = _.get(originalDetectIntentRequest, "source") || "google";
 
     if (_.get(storage, "voxa.userId")) {
       userId = storage.voxa.userId;
     } else if (conv.user.id) {
       userId = conv.user.id;
-    } else {
-      userId = v1();
+    } else if (this.source === "facebook") {
+      userId = _.get(originalDetectIntentRequest, "payload.data.sender.id");
     }
 
     storage.voxa = { userId };

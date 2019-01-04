@@ -1055,6 +1055,8 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
       const reply = await dialogFlowAgent.execute(event);
       expect(reply.payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
@@ -1076,6 +1078,8 @@ describe("DialogFlow Directives", () => {
         reply: "FacebookSuggestions",
         to: "entry",
       });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
       const reply = await dialogFlowAgent.execute(event);
       expect(reply.payload.facebook.attachment.payload).to.deep.equal({
@@ -1104,6 +1108,8 @@ describe("DialogFlow Directives", () => {
         textp: "Text!",
         to: "entry",
       });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
       const reply = await dialogFlowAgent.execute(event);
       expect(reply.payload.facebook.attachment.payload).to.deep.equal({

@@ -10,6 +10,9 @@ import { views } from "../views";
 const launchIntent = require("../requests/dialogflow/launchIntent.json");
 
 /* tslint:disable-next-line:no-var-requires */
+const facebookLaunchIntent = require("../requests/dialogflow/facebookLaunchIntent.json");
+
+/* tslint:disable-next-line:no-var-requires */
 const optionIntent = require("../requests/dialogflow/actions.intent.OPTION.json");
 
 /* tslint:disable-next-line:no-var-requires */
@@ -174,6 +177,13 @@ describe("DialogFlowEvent", () => {
         "status": "OK",
       },
     });
+  });
+});
+
+describe("Facebook Messenger", () => {
+  it("should get the right userId for Facebook Messenger", async () => {
+    const event = new DialogFlowEvent(facebookLaunchIntent, {});
+    expect(event.user.id).to.equal("1234567890");
   });
 });
 
