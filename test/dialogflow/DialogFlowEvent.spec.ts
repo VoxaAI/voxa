@@ -10,6 +10,9 @@ import { views } from "../views";
 const launchIntent = require("../requests/dialogflow/launchIntent.json");
 
 /* tslint:disable-next-line:no-var-requires */
+const facebookLaunchIntent = require("../requests/dialogflow/facebookLaunchIntent.json");
+
+/* tslint:disable-next-line:no-var-requires */
 const optionIntent = require("../requests/dialogflow/actions.intent.OPTION.json");
 
 /* tslint:disable-next-line:no-var-requires */
@@ -178,32 +181,9 @@ describe("DialogFlowEvent", () => {
 });
 
 describe("Facebook Messenger", () => {
-  let event: any;
-  let app: VoxaApp;
-  let dialogFlowAgent: DialogFlowPlatform;
-
-  beforeEach(() => {
-    app = new VoxaApp({ views, variables });
-    dialogFlowAgent = new DialogFlowPlatform(app);
-    event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
-  });
-
   it("should get the right userId for Facebook Messenger", async () => {
-    app.onIntent("LaunchIntent", (voxaEvent: DialogFlowEvent) => {
-      voxaEvent.model.userId = voxaEvent.user.userId;
-
-      return {
-        flow: "yield",
-        sayp: "Say!",
-        textp: "Text!",
-        to: "entry",
-      };
-    });
-
-    const reply = await dialogFlowAgent.execute(event);
-    const attributesJson = JSON.parse(reply.outputContexts[0].parameters.attributes);
-
-    expect(attributesJson.model.userId).to.equal("1234567890");
+    const event = new DialogFlowEvent(facebookLaunchIntent, {});
+    expect(event.user.id).to.equal("1234567890");
   });
 });
 
