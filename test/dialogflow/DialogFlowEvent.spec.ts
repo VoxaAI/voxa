@@ -177,6 +177,36 @@ describe("DialogFlowEvent", () => {
   });
 });
 
+describe("Facebook Messenger", () => {
+  let event: any;
+  let app: VoxaApp;
+  let dialogFlowAgent: DialogFlowPlatform;
+
+  beforeEach(() => {
+    app = new VoxaApp({ views, variables });
+    dialogFlowAgent = new DialogFlowPlatform(app);
+    event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+  });
+
+  it("should get the right userId for Facebook Messenger", async () => {
+    app.onIntent("LaunchIntent", (voxaEvent: DialogFlowEvent) => {
+      voxaEvent.model.userId = voxaEvent.user.userId;
+
+      return {
+        flow: "yield",
+        sayp: "Say!",
+        textp: "Text!",
+        to: "entry",
+      };
+    });
+
+    const reply = await dialogFlowAgent.execute(event);
+    const attributesJson = JSON.parse(reply.outputContexts[0].parameters.attributes);
+
+    expect(attributesJson.model.userId).to.equal("1234567890");
+  });
+});
+
 describe("Google Sign-In", () => {
   let voxaApp: VoxaApp;
   let googleAction: DialogFlowPlatform;

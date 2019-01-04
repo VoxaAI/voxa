@@ -1047,24 +1047,17 @@ describe("DialogFlow Directives", () => {
 
   describe("FacebookAccountLink", () => {
     it("should add a facebook account link card", async () => {
-      app.onIntent("LaunchIntent", (voxaEvent: DialogFlowEvent) => {
-        voxaEvent.model.userId = voxaEvent.user.userId;
-
-        return {
-          facebookAccountLink: "https://www.messenger.com",
-          flow: "yield",
-          sayp: "Say!",
-          textp: "Text!",
-          to: "entry",
-        };
+      app.onIntent("LaunchIntent", {
+        facebookAccountLink: "https://www.messenger.com",
+        flow: "yield",
+        sayp: "Say!",
+        textp: "Text!",
+        to: "entry",
       });
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
       const reply = await dialogFlowAgent.execute(event);
-      const attributesJson = JSON.parse(reply.outputContexts[0].parameters.attributes);
-
-      expect(attributesJson.model.userId).to.equal("1234567890");
       expect(reply.payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
           {
@@ -1080,22 +1073,15 @@ describe("DialogFlow Directives", () => {
 
   describe("FacebookSuggestionChips", () => {
     it("should add a FacebookSuggestionChips using a reply view", async () => {
-      app.onIntent("LaunchIntent", (voxaEvent: DialogFlowEvent) => {
-        voxaEvent.model.userId = voxaEvent.user.userId;
-
-        return {
-          flow: "yield",
-          reply: "FacebookSuggestions",
-          to: "entry",
-        };
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        reply: "FacebookSuggestions",
+        to: "entry",
       });
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
       const reply = await dialogFlowAgent.execute(event);
-      const attributesJson = JSON.parse(reply.outputContexts[0].parameters.attributes);
-
-      expect(attributesJson.model.userId).to.equal("1234567890");
       expect(reply.payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
           {
@@ -1115,24 +1101,17 @@ describe("DialogFlow Directives", () => {
     });
 
     it("should add a FacebookSuggestionChips", async () => {
-      app.onIntent("LaunchIntent", (voxaEvent: DialogFlowEvent) => {
-        voxaEvent.model.userId = voxaEvent.user.userId;
-
-        return {
-          facebookSuggestionChips: ["yes", "no"],
-          flow: "yield",
-          sayp: "Say!",
-          textp: "Text!",
-          to: "entry",
-        };
+      app.onIntent("LaunchIntent", {
+        facebookSuggestionChips: ["yes", "no"],
+        flow: "yield",
+        sayp: "Say!",
+        textp: "Text!",
+        to: "entry",
       });
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
       const reply = await dialogFlowAgent.execute(event);
-      const attributesJson = JSON.parse(reply.outputContexts[0].parameters.attributes);
-
-      expect(attributesJson.model.userId).to.equal("1234567890");
       expect(reply.payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
           {
