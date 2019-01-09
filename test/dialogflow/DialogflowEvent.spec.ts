@@ -10,6 +10,9 @@ import { views } from "../views";
 const launchIntent = require("../requests/dialogflow/launchIntent.json");
 
 /* tslint:disable-next-line:no-var-requires */
+const facebookLaunchIntent = require("../requests/dialogflow/facebookLaunchIntent.json");
+
+/* tslint:disable-next-line:no-var-requires */
 const optionIntent = require("../requests/dialogflow/actions.intent.OPTION.json");
 
 /* tslint:disable-next-line:no-var-requires */
@@ -177,6 +180,13 @@ describe("DialogflowEvent", () => {
   });
 });
 
+describe("Facebook Messenger", () => {
+  it("should get the right userId for Facebook Messenger", async () => {
+    const event = new DialogflowEvent(facebookLaunchIntent, {});
+    expect(event.user.id).to.equal("1234567890");
+  });
+});
+
 describe("Google Sign-In", () => {
   let voxaApp: VoxaApp;
   let googleAction: DialogflowPlatform;
@@ -193,7 +203,8 @@ describe("Google Sign-In", () => {
     jti: "1234567890abcdefghijklmnopqrstuvwxyz",
     name: "John Doe",
     nbf: 1542217537,
-    picture: "https://abc.googleusercontent.com/-abcdefghijok/AAAAAAAAAAI/AAAAAAAACe0/123456789/s96-c/photo.jpg",
+    picture:
+      "https://abc.googleusercontent.com/-abcdefghijok/AAAAAAAAAAI/AAAAAAAACe0/123456789/s96-c/photo.jpg",
     sub: "12345678901234567899",
   };
 
@@ -202,7 +213,9 @@ describe("Google Sign-In", () => {
     googleAction = new DialogflowPlatform(voxaApp, { clientId: "clientId" });
 
     const userDetailsMocked: any = _.cloneDeep(googleResponse);
-    simple.mock(DialogflowEvent.prototype, "verifyProfile").resolveWith(userDetailsMocked);
+    simple
+      .mock(DialogflowEvent.prototype, "verifyProfile")
+      .resolveWith(userDetailsMocked);
   });
 
   afterEach(() => {

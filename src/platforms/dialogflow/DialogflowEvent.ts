@@ -40,6 +40,7 @@ export class DialogflowEvent extends VoxaEvent {
   public session!: DialogflowSession;
   public google!: { conv: DialogflowConversation };
   public intent: DialogflowIntent;
+  public source: string = "";
 
   constructor(
     rawEvent: GoogleCloudDialogflowV2WebhookRequest,
@@ -56,10 +57,14 @@ export class DialogflowEvent extends VoxaEvent {
     this.intent = new DialogflowIntent(this.google.conv);
   }
 
-  public async verifyProfile(): Promise<TokenPayload|undefined> {
+  public async verifyProfile(): Promise<TokenPayload | undefined> {
     const client = new OAuth2Client(this.platform.config.clientId);
-    const payload: TokenPayload|undefined = await this.google.conv.user._verifyProfile(
-      client, this.platform.config.clientId);
+    const payload:
+      | TokenPayload
+      | undefined = await this.google.conv.user._verifyProfile(
+      client,
+      this.platform.config.clientId,
+    );
 
     return payload;
   }
@@ -84,16 +89,19 @@ export class DialogflowEvent extends VoxaEvent {
    * After that we'll default to the userStorage value
    */
   protected initUser(): void {
+    const { originalDetectIntentRequest } = this.rawEvent;
     const { conv } = this.google;
     const storage = conv.user.storage as any;
-    let userId: string;
+    let userId: string = "";
+
+    this.source = _.get(originalDetectIntentRequest, "source") || "google";
 
     if (_.get(storage, "voxa.userId")) {
       userId = storage.voxa.userId;
     } else if (conv.user.id) {
       userId = conv.user.id;
-    } else {
-      userId = v1();
+    } else if (this.source === "facebook") {
+      userId = _.get(originalDetectIntentRequest, "payload.data.sender.id");
     }
 
     storage.voxa = { userId };
