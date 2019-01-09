@@ -1,7 +1,7 @@
 {
   "name": "voxa",
-  "version": "3.0.0-alpha42",
-  "description": "A fsm (state machine) framework for Alexa apps using Node.js",
+  "version": "3.0.0",
+  "description": "A fsm (state machine) framework for Alexa, Dialogflow and Botframework apps using Node.js",
   "main": "./lib/src/index.js",
   "types": "./lib/src/index.d.ts",
   "scripts": {
