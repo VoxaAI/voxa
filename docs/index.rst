@@ -54,12 +54,12 @@ Instantiating a Voxa Application requires a configuration specifying your :ref:`
 Platforms
 -------------
 
-Once you have instantiated a platform is time to create a plaform application. There are platform handlers for Alexa, DialogFlow and Botframework (Cortana);
+Once you have instantiated a platform is time to create a plaform application. There are platform handlers for Alexa, Dialogflow and Botframework (Cortana);
 
 .. code-block:: javascript
 
     const alexaSkill = new voxa.AlexaPlatform(app);
-    const dialogFlowAction = new voxa.DialogFlowPlatform(app);
+    const dialogflowAction = new voxa.DialogflowPlatform(app);
 
     // botframework requires some extra configuration like the Azure Table Storage to use and the Luis.ai endpoint
     const storageName = config.cortana.storageName;

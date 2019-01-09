@@ -32,14 +32,14 @@ import { LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
 import { v1 } from "uuid";
 import { VoxaEvent } from "../../VoxaEvent";
-import { DialogFlowIntent } from "./DialogFlowIntent";
-import { DialogFlowSession } from "./DialogFlowSession";
+import { DialogflowIntent } from "./DialogflowIntent";
+import { DialogflowSession } from "./DialogflowSession";
 
-export class DialogFlowEvent extends VoxaEvent {
+export class DialogflowEvent extends VoxaEvent {
   public rawEvent!: GoogleCloudDialogflowV2WebhookRequest;
-  public session!: DialogFlowSession;
+  public session!: DialogflowSession;
   public google!: { conv: DialogflowConversation };
-  public intent: DialogFlowIntent;
+  public intent: DialogflowIntent;
   public source: string = "";
 
   constructor(
@@ -54,13 +54,17 @@ export class DialogFlowEvent extends VoxaEvent {
       type: "IntentRequest",
     };
 
-    this.intent = new DialogFlowIntent(this.google.conv);
+    this.intent = new DialogflowIntent(this.google.conv);
   }
 
-  public async verifyProfile(): Promise<TokenPayload|undefined> {
+  public async verifyProfile(): Promise<TokenPayload | undefined> {
     const client = new OAuth2Client(this.platform.config.clientId);
-    const payload: TokenPayload|undefined = await this.google.conv.user._verifyProfile(
-      client, this.platform.config.clientId);
+    const payload:
+      | TokenPayload
+      | undefined = await this.google.conv.user._verifyProfile(
+      client,
+      this.platform.config.clientId,
+    );
 
     return payload;
   }
@@ -72,7 +76,7 @@ export class DialogFlowEvent extends VoxaEvent {
         headers: {},
       }),
     };
-    this.session = new DialogFlowSession(this.google.conv);
+    this.session = new DialogflowSession(this.google.conv);
   }
 
   /**

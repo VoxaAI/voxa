@@ -28,7 +28,7 @@ try {
 }
 
 const VoxaApp = voxa.VoxaApp;
-const DialogFlowPlatform = voxa.DialogFlowPlatform;
+const DialogflowPlatform = voxa.DialogflowPlatform;
 const AlexaPlatform = voxa.AlexaPlatform;
 
 const views = require("./views.json");
@@ -73,13 +73,13 @@ app.onState(
 
 const alexaSkill = new AlexaPlatform(app);
 
-const dialogFlowAction = new DialogFlowPlatform(app);
+const dialogflowAction = new DialogflowPlatform(app);
 
 module.exports = {
   alexaSkill,
   alexaLambdaHandler: alexaSkill.lambda(),
   alexaLambdaHTTPHandler: alexaSkill.lambdaHTTP(),
-  dialogFlowAction: dialogFlowAction,
-  dialogFlowActionLambdaHandler: dialogFlowAction.lambda(),
-  dialogFlowActionLambdaHTTPHandler: dialogFlowAction.lambdaHTTP()
+  dialogflowAction: dialogflowAction,
+  dialogflowActionLambdaHandler: dialogflowAction.lambda(),
+  dialogflowActionLambdaHTTPHandler: dialogflowAction.lambdaHTTP()
 };

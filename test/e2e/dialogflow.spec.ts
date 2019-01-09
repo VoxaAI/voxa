@@ -26,7 +26,7 @@ import * as portfinder from "portfinder";
 // import { VirtualGoogleAssistant } from "virtual-google-assistant";
 
 /* tslint:disable-next-line:no-var-requires */
-const { dialogFlowAction } = require("../../hello-world/hello-world");
+const { dialogflowAction } = require("../../hello-world/hello-world");
 /* tslint:disable-next-line:no-var-requires */
 const { VirtualGoogleAssistant } = require("virtual-google-assistant");
 
@@ -41,7 +41,7 @@ describe("Hello World Google Assistant", () => {
   beforeEach(async () => {
     const port = await portfinder.getPortPromise();
 
-    server = (await dialogFlowAction.startServer(port)) as Server;
+    server = (await dialogflowAction.startServer(port)) as Server;
 
     googleAssistant = VirtualGoogleAssistant.Builder()
       .directory("hello-world/dialogflowmodel")
@@ -53,7 +53,7 @@ describe("Hello World Google Assistant", () => {
     server.close(done);
   });
 
-  it("Runs the dialogFlowAction and like's voxa", async () => {
+  it("Runs the dialogflowAction and like's voxa", async () => {
     googleAssistant.addFilter((request: any) => {
       request.originalDetectIntentRequest.payload.user.userStorage =
         '{"data": {"voxa": {"userId": "123"}}}';
@@ -68,7 +68,7 @@ describe("Hello World Google Assistant", () => {
     expect(reply.fulfillmentText).to.include(views.en.translation.doesLikeVoxa);
   });
 
-  it("Runs the dialogFlowAction and does not like voxa", async () => {
+  it("Runs the dialogflowAction and does not like voxa", async () => {
     reply = await googleAssistant.launch();
     expect(reply.fulfillmentText).to.include(
       "Welcome to this voxa app, are you enjoying voxa so far?",

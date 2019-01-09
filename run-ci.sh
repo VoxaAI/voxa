@@ -6,7 +6,7 @@ yarn run test-ci
 yarn run report
 yarn run lint
 
-npx typedoc --out typedoc --name Voxa --readme ./README.md --target ES5 --ignoreCompilerErrors ./src
+npx typedoc --out typedoc --name Voxa --readme ./README.md --target ES5 ./src
 NODE_VERSION=${TRAVIS_NODE_VERSION:-}
 if [ ! -z "${NODE_VERSION}" ]; then
   docker pull "lambci/lambda:nodejs$TRAVIS_NODE_VERSION"
