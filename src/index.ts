@@ -87,6 +87,7 @@ export {
   Carousel,
   DialogFlowEvent,
   FacebookAccountLink,
+  FacebookAccountUnlink,
   FacebookSuggestionChips,
   List,
   MediaResponse,

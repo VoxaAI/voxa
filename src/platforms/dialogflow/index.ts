@@ -6,6 +6,7 @@ export {
   BasicCard,
   Carousel,
   FacebookAccountLink,
+  FacebookAccountUnlink,
   FacebookSuggestionChips,
   List,
   MediaResponse,

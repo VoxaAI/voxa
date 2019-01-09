@@ -22,5 +22,6 @@ export {
 } from "./assistant";
 export {
   FacebookAccountLink,
+  FacebookAccountUnlink,
   FacebookSuggestionChips,
 } from "./facebook";
