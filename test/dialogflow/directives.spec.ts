@@ -1046,7 +1046,7 @@ describe("DialogFlow Directives", () => {
   });
 
   describe("FacebookAccountLink", () => {
-    it("should add a facebook account link card", async () => {
+    it("should add a facebook account link button", async () => {
       app.onIntent("LaunchIntent", {
         facebookAccountLink: "https://www.messenger.com",
         flow: "yield",
@@ -1063,6 +1063,31 @@ describe("DialogFlow Directives", () => {
           {
             type: "account_link",
             url: "https://www.messenger.com",
+          },
+        ],
+        template_type: "button",
+        text: "Text!",
+      });
+    });
+  });
+
+  describe("FacebookAccountUnlink", () => {
+    it("should add a facebook account unlink button", async () => {
+      app.onIntent("LaunchIntent", {
+        facebookAccountUnlink: true,
+        flow: "yield",
+        sayp: "Say!",
+        textp: "Text!",
+        to: "entry",
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const reply = await dialogFlowAgent.execute(event);
+      expect(reply.payload.facebook.attachment.payload).to.deep.equal({
+        buttons: [
+          {
+            type: "account_unlink",
           },
         ],
         template_type: "button",

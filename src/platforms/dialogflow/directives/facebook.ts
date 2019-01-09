@@ -39,6 +39,35 @@ export class FacebookAccountLink implements IDirective {
   }
 }
 
+export class FacebookAccountUnlink implements IDirective {
+  public static platform: string = "dialogflow";
+  public static key: string = "facebookAccountUnlink";
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    const dialogFlowReply = (reply as DialogFlowReply);
+
+    dialogFlowReply.source = "facebook";
+    dialogFlowReply.payload.facebook = {
+      attachment: {
+        payload: {
+          buttons: [
+            {
+              type: "account_unlink",
+            },
+          ],
+          template_type: "button",
+          text: dialogFlowReply.fulfillmentText,
+        },
+        type: "template",
+      },
+    };
+  }
+}
+
 export class FacebookSuggestionChips implements IDirective {
   public static platform: string = "dialogflow";
   public static key: string = "facebookSuggestionChips";

@@ -185,6 +185,10 @@ describe("Facebook Messenger", () => {
     const event = new DialogFlowEvent(facebookLaunchIntent, {});
     expect(event.user.id).to.equal("1234567890");
   });
+  it("should get the right source for Facebook Messenger", async () => {
+    const event = new DialogFlowEvent(facebookLaunchIntent, {});
+    expect(event.source).to.equal("facebook");
+  });
 });
 
 describe("Google Sign-In", () => {
