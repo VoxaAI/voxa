@@ -1,11 +1,57 @@
 import * as _ from "lodash";
 
-import { IDirective } from "../../../directives";
+import { IDirective, IDirectiveClass } from "../../../directives";
 import { ITransition } from "../../../StateMachine";
 import { IVoxaEvent } from "../../../VoxaEvent";
 import { IVoxaReply } from "../../../VoxaReply";
 import { DialogFlowEvent } from "../DialogFlowEvent";
 import { DialogFlowReply } from "../DialogFlowReply";
+
+function createQuickReplyDirective(
+  contentType: string,
+  key: string,
+): IDirectiveClass {
+  return class implements IDirective {
+    public static platform: string = "dialogflow";
+    public static key: string = key;
+
+    constructor(public message: string, public replyArray: IFacebookQuickReply|IFacebookQuickReply[]) {}
+
+    public async writeToReply(
+      reply: IVoxaReply,
+      event: IVoxaEvent,
+      transition: ITransition,
+    ): Promise<void> {
+      const dialogFlowReply = (reply as DialogFlowReply);
+      const quickReplies: any[] = [];
+
+      if (_.isEmpty(this.replyArray)) {
+        quickReplies.push({
+          content_type: contentType,
+        });
+      } else {
+        if (!_.isArray(this.replyArray)) {
+          this.replyArray = [this.replyArray];
+        }
+
+        _.forEach(this.replyArray, (item) => {
+          quickReplies.push({
+            content_type: contentType,
+            image_url: item.imageUrl,
+            payload: item.payload,
+            title: item.title,
+          });
+        });
+      }
+
+      dialogFlowReply.source = "facebook";
+      dialogFlowReply.payload.facebook = {
+        quick_replies: quickReplies,
+        text: this.message,
+      };
+    }
+  };
+}
 
 export class FacebookAccountLink implements IDirective {
   public static platform: string = "dialogflow";
@@ -119,112 +165,22 @@ export interface IFacebookQuickReply {
   payload: string;
 }
 
-export class FacebookQuickReplyLocation implements IDirective {
-  public static platform: string = "dialogflow";
-  public static key: string = "facebookQuickReplyLocation";
+export const FacebookQuickReplyLocation = createQuickReplyDirective(
+  "location",
+  "facebookQuickReplyLocation",
+);
 
-  constructor(public message: string) {}
+export const FacebookQuickReplyPhoneNumber = createQuickReplyDirective(
+  "user_phone_number",
+  "facebookQuickReplyPhoneNumber",
+);
 
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const dialogFlowReply = (reply as DialogFlowReply);
+export const FacebookQuickReplyText = createQuickReplyDirective(
+  "text",
+  "facebookQuickReplyText",
+);
 
-    dialogFlowReply.source = "facebook";
-    dialogFlowReply.payload.facebook = {
-      quick_replies: [
-        {
-          content_type: "location",
-        },
-      ],
-      text: this.message,
-    };
-  }
-}
-
-export class FacebookQuickReplyPhoneNumber implements IDirective {
-  public static platform: string = "dialogflow";
-  public static key: string = "facebookQuickReplyPhoneNumber";
-
-  constructor(public message: string) {}
-
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const dialogFlowReply = (reply as DialogFlowReply);
-
-    dialogFlowReply.source = "facebook";
-    dialogFlowReply.payload.facebook = {
-      quick_replies: [
-        {
-          content_type: "user_phone_number",
-        },
-      ],
-      text: this.message,
-    };
-  }
-}
-
-export class FacebookQuickReplyText implements IDirective {
-  public static platform: string = "dialogflow";
-  public static key: string = "facebookQuickReplyText";
-
-  constructor(public message: string, public replyArray: IFacebookQuickReply|IFacebookQuickReply[]) {}
-
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    if (!_.isArray(this.replyArray)) {
-      this.replyArray = [this.replyArray];
-    }
-
-    const dialogFlowReply = (reply as DialogFlowReply);
-    const quickReplies: any[] = [];
-
-    _.forEach(this.replyArray, (item) => {
-      quickReplies.push({
-        content_type: "text",
-        image_url: item.imageUrl,
-        payload: item.payload,
-        title: item.title,
-      });
-    });
-
-    dialogFlowReply.source = "facebook";
-    dialogFlowReply.payload.facebook = {
-      quick_replies: quickReplies,
-      text: this.message,
-    };
-  }
-}
-
-export class FacebookQuickReplyUserEmail implements IDirective {
-  public static platform: string = "dialogflow";
-  public static key: string = "facebookQuickReplyUserEmail";
-
-  constructor(public message: string) {}
-
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
-  ): Promise<void> {
-    const dialogFlowReply = (reply as DialogFlowReply);
-
-    dialogFlowReply.source = "facebook";
-    dialogFlowReply.payload.facebook = {
-      quick_replies: [
-        {
-          content_type: "user_email",
-        },
-      ],
-      text: this.message,
-    };
-  }
-}
+export const FacebookQuickReplyUserEmail = createQuickReplyDirective(
+  "user_email",
+  "facebookQuickReplyUserEmail",
+);
