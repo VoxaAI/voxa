@@ -44,10 +44,19 @@ function createQuickReplyDirective(
         });
       }
 
+      let text;
+
+      try {
+        text = await event.renderer.renderPath(this.message, event);
+      } catch (err) {
+        // THE VALUE SENT IS A REAL STRING AND NOT A PATH TO A VIEW
+        text = this.message;
+      }
+
       dialogFlowReply.source = "facebook";
       dialogFlowReply.payload.facebook = {
         quick_replies: quickReplies,
-        text: this.message,
+        text,
       };
     }
   };
@@ -66,6 +75,15 @@ export class FacebookAccountLink implements IDirective {
   ): Promise<void> {
     const dialogFlowReply = (reply as DialogFlowReply);
 
+    let renderedUrl;
+
+    try {
+      renderedUrl = await event.renderer.renderPath(this.url, event);
+    } catch (err) {
+      // THE VALUE SENT IS A REAL STRING AND NOT A PATH TO A VIEW
+      renderedUrl = this.url;
+    }
+
     dialogFlowReply.source = "facebook";
     dialogFlowReply.payload.facebook = {
       attachment: {
@@ -73,7 +91,7 @@ export class FacebookAccountLink implements IDirective {
           buttons: [
             {
               type: "account_link",
-              url: this.url,
+              url: renderedUrl,
             },
           ],
           template_type: "button",

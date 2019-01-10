@@ -160,9 +160,36 @@ export const views = {
       ExitIntent: {
         Farewell: "Ok. For more info visit {site} site.",
       },
-      FacebookSuggestions: {
-        facebookSuggestionChips: ["Suggestion 1", "Suggestion 2"],
-        text: "Pick a suggestion",
+      Facebook: {
+        AccountLink: {
+          facebookAccountLink: "https://www.messenger.com",
+          say: "Say!",
+          text: "Text!",
+        },
+        AccountUnlink: {
+          facebookAccountUnlink: true,
+          say: "Say!",
+          text: "Text!",
+        },
+        QuickReplyLocation: {
+          facebookQuickReplyLocation: "Send me your location",
+          say: "Say!",
+          text: "Text!",
+        },
+        QuickReplyPhoneNumber: {
+          facebookQuickReplyPhoneNumber: "Send me your phone number",
+          say: "Say!",
+          text: "Text!",
+        },
+        QuickReplyUserEmail: {
+          facebookQuickReplyUserEmail: "Send me your email",
+          say: "Say!",
+          text: "Text!",
+        },
+        Suggestions: {
+          facebookSuggestionChips: ["Suggestion 1", "Suggestion 2"],
+          text: "Pick a suggestion",
+        },
       },
       Help: "This is the help",
       HelpIntent: {

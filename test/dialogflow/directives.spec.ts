@@ -1048,6 +1048,29 @@ describe("DialogFlow Directives", () => {
   });
 
   describe("FacebookAccountLink", () => {
+    it("should add a facebook account link button using a reply view", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        reply: "Facebook.AccountLink",
+        to: "entry",
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const reply = await dialogFlowAgent.execute(event);
+      expect(reply.fulfillmentText).to.equal("Text!");
+      expect(reply.payload.facebook.attachment.payload).to.deep.equal({
+        buttons: [
+          {
+            type: "account_link",
+            url: "https://www.messenger.com",
+          },
+        ],
+        template_type: "button",
+        text: "Text!",
+      });
+    });
+
     it("should add a facebook account link button", async () => {
       app.onIntent("LaunchIntent", {
         facebookAccountLink: "https://www.messenger.com",
@@ -1074,6 +1097,28 @@ describe("DialogFlow Directives", () => {
   });
 
   describe("FacebookAccountUnlink", () => {
+    it("should add a facebook account unlink button using a reply view", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        reply: "Facebook.AccountUnlink",
+        to: "entry",
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const reply = await dialogFlowAgent.execute(event);
+      expect(reply.fulfillmentText).to.equal("Text!");
+      expect(reply.payload.facebook.attachment.payload).to.deep.equal({
+        buttons: [
+          {
+            type: "account_unlink",
+          },
+        ],
+        template_type: "button",
+        text: "Text!",
+      });
+    });
+
     it("should add a facebook account unlink button", async () => {
       app.onIntent("LaunchIntent", {
         facebookAccountUnlink: true,
@@ -1102,13 +1147,14 @@ describe("DialogFlow Directives", () => {
     it("should add a FacebookSuggestionChips using a reply view", async () => {
       app.onIntent("LaunchIntent", {
         flow: "yield",
-        reply: "FacebookSuggestions",
+        reply: "Facebook.Suggestions",
         to: "entry",
       });
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
       const reply = await dialogFlowAgent.execute(event);
+      expect(reply.fulfillmentText).to.equal("Pick a suggestion");
       expect(reply.payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
           {
@@ -1159,6 +1205,25 @@ describe("DialogFlow Directives", () => {
   });
 
   describe("FacebookQuickReplyLocation", () => {
+    it("should send a quick reply for location request using a reply view", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        reply: "Facebook.QuickReplyLocation",
+        to: "entry",
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const reply = await dialogFlowAgent.execute(event);
+      expect(reply.fulfillmentText).to.equal("Text!");
+      expect(reply.payload.facebook.text).to.equal("Send me your location");
+      expect(reply.payload.facebook.quick_replies).to.deep.equal([
+        {
+          content_type: "location",
+        },
+      ]);
+    });
+
     it("should send a quick reply for location request", async () => {
       app.onIntent("LaunchIntent", {
         facebookQuickReplyLocation: "Send me your location",
@@ -1181,6 +1246,25 @@ describe("DialogFlow Directives", () => {
   });
 
   describe("FacebookQuickReplyPhoneNumber", () => {
+    it("should send a quick reply for phone number request using a reply view", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        reply: "Facebook.QuickReplyPhoneNumber",
+        to: "entry",
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const reply = await dialogFlowAgent.execute(event);
+      expect(reply.fulfillmentText).to.equal("Text!");
+      expect(reply.payload.facebook.text).to.equal("Send me your phone number");
+      expect(reply.payload.facebook.quick_replies).to.deep.equal([
+        {
+          content_type: "user_phone_number",
+        },
+      ]);
+    });
+
     it("should send a quick reply for phone number request", async () => {
       app.onIntent("LaunchIntent", {
         facebookQuickReplyPhoneNumber: "Send me your phone number",
@@ -1235,6 +1319,7 @@ describe("DialogFlow Directives", () => {
       expect(reply.payload.facebook.text).to.equal("What's your favorite shape?");
       expect(reply.payload.facebook.quick_replies).to.deep.equal([quickReplyExpect]);
     });
+
     it("should send a quick reply for options request from an array", async () => {
       const quickReplyTextArray: IFacebookQuickReply[] = [
         {
@@ -1280,6 +1365,25 @@ describe("DialogFlow Directives", () => {
   });
 
   describe("FacebookQuickReplyUserEmail", () => {
+    it("should send a quick reply for user's email request using a reply view", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        reply: "Facebook.QuickReplyUserEmail",
+        to: "entry",
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const reply = await dialogFlowAgent.execute(event);
+      expect(reply.fulfillmentText).to.equal("Text!");
+      expect(reply.payload.facebook.text).to.equal("Send me your email");
+      expect(reply.payload.facebook.quick_replies).to.deep.equal([
+        {
+          content_type: "user_email",
+        },
+      ]);
+    });
+
     it("should send a quick reply for user's email request", async () => {
       app.onIntent("LaunchIntent", {
         facebookQuickReplyUserEmail: "Send me your email",
