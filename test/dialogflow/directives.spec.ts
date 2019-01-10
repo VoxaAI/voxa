@@ -9,6 +9,8 @@ import {
   DialogFlowEvent,
   DialogFlowPlatform,
   DialogFlowReply,
+  FacebookQuickReplyText,
+  IFacebookQuickReply,
   MediaResponse,
 } from "../../src/platforms/dialogflow";
 import { VoxaApp } from "../../src/VoxaApp";
@@ -1153,6 +1155,149 @@ describe("DialogFlow Directives", () => {
         template_type: "button",
         text: "Text!",
       });
+    });
+  });
+
+  describe("FacebookQuickReplyLocation", () => {
+    it("should send a quick reply for location request", async () => {
+      app.onIntent("LaunchIntent", {
+        facebookQuickReplyLocation: "Send me your location",
+        flow: "yield",
+        sayp: "Say!",
+        textp: "Text!",
+        to: "entry",
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const reply = await dialogFlowAgent.execute(event);
+      expect(reply.payload.facebook.text).to.equal("Send me your location");
+      expect(reply.payload.facebook.quick_replies).to.deep.equal([
+        {
+          content_type: "location",
+        },
+      ]);
+    });
+  });
+
+  describe("FacebookQuickReplyPhoneNumber", () => {
+    it("should send a quick reply for phone number request", async () => {
+      app.onIntent("LaunchIntent", {
+        facebookQuickReplyPhoneNumber: "Send me your phone number",
+        flow: "yield",
+        sayp: "Say!",
+        textp: "Text!",
+        to: "entry",
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const reply = await dialogFlowAgent.execute(event);
+      expect(reply.payload.facebook.text).to.equal("Send me your phone number");
+      expect(reply.payload.facebook.quick_replies).to.deep.equal([
+        {
+          content_type: "user_phone_number",
+        },
+      ]);
+    });
+  });
+
+  describe("FacebookQuickReplyText", () => {
+    it("should send a quick reply for options request from a single item", async () => {
+      const quickReplySingleElement: IFacebookQuickReply = {
+        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/16777216colors.png/220px-16777216colors.png",
+        payload: "square",
+        title: "Square Multicolor",
+      };
+
+      app.onIntent("LaunchIntent", (voxaEvent: DialogFlowEvent) => {
+        const facebookQuickReplyText = new FacebookQuickReplyText("What's your favorite shape?", quickReplySingleElement);
+
+        return {
+          directives: [facebookQuickReplyText],
+          flow: "yield",
+          sayp: "Say!",
+          textp: "Text!",
+          to: "entry",
+        };
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const reply = await dialogFlowAgent.execute(event);
+
+      const quickReplyExpect: any = _.cloneDeep(quickReplySingleElement);
+      quickReplyExpect.image_url = quickReplySingleElement.imageUrl;
+      quickReplyExpect.content_type = "text";
+
+      _.unset(quickReplyExpect, "imageUrl");
+
+      expect(reply.payload.facebook.text).to.equal("What's your favorite shape?");
+      expect(reply.payload.facebook.quick_replies).to.deep.equal([quickReplyExpect]);
+    });
+    it("should send a quick reply for options request from an array", async () => {
+      const quickReplyTextArray: IFacebookQuickReply[] = [
+        {
+          imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/16777216colors.png/220px-16777216colors.png",
+          payload: "square",
+          title: "Square Multicolor",
+        },
+        {
+          imageUrl: "https://www.w3schools.com/colors/img_colormap.gif",
+          payload: "hexagonal",
+          title: "Hexagonal multicolor",
+        },
+      ];
+
+      app.onIntent("LaunchIntent", (voxaEvent: DialogFlowEvent) => {
+        const facebookQuickReplyText = new FacebookQuickReplyText("What's your favorite shape?", quickReplyTextArray);
+
+        return {
+          directives: [facebookQuickReplyText],
+          flow: "yield",
+          sayp: "Say!",
+          textp: "Text!",
+          to: "entry",
+        };
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const reply = await dialogFlowAgent.execute(event);
+
+      const quickReplyExpect: any = _.cloneDeep(quickReplyTextArray);
+      quickReplyExpect[0].image_url = quickReplyExpect[0].imageUrl;
+      quickReplyExpect[1].image_url = quickReplyExpect[1].imageUrl;
+      quickReplyExpect[0].content_type = "text";
+      quickReplyExpect[1].content_type = "text";
+
+      _.unset(quickReplyExpect[0], "imageUrl");
+      _.unset(quickReplyExpect[1], "imageUrl");
+
+      expect(reply.payload.facebook.text).to.equal("What's your favorite shape?");
+      expect(reply.payload.facebook.quick_replies).to.deep.equal(quickReplyExpect);
+    });
+  });
+
+  describe("FacebookQuickReplyUserEmail", () => {
+    it("should send a quick reply for user's email request", async () => {
+      app.onIntent("LaunchIntent", {
+        facebookQuickReplyUserEmail: "Send me your email",
+        flow: "yield",
+        sayp: "Say!",
+        textp: "Text!",
+        to: "entry",
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const reply = await dialogFlowAgent.execute(event);
+      expect(reply.payload.facebook.text).to.equal("Send me your email");
+      expect(reply.payload.facebook.quick_replies).to.deep.equal([
+        {
+          content_type: "user_email",
+        },
+      ]);
     });
   });
 });
