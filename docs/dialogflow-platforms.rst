@@ -26,6 +26,23 @@ You need to include in your controller the following field: ``facebookAccountLin
     };
   });
 
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookAccountLink"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookAccountLink": {
+      "facebookAccountLink": "https://www.messenger.com"
+    }
+  }
 
 - Account Unlink button
 You need to include in your controller the following field: ``facebookAccountUnlink``, which can take any value like a boolean, just to indicate to Voxa we're adding this button to the response. For more information about the account linking flow, check how to add a `Log Out Button <https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#logout>`_, and `Account Linking <https://developers.facebook.com/docs/messenger-platform/identity/account-linking>`_.
@@ -37,6 +54,24 @@ You need to include in your controller the following field: ``facebookAccountUnl
       facebookAccountUnlink: true,
     };
   });
+
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookAccountUnlink"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookAccountLink": {
+      "facebookAccountUnlink": true
+    }
+  }
 
 
 - Location Quick Reply
@@ -50,6 +85,24 @@ You need to include in your controller the following field: ``facebookQuickReply
     };
   });
 
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookQuickReplyLocation"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookQuickReplyLocation": {
+      "facebookQuickReplyLocation": "Send me your location"
+    }
+  }
+
 
 - Phone Number Quick Reply
 You need to include in your controller the following field: ``facebookQuickReplyPhoneNumber``, which takes a string with the title of the message that goes along with the button requesting user's phone number. For more information about the account linking flow, check how to add a `User Phone Number Quick Reply <https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies#phone>`_.
@@ -61,6 +114,24 @@ You need to include in your controller the following field: ``facebookQuickReply
       facebookQuickReplyPhoneNumber: "Send me your phone number",
     };
   });
+
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookQuickReplyPhoneNumber"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookQuickReplyPhoneNumber": {
+      "facebookQuickReplyPhoneNumber": "Send me your phone number"
+    }
+  }
 
 
 - Text Quick Reply
@@ -95,6 +166,49 @@ For more information about the account linking flow, check how to add a `User Te
     };
   });
 
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookQuickReplyText"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookQuickReplyText": {
+      "facebookQuickReplyText": "{quickReplyText}"
+    }
+  }
+  .........
+  variables
+  .........
+  const { FacebookQuickReplyText } = require('voxa');
+
+  export function quickReplyText(request) {
+    const quickReplyTextArray = [
+      {
+        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/16777216colors.png/220px-16777216colors.png",
+        payload: "square",
+        title: "Square Multicolor",
+      },
+      {
+        imageUrl: "https://www.w3schools.com/colors/img_colormap.gif",
+        payload: "hexagonal",
+        title: "Hexagonal multicolor",
+      },
+    ];
+
+    const facebookQuickReplyText = new FacebookQuickReplyText("What's your favorite shape?", quickReplyTextArray);
+
+    return {
+      directives: [facebookQuickReplyText],
+    };
+  },
+
 
 - Email Quick Reply
 You need to include in your controller the following field: ``facebookQuickReplyUserEmail``, which takes a string with the title of the message that goes along with the button requesting user's email. For more information about the account linking flow, check how to add a `User Email Quick Reply <https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies#email>`_.
@@ -106,6 +220,24 @@ You need to include in your controller the following field: ``facebookQuickReply
       facebookQuickReplyUserEmail: "Send me your email",
     };
   });
+
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookQuickReplyUserEmail"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookQuickReplyUserEmail": {
+      "facebookQuickReplyUserEmail": "Send me your email"
+    }
+  }
 
 
 - Postbacks buttons (Suggestion chips)
@@ -120,6 +252,24 @@ You need to include in your controller the following field: ``facebookSuggestion
       to: "entry",
     };
   });
+
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookSuggestionChips"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookSuggestionChips": {
+      "facebookSuggestionChips": ["YES", "NO"]
+    }
+  }
 
 For more information check the `Dialogflow documentation for Facebook Messenger <https://dialogflow.com/docs/integrations/facebook>`_
 
