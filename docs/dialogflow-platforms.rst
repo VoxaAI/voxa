@@ -15,16 +15,230 @@ Facebook Messenger
 
 The ``DialogflowPlatform`` for voxa has available some of the core functionalities to send to your chatbot in responses. For now, you can integrate:
 
-- Account Linking buttons
+- Account Linking button
 You need to include in your controller the following field: ``facebookAccountLink``, which takes a URL to go into the account linking flow. For more information about the account linking flow, check how to add a `Log In Button <https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#login>`_, and `Account Linking <https://developers.facebook.com/docs/messenger-platform/identity/account-linking>`_.
 
 .. code-block:: javascript
 
   app.onState('someState', () => {
     return {
-      facebookAccountLink: "https://www.messenger.com"
-    }
+      facebookAccountLink: "https://www.messenger.com",
+    };
   });
+
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookAccountLink"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookAccountLink": {
+      "facebookAccountLink": "https://www.messenger.com"
+    }
+  }
+
+- Account Unlink button
+You need to include in your controller the following field: ``facebookAccountUnlink``, which can take any value like a boolean, just to indicate to Voxa we're adding this button to the response. For more information about the account linking flow, check how to add a `Log Out Button <https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#logout>`_, and `Account Linking <https://developers.facebook.com/docs/messenger-platform/identity/account-linking>`_.
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      facebookAccountUnlink: true,
+    };
+  });
+
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookAccountUnlink"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookAccountLink": {
+      "facebookAccountUnlink": true
+    }
+  }
+
+
+- Location Quick Reply
+You need to include in your controller the following field: ``facebookQuickReplyLocation``, which takes a string with the title of the message that goes along with the button requesting user's location. For more information about the account linking flow, check how to add a `Location Quick Reply <https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies#locations>`_.
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      facebookQuickReplyLocation: "Send me your location",
+    };
+  });
+
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookQuickReplyLocation"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookQuickReplyLocation": {
+      "facebookQuickReplyLocation": "Send me your location"
+    }
+  }
+
+
+- Phone Number Quick Reply
+You need to include in your controller the following field: ``facebookQuickReplyPhoneNumber``, which takes a string with the title of the message that goes along with the button requesting user's phone number. For more information about the account linking flow, check how to add a `User Phone Number Quick Reply <https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies#phone>`_.
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      facebookQuickReplyPhoneNumber: "Send me your phone number",
+    };
+  });
+
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookQuickReplyPhoneNumber"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookQuickReplyPhoneNumber": {
+      "facebookQuickReplyPhoneNumber": "Send me your phone number"
+    }
+  }
+
+
+- Text Quick Reply
+You need to include in your controller the following field: ``directives``, which takes an array of directives, and the one you're going to send is a FacebookQuickReplyText directive, that takes 2 parameters:
+- message: string with the title of the message that goes along with the button requesting user's email.
+- replyArray: a IFacebookQuickReply object or array of objets with the options to render in the chat.
+
+For more information about the account linking flow, check how to add a `User Text Quick Reply <https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies#text>`_.
+
+.. code-block:: javascript
+
+  const { FacebookQuickReplyText, IFacebookQuickReply } = require('voxa');
+
+  app.onState('someState', () => {
+    const quickReplyTextArray: IFacebookQuickReply[] = [
+      {
+        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/16777216colors.png/220px-16777216colors.png",
+        payload: "square",
+        title: "Square Multicolor",
+      },
+      {
+        imageUrl: "https://www.w3schools.com/colors/img_colormap.gif",
+        payload: "hexagonal",
+        title: "Hexagonal multicolor",
+      },
+    ];
+
+    const facebookQuickReplyText = new FacebookQuickReplyText("What's your favorite shape?", quickReplyTextArray);
+
+    return {
+      directives: [facebookQuickReplyText],
+    };
+  });
+
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookQuickReplyText"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookQuickReplyText": {
+      "facebookQuickReplyText": "{quickReplyText}"
+    }
+  }
+  .........
+  variables
+  .........
+  const { FacebookQuickReplyText } = require('voxa');
+
+  export function quickReplyText(request) {
+    const quickReplyTextArray = [
+      {
+        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/16777216colors.png/220px-16777216colors.png",
+        payload: "square",
+        title: "Square Multicolor",
+      },
+      {
+        imageUrl: "https://www.w3schools.com/colors/img_colormap.gif",
+        payload: "hexagonal",
+        title: "Hexagonal multicolor",
+      },
+    ];
+
+    const facebookQuickReplyText = new FacebookQuickReplyText("What's your favorite shape?", quickReplyTextArray);
+
+    return {
+      directives: [facebookQuickReplyText],
+    };
+  },
+
+
+- Email Quick Reply
+You need to include in your controller the following field: ``facebookQuickReplyUserEmail``, which takes a string with the title of the message that goes along with the button requesting user's email. For more information about the account linking flow, check how to add a `User Email Quick Reply <https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies#email>`_.
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      facebookQuickReplyUserEmail: "Send me your email",
+    };
+  });
+
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookQuickReplyUserEmail"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookQuickReplyUserEmail": {
+      "facebookQuickReplyUserEmail": "Send me your email"
+    }
+  }
+
 
 - Postbacks buttons (Suggestion chips)
 You need to include in your controller the following field: ``facebookSuggestionChips``, which could be a simple string that the Voxa renderer will get from your views file with an array of strings, or directly an array of strings. For more information about this, check how to add `Postback Buttons <https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback>`_.
@@ -36,8 +250,26 @@ You need to include in your controller the following field: ``facebookSuggestion
       facebookSuggestionChips: ["YES", "NO"],
       textp: "Select YES or NO",
       to: "entry",
-    }
+    };
   });
+
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookSuggestionChips"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookSuggestionChips": {
+      "facebookSuggestionChips": ["YES", "NO"]
+    }
+  }
 
 For more information check the `Dialogflow documentation for Facebook Messenger <https://dialogflow.com/docs/integrations/facebook>`_
 

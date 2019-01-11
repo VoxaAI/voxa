@@ -23,5 +23,10 @@ export {
 export {
   FacebookAccountLink,
   FacebookAccountUnlink,
+  FacebookQuickReplyLocation,
+  FacebookQuickReplyPhoneNumber,
+  FacebookQuickReplyText,
+  FacebookQuickReplyUserEmail,
   FacebookSuggestionChips,
+  IFacebookQuickReply,
 } from "./facebook";

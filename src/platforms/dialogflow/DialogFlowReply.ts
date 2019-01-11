@@ -34,10 +34,12 @@ import { DialogFlowEvent } from "./DialogFlowEvent";
 
 export interface IDialogFlowPayload {
   facebook?: {
-    attachment: {
+    attachment?: {
       payload: any;
       type: string;
     };
+    quick_replies?: any[];
+    text?: any;
   };
   google: {
     expectUserResponse: boolean;

@@ -70,6 +70,7 @@ export class Renderer {
     const platform = voxaEvent.platform.name;
 
     let message = voxaEvent.t(view, {
+      defaultValue: view,
       returnObjects: true,
     });
 
