@@ -1,0 +1,55 @@
+{
+  "elements": [
+    {
+      "buttons": [
+        {
+          "title": "View",
+          "type": "web_url",
+          "url": "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+          "webview_height_ratio": "full"
+        }
+      ],
+      "image_url": "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+      "subtitle": "See all our colors",
+      "title": "Classic T-Shirt Collection"
+    },
+    {
+      "default_action": {
+        "type": "web_url",
+        "url": "https://www.w3schools.com",
+        "webview_height_ratio": "tall"
+      },
+      "image_url": "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+      "subtitle": "See all our colors",
+      "title": "Classic T-Shirt Collection"
+    },
+    {
+      "buttons": [
+        {
+          "title": "View",
+          "type": "web_url",
+          "url": "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+          "webview_height_ratio": "tall"
+        }
+      ],
+      "default_action": {
+        "type": "web_url",
+        "url": "https://www.w3schools.com",
+        "webview_height_ratio": "tall"
+      },
+      "image_url": "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+      "subtitle": "100% Cotton, 200% Comfortable",
+      "title": "Classic T-Shirt Collection"
+    }
+  ],
+  "template_type": "list",
+  "buttons": [
+    {
+      "payload": "payload",
+      "title": "View More",
+      "type": "postback"
+    }
+  ],
+  "sharable": true,
+  "top_element_style": "large"
+}

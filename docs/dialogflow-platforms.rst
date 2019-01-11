@@ -271,6 +271,253 @@ Or you can also handle these values from your views file
     }
   }
 
+
+- Carousel
+You need to include in your controller the following field: ``facebookCarousel``, which takes an object with an array of elements to be taken as items in a generic list of buttons. For more information about the carousel, check how to add a `Generic Template <https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic>`_.
+
+.. code-block:: javascript
+  const { FACEBOOK_WEBVIEW_HEIGHT_RATIO } = require('voxa');
+
+  app.onState('someState', () => {
+    const buttons = [
+      {
+        title: "Go to see this URL",
+        type: "web_url",
+        url: "https://www.example.com/imgs/imageExample.png",
+      },
+      {
+        payload: "value",
+        title: "Send this to chat",
+        type: "postback",
+      },
+    ];
+
+    const facebookCarousel = {
+      elements: [
+        {
+          buttons,
+          defaultActionUrl: "https://www.example.com/imgs/imageExample.png",
+          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.COMPACT,
+          imageUrl: "https://www.example.com/imgs/imageExample.png",
+          subtitle: "subtitle",
+          title: "title",
+        },
+        {
+          buttons,
+          defaultActionUrl: "https://www.example.com/imgs/imageExample.png",
+          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
+          imageUrl: "https://www.example.com/imgs/imageExample.png",
+          subtitle: "subtitle",
+          title: "title",
+        },
+      ],
+    };
+
+    return {
+      facebookCarousel,
+    };
+  });
+
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookCarousel"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookCarousel": {
+      "facebookCarousel": "{carousel}"
+    }
+  }
+  .........
+  variables
+  .........
+  carousel: function carousel(request) {
+    const buttons = [
+      {
+        title: "Go to see this URL",
+        type: "web_url",
+        url: "https://www.example.com/imgs/imageExample.png",
+      },
+      {
+        payload: "value",
+        title: "Send this to chat",
+        type: "postback",
+      },
+    ];
+
+    const carousel = {
+      elements: [
+        {
+          buttons,
+          defaultActionUrl: "https://www.example.com/imgs/imageExample.png",
+          defaultMessengerExtensions: false,
+          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.COMPACT,
+          imageUrl: "https://www.w3schools.com/colors/img_colormap.gif",
+          subtitle: "subtitle",
+          title: "title",
+        },
+        {
+          buttons,
+          defaultActionUrl: "https://www.example.com/imgs/imageExample.png",
+          defaultMessengerExtensions: false,
+          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
+          imageUrl: "https://www.w3schools.com/colors/img_colormap.gif",
+          subtitle: "subtitle",
+          title: "title",
+        },
+      ],
+    };
+
+    return carousel;
+  },
+
+
+- List
+You need to include in your controller the following field: ``facebookList``, which takes an object with an array of elements to be taken as items in a list of buttons. For more information about the carousel, check how to add a `List Template <https://developers.facebook.com/docs/messenger-platform/send-messages/template/list>`_.
+
+.. code-block:: javascript
+  const { FACEBOOK_TOP_ELEMENT_STYLE, FACEBOOK_WEBVIEW_HEIGHT_RATIO } = require('voxa');
+
+  app.onState('someState', () => {
+    const buttons = [
+      {
+        payload: "payload",
+        title: "View More",
+        type: "postback",
+      },
+    ];
+
+    const facebookList = {
+      buttons,
+      elements: [
+        {
+          buttons: [
+            {
+              title: "View",
+              type: "web_url",
+              url: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+              webviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.FULL,
+            },
+          ],
+          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+          subtitle: "See all our colors",
+          title: "Classic T-Shirt Collection",
+        },
+        {
+          defaultActionUrl: "https://www.w3schools.com",
+          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
+          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+          subtitle: "See all our colors",
+          title: "Classic T-Shirt Collection",
+        },
+        {
+          buttons: [
+            {
+              title: "View",
+              type: "web_url",
+              url: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+              webviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
+            },
+          ],
+          defaultActionUrl: "https://www.w3schools.com",
+          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
+          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+          subtitle: "100% Cotton, 200% Comfortable",
+          title: "Classic T-Shirt Collection",
+        },
+      ],
+      sharable: true,
+      topElementStyle: FACEBOOK_TOP_ELEMENT_STYLE.LARGE,
+    };
+
+    return {
+      facebookList,
+    };
+  });
+
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookList"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookList": {
+      "facebookList": "{list}"
+    }
+  }
+  .........
+  variables
+  .........
+  list: function list(request) {
+    const buttons = [
+      {
+        payload: "payload",
+        title: "View More",
+        type: "postback",
+      },
+    ];
+
+    const list = {
+      buttons,
+      elements: [
+        {
+          buttons: [
+            {
+              title: "View",
+              type: "web_url",
+              url: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+              webviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.FULL,
+            },
+          ],
+          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+          subtitle: "See all our colors",
+          title: "Classic T-Shirt Collection",
+        },
+        {
+          defaultActionUrl: "https://www.w3schools.com",
+          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
+          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+          subtitle: "See all our colors",
+          title: "Classic T-Shirt Collection",
+        },
+        {
+          buttons: [
+            {
+              title: "View",
+              type: "web_url",
+              url: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+              webviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
+            },
+          ],
+          defaultActionUrl: "https://www.w3schools.com",
+          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
+          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+          subtitle: "100% Cotton, 200% Comfortable",
+          title: "Classic T-Shirt Collection",
+        },
+      ],
+      sharable: true,
+      topElementStyle: FACEBOOK_TOP_ELEMENT_STYLE.LARGE,
+    };
+
+    return list;
+  },
+
+
 For more information check the `Dialogflow documentation for Facebook Messenger <https://dialogflow.com/docs/integrations/facebook>`_
 
 

@@ -7,6 +7,12 @@
 import * as _ from "lodash";
 
 import { Hint, HomeCard } from "../src/platforms/alexa/directives";
+import {
+  FACEBOOK_TOP_ELEMENT_STYLE,
+  FACEBOOK_WEBVIEW_HEIGHT_RATIO,
+  IFacebookGenericButtonTemplate,
+  IFacebookPayloadTemplate,
+} from "../src/platforms/dialogflow";
 import { IVoxaEvent } from "../src/VoxaEvent";
 
 export const variables = {
@@ -116,5 +122,100 @@ export const variables = {
 
   reminderId: function reminderId(request: IVoxaEvent) {
     return request.model.reminder.alertToken;
+  },
+
+  facebookCarousel: function facebookCarousel(request: IVoxaEvent) {
+    const buttons: IFacebookGenericButtonTemplate[] = [
+      {
+        title: "Go to see this URL",
+        type: "web_url",
+        url: "https://www.example.com/imgs/imageExample.png",
+      },
+      {
+        payload: "value",
+        title: "Send this to chat",
+        type: "postback",
+      },
+    ];
+
+    const carousel: IFacebookPayloadTemplate = {
+      elements: [
+        {
+          buttons,
+          defaultActionUrl: "https://www.example.com/imgs/imageExample.png",
+          defaultMessengerExtensions: false,
+          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.COMPACT,
+          imageUrl: "https://www.w3schools.com/colors/img_colormap.gif",
+          subtitle: "subtitle",
+          title: "title",
+        },
+        {
+          buttons,
+          defaultActionUrl: "https://www.example.com/imgs/imageExample.png",
+          defaultMessengerExtensions: false,
+          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
+          imageUrl: "https://www.w3schools.com/colors/img_colormap.gif",
+          subtitle: "subtitle",
+          title: "title",
+        },
+      ],
+    };
+
+    return carousel;
+  },
+
+  facebookList: function facebookList(request: IVoxaEvent) {
+    const buttons: IFacebookGenericButtonTemplate[] = [
+      {
+        payload: "payload",
+        title: "View More",
+        type: "postback",
+      },
+    ];
+
+    const list: IFacebookPayloadTemplate = {
+      buttons,
+      elements: [
+        {
+          buttons: [
+            {
+              title: "View",
+              type: "web_url",
+              url: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+              webviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.FULL,
+            },
+          ],
+          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+          subtitle: "See all our colors",
+          title: "Classic T-Shirt Collection",
+        },
+        {
+          defaultActionUrl: "https://www.w3schools.com",
+          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
+          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+          subtitle: "See all our colors",
+          title: "Classic T-Shirt Collection",
+        },
+        {
+          buttons: [
+            {
+              title: "View",
+              type: "web_url",
+              url: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+              webviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
+            },
+          ],
+          defaultActionUrl: "https://www.w3schools.com",
+          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
+          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+          subtitle: "100% Cotton, 200% Comfortable",
+          title: "Classic T-Shirt Collection",
+        },
+      ],
+      sharable: true,
+      topElementStyle: FACEBOOK_TOP_ELEMENT_STYLE.LARGE,
+    };
+
+    return list;
   },
 };
