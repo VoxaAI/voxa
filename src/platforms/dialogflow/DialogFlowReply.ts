@@ -66,7 +66,7 @@ export class DialogFlowReply implements IVoxaReply {
       google: {
         expectUserResponse: true,
         isSsml: true,
-        userStorage: conv.user.storage,
+        userStorage: {},
       },
     };
   }
