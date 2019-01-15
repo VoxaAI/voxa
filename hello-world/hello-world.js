@@ -45,12 +45,6 @@ app.onState("LaunchIntent", {
   flow: "yield"
 });
 
-app.onBeforeReplySent(request => {
-  if (request.platform.name === "dialogflow") {
-    request.google.conv.user.storage = {};
-  }
-});
-
 app.onState(
   "likesVoxa?",
   {
@@ -70,6 +64,15 @@ app.onState(
   },
   "NoIntent"
 );
+
+app.onIntent("UserIdIntent", voxaEvent => {
+  return {
+    flow: "yield",
+    sayp: voxaEvent.user.userId,
+    textp: voxaEvent.user.userId,
+    to: "userId"
+  };
+});
 
 const alexaSkill = new AlexaPlatform(app);
 

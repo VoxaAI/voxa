@@ -21,7 +21,7 @@ export class DialogFlowSession implements IVoxaSession {
     this.attributes = this.getAttributes(conv);
   }
 
-  public getAttributes(conv: DialogflowConversation) {
+  private getAttributes(conv: DialogflowConversation) {
     const context: Context<Parameters> | undefined = this.contexts.attributes;
     if (!context) {
       return {};

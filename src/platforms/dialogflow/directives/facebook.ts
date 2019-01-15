@@ -15,14 +15,17 @@ function createQuickReplyDirective(
     public static platform: string = "dialogflow";
     public static key: string = key;
 
-    constructor(public message: string, public replyArray: IFacebookQuickReply|IFacebookQuickReply[]) {}
+    constructor(
+      public message: string,
+      public replyArray: IFacebookQuickReply | IFacebookQuickReply[],
+    ) {}
 
     public async writeToReply(
       reply: IVoxaReply,
       event: IVoxaEvent,
       transition: ITransition,
     ): Promise<void> {
-      const dialogFlowReply = (reply as DialogFlowReply);
+      const dialogFlowReply = reply as DialogFlowReply;
       const quickReplies: any[] = [];
 
       if (_.isEmpty(this.replyArray)) {
@@ -73,7 +76,7 @@ export class FacebookAccountLink implements IDirective {
     event: IVoxaEvent,
     transition: ITransition,
   ): Promise<void> {
-    const dialogFlowReply = (reply as DialogFlowReply);
+    const dialogFlowReply = reply as DialogFlowReply;
 
     let renderedUrl;
 
@@ -112,7 +115,7 @@ export class FacebookAccountUnlink implements IDirective {
     event: IVoxaEvent,
     transition: ITransition,
   ): Promise<void> {
-    const dialogFlowReply = (reply as DialogFlowReply);
+    const dialogFlowReply = reply as DialogFlowReply;
 
     dialogFlowReply.source = "facebook";
     dialogFlowReply.payload.facebook = {
@@ -161,7 +164,7 @@ export class FacebookSuggestionChips implements IDirective {
       suggestionChips.push(button);
     });
 
-    const dialogFlowReply = (reply as DialogFlowReply);
+    const dialogFlowReply = reply as DialogFlowReply;
 
     dialogFlowReply.source = "facebook";
     dialogFlowReply.payload.facebook = {

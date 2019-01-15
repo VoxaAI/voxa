@@ -54,11 +54,6 @@ describe("Hello World Google Assistant", () => {
   });
 
   it("Runs the dialogFlowAction and like's voxa", async () => {
-    googleAssistant.addFilter((request: any) => {
-      request.originalDetectIntentRequest.payload.user.userStorage =
-        '{"data": {"voxa": {"userId": "123"}}}';
-    });
-
     reply = await googleAssistant.launch();
     expect(reply.fulfillmentText).to.include(
       "Welcome to this voxa app, are you enjoying voxa so far?",
@@ -78,5 +73,79 @@ describe("Hello World Google Assistant", () => {
     expect(reply.fulfillmentText).to.include(
       views.en.translation.doesNotLikeVoxa,
     );
+  });
+
+  /**
+   * Newest dialog flow has deprecated the userId property, because of that we're
+   * storing it in the userStorage
+   */
+  it("Uses the same userId on multiple turns", async () => {
+    reply = await googleAssistant.intend("UserIdIntent");
+    const userId = reply.fulfillmentText;
+    expect(userId).to.not.equal("");
+    expect(reply.payload.google.userStorage).to.not.be.undefined;
+    expect(
+      JSON.parse(reply.payload.google.userStorage).data.voxa.userId,
+    ).to.equal(userId);
+
+    googleAssistant.addFilter((request: any) => {
+      request.originalDetectIntentRequest.payload.user.userStorage =
+        reply.payload.google.userStorage;
+    });
+    reply = await googleAssistant.intend("UserIdIntent");
+    expect(reply.fulfillmentText).to.equal(userId);
+
+    googleAssistant.addFilter((request: any) => {
+      request.originalDetectIntentRequest.payload.user.userStorage =
+        reply.payload.google.userStorage;
+    });
+    reply = await googleAssistant.intend("UserIdIntent");
+    expect(reply.fulfillmentText).to.equal(userId);
+
+    googleAssistant.addFilter((request: any) => {
+      request.originalDetectIntentRequest.payload.user.userStorage =
+        reply.payload.google.userStorage;
+    });
+    reply = await googleAssistant.intend("UserIdIntent");
+    expect(reply.fulfillmentText).to.equal(userId);
+  });
+
+  /**
+   * However we also want to just use the current userId property when
+   * available
+   */
+  it("Uses the same userId on multiple turns", async () => {
+    const userId = "123";
+    googleAssistant.addFilter((request: any) => {
+      request.originalDetectIntentRequest.payload.user.userId = userId;
+    });
+
+    reply = await googleAssistant.intend("UserIdIntent");
+    expect(reply.fulfillmentText).to.equal(userId);
+    expect(reply.payload.google.userStorage).to.not.be.undefined;
+    expect(
+      JSON.parse(reply.payload.google.userStorage).data.voxa.userId,
+    ).to.equal(userId);
+
+    googleAssistant.addFilter((request: any) => {
+      request.originalDetectIntentRequest.payload.user.userStorage =
+        reply.payload.google.userStorage;
+    });
+    reply = await googleAssistant.intend("UserIdIntent");
+    expect(reply.fulfillmentText).to.equal(userId);
+
+    googleAssistant.addFilter((request: any) => {
+      request.originalDetectIntentRequest.payload.user.userStorage =
+        reply.payload.google.userStorage;
+    });
+    reply = await googleAssistant.intend("UserIdIntent");
+    expect(reply.fulfillmentText).to.equal(userId);
+
+    googleAssistant.addFilter((request: any) => {
+      request.originalDetectIntentRequest.payload.user.userStorage =
+        reply.payload.google.userStorage;
+    });
+    reply = await googleAssistant.intend("UserIdIntent");
+    expect(reply.fulfillmentText).to.equal(userId);
   });
 });
