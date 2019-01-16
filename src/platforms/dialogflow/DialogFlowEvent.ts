@@ -110,7 +110,6 @@ export class DialogFlowEvent extends VoxaEvent {
         userId = v1();
       }
 
-      this.session.sessionId = v1();
       _.set(this.google.conv.user.storage, "voxa.userId", userId);
     } else if (this.source === "facebook") {
       userId = _.get(originalDetectIntentRequest, "payload.data.sender.id");
