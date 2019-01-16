@@ -102,10 +102,10 @@ export class DialogFlowEvent extends VoxaEvent {
     this.source = _.get(originalDetectIntentRequest, "source") || "google";
 
     if (this.source === "google") {
-      if (_.get(storage, "voxa.userId")) {
-        userId = storage.voxa.userId;
-      } else if (conv.user.id) {
+      if (conv.user.id) {
         userId = conv.user.id;
+      } else if (_.get(storage, "voxa.userId")) {
+        userId = storage.voxa.userId;
       } else {
         userId = v1();
       }
