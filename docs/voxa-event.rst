@@ -149,4 +149,4 @@ The ``voxaEvent`` Object
 
 - :ref:`AlexaEvent <alexa-event>`
 - :ref:`BotFrameworkEvent <botframework-event>`
-- :ref:`DialogFlowEvent <dialogflow-event>`
+- :ref:`DialogflowEvent <dialogflow-event>`

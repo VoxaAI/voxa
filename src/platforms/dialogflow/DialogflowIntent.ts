@@ -2,7 +2,7 @@ import { DialogflowConversation } from "actions-on-google";
 import * as _ from "lodash";
 import { IVoxaIntent } from "../../VoxaEvent";
 
-export class DialogFlowIntent implements IVoxaIntent {
+export class DialogflowIntent implements IVoxaIntent {
   public name: string;
   public params: any;
   public rawIntent: DialogflowConversation;

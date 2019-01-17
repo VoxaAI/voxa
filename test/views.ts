@@ -120,7 +120,7 @@ export const views = {
         Error: "There was an error trying to get your settings info.",
         FullSettings: "Your default settings are: {settingsInfo}",
       },
-      DialogFlowBasicCard: {
+      DialogflowBasicCard: {
         buttons: {
           openUrlAction: "https://example.com",
           title: "Example.com",
@@ -133,7 +133,7 @@ export const views = {
         text: "This is the text",
         title: "title",
       },
-      DialogFlowCarousel: {
+      DialogflowCarousel: {
         items: {
           LIST_ITEM: {
             description: "The item description",
@@ -141,7 +141,7 @@ export const views = {
           },
         },
       },
-      DialogFlowListSelect: {
+      DialogflowListSelect: {
         items: [
           {
             description: "The item description",
@@ -154,8 +154,8 @@ export const views = {
         ],
         title: "The list select",
       },
-      DialogFlowSuggestions: {
-        dialogFlowSuggestions: ["Suggestion 1", "Suggestion 2"],
+      DialogflowSuggestions: {
+        dialogflowSuggestions: ["Suggestion 1", "Suggestion 2"],
       },
       ExitIntent: {
         Farewell: "Ok. For more info visit {site} site.",
@@ -211,7 +211,7 @@ export const views = {
       LaunchIntent: {
         OpenResponse: {
           alexa: "Hello! Good {time}",
-          dialogflow: "Hello from DialogFlow",
+          dialogflow: "Hello from Dialogflow",
         },
       },
       Lists: {

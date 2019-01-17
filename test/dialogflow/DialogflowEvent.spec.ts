@@ -2,7 +2,7 @@ import { expect } from "chai";
 import * as _ from "lodash";
 import * as simple from "simple-mock";
 
-import { DialogFlowEvent, DialogFlowPlatform, VoxaApp } from "../../src/";
+import { DialogflowEvent, DialogflowPlatform, VoxaApp } from "../../src/";
 import { variables } from "../variables";
 import { views } from "../views";
 
@@ -42,10 +42,10 @@ const slotsIntent = require("../requests/dialogflow/slots.json");
 /* tslint:disable-next-line:no-var-requires */
 const newSurfaceIntent = require("../requests/dialogflow/actions.intent.NEW_SURFACE.json");
 
-describe("DialogFlowEvent", () => {
+describe("DialogflowEvent", () => {
   describe("Google Actions", () => {
     it("should format option values", () => {
-      const event = new DialogFlowEvent(optionIntent, {});
+      const event = new DialogflowEvent(optionIntent, {});
       expect(event.intent.name).to.equal("actions.intent.OPTION");
       expect(event.intent.params).to.deep.equal({
         OPTION: "today",
@@ -54,7 +54,7 @@ describe("DialogFlowEvent", () => {
     });
 
     it("should format dialogflow parms", () => {
-      const event = new DialogFlowEvent(slotsIntent, {});
+      const event = new DialogflowEvent(slotsIntent, {});
       expect(event.intent.name).to.equal("SleepSingleIntent");
       expect(event.intent.params).to.deep.equal({
         VOICE: "10 minutes sleep exercise",
@@ -68,7 +68,7 @@ describe("DialogFlowEvent", () => {
     });
 
     it("should find users on the session", () => {
-      const event = new DialogFlowEvent(launchIntent, {});
+      const event = new DialogflowEvent(launchIntent, {});
       /* tslint:disable-next-line:max-line-length */
       expect(event.user.id).to.equal(
         "ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y",
@@ -76,7 +76,7 @@ describe("DialogFlowEvent", () => {
     });
 
     it("should return supported capabilities", () => {
-      const event = new DialogFlowEvent(launchIntent, {});
+      const event = new DialogflowEvent(launchIntent, {});
       expect(event.supportedInterfaces).to.deep.equal([
         "actions.capability.AUDIO_OUTPUT",
         "actions.capability.SCREEN_OUTPUT",
@@ -86,7 +86,7 @@ describe("DialogFlowEvent", () => {
     });
 
     it("should return inputs", () => {
-      const event = new DialogFlowEvent(launchIntent, {});
+      const event = new DialogflowEvent(launchIntent, {});
       expect(event.intent.name).to.equal("LaunchIntent");
       expect(event.intent.params).to.deep.equal({
         KEYBOARD: "Talk to my test app",
@@ -95,7 +95,7 @@ describe("DialogFlowEvent", () => {
     });
 
     it("should return the MEDIA_STATUS information", () => {
-      const event = new DialogFlowEvent(mediaStatusIntent, {});
+      const event = new DialogflowEvent(mediaStatusIntent, {});
       expect(event.intent.name).to.equal("MEDIA_STATUS");
       expect(event.intent.params).to.deep.equal({
         MEDIA_STATUS: {
@@ -106,7 +106,7 @@ describe("DialogFlowEvent", () => {
     });
 
     it("should return the SIGN_IN information", () => {
-      const event = new DialogFlowEvent(signinIntent, {});
+      const event = new DialogflowEvent(signinIntent, {});
       expect(event.intent.params).to.deep.equal({
         SIGN_IN: {
           "@type": "type.googleapis.com/google.actions.v2.SignInValue",
@@ -116,19 +116,19 @@ describe("DialogFlowEvent", () => {
     });
 
     it("should return the correct intent", () => {
-      const event = new DialogFlowEvent(helpIntent, {});
+      const event = new DialogflowEvent(helpIntent, {});
       expect(event.intent.name).to.equal("HelpIntent");
     });
 
     it("should extract the session attributes from the context", () => {
-      const event = new DialogFlowEvent(helpIntent, {});
+      const event = new DialogflowEvent(helpIntent, {});
       expect(event.session.attributes).to.deep.equal({
         key: "value",
       });
     });
 
     it("should extract the correct parameters from a permissionIntent", () => {
-      const event = new DialogFlowEvent(permissionIntent, {});
+      const event = new DialogflowEvent(permissionIntent, {});
       expect(event.intent.params).to.deep.equal({
         KEYBOARD: "yes",
         PERMISSION: true,
@@ -138,7 +138,7 @@ describe("DialogFlowEvent", () => {
     });
 
     it("should extract the correct parameters from a datetimeIntent", () => {
-      const event = new DialogFlowEvent(datetimeIntent, {});
+      const event = new DialogflowEvent(datetimeIntent, {});
       expect(event.intent.params).to.deep.equal({
         DATETIME: {
           date: {
@@ -155,7 +155,7 @@ describe("DialogFlowEvent", () => {
     });
 
     it("should extract the correct parameters from a confirmationIntent", () => {
-      const event = new DialogFlowEvent(placeIntent, {});
+      const event = new DialogflowEvent(placeIntent, {});
       expect(event.intent.params).to.deep.equal({
         KEYBOARD: "Query handled by Actions on Google",
         PLACE: {
@@ -171,7 +171,7 @@ describe("DialogFlowEvent", () => {
     });
 
     it("should extract the NEW_SURFACE confirmationIntent", () => {
-      const event = new DialogFlowEvent(newSurfaceIntent, {});
+      const event = new DialogflowEvent(newSurfaceIntent, {});
       expect(event.intent.params).to.deep.equal({
         NEW_SURFACE: {
           "@type": "type.googleapis.com/google.actions.v2.NewSurfaceValue",
@@ -181,7 +181,7 @@ describe("DialogFlowEvent", () => {
     });
 
     it("should get the correct userId when present", () => {
-      const event = new DialogFlowEvent(newSurfaceIntent, {});
+      const event = new DialogflowEvent(newSurfaceIntent, {});
       expect(event.user.id).to.equal("1527283153072");
       expect(event.google.conv.user.storage).to.deep.equal({
         voxa: { userId: "1527283153072" },
@@ -189,7 +189,7 @@ describe("DialogFlowEvent", () => {
     });
 
     it("should generate a new userId when missing", () => {
-      const event = new DialogFlowEvent(confirmationIntent, {});
+      const event = new DialogflowEvent(confirmationIntent, {});
       expect(event.user.id).to.not.be.undefined;
       expect(event.google.conv.user.storage).to.deep.equal({
         voxa: { userId: event.user.userId },
@@ -199,17 +199,17 @@ describe("DialogFlowEvent", () => {
 
   describe("Facebook Messenger", () => {
     it("should get the right userId for Facebook Messenger", async () => {
-      const event = new DialogFlowEvent(facebookLaunchIntent, {});
+      const event = new DialogflowEvent(facebookLaunchIntent, {});
       expect(event.user.id).to.equal("1234567890");
     });
     it("should get the right source for Facebook Messenger", async () => {
-      const event = new DialogFlowEvent(facebookLaunchIntent, {});
+      const event = new DialogflowEvent(facebookLaunchIntent, {});
       expect(event.source).to.equal("facebook");
     });
   });
   describe("Google Sign-In", () => {
     let voxaApp: VoxaApp;
-    let googleAction: DialogFlowPlatform;
+    let googleAction: DialogflowPlatform;
 
     const googleResponse: any = {
       aud: "1234567890-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com",
@@ -230,11 +230,11 @@ describe("DialogFlowEvent", () => {
 
     beforeEach(() => {
       voxaApp = new VoxaApp({ views, variables });
-      googleAction = new DialogFlowPlatform(voxaApp, { clientId: "clientId" });
+      googleAction = new DialogflowPlatform(voxaApp, { clientId: "clientId" });
 
       const userDetailsMocked: any = _.cloneDeep(googleResponse);
       simple
-        .mock(DialogFlowEvent.prototype, "verifyProfile")
+        .mock(DialogflowEvent.prototype, "verifyProfile")
         .resolveWith(userDetailsMocked);
     });
 
@@ -247,7 +247,7 @@ describe("DialogFlowEvent", () => {
       const pathToIdToken = "originalDetectIntentRequest.payload.user.idToken";
       _.set(launchIntentWithIdToken, pathToIdToken, "idToken");
 
-      const event = new DialogFlowEvent(launchIntentWithIdToken, {});
+      const event = new DialogflowEvent(launchIntentWithIdToken, {});
       event.platform = googleAction;
 
       const userInformation = await event.getUserInformation();
@@ -265,7 +265,7 @@ describe("DialogFlowEvent", () => {
     });
 
     it("should throw an error when idToken is empty", async () => {
-      const event = new DialogFlowEvent(launchIntent, {});
+      const event = new DialogflowEvent(launchIntent, {});
       event.platform = googleAction;
 
       let exceptionWasThrown: boolean = false;
