@@ -84,7 +84,7 @@ function createGenericTemplateDirective(
       let configElements: IFacebookElementTemplate[];
       let configButtons: IFacebookGenericButtonTemplate[]|undefined;
       let configSharable: boolean|undefined;
-      let configTopElementStyle: string|undefined;
+      let configTopElementStyle: FACEBOOK_TOP_ELEMENT_STYLE|undefined;
 
       if (_.isString(this.config)) {
         const payloadTemplate: IFacebookPayloadTemplate = await event.renderer.renderPath(this.config, event);
@@ -99,7 +99,7 @@ function createGenericTemplateDirective(
         configTopElementStyle = this.config.topElementStyle;
       }
 
-      const facebookPayload = {
+      const facebookPayload: IVoxaFacebookPayloadTemplate = {
         buttons: configButtons,
         elements: getTemplateElements(configElements),
         sharable: configSharable,
@@ -136,7 +136,7 @@ function getTemplateElements(configElements: IFacebookElementTemplate[]) {
       defaultAction = _.omitBy(defaultAction, _.isNil);
     }
 
-    let buttons: any = _.map(item.buttons, (x) => {
+    let buttons = _.map(item.buttons, (x) => {
       const buttonFormatted: any = _.pick(x, ["payload", "title", "type", "url"]);
 
       buttonFormatted.fallback_url = x.fallbackUrl;
@@ -144,13 +144,13 @@ function getTemplateElements(configElements: IFacebookElementTemplate[]) {
       buttonFormatted.webview_height_ratio = x.webviewHeightRatio;
 
       return _.omitBy(buttonFormatted, _.isNil);
-    });
+    }) as IVoxaFacebookGenericButtonTemplate[]|undefined;
 
     if (_.isEmpty(buttons)) {
       buttons = undefined;
     }
 
-    const elementItem: any = {
+    const elementItem: IVoxaFacebookElementTemplate = {
       buttons,
       default_action: defaultAction,
       image_url: item.imageUrl,
@@ -349,6 +349,40 @@ export interface IFacebookPayloadTemplate {
   imageAspectRatio?: FACEBOOK_IMAGE_ASPECT_RATIO;
   sharable?: boolean;
   topElementStyle?: FACEBOOK_TOP_ELEMENT_STYLE;
+}
+
+export interface IVoxaFacebookGenericButtonTemplate {
+  fallback_url?: string;
+  messenger_extensions?: boolean;
+  payload?: string;
+  title: string;
+  type: string;
+  url?: string;
+  webview_height_ratio?: FACEBOOK_WEBVIEW_HEIGHT_RATIO;
+}
+
+export interface IVoxaFacebookElementTemplate {
+  buttons?: IFacebookGenericButtonTemplate[];
+  default_action?: {
+    fallback_url?: string;
+    messenger_extensions?: boolean;
+    type?: string;
+    url?: string;
+    webview_height_ratio?: FACEBOOK_WEBVIEW_HEIGHT_RATIO;
+  };
+  image_url?: string;
+  subtitle?: string;
+  title: string;
+  sharable?: boolean;
+}
+
+export interface IVoxaFacebookPayloadTemplate {
+  buttons?: IFacebookGenericButtonTemplate[];
+  elements: IFacebookElementTemplate[];
+  image_aspect_ratio?: FACEBOOK_IMAGE_ASPECT_RATIO;
+  sharable?: boolean;
+  template_type: string;
+  top_element_style?: FACEBOOK_TOP_ELEMENT_STYLE;
 }
 
 export const FacebookCarousel = createGenericTemplateDirective(

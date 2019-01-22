@@ -33,14 +33,14 @@ import {
  */
 export class FacebookElementTemplateBuilder {
   private buttons: IFacebookGenericButtonTemplate[] = [];
-  private imageUrl: string|undefined;
-  private subtitle: string|undefined;
+  private imageUrl?: string;
+  private subtitle?: string;
   private title: string = "";
-  private defaultActionUrl: string|undefined;
-  private defaultActionFallbackUrl: string|undefined;
-  private defaultMessengerExtensions: boolean|undefined;
-  private defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO|undefined;
-  private sharable: boolean|undefined;
+  private defaultActionUrl?: string;
+  private defaultActionFallbackUrl?: string;
+  private defaultMessengerExtensions?: boolean;
+  private defaultWebviewHeightRatio?: FACEBOOK_WEBVIEW_HEIGHT_RATIO;
+  private sharable?: boolean;
 
   public addButton(button: IFacebookGenericButtonTemplate): FacebookElementTemplateBuilder {
     this.buttons.push(button);

@@ -179,6 +179,8 @@ export const variables = {
         {
           buttons: [
             {
+              fallbackUrl: "https://www.example.com",
+              messengerExtensions: false,
               title: "View",
               type: "web_url",
               url: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
@@ -199,6 +201,8 @@ export const variables = {
         {
           buttons: [
             {
+              fallbackUrl: "https://www.example.com",
+              messengerExtensions: false,
               title: "View",
               type: "web_url",
               url: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",

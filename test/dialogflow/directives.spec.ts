@@ -9,6 +9,7 @@ import {
   DialogflowEvent,
   DialogflowPlatform,
   DialogflowReply,
+  FACEBOOK_IMAGE_ASPECT_RATIO,
   FACEBOOK_TOP_ELEMENT_STYLE,
   FACEBOOK_WEBVIEW_HEIGHT_RATIO,
   FacebookButtonTemplateBuilder,
@@ -1469,7 +1470,8 @@ describe("Dialogflow Directives", () => {
 
         facebookTemplateBuilder
           .addElement(elementBuilder1.build())
-          .addElement(elementBuilder2.build());
+          .addElement(elementBuilder2.build())
+          .setImageAspectRatio(FACEBOOK_IMAGE_ASPECT_RATIO.HORIZONTAL);
 
         return {
           facebookCarousel: facebookTemplateBuilder.build(),
@@ -1520,6 +1522,8 @@ describe("Dialogflow Directives", () => {
           .setType("postback");
 
         buttonBuilder2
+          .setFallbackUrl("https://www.example.com")
+          .setMessengerExtensions(false)
           .setTitle("View")
           .setType("web_url")
           .setUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
@@ -1529,14 +1533,16 @@ describe("Dialogflow Directives", () => {
           .addButton(buttonBuilder2.build())
           .setImageUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
           .setSubtitle("See all our colors")
-          .setTitle("Classic T-Shirt Collection");
+          .setTitle("Classic T-Shirt Collection")
+          .setDefaultActionFallbackUrl("https://www.example.com");
 
         elementBuilder2
           .setDefaultActionUrl("https://www.w3schools.com")
           .setDefaultWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL)
           .setImageUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
           .setSubtitle("See all our colors")
-          .setTitle("Classic T-Shirt Collection");
+          .setTitle("Classic T-Shirt Collection")
+          .setSharable(false);
 
         buttonBuilder2.setWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL);
 

@@ -36,9 +36,9 @@ import {
 export class FacebookTemplateBuilder {
   private buttons: IFacebookGenericButtonTemplate[] = [];
   private elements: IFacebookElementTemplate[] = [];
-  private imageAspectRatio: FACEBOOK_IMAGE_ASPECT_RATIO|undefined;
-  private sharable: boolean|undefined;
-  private topElementStyle: FACEBOOK_TOP_ELEMENT_STYLE|undefined;
+  private imageAspectRatio?: FACEBOOK_IMAGE_ASPECT_RATIO;
+  private sharable?: boolean;
+  private topElementStyle?: FACEBOOK_TOP_ELEMENT_STYLE;
 
   public addButton(button: IFacebookGenericButtonTemplate): FacebookTemplateBuilder {
     this.buttons.push(button);

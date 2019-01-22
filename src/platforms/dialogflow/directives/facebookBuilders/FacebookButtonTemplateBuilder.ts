@@ -31,13 +31,13 @@ import {
  * Template Builder class reference
  */
 export class FacebookButtonTemplateBuilder {
-  private fallbackUrl: string|undefined;
-  private messengerExtensions: boolean|undefined;
-  private payload: string|undefined;
+  private fallbackUrl?: string;
+  private messengerExtensions?: boolean;
+  private payload?: string;
   private title: string = "";
   private type: string = "";
-  private url: string|undefined;
-  private webviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO|undefined;
+  private url?: string;
+  private webviewHeightRatio?: FACEBOOK_WEBVIEW_HEIGHT_RATIO;
 
   public setFallbackUrl(fallbackUrl: string): FacebookButtonTemplateBuilder {
     this.fallbackUrl = fallbackUrl;

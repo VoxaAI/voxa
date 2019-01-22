@@ -3,6 +3,8 @@
     {
       "buttons": [
         {
+          "fallback_url": "https://www.example.com",
+          "messenger_extensions": false,
           "title": "View",
           "type": "web_url",
           "url": "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
@@ -26,6 +28,8 @@
     {
       "buttons": [
         {
+          "fallback_url": "https://www.example.com",
+          "messenger_extensions": false,
           "title": "View",
           "type": "web_url",
           "url": "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
