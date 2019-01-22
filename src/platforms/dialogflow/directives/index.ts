@@ -38,3 +38,8 @@ export {
   IFacebookPayloadTemplate,
   IFacebookQuickReply,
 } from "./facebook";
+export {
+  FacebookButtonTemplateBuilder,
+  FacebookElementTemplateBuilder,
+  FacebookTemplateBuilder,
+} from "./facebookBuilders";

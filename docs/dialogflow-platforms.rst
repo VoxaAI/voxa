@@ -276,45 +276,56 @@ Or you can also handle these values from your views file
 You need to include in your controller the following field: ``facebookCarousel``, which takes an object with an array of elements to be taken as items in a generic list of buttons. For more information about the carousel, check how to add a `Generic Template <https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic>`_.
 
 .. code-block:: javascript
-  const { FACEBOOK_WEBVIEW_HEIGHT_RATIO } = require('voxa');
+  const {
+    FACEBOOK_WEBVIEW_HEIGHT_RATIO,
+    FacebookButtonTemplateBuilder,
+    FacebookElementTemplateBuilder,
+    FacebookTemplateBuilder,
+  } = require('voxa');
 
   app.onState('someState', () => {
-    const buttons = [
-      {
-        title: "Go to see this URL",
-        type: "web_url",
-        url: "https://www.example.com/imgs/imageExample.png",
-      },
-      {
-        payload: "value",
-        title: "Send this to chat",
-        type: "postback",
-      },
-    ];
+    const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+    const elementBuilder1 = new FacebookElementTemplateBuilder();
+    const elementBuilder2 = new FacebookElementTemplateBuilder();
+    const facebookTemplateBuilder = new FacebookTemplateBuilder();
 
-    const facebookCarousel = {
-      elements: [
-        {
-          buttons,
-          defaultActionUrl: "https://www.example.com/imgs/imageExample.png",
-          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.COMPACT,
-          imageUrl: "https://www.example.com/imgs/imageExample.png",
-          subtitle: "subtitle",
-          title: "title",
-        },
-        {
-          buttons,
-          defaultActionUrl: "https://www.example.com/imgs/imageExample.png",
-          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
-          imageUrl: "https://www.example.com/imgs/imageExample.png",
-          subtitle: "subtitle",
-          title: "title",
-        },
-      ],
-    };
+    buttonBuilder1
+      .setTitle("Go to see this URL")
+      .setType("web_url")
+      .setUrl("https://www.example.com/imgs/imageExample.png");
+
+    buttonBuilder2
+      .setPayload("value")
+      .setTitle("Send this to chat")
+      .setType("postback");
+
+    elementBuilder1
+      .addButton(buttonBuilder1.build())
+      .addButton(buttonBuilder2.build())
+      .setDefaultActionUrl("https://www.example.com/imgs/imageExample.png")
+      .setDefaultMessengerExtensions(false)
+      .setDefaultWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.COMPACT)
+      .setImageUrl("https://www.w3schools.com/colors/img_colormap.gif")
+      .setSubtitle("subtitle")
+      .setTitle("title");
+
+    elementBuilder2
+      .addButton(buttonBuilder1.build())
+      .addButton(buttonBuilder2.build())
+      .setDefaultActionUrl("https://www.example.com/imgs/imageExample.png")
+      .setDefaultMessengerExtensions(false)
+      .setDefaultWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL)
+      .setImageUrl("https://www.w3schools.com/colors/img_colormap.gif")
+      .setSubtitle("subtitle")
+      .setTitle("title");
+
+    facebookTemplateBuilder
+      .addElement(elementBuilder1.build())
+      .addElement(elementBuilder2.build());
 
     return {
-      facebookCarousel,
+      facebookCarousel: facebookTemplateBuilder.build(),
     };
   });
 
@@ -383,62 +394,64 @@ Or you can also handle these values from your views file
 You need to include in your controller the following field: ``facebookList``, which takes an object with an array of elements to be taken as items in a list of buttons. For more information about the carousel, check how to add a `List Template <https://developers.facebook.com/docs/messenger-platform/send-messages/template/list>`_.
 
 .. code-block:: javascript
-  const { FACEBOOK_TOP_ELEMENT_STYLE, FACEBOOK_WEBVIEW_HEIGHT_RATIO } = require('voxa');
+  const {
+    FACEBOOK_WEBVIEW_HEIGHT_RATIO,
+    FACEBOOK_TOP_ELEMENT_STYLE,
+    FacebookButtonTemplateBuilder,
+    FacebookElementTemplateBuilder,
+    FacebookTemplateBuilder,
+  } = require('voxa');
 
   app.onState('someState', () => {
-    const buttons = [
-      {
-        payload: "payload",
-        title: "View More",
-        type: "postback",
-      },
-    ];
+    const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+    const elementBuilder1 = new FacebookElementTemplateBuilder();
+    const elementBuilder2 = new FacebookElementTemplateBuilder();
+    const elementBuilder3 = new FacebookElementTemplateBuilder();
+    const facebookTemplateBuilder = new FacebookTemplateBuilder();
 
-    const facebookList = {
-      buttons,
-      elements: [
-        {
-          buttons: [
-            {
-              title: "View",
-              type: "web_url",
-              url: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
-              webviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.FULL,
-            },
-          ],
-          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
-          subtitle: "See all our colors",
-          title: "Classic T-Shirt Collection",
-        },
-        {
-          defaultActionUrl: "https://www.w3schools.com",
-          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
-          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
-          subtitle: "See all our colors",
-          title: "Classic T-Shirt Collection",
-        },
-        {
-          buttons: [
-            {
-              title: "View",
-              type: "web_url",
-              url: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
-              webviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
-            },
-          ],
-          defaultActionUrl: "https://www.w3schools.com",
-          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
-          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
-          subtitle: "100% Cotton, 200% Comfortable",
-          title: "Classic T-Shirt Collection",
-        },
-      ],
-      sharable: true,
-      topElementStyle: FACEBOOK_TOP_ELEMENT_STYLE.LARGE,
-    };
+    buttonBuilder1
+      .setPayload("payload")
+      .setTitle("View More")
+      .setType("postback");
+
+    buttonBuilder2
+      .setTitle("View")
+      .setType("web_url")
+      .setUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
+      .setWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.FULL);
+
+    elementBuilder1
+      .addButton(buttonBuilder2.build())
+      .setImageUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
+      .setSubtitle("See all our colors")
+      .setTitle("Classic T-Shirt Collection");
+
+    elementBuilder2
+      .setDefaultActionUrl("https://www.w3schools.com")
+      .setDefaultWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL)
+      .setImageUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
+      .setSubtitle("See all our colors")
+      .setTitle("Classic T-Shirt Collection");
+
+    elementBuilder3
+      .addButton(buttonBuilder2.build())
+      .setDefaultActionUrl("https://www.w3schools.com")
+      .setDefaultWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL)
+      .setImageUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
+      .setSubtitle("100% Cotton, 200% Comfortable")
+      .setTitle("Classic T-Shirt Collection");
+
+    facebookTemplateBuilder
+      .addButton(buttonBuilder1.build())
+      .addElement(elementBuilder1.build())
+      .addElement(elementBuilder2.build())
+      .addElement(elementBuilder3.build())
+      .setSharable(true)
+      .setTopElementStyle(FACEBOOK_TOP_ELEMENT_STYLE.LARGE);
 
     return {
-      facebookList,
+      facebookList: facebookTemplateBuilder.build(),
     };
   });
 
@@ -463,58 +476,54 @@ Or you can also handle these values from your views file
   variables
   .........
   list: function list(request) {
-    const buttons = [
-      {
-        payload: "payload",
-        title: "View More",
-        type: "postback",
-      },
-    ];
+    const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+    const elementBuilder1 = new FacebookElementTemplateBuilder();
+    const elementBuilder2 = new FacebookElementTemplateBuilder();
+    const elementBuilder3 = new FacebookElementTemplateBuilder();
+    const facebookTemplateBuilder = new FacebookTemplateBuilder();
 
-    const list = {
-      buttons,
-      elements: [
-        {
-          buttons: [
-            {
-              title: "View",
-              type: "web_url",
-              url: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
-              webviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.FULL,
-            },
-          ],
-          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
-          subtitle: "See all our colors",
-          title: "Classic T-Shirt Collection",
-        },
-        {
-          defaultActionUrl: "https://www.w3schools.com",
-          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
-          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
-          subtitle: "See all our colors",
-          title: "Classic T-Shirt Collection",
-        },
-        {
-          buttons: [
-            {
-              title: "View",
-              type: "web_url",
-              url: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
-              webviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
-            },
-          ],
-          defaultActionUrl: "https://www.w3schools.com",
-          defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
-          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
-          subtitle: "100% Cotton, 200% Comfortable",
-          title: "Classic T-Shirt Collection",
-        },
-      ],
-      sharable: true,
-      topElementStyle: FACEBOOK_TOP_ELEMENT_STYLE.LARGE,
-    };
+    buttonBuilder1
+      .setPayload("payload")
+      .setTitle("View More")
+      .setType("postback");
 
-    return list;
+    buttonBuilder2
+      .setTitle("View")
+      .setType("web_url")
+      .setUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
+      .setWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.FULL);
+
+    elementBuilder1
+      .addButton(buttonBuilder2.build())
+      .setImageUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
+      .setSubtitle("See all our colors")
+      .setTitle("Classic T-Shirt Collection");
+
+    elementBuilder2
+      .setDefaultActionUrl("https://www.w3schools.com")
+      .setDefaultWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL)
+      .setImageUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
+      .setSubtitle("See all our colors")
+      .setTitle("Classic T-Shirt Collection");
+
+    elementBuilder3
+      .addButton(buttonBuilder2.build())
+      .setDefaultActionUrl("https://www.w3schools.com")
+      .setDefaultWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL)
+      .setImageUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
+      .setSubtitle("100% Cotton, 200% Comfortable")
+      .setTitle("Classic T-Shirt Collection");
+
+    facebookTemplateBuilder
+      .addButton(buttonBuilder1.build())
+      .addElement(elementBuilder1.build())
+      .addElement(elementBuilder2.build())
+      .addElement(elementBuilder3.build())
+      .setSharable(true)
+      .setTopElementStyle(FACEBOOK_TOP_ELEMENT_STYLE.LARGE);
+
+    return facebookTemplateBuilder.build();
   },
 
 
