@@ -186,6 +186,11 @@ export const views = {
           say: "Say!",
           text: "Text!",
         },
+        OpenGraphTemplate: {
+          facebookOpenGraphTemplate: "{facebookOpenGraphTemplate}",
+          say: "Say!",
+          text: "Text!",
+        },
         QuickReplyLocation: {
           facebookQuickReplyLocation: "Send me your location",
           say: "Say!",

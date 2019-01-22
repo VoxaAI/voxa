@@ -528,7 +528,7 @@ Or you can also handle these values from your views file
 
 
 - Button Template
-You need to include in your controller the following field: ``facebookButtonTemplate``, which takes an object with an array of buttons to be taken as items in a list of buttons. For more information about the button template, check how to add a `List Template <https://developers.facebook.com/docs/messenger-platform/send-messages/template/list>`_.
+You need to include in your controller the following field: ``facebookButtonTemplate``, which takes an object with an array of buttons to be taken as items in a list of buttons. For more information about the button template, check how to add a `Button Template <https://developers.facebook.com/docs/messenger-platform/send-messages/template/button>`_.
 
 .. code-block:: javascript
   const {
@@ -614,6 +614,92 @@ Or you can also handle these values from your views file
       .addButton(buttonBuilder2.build())
       .addButton(buttonBuilder3.build())
       .setText("What do you want to do?");
+
+    return facebookTemplateBuilder.build();
+  },
+
+
+- Open Graph Template
+You need to include in your controller the following field: ``facebookOpenGraphTemplate``, which takes an object with an array of buttons to be taken as items in a list of buttons and a url for the open graph link. For more information about the button template, check how to add a `Open Graph Template <https://developers.facebook.com/docs/messenger-platform/send-messages/template/open-graph>`_.
+
+.. code-block:: javascript
+  const {
+    FacebookButtonTemplateBuilder,
+    FacebookTemplateBuilder,
+  } = require('voxa');
+
+  app.onState('someState', () => {
+    const elementBuilder1 = new FacebookElementTemplateBuilder();
+    const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+    const facebookTemplateBuilder = new FacebookTemplateBuilder();
+
+    buttonBuilder1
+      .setTitle("Go to Wikipedia")
+      .setType("web_url")
+      .setUrl("https://en.wikipedia.org/wiki/Rickrolling");
+
+    buttonBuilder2
+      .setTitle("Go to Twitter")
+      .setType("web_url")
+      .setUrl("http://www.twitter.com");
+
+    elementBuilder1
+      .addButton(buttonBuilder1.build())
+      .addButton(buttonBuilder2.build())
+      .setUrl("https://open.spotify.com/track/7GhIk7Il098yCjg4BQjzvb");
+
+    facebookTemplateBuilder
+      .addElement(elementBuilder1.build());
+
+    return {
+      facebookOpenGraphTemplate: facebookTemplateBuilder.build(),
+    };
+  });
+
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookOpenGraphTemplate"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookOpenGraphTemplate": {
+      "facebookOpenGraphTemplate": "{openGraphTemplate}"
+    }
+  }
+  .........
+  variables
+  .........
+  openGraphTemplate: function openGraphTemplate(request) {
+    const elementBuilder1 = new FacebookElementTemplateBuilder();
+    const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+    const facebookTemplateBuilder = new FacebookTemplateBuilder();
+
+    buttonBuilder1
+      .setTitle("Go to Wikipedia")
+      .setType("web_url")
+      .setUrl("https://en.wikipedia.org/wiki/Rickrolling");
+
+    buttonBuilder2
+      .setTitle("Go to Twitter")
+      .setType("web_url")
+      .setUrl("http://www.twitter.com");
+
+    elementBuilder1
+      .addButton(buttonBuilder1.build())
+      .addButton(buttonBuilder2.build())
+      .setUrl("https://open.spotify.com/track/7GhIk7Il098yCjg4BQjzvb");
+
+    facebookTemplateBuilder
+      .addElement(elementBuilder1.build());
 
     return facebookTemplateBuilder.build();
   },

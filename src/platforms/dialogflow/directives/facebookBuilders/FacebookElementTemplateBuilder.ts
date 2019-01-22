@@ -41,6 +41,7 @@ export class FacebookElementTemplateBuilder {
   private defaultMessengerExtensions?: boolean;
   private defaultWebviewHeightRatio?: FACEBOOK_WEBVIEW_HEIGHT_RATIO;
   private sharable?: boolean;
+  private url?: string;
 
   public addButton(button: IFacebookGenericButtonTemplate): FacebookElementTemplateBuilder {
     this.buttons.push(button);
@@ -62,6 +63,12 @@ export class FacebookElementTemplateBuilder {
 
   public setTitle(title: string): FacebookElementTemplateBuilder {
     this.title = title;
+
+    return this;
+  }
+
+  public setUrl(url: string): FacebookElementTemplateBuilder {
+    this.url = url;
 
     return this;
   }
@@ -109,6 +116,7 @@ export class FacebookElementTemplateBuilder {
       sharable: this.sharable,
       subtitle: this.subtitle,
       title: this.title,
+      url: this.url,
     };
 
     return _.omitBy(template, _.isNil) as IFacebookElementTemplate;

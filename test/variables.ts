@@ -11,6 +11,7 @@ import {
   FACEBOOK_TOP_ELEMENT_STYLE,
   FACEBOOK_WEBVIEW_HEIGHT_RATIO,
   FacebookButtonTemplateBuilder,
+  FacebookElementTemplateBuilder,
   FacebookTemplateBuilder,
   IFacebookGenericButtonTemplate,
   IFacebookPayloadTemplate,
@@ -253,5 +254,32 @@ export const variables = {
     };
 
     return list;
+  },
+
+  facebookOpenGraphTemplate: function facebookOpenGraphTemplate(request: IVoxaEvent) {
+    const elementBuilder1 = new FacebookElementTemplateBuilder();
+    const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+    const facebookTemplateBuilder = new FacebookTemplateBuilder();
+
+    buttonBuilder1
+      .setTitle("Go to Wikipedia")
+      .setType("web_url")
+      .setUrl("https://en.wikipedia.org/wiki/Rickrolling");
+
+    buttonBuilder2
+      .setTitle("Go to Twitter")
+      .setType("web_url")
+      .setUrl("http://www.twitter.com");
+
+    elementBuilder1
+      .addButton(buttonBuilder1.build())
+      .addButton(buttonBuilder2.build())
+      .setUrl("https://open.spotify.com/track/7GhIk7Il098yCjg4BQjzvb");
+
+    facebookTemplateBuilder
+      .addElement(elementBuilder1.build());
+
+    return facebookTemplateBuilder.build();
   },
 };

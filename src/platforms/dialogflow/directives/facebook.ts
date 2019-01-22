@@ -161,6 +161,7 @@ function getTemplateElements(configElements: IFacebookElementTemplate[]|undefine
       image_url: item.imageUrl,
       subtitle: item.subtitle,
       title: item.title,
+      url: item.url,
     };
 
     elements.push(_.omitBy(elementItem, _.isEmpty));
@@ -340,12 +341,13 @@ export interface IFacebookElementTemplate {
   buttons?: IFacebookGenericButtonTemplate[];
   imageUrl?: string;
   subtitle?: string;
-  title: string;
+  title?: string;
   defaultActionUrl?: string;
   defaultActionFallbackUrl?: string;
   defaultMessengerExtensions?: boolean;
   defaultWebviewHeightRatio?: FACEBOOK_WEBVIEW_HEIGHT_RATIO;
   sharable?: boolean;
+  url?: string;
 }
 
 export interface IFacebookPayloadTemplate {
@@ -378,8 +380,9 @@ export interface IVoxaFacebookElementTemplate {
   };
   image_url?: string;
   subtitle?: string;
-  title: string;
+  title?: string;
   sharable?: boolean;
+  url?: string;
 }
 
 export interface IVoxaFacebookPayloadTemplate {
@@ -405,4 +408,9 @@ export const FacebookCarousel = createGenericTemplateDirective(
 export const FacebookList = createGenericTemplateDirective(
   "facebookList",
   "list",
+);
+
+export const FacebookOpenGraphTemplate = createGenericTemplateDirective(
+  "facebookOpenGraphTemplate",
+  "open_graph",
 );

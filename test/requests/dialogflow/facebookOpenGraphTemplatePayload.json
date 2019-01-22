@@ -1,0 +1,20 @@
+{
+  "template_type": "open_graph",
+  "elements": [
+    {
+      "buttons": [
+        {
+          "title": "Go to Wikipedia",
+          "type": "web_url",
+          "url": "https://en.wikipedia.org/wiki/Rickrolling"
+        },
+        {
+          "title": "Go to Twitter",
+          "type": "web_url",
+          "url": "http://www.twitter.com"
+        }
+      ],
+      "url": "https://open.spotify.com/track/7GhIk7Il098yCjg4BQjzvb"
+    }
+  ]
+}

@@ -16,6 +16,7 @@ export {
   FacebookButtonTemplate,
   FacebookCarousel,
   FacebookList,
+  FacebookOpenGraphTemplate,
   FacebookQuickReplyLocation,
   FacebookQuickReplyPhoneNumber,
   FacebookQuickReplyText,
