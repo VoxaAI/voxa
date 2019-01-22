@@ -123,7 +123,7 @@ describe("Hello World", () => {
       const lambdaCallbackResult = dockerLambda({
         dockerImage: `lambci/lambda:nodejs${NODE_VERSION}`,
         event: lambdaProxyLaunchIntent,
-        handler: "hello-world.dialogFlowActionLambdaHTTPHandler"
+        handler: "hello-world.dialogflowActionLambdaHTTPHandler"
       });
 
       expect(lambdaCallbackResult.headers).to.deep.equal({

@@ -1,17 +1,17 @@
 {
   "body": "{\"responseId\":\"d9c236a8-be4a-4ed2-b536-645ea4e20345\",\"queryResult\":{\"queryText\":\"GOOGLE_ASSISTANT_WELCOME\",\"action\":\"LaunchIntent\",\"parameters\":{\"requestPhrase\":\"\"},\"allRequiredParamsPresent\":true,\"outputContexts\":[{\"name\":\"projects/project/agent/sessions/1525973454075/contexts/google_assistant_welcome\",\"parameters\":{\"requestPhrase.original\":\"\",\"requestPhrase\":\"\"}},{\"name\":\"projects/project/agent/sessions/1525973454075/contexts/actions_capability_screen_output\",\"parameters\":{\"requestPhrase.original\":\"\",\"requestPhrase\":\"\"}},{\"name\":\"projects/project/agent/sessions/1525973454075/contexts/actions_capability_audio_output\",\"parameters\":{\"requestPhrase.original\":\"\",\"requestPhrase\":\"\"}},{\"name\":\"projects/project/agent/sessions/1525973454075/contexts/google_assistant_input_type_keyboard\",\"parameters\":{\"requestPhrase.original\":\"\",\"requestPhrase\":\"\"}},{\"name\":\"projects/project/agent/sessions/1525973454075/contexts/actions_capability_web_browser\",\"parameters\":{\"requestPhrase.original\":\"\",\"requestPhrase\":\"\"}},{\"name\":\"projects/project/agent/sessions/1525973454075/contexts/actions_capability_media_response_audio\",\"parameters\":{\"requestPhrase.original\":\"\",\"requestPhrase\":\"\"}}],\"intent\":{\"name\":\"projects/project/agent/intents/e2ea702b-a923-49c6-b681-2b4a7f0d505c\",\"displayName\":\"LaunchIntent\"},\"intentDetectionConfidence\":1,\"diagnosticInfo\":{},\"languageCode\":\"en-us\"},\"originalDetectIntentRequest\":{\"source\":\"google\",\"version\":\"2\",\"payload\":{\"isInSandbox\":true,\"surface\":{\"capabilities\":[{\"name\":\"actions.capability.AUDIO_OUTPUT\"},{\"name\":\"actions.capability.SCREEN_OUTPUT\"},{\"name\":\"actions.capability.MEDIA_RESPONSE_AUDIO\"},{\"name\":\"actions.capability.WEB_BROWSER\"}]},\"inputs\":[{\"rawInputs\":[{\"query\":\"Talk to my test app\",\"inputType\":\"KEYBOARD\"}],\"intent\":\"actions.intent.MAIN\"}],\"user\":{\"lastSeen\":\"2018-05-08T23:02:42Z\",\"locale\":\"en-US\",\"userId\":\"ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y\"},\"conversation\":{\"conversationId\":\"1525973454075\",\"type\":\"NEW\"},\"availableSurfaces\":[{\"capabilities\":[{\"name\":\"actions.capability.AUDIO_OUTPUT\"},{\"name\":\"actions.capability.SCREEN_OUTPUT\"}]}]}},\"session\":\"projects/project/agent/sessions/1525973454075\"}",
-  "resource": "/dialogFlow",
+  "resource": "/dialogflow",
   "requestContext": {
     "requestTime": "15/Jun/2018:21:45:43 +0000",
     "protocol": "HTTP/1.1",
     "resourceId": "vyditn",
     "apiId": "wadf2x11v3",
-    "resourcePath": "/dialogFlow",
+    "resourcePath": "/dialogflow",
     "httpMethod": "POST",
     "stage": "staging",
     "requestId": "743f0a21-70e5-11e8-863d-ebb358687638",
     "extendedRequestId": "Iiz9KHYeoAMFUGw=",
-    "path": "/staging/dialogFlow",
+    "path": "/staging/dialogflow",
     "requestTimeEpoch": 1529099143491,
     "identity": {
       "userArn": null,
@@ -52,6 +52,6 @@
     "CloudFront-Is-Desktop-Viewer": "true"
   },
   "stageVariables": null,
-  "path": "/dialogFlow",
+  "path": "/dialogflow",
   "isBase64Encoded": false
 }

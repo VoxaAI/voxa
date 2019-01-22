@@ -28,21 +28,21 @@ import {
 } from "actions-on-google";
 import { expect } from "chai";
 import * as _ from "lodash";
-import { DialogFlowReply } from "../../src/platforms/dialogflow";
+import { DialogflowReply } from "../../src/platforms/dialogflow";
 
 /* tslint:disable-next-line:no-var-requires */
 const rawEvent = require("../requests/dialogflow/launchIntent.json");
 import { DialogflowConversation } from "actions-on-google";
 
-describe("DialogFlowReply", () => {
-  let reply: DialogFlowReply;
+describe("DialogflowReply", () => {
+  let reply: DialogflowReply;
 
   beforeEach(() => {
     const conv = new DialogflowConversation({
       body: rawEvent,
       headers: {},
     });
-    reply = new DialogFlowReply(conv);
+    reply = new DialogflowReply(conv);
   });
 
   describe("hasTerminated", () => {

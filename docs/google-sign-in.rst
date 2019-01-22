@@ -13,14 +13,14 @@ With Voxa, you can ask for the user's full name like this:
 
 .. code-block:: javascript
 
-  app.onIntent('ProfileIntent', async (dialogFlowEvent: DialogFlowEvent) => {
-    const userInfo = await dialogFlowEvent.getUserInformation();
+  app.onIntent('ProfileIntent', async (dialogflowEvent: DialogflowEvent) => {
+    const userInfo = await dialogflowEvent.getUserInformation();
 
-    dialogFlowEvent.model.email = userInfo.email;
-    dialogFlowEvent.model.familyName = userInfo.familyName;
-    dialogFlowEvent.model.givenName = userInfo.givenName;
-    dialogFlowEvent.model.name = userInfo.name;
-    dialogFlowEvent.model.locale = userInfo.locale;
+    dialogflowEvent.model.email = userInfo.email;
+    dialogflowEvent.model.familyName = userInfo.familyName;
+    dialogflowEvent.model.givenName = userInfo.givenName;
+    dialogflowEvent.model.name = userInfo.name;
+    dialogflowEvent.model.locale = userInfo.locale;
 
     return { ask: 'CustomerContact.FullInfo' };
   });
