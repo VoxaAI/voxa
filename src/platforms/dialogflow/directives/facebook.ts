@@ -81,7 +81,6 @@ function createGenericTemplateDirective(
       transition: ITransition,
     ): Promise<void> {
       const dialogFlowReply = (reply as DialogflowReply);
-      const elements: any[] = [];
       let configElements: IFacebookElementTemplate[];
       let configButtons: IFacebookGenericButtonTemplate[]|undefined;
       let configSharable: boolean|undefined;
@@ -100,83 +99,69 @@ function createGenericTemplateDirective(
         configTopElementStyle = this.config.topElementStyle;
       }
 
-      _.forEach(configElements, (item) => {
-        let defaultAction;
-
-        if (item.defaultActionUrl) {
-          defaultAction = {
-            type: "web_url",
-            url: item.defaultActionUrl,
-          };
-
-          if (item.defaultActionFallbackUrl) {
-            _.set(defaultAction, "fallback_url", item.defaultActionFallbackUrl);
-          }
-
-          if (_.isBoolean(item.defaultMessengerExtensions)) {
-            _.set(defaultAction, "messenger_extensions", item.defaultMessengerExtensions);
-          }
-
-          if (item.defaultWebviewHeightRatio) {
-            _.set(defaultAction, "webview_height_ratio", item.defaultWebviewHeightRatio);
-          }
-        }
-
-        let buttons: any = _.map(item.buttons, (x) => {
-          const buttonFormatted: any = _.pick(x, ["payload", "title", "type", "url"]);
-
-          buttonFormatted.fallback_url = x.fallbackUrl;
-          buttonFormatted.messenger_extensions = x.messengerExtensions;
-          buttonFormatted.webview_height_ratio = x.webviewHeightRatio;
-
-          return _.omitBy(buttonFormatted, _.isNil);
-        });
-
-        if (_.isEmpty(buttons)) {
-          buttons = undefined;
-        }
-
-        const elementItem: any = {
-          image_url: item.imageUrl,
-          subtitle: item.subtitle,
-          title: item.title,
-        };
-
-        if (buttons) {
-          elementItem.buttons = buttons;
-        }
-
-        if (defaultAction) {
-          elementItem.default_action = defaultAction;
-        }
-
-        elements.push(elementItem);
-      });
+      const facebookPayload = {
+        buttons: configButtons,
+        elements: getTemplateElements(configElements),
+        sharable: configSharable,
+        template_type: templateType,
+        top_element_style: configTopElementStyle,
+      };
 
       dialogFlowReply.source = "facebook";
       dialogFlowReply.payload.facebook = {
         attachment: {
-          payload: {
-            elements,
-            template_type: templateType,
-          },
+          payload: _.omitBy(facebookPayload, _.isNil),
           type: "template",
         },
       };
-
-      if (configButtons) {
-        _.set(dialogFlowReply, "payload.facebook.attachment.payload.buttons", configButtons);
-      }
-
-      if (configSharable) {
-        _.set(dialogFlowReply, "payload.facebook.attachment.payload.sharable", configSharable);
-      }
-
-      if (configTopElementStyle) {
-        _.set(dialogFlowReply, "payload.facebook.attachment.payload.top_element_style", configTopElementStyle);
-      }
     }
   };
+}
+
+function getTemplateElements(configElements: IFacebookElementTemplate[]) {
+  const elements: any[] = [];
+
+  _.forEach(configElements, (item) => {
+    let defaultAction;
+
+    if (item.defaultActionUrl) {
+      defaultAction = {
+        fallback_url: item.defaultActionFallbackUrl,
+        messenger_extensions: item.defaultMessengerExtensions,
+        type: "web_url",
+        url: item.defaultActionUrl,
+        webview_height_ratio: item.defaultWebviewHeightRatio,
+      };
+
+      defaultAction = _.omitBy(defaultAction, _.isNil);
+    }
+
+    let buttons: any = _.map(item.buttons, (x) => {
+      const buttonFormatted: any = _.pick(x, ["payload", "title", "type", "url"]);
+
+      buttonFormatted.fallback_url = x.fallbackUrl;
+      buttonFormatted.messenger_extensions = x.messengerExtensions;
+      buttonFormatted.webview_height_ratio = x.webviewHeightRatio;
+
+      return _.omitBy(buttonFormatted, _.isNil);
+    });
+
+    if (_.isEmpty(buttons)) {
+      buttons = undefined;
+    }
+
+    const elementItem: any = {
+      buttons,
+      default_action: defaultAction,
+      image_url: item.imageUrl,
+      subtitle: item.subtitle,
+      title: item.title,
+    };
+
+    elements.push(_.omitBy(elementItem, _.isNil));
+  });
+
+  return elements;
 }
 
 export class FacebookAccountLink implements IDirective {

@@ -84,7 +84,9 @@ export class FacebookElementTemplateBuilder {
     return this;
   }
 
-  public setDefaultWebviewHeightRatio(defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO): FacebookElementTemplateBuilder {
+  public setDefaultWebviewHeightRatio(
+    defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO,
+  ): FacebookElementTemplateBuilder {
     this.defaultWebviewHeightRatio = defaultWebviewHeightRatio;
 
     return this;
@@ -99,14 +101,14 @@ export class FacebookElementTemplateBuilder {
   public build(): IFacebookElementTemplate {
     const template: IFacebookElementTemplate = {
       buttons: this.buttons,
-      imageUrl: this.imageUrl,
-      subtitle: this.subtitle,
-      title: this.title,
-      defaultActionUrl: this.defaultActionUrl,
       defaultActionFallbackUrl: this.defaultActionFallbackUrl,
+      defaultActionUrl: this.defaultActionUrl,
       defaultMessengerExtensions: this.defaultMessengerExtensions,
       defaultWebviewHeightRatio: this.defaultWebviewHeightRatio,
+      imageUrl: this.imageUrl,
       sharable: this.sharable,
+      subtitle: this.subtitle,
+      title: this.title,
     };
 
     return _.omitBy(template, _.isNil) as IFacebookElementTemplate;
