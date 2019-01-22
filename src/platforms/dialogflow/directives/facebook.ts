@@ -136,7 +136,7 @@ function getTemplateElements(configElements: IFacebookElementTemplate[]) {
       defaultAction = _.omitBy(defaultAction, _.isNil);
     }
 
-    let buttons = _.map(item.buttons, (x) => {
+    const buttons = _.map(item.buttons, (x) => {
       const buttonFormatted: any = _.pick(x, ["payload", "title", "type", "url"]);
 
       buttonFormatted.fallback_url = x.fallbackUrl;
@@ -144,11 +144,7 @@ function getTemplateElements(configElements: IFacebookElementTemplate[]) {
       buttonFormatted.webview_height_ratio = x.webviewHeightRatio;
 
       return _.omitBy(buttonFormatted, _.isNil);
-    }) as IVoxaFacebookGenericButtonTemplate[]|undefined;
-
-    if (_.isEmpty(buttons)) {
-      buttons = undefined;
-    }
+    }) as IVoxaFacebookGenericButtonTemplate[];
 
     const elementItem: IVoxaFacebookElementTemplate = {
       buttons,
@@ -158,7 +154,7 @@ function getTemplateElements(configElements: IFacebookElementTemplate[]) {
       title: item.title,
     };
 
-    elements.push(_.omitBy(elementItem, _.isNil));
+    elements.push(_.omitBy(elementItem, _.isEmpty));
   });
 
   return elements;
