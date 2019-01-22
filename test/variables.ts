@@ -10,6 +10,8 @@ import { Hint, HomeCard } from "../src/platforms/alexa/directives";
 import {
   FACEBOOK_TOP_ELEMENT_STYLE,
   FACEBOOK_WEBVIEW_HEIGHT_RATIO,
+  FacebookButtonTemplateBuilder,
+  FacebookTemplateBuilder,
   IFacebookGenericButtonTemplate,
   IFacebookPayloadTemplate,
 } from "../src/platforms/dialogflow";
@@ -122,6 +124,36 @@ export const variables = {
 
   reminderId: function reminderId(request: IVoxaEvent) {
     return request.model.reminder.alertToken;
+  },
+
+  facebookButtonTemplate: function facebookButtonTemplate(request: IVoxaEvent) {
+    const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder3 = new FacebookButtonTemplateBuilder();
+    const facebookTemplateBuilder = new FacebookTemplateBuilder();
+
+    buttonBuilder1
+      .setPayload("payload")
+      .setTitle("View More")
+      .setType("postback");
+
+    buttonBuilder2
+      .setPayload("1234567890")
+      .setTitle("Call John")
+      .setType("phone_number");
+
+    buttonBuilder3
+      .setTitle("Go to Twitter")
+      .setType("web_url")
+      .setUrl("http://www.twitter.com");
+
+    facebookTemplateBuilder
+      .addButton(buttonBuilder1.build())
+      .addButton(buttonBuilder2.build())
+      .addButton(buttonBuilder3.build())
+      .setText("What do you want to do?");
+
+    return facebookTemplateBuilder.build();
   },
 
   facebookCarousel: function facebookCarousel(request: IVoxaEvent) {

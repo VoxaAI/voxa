@@ -81,9 +81,10 @@ function createGenericTemplateDirective(
       transition: ITransition,
     ): Promise<void> {
       const dialogflowReply = (reply as DialogflowReply);
-      let configElements: IFacebookElementTemplate[];
+      let configElements: IFacebookElementTemplate[]|undefined;
       let configButtons: IFacebookGenericButtonTemplate[]|undefined;
       let configSharable: boolean|undefined;
+      let configText: string|undefined;
       let configTopElementStyle: FACEBOOK_TOP_ELEMENT_STYLE|undefined;
 
       if (_.isString(this.config)) {
@@ -91,21 +92,29 @@ function createGenericTemplateDirective(
         configButtons = payloadTemplate.buttons;
         configElements = payloadTemplate.elements;
         configSharable = payloadTemplate.sharable;
+        configText = payloadTemplate.text;
         configTopElementStyle = payloadTemplate.topElementStyle;
       } else {
         configButtons = this.config.buttons;
         configElements = this.config.elements;
         configSharable = this.config.sharable;
+        configText = this.config.text;
         configTopElementStyle = this.config.topElementStyle;
       }
 
+      const elements = getTemplateElements(configElements);
+
       const facebookPayload: IVoxaFacebookPayloadTemplate = {
         buttons: configButtons,
-        elements: getTemplateElements(configElements),
         sharable: configSharable,
         template_type: templateType,
+        text: configText,
         top_element_style: configTopElementStyle,
       };
+
+      if (!_.isEmpty(elements)) {
+        facebookPayload.elements = elements;
+      }
 
       dialogflowReply.source = "facebook";
       dialogflowReply.payload.facebook = {
@@ -118,7 +127,7 @@ function createGenericTemplateDirective(
   };
 }
 
-function getTemplateElements(configElements: IFacebookElementTemplate[]) {
+function getTemplateElements(configElements: IFacebookElementTemplate[]|undefined) {
   const elements: any[] = [];
 
   _.forEach(configElements, (item) => {
@@ -341,9 +350,10 @@ export interface IFacebookElementTemplate {
 
 export interface IFacebookPayloadTemplate {
   buttons?: IFacebookGenericButtonTemplate[];
-  elements: IFacebookElementTemplate[];
+  elements?: IFacebookElementTemplate[];
   imageAspectRatio?: FACEBOOK_IMAGE_ASPECT_RATIO;
   sharable?: boolean;
+  text?: string;
   topElementStyle?: FACEBOOK_TOP_ELEMENT_STYLE;
 }
 
@@ -374,12 +384,18 @@ export interface IVoxaFacebookElementTemplate {
 
 export interface IVoxaFacebookPayloadTemplate {
   buttons?: IFacebookGenericButtonTemplate[];
-  elements: IFacebookElementTemplate[];
+  elements?: IFacebookElementTemplate[];
   image_aspect_ratio?: FACEBOOK_IMAGE_ASPECT_RATIO;
   sharable?: boolean;
   template_type: string;
+  text?: string;
   top_element_style?: FACEBOOK_TOP_ELEMENT_STYLE;
 }
+
+export const FacebookButtonTemplate = createGenericTemplateDirective(
+  "facebookButtonTemplate",
+  "button",
+);
 
 export const FacebookCarousel = createGenericTemplateDirective(
   "facebookCarousel",

@@ -13,6 +13,7 @@ export {
   FACEBOOK_WEBVIEW_HEIGHT_RATIO,
   FacebookAccountLink,
   FacebookAccountUnlink,
+  FacebookButtonTemplate,
   FacebookCarousel,
   FacebookList,
   FacebookQuickReplyLocation,

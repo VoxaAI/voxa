@@ -527,6 +527,99 @@ Or you can also handle these values from your views file
   },
 
 
+- Button Template
+You need to include in your controller the following field: ``facebookButtonTemplate``, which takes an object with an array of buttons to be taken as items in a list of buttons. For more information about the button template, check how to add a `List Template <https://developers.facebook.com/docs/messenger-platform/send-messages/template/list>`_.
+
+.. code-block:: javascript
+  const {
+    FacebookButtonTemplateBuilder,
+    FacebookTemplateBuilder,
+  } = require('voxa');
+
+  app.onState('someState', () => {
+    const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder3 = new FacebookButtonTemplateBuilder();
+    const facebookTemplateBuilder = new FacebookTemplateBuilder();
+
+    buttonBuilder1
+      .setPayload("payload")
+      .setTitle("View More")
+      .setType("postback");
+
+    buttonBuilder2
+      .setPayload("1234567890")
+      .setTitle("Call John")
+      .setType("phone_number");
+
+    buttonBuilder3
+      .setTitle("Go to Twitter")
+      .setType("web_url")
+      .setUrl("http://www.twitter.com");
+
+    facebookTemplateBuilder
+      .addButton(buttonBuilder1.build())
+      .addButton(buttonBuilder2.build())
+      .addButton(buttonBuilder3.build())
+      .setText("What do you want to do?");
+
+    return {
+      facebookButtonTemplate: facebookTemplateBuilder.build(),
+    };
+  });
+
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookButtonTemplate"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookButtonTemplate": {
+      "facebookButtonTemplate": "{buttonTemplate}"
+    }
+  }
+  .........
+  variables
+  .........
+  buttonTemplate: function buttonTemplate(request) {
+    const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder3 = new FacebookButtonTemplateBuilder();
+    const facebookTemplateBuilder = new FacebookTemplateBuilder();
+
+    buttonBuilder1
+      .setPayload("payload")
+      .setTitle("View More")
+      .setType("postback");
+
+    buttonBuilder2
+      .setPayload("1234567890")
+      .setTitle("Call John")
+      .setType("phone_number");
+
+    buttonBuilder3
+      .setTitle("Go to Twitter")
+      .setType("web_url")
+      .setUrl("http://www.twitter.com");
+
+    facebookTemplateBuilder
+      .addButton(buttonBuilder1.build())
+      .addButton(buttonBuilder2.build())
+      .addButton(buttonBuilder3.build())
+      .setText("What do you want to do?");
+
+    return facebookTemplateBuilder.build();
+  },
+
+
+
 For more information check the `Dialogflow documentation for Facebook Messenger <https://dialogflow.com/docs/integrations/facebook>`_
 
 

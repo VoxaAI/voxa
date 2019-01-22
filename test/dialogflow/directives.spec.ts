@@ -1414,6 +1414,68 @@ describe("Dialogflow Directives", () => {
     });
   });
 
+  describe("FacebookButtonTemplate", () => {
+    it("should send a FacebookButtonTemplate using a reply view", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        reply: "Facebook.ButtonTemplate",
+        to: "entry",
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const facebookButtonTemplatePayload = require("../requests/dialogflow/facebookButtonTemplatePayload.json");
+
+      const reply = await dialogflowAgent.execute(event);
+      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookButtonTemplatePayload);
+    });
+
+    it("should send a FacebookButtonTemplate", async () => {
+      app.onIntent("LaunchIntent", (voxaEvent: DialogflowEvent) => {
+        const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+        const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+        const buttonBuilder3 = new FacebookButtonTemplateBuilder();
+        const facebookTemplateBuilder = new FacebookTemplateBuilder();
+
+        buttonBuilder1
+          .setPayload("payload")
+          .setTitle("View More")
+          .setType("postback");
+
+        buttonBuilder2
+          .setPayload("1234567890")
+          .setTitle("Call John")
+          .setType("phone_number");
+
+        buttonBuilder3
+          .setTitle("Go to Twitter")
+          .setType("web_url")
+          .setUrl("http://www.twitter.com");
+
+        facebookTemplateBuilder
+          .addButton(buttonBuilder1.build())
+          .addButton(buttonBuilder2.build())
+          .addButton(buttonBuilder3.build())
+          .setText("What do you want to do?");
+
+        return {
+          facebookButtonTemplate: facebookTemplateBuilder.build(),
+          flow: "yield",
+          sayp: "Say!",
+          textp: "Text!",
+          to: "entry",
+        };
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const facebookButtonTemplatePayload = require("../requests/dialogflow/facebookButtonTemplatePayload.json");
+
+      const reply = await dialogflowAgent.execute(event);
+      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookButtonTemplatePayload);
+    });
+  });
+
   describe("FacebookCarousel", () => {
     it("should send a FacebookCarousel template using a reply view", async () => {
       app.onIntent("LaunchIntent", {
