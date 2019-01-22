@@ -123,7 +123,7 @@ describe("Hello World", () => {
       const lambdaCallbackResult = dockerLambda({
         dockerImage: `lambci/lambda:nodejs${NODE_VERSION}`,
         event: lambdaProxyLaunchIntent,
-        handler: "hello-world.dialogFlowActionLambdaHTTPHandler"
+        handler: "hello-world.dialogflowActionLambdaHTTPHandler"
       });
 
       expect(lambdaCallbackResult.headers).to.deep.equal({
@@ -147,6 +147,8 @@ describe("Hello World", () => {
         payload: {
           google: {
             expectUserResponse: true,
+            userStorage:
+              '{"data":{"voxa":{"userId":"ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y"}}}',
             isSsml: true,
             richResponse: {
               items: [
@@ -159,8 +161,7 @@ describe("Hello World", () => {
                   }
                 }
               ]
-            },
-            resetUserStorage: true
+            }
           }
         }
       });

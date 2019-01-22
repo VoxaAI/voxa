@@ -4,8 +4,8 @@ import { IDirective, IDirectiveClass } from "../../../directives";
 import { ITransition } from "../../../StateMachine";
 import { IVoxaEvent } from "../../../VoxaEvent";
 import { IVoxaReply } from "../../../VoxaReply";
-import { DialogFlowEvent } from "../DialogFlowEvent";
-import { DialogFlowReply } from "../DialogFlowReply";
+import { DialogflowEvent } from "../DialogflowEvent";
+import { DialogflowReply } from "../DialogflowReply";
 
 function createQuickReplyDirective(
   contentType: string,
@@ -15,14 +15,17 @@ function createQuickReplyDirective(
     public static platform: string = "dialogflow";
     public static key: string = key;
 
-    constructor(public message: string, public replyArray: IFacebookQuickReply|IFacebookQuickReply[]) {}
+    constructor(
+      public message: string,
+      public replyArray: IFacebookQuickReply | IFacebookQuickReply[],
+    ) {}
 
     public async writeToReply(
       reply: IVoxaReply,
       event: IVoxaEvent,
       transition: ITransition,
     ): Promise<void> {
-      const dialogFlowReply = (reply as DialogFlowReply);
+      const dialogflowReply = reply as DialogflowReply;
       const quickReplies: any[] = [];
 
       if (_.isEmpty(this.replyArray)) {
@@ -53,8 +56,8 @@ function createQuickReplyDirective(
         text = this.message;
       }
 
-      dialogFlowReply.source = "facebook";
-      dialogFlowReply.payload.facebook = {
+      dialogflowReply.source = "facebook";
+      dialogflowReply.payload.facebook = {
         quick_replies: quickReplies,
         text,
       };
@@ -77,7 +80,7 @@ function createGenericTemplateDirective(
       event: IVoxaEvent,
       transition: ITransition,
     ): Promise<void> {
-      const dialogFlowReply = (reply as DialogFlowReply);
+      const dialogFlowReply = (reply as DialogflowReply);
       const elements: any[] = [];
       let configElements: IFacebookElementTemplate[];
       let configButtons: IFacebookGenericButtonTemplate[]|undefined;
@@ -187,7 +190,7 @@ export class FacebookAccountLink implements IDirective {
     event: IVoxaEvent,
     transition: ITransition,
   ): Promise<void> {
-    const dialogFlowReply = (reply as DialogFlowReply);
+    const dialogflowReply = reply as DialogflowReply;
 
     let renderedUrl;
 
@@ -198,8 +201,8 @@ export class FacebookAccountLink implements IDirective {
       renderedUrl = this.url;
     }
 
-    dialogFlowReply.source = "facebook";
-    dialogFlowReply.payload.facebook = {
+    dialogflowReply.source = "facebook";
+    dialogflowReply.payload.facebook = {
       attachment: {
         payload: {
           buttons: [
@@ -209,7 +212,7 @@ export class FacebookAccountLink implements IDirective {
             },
           ],
           template_type: "button",
-          text: dialogFlowReply.fulfillmentText,
+          text: dialogflowReply.fulfillmentText,
         },
         type: "template",
       },
@@ -226,10 +229,10 @@ export class FacebookAccountUnlink implements IDirective {
     event: IVoxaEvent,
     transition: ITransition,
   ): Promise<void> {
-    const dialogFlowReply = (reply as DialogFlowReply);
+    const dialogflowReply = reply as DialogflowReply;
 
-    dialogFlowReply.source = "facebook";
-    dialogFlowReply.payload.facebook = {
+    dialogflowReply.source = "facebook";
+    dialogflowReply.payload.facebook = {
       attachment: {
         payload: {
           buttons: [
@@ -238,7 +241,7 @@ export class FacebookAccountUnlink implements IDirective {
             },
           ],
           template_type: "button",
-          text: dialogFlowReply.fulfillmentText,
+          text: dialogflowReply.fulfillmentText,
         },
         type: "template",
       },
@@ -275,15 +278,15 @@ export class FacebookSuggestionChips implements IDirective {
       suggestionChips.push(button);
     });
 
-    const dialogFlowReply = (reply as DialogFlowReply);
+    const dialogflowReply = reply as DialogflowReply;
 
-    dialogFlowReply.source = "facebook";
-    dialogFlowReply.payload.facebook = {
+    dialogflowReply.source = "facebook";
+    dialogflowReply.payload.facebook = {
       attachment: {
         payload: {
           buttons: suggestionChips,
           template_type: "button",
-          text: dialogFlowReply.fulfillmentText,
+          text: dialogflowReply.fulfillmentText,
         },
         type: "template",
       },

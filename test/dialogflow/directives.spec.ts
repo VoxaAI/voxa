@@ -6,9 +6,9 @@ import * as _ from "lodash";
 import "mocha";
 
 import {
-  DialogFlowEvent,
-  DialogFlowPlatform,
-  DialogFlowReply,
+  DialogflowEvent,
+  DialogflowPlatform,
+  DialogflowReply,
   FACEBOOK_TOP_ELEMENT_STYLE,
   FACEBOOK_WEBVIEW_HEIGHT_RATIO,
   FacebookQuickReplyText,
@@ -21,10 +21,10 @@ import { VoxaApp } from "../../src/VoxaApp";
 import { variables } from "./../variables";
 import { views } from "./../views";
 
-describe("DialogFlow Directives", () => {
+describe("Dialogflow Directives", () => {
   let event: any;
   let app: VoxaApp;
-  let dialogFlowAgent: DialogFlowPlatform;
+  let dialogflowAgent: DialogflowPlatform;
 
   before(() => {
     i18n.init({
@@ -36,14 +36,14 @@ describe("DialogFlow Directives", () => {
 
   beforeEach(() => {
     app = new VoxaApp({ views, variables });
-    dialogFlowAgent = new DialogFlowPlatform(app);
+    dialogflowAgent = new DialogflowPlatform(app);
     event = _.cloneDeep(require("../requests/dialogflow/launchIntent.json"));
   });
 
   describe("Context", () => {
     it("should add an output context", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowContext: {
+        dialogflowContext: {
           lifespan: 5,
           name: "DONE_YES_NO_CONTEXT",
         },
@@ -51,7 +51,7 @@ describe("DialogFlow Directives", () => {
         to: "die",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.outputContexts).to.deep.equal([
         {
           lifespanCount: 5,
@@ -83,12 +83,12 @@ describe("DialogFlow Directives", () => {
     it("should not add a MediaResponse to a device with no audio support", async () => {
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
       app.onIntent("LaunchIntent", {
-        dialogFlowMediaResponse: mediaObject,
+        dialogflowMediaResponse: mediaObject,
         sayp: "Hello!",
         to: "die",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
 
       expect(reply.payload.google.richResponse).to.deep.equal({
         items: [
@@ -103,12 +103,12 @@ describe("DialogFlow Directives", () => {
 
     it("should add a MediaResponse", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowMediaResponse: mediaObject,
+        dialogflowMediaResponse: mediaObject,
         sayp: "Hello!",
         to: "die",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
 
       expect(reply.payload.google.richResponse).to.deep.equal({
         items: [
@@ -140,13 +140,13 @@ describe("DialogFlow Directives", () => {
         body: event,
         headers: {},
       });
-      const reply = new DialogFlowReply(conv);
-      const dialogFlowEvent = new DialogFlowEvent(event);
+      const reply = new DialogflowReply(conv);
+      const dialogflowEvent = new DialogflowEvent(event);
       const mediaResponse = new MediaResponse(mediaObject);
 
       let error: Error | null = null;
       try {
-        await mediaResponse.writeToReply(reply, dialogFlowEvent, {});
+        await mediaResponse.writeToReply(reply, dialogflowEvent, {});
       } catch (e) {
         error = e;
       }
@@ -156,7 +156,7 @@ describe("DialogFlow Directives", () => {
         throw expect(error).to.not.be.null;
       }
       expect(error.message).to.equal(
-        "A simple response is required before a dialogFlowMediaResponse",
+        "A simple response is required before a dialogflowMediaResponse",
       );
     });
   });
@@ -177,12 +177,12 @@ describe("DialogFlow Directives", () => {
       };
 
       app.onIntent("LaunchIntent", {
-        dialogFlowCarousel: carousel,
+        dialogflowCarousel: carousel,
         to: "die",
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.be.undefined;
     });
 
@@ -201,11 +201,11 @@ describe("DialogFlow Directives", () => {
       };
 
       app.onIntent("LaunchIntent", {
-        dialogFlowCarousel: carousel,
+        dialogflowCarousel: carousel,
         to: "die",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
@@ -232,11 +232,11 @@ describe("DialogFlow Directives", () => {
 
     it("should add a carousel from a view to the reply", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowCarousel: "DialogFlowCarousel",
+        dialogflowCarousel: "DialogflowCarousel",
         to: "die",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
@@ -263,22 +263,22 @@ describe("DialogFlow Directives", () => {
   describe("List", () => {
     it("should not add a List if event has no screen capabilites", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowList: "DialogFlowListSelect",
+        dialogflowList: "DialogflowListSelect",
         to: "die",
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.be.undefined;
     });
 
     it("should add a List from a view to the reply", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowList: "DialogFlowListSelect",
+        dialogflowList: "DialogflowListSelect",
         to: "die",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
@@ -316,11 +316,11 @@ describe("DialogFlow Directives", () => {
       };
 
       app.onIntent("LaunchIntent", {
-        dialogFlowList: list,
+        dialogflowList: list,
         to: "die",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
@@ -350,7 +350,7 @@ describe("DialogFlow Directives", () => {
   describe("DateTimeDirective", () => {
     it("should add a DateTime Response", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowDateTime: {
+        dialogflowDateTime: {
           prompts: {
             date: "Which date works best for you?",
             initial: "When do you want to come in?",
@@ -362,7 +362,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.DateTimeValueSpec",
@@ -380,13 +380,13 @@ describe("DialogFlow Directives", () => {
   describe("ConfirmationDirective", () => {
     it("should add a Confirmation Response", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowConfirmation: "Confirmation",
+        dialogflowConfirmation: "Confirmation",
         flow: "yield",
         sayp: "Hello!",
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type":
@@ -403,7 +403,7 @@ describe("DialogFlow Directives", () => {
   describe("PlaceDirective", () => {
     it("should add a Place Response", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowPlace: {
+        dialogflowPlace: {
           context: "To get a your home address",
           prompt: "can i get your location?",
         },
@@ -412,7 +412,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.PlaceValueSpec",
@@ -433,7 +433,7 @@ describe("DialogFlow Directives", () => {
   describe("PermissionsDirective", () => {
     it("should add a Permissions Response", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowPermission: {
+        dialogflowPermission: {
           context: "Can i get your name?",
           permissions: "NAME",
         },
@@ -442,7 +442,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.PermissionValueSpec",
@@ -457,7 +457,7 @@ describe("DialogFlow Directives", () => {
   describe("DeepLinkDirective", () => {
     it("should add a DeepLink Response", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowDeepLink: {
+        dialogflowDeepLink: {
           destination: "Google",
           package: "com.example.gizmos",
           reason: "handle this for you",
@@ -468,7 +468,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.LinkValueSpec",
@@ -495,26 +495,26 @@ describe("DialogFlow Directives", () => {
   describe("BasicCard Directive", () => {
     it("should not add BasicCard if missing screen output", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowBasicCard: "DialogFlowBasicCard",
+        dialogflowBasicCard: "DialogflowBasicCard",
         flow: "yield",
         sayp: "Hello!",
         to: "entry",
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.hasDirective("BasicCard")).to.be.false;
     });
 
     it("should add a BasicCard from a view", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowBasicCard: "DialogFlowBasicCard",
+        dialogflowBasicCard: "DialogflowBasicCard",
         flow: "yield",
         sayp: "Hello!",
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(
         _.get(reply, "payload.google.richResponse.items[1]"),
       ).to.deep.equal({
@@ -538,7 +538,7 @@ describe("DialogFlow Directives", () => {
 
     it("should add a BasicCard Response", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowBasicCard: {
+        dialogflowBasicCard: {
           buttons: {
             openUrlAction: "https://example.com",
             title: "Example.com",
@@ -556,7 +556,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(
         _.get(reply, "payload.google.richResponse.items[1]"),
       ).to.deep.equal({
@@ -582,13 +582,13 @@ describe("DialogFlow Directives", () => {
   describe("Suggestions Directive", () => {
     it("should add a Suggestions Response", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowSuggestions: ["suggestion"],
+        dialogflowSuggestions: ["suggestion"],
         flow: "yield",
         sayp: "Hello!",
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(
         _.get(reply, "payload.google.richResponse.suggestions"),
       ).to.deep.equal([
@@ -601,12 +601,12 @@ describe("DialogFlow Directives", () => {
     it("should add a Suggestions Response when using a reply view", async () => {
       app.onIntent("LaunchIntent", {
         flow: "yield",
-        reply: "DialogFlowSuggestions",
+        reply: "DialogflowSuggestions",
         sayp: "Hello!",
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(
         _.get(reply, "payload.google.richResponse.suggestions"),
       ).to.deep.equal([
@@ -623,13 +623,13 @@ describe("DialogFlow Directives", () => {
   describe("Account Linking Directive", () => {
     it("should add a DeepLink Response", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowAccountLinkingCard: "AccountLinking",
+        dialogflowAccountLinkingCard: "AccountLinking",
         flow: "yield",
         sayp: "Hello!",
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.SignInValueSpec",
@@ -664,13 +664,13 @@ describe("DialogFlow Directives", () => {
       };
 
       app.onIntent("LaunchIntent", {
-        dialogFlowTransactionDecision: transactionDecisionOptions,
+        dialogflowTransactionDecision: transactionDecisionOptions,
         flow: "yield",
         sayp: "Hello!",
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
         data: _.merge(
           {
@@ -701,13 +701,13 @@ describe("DialogFlow Directives", () => {
         },
       };
       app.onIntent("LaunchIntent", {
-        dialogFlowTransactionRequirements: transactionRequirementsOptions,
+        dialogflowTransactionRequirements: transactionRequirementsOptions,
         flow: "yield",
         sayp: "Hello!",
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
         data: _.merge(
           {
@@ -729,13 +729,13 @@ describe("DialogFlow Directives", () => {
       };
 
       app.onIntent("LaunchIntent", {
-        dialogFlowRegisterUpdate: registerUpdateOptions,
+        dialogflowRegisterUpdate: registerUpdateOptions,
         flow: "yield",
         sayp: "Hello!",
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
         data: {
           "@type":
@@ -766,13 +766,13 @@ describe("DialogFlow Directives", () => {
       };
 
       app.onIntent("LaunchIntent", {
-        dialogFlowUpdatePermission: updatePermissionOptions,
+        dialogflowUpdatePermission: updatePermissionOptions,
         flow: "yield",
         sayp: "Hello!",
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.PermissionValueSpec",
@@ -836,26 +836,26 @@ describe("DialogFlow Directives", () => {
 
     it("should not add a Table Response if no screen output", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowTable: table,
+        dialogflowTable: table,
         flow: "yield",
         sayp: "Hello!",
         to: "entry",
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.hasDirective("Table")).to.be.false;
     });
 
     it("should add a Table Response", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowTable: table,
+        dialogflowTable: table,
         flow: "yield",
         sayp: "Hello!",
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(
         _.get(reply, "payload.google.richResponse.items[1]"),
       ).to.deep.equal({
@@ -943,7 +943,7 @@ describe("DialogFlow Directives", () => {
     it("should include a new surface directive", async () => {
       const capability = "actions.capability.SCREEN_OUTPUT";
       app.onIntent("LaunchIntent", {
-        dialogFlowNewSurface: {
+        dialogflowNewSurface: {
           capabilities: capability,
           context: "To show you an image",
           notification: "Check out this image",
@@ -953,7 +953,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.google.systemIntent).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.NewSurfaceValueSpec",
@@ -969,26 +969,26 @@ describe("DialogFlow Directives", () => {
   describe("BrowseCarousel", () => {
     it("should not include a browse carouse if no screen output", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowBrowseCarousel: {},
+        dialogflowBrowseCarousel: {},
         flow: "yield",
         sayp: "Hello!",
         to: "entry",
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.hasDirective("BrowseCarousel")).to.be.false;
     });
 
     it("should include a new surface directive", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowBrowseCarousel: {},
+        dialogflowBrowseCarousel: {},
         flow: "yield",
         sayp: "Hello!",
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(
         _.get(reply, "payload.google.richResponse.items[1]"),
       ).to.deep.equal({
@@ -1002,7 +1002,7 @@ describe("DialogFlow Directives", () => {
   describe("LinkOutSuggestionDirective", () => {
     it("should add a LinkOutSuggestion", async () => {
       app.onIntent("LaunchIntent", {
-        dialogFlowLinkOutSuggestion: {
+        dialogflowLinkOutSuggestion: {
           name: "Example",
           url: "https://example.com",
         },
@@ -1011,7 +1011,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.google.richResponse).to.deep.equal({
         items: [
           {
@@ -1037,7 +1037,7 @@ describe("DialogFlow Directives", () => {
         to: "entry",
       });
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.google.richResponse).to.deep.equal({
         items: [
           {
@@ -1061,7 +1061,7 @@ describe("DialogFlow Directives", () => {
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.fulfillmentText).to.equal("Text!");
       expect(reply.payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
@@ -1086,7 +1086,7 @@ describe("DialogFlow Directives", () => {
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
           {
@@ -1110,7 +1110,7 @@ describe("DialogFlow Directives", () => {
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.fulfillmentText).to.equal("Text!");
       expect(reply.payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
@@ -1134,7 +1134,7 @@ describe("DialogFlow Directives", () => {
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
           {
@@ -1157,7 +1157,7 @@ describe("DialogFlow Directives", () => {
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.fulfillmentText).to.equal("Pick a suggestion");
       expect(reply.payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
@@ -1188,7 +1188,7 @@ describe("DialogFlow Directives", () => {
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
           {
@@ -1218,7 +1218,7 @@ describe("DialogFlow Directives", () => {
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.fulfillmentText).to.equal("Text!");
       expect(reply.payload.facebook.text).to.equal("Send me your location");
       expect(reply.payload.facebook.quick_replies).to.deep.equal([
@@ -1239,7 +1239,7 @@ describe("DialogFlow Directives", () => {
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.facebook.text).to.equal("Send me your location");
       expect(reply.payload.facebook.quick_replies).to.deep.equal([
         {
@@ -1259,7 +1259,7 @@ describe("DialogFlow Directives", () => {
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.fulfillmentText).to.equal("Text!");
       expect(reply.payload.facebook.text).to.equal("Send me your phone number");
       expect(reply.payload.facebook.quick_replies).to.deep.equal([
@@ -1280,7 +1280,7 @@ describe("DialogFlow Directives", () => {
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.facebook.text).to.equal("Send me your phone number");
       expect(reply.payload.facebook.quick_replies).to.deep.equal([
         {
@@ -1299,7 +1299,7 @@ describe("DialogFlow Directives", () => {
         title: "Square Multicolor",
       };
 
-      app.onIntent("LaunchIntent", (voxaEvent: DialogFlowEvent) => {
+      app.onIntent("LaunchIntent", (voxaEvent: DialogflowEvent) => {
         const facebookQuickReplyText = new FacebookQuickReplyText(quickReplyMessage, quickReplySingleElement);
 
         return {
@@ -1313,7 +1313,7 @@ describe("DialogFlow Directives", () => {
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
 
       const quickReplyExpect: any = _.cloneDeep(quickReplySingleElement);
       quickReplyExpect.image_url = quickReplySingleElement.imageUrl;
@@ -1339,7 +1339,7 @@ describe("DialogFlow Directives", () => {
         },
       ];
 
-      app.onIntent("LaunchIntent", (voxaEvent: DialogFlowEvent) => {
+      app.onIntent("LaunchIntent", (voxaEvent: DialogflowEvent) => {
         const facebookQuickReplyText = new FacebookQuickReplyText("What's your favorite shape?", quickReplyTextArray);
 
         return {
@@ -1353,7 +1353,7 @@ describe("DialogFlow Directives", () => {
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
 
       const quickReplyExpect: any = _.cloneDeep(quickReplyTextArray);
       quickReplyExpect[0].image_url = quickReplyExpect[0].imageUrl;
@@ -1379,7 +1379,7 @@ describe("DialogFlow Directives", () => {
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.fulfillmentText).to.equal("Text!");
       expect(reply.payload.facebook.text).to.equal("Send me your email");
       expect(reply.payload.facebook.quick_replies).to.deep.equal([
@@ -1400,7 +1400,7 @@ describe("DialogFlow Directives", () => {
 
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.facebook.text).to.equal("Send me your email");
       expect(reply.payload.facebook.quick_replies).to.deep.equal([
         {
@@ -1422,12 +1422,12 @@ describe("DialogFlow Directives", () => {
 
       const facebookCarouselPayload = require("../requests/dialogflow/facebookCarouselPayload.json");
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookCarouselPayload);
     });
 
     it("should send a FacebookCarousel template", async () => {
-      app.onIntent("LaunchIntent", (voxaEvent: DialogFlowEvent) => {
+      app.onIntent("LaunchIntent", (voxaEvent: DialogflowEvent) => {
         const buttons: IFacebookGenericButtonTemplate[] = [
           {
             title: "Go to see this URL",
@@ -1477,7 +1477,7 @@ describe("DialogFlow Directives", () => {
 
       const facebookCarouselPayload = require("../requests/dialogflow/facebookCarouselPayload.json");
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookCarouselPayload);
     });
   });
@@ -1494,12 +1494,12 @@ describe("DialogFlow Directives", () => {
 
       const facebookListPayload = require("../requests/dialogflow/facebookListPayload.json");
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookListPayload);
     });
 
     it("should send a FacebookList template", async () => {
-      app.onIntent("LaunchIntent", (voxaEvent: DialogFlowEvent) => {
+      app.onIntent("LaunchIntent", (voxaEvent: DialogflowEvent) => {
         const buttons: IFacebookGenericButtonTemplate[] = [
           {
             payload: "payload",
@@ -1564,7 +1564,7 @@ describe("DialogFlow Directives", () => {
 
       const facebookListPayload = require("../requests/dialogflow/facebookListPayload.json");
 
-      const reply = await dialogFlowAgent.execute(event);
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookListPayload);
     });
   });

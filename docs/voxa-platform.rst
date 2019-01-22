@@ -29,7 +29,7 @@ Voxa Platforms wrap your :js:class:`VoxaApp <VoxaApp>` and allows you to define 
 
     .. code-block:: javascript
 
-        exports.handler = dialogFlowAction.lambdaHTTP();
+        exports.handler = dialogflowAction.lambdaHTTP();
 
   .. js:method:: azureFunction()
 
@@ -62,18 +62,18 @@ The Alexa Platform allows you to use Voxa with Alexa
 
 .. _dialogflow-platform:
 
-DialogFlow
+Dialogflow
 -------------
 
-The DialogFlow Platform allows you to use Voxa with DialogFlow
+The Dialogflow Platform allows you to use Voxa with Dialogflow
 
 .. code-block:: javascript
 
-  const { DialogFlowPlatform } = require('voxa');
+  const { DialogflowPlatform } = require('voxa');
   const { voxaApp } = require('./app');
 
-  const dialogFlowAction = new DialogFlowPlatform(voxaApp);
-  exports.handler = dialogFlowAction.lambdaHTTP();
+  const dialogflowAction = new DialogflowPlatform(voxaApp);
+  exports.handler = dialogflowAction.lambdaHTTP();
 
 
 .. _botframework-platform:
