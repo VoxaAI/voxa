@@ -80,7 +80,7 @@ function createGenericTemplateDirective(
       event: IVoxaEvent,
       transition: ITransition,
     ): Promise<void> {
-      const dialogFlowReply = (reply as DialogflowReply);
+      const dialogflowReply = (reply as DialogflowReply);
       let configElements: IFacebookElementTemplate[];
       let configButtons: IFacebookGenericButtonTemplate[]|undefined;
       let configSharable: boolean|undefined;
@@ -107,8 +107,8 @@ function createGenericTemplateDirective(
         top_element_style: configTopElementStyle,
       };
 
-      dialogFlowReply.source = "facebook";
-      dialogFlowReply.payload.facebook = {
+      dialogflowReply.source = "facebook";
+      dialogflowReply.payload.facebook = {
         attachment: {
           payload: _.omitBy(facebookPayload, _.isNil),
           type: "template",
