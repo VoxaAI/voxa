@@ -9,7 +9,15 @@ import {
   DialogflowEvent,
   DialogflowPlatform,
   DialogflowReply,
+  FACEBOOK_IMAGE_ASPECT_RATIO,
+  FACEBOOK_TOP_ELEMENT_STYLE,
+  FACEBOOK_WEBVIEW_HEIGHT_RATIO,
+  FacebookButtonTemplateBuilder,
+  FacebookElementTemplateBuilder,
   FacebookQuickReplyText,
+  FacebookTemplateBuilder,
+  IFacebookGenericButtonTemplate,
+  IFacebookPayloadTemplate,
   IFacebookQuickReply,
   MediaResponse,
 } from "../../src/platforms/dialogflow";
@@ -1288,14 +1296,15 @@ describe("Dialogflow Directives", () => {
 
   describe("FacebookQuickReplyText", () => {
     it("should send a quick reply for options request from a single item", async () => {
+      const quickReplyMessage = "What's your favorite shape?";
       const quickReplySingleElement: IFacebookQuickReply = {
-        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/16777216colors.png/220px-16777216colors.png",
+        imageUrl: "https://www.example.com/imgs/imageExample.png",
         payload: "square",
         title: "Square Multicolor",
       };
 
       app.onIntent("LaunchIntent", (voxaEvent: DialogflowEvent) => {
-        const facebookQuickReplyText = new FacebookQuickReplyText("What's your favorite shape?", quickReplySingleElement);
+        const facebookQuickReplyText = new FacebookQuickReplyText(quickReplyMessage, quickReplySingleElement);
 
         return {
           directives: [facebookQuickReplyText],
@@ -1316,14 +1325,14 @@ describe("Dialogflow Directives", () => {
 
       _.unset(quickReplyExpect, "imageUrl");
 
-      expect(reply.payload.facebook.text).to.equal("What's your favorite shape?");
+      expect(reply.payload.facebook.text).to.equal(quickReplyMessage);
       expect(reply.payload.facebook.quick_replies).to.deep.equal([quickReplyExpect]);
     });
 
     it("should send a quick reply for options request from an array", async () => {
       const quickReplyTextArray: IFacebookQuickReply[] = [
         {
-          imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/16777216colors.png/220px-16777216colors.png",
+          imageUrl: "https://www.example.com/imgs/imageExample.png",
           payload: "square",
           title: "Square Multicolor",
         },
@@ -1402,6 +1411,172 @@ describe("Dialogflow Directives", () => {
           content_type: "user_email",
         },
       ]);
+    });
+  });
+
+  describe("FacebookCarousel", () => {
+    it("should send a FacebookCarousel template using a reply view", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        reply: "Facebook.Carousel",
+        to: "entry",
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const facebookCarouselPayload = require("../requests/dialogflow/facebookCarouselPayload.json");
+
+      const reply = await dialogflowAgent.execute(event);
+      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookCarouselPayload);
+    });
+
+    it("should send a FacebookCarousel template", async () => {
+      app.onIntent("LaunchIntent", (voxaEvent: DialogflowEvent) => {
+        const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+        const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+        const elementBuilder1 = new FacebookElementTemplateBuilder();
+        const elementBuilder2 = new FacebookElementTemplateBuilder();
+        const facebookTemplateBuilder = new FacebookTemplateBuilder();
+
+        buttonBuilder1
+          .setTitle("Go to see this URL")
+          .setType("web_url")
+          .setUrl("https://www.example.com/imgs/imageExample.png");
+
+        buttonBuilder2
+          .setPayload("value")
+          .setTitle("Send this to chat")
+          .setType("postback");
+
+        elementBuilder1
+          .addButton(buttonBuilder1.build())
+          .addButton(buttonBuilder2.build())
+          .setDefaultActionUrl("https://www.example.com/imgs/imageExample.png")
+          .setDefaultMessengerExtensions(false)
+          .setDefaultWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.COMPACT)
+          .setImageUrl("https://www.w3schools.com/colors/img_colormap.gif")
+          .setSubtitle("subtitle")
+          .setTitle("title");
+
+        elementBuilder2
+          .addButton(buttonBuilder1.build())
+          .addButton(buttonBuilder2.build())
+          .setDefaultActionUrl("https://www.example.com/imgs/imageExample.png")
+          .setDefaultMessengerExtensions(false)
+          .setDefaultWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL)
+          .setImageUrl("https://www.w3schools.com/colors/img_colormap.gif")
+          .setSubtitle("subtitle")
+          .setTitle("title");
+
+        facebookTemplateBuilder
+          .addElement(elementBuilder1.build())
+          .addElement(elementBuilder2.build())
+          .setImageAspectRatio(FACEBOOK_IMAGE_ASPECT_RATIO.HORIZONTAL);
+
+        return {
+          facebookCarousel: facebookTemplateBuilder.build(),
+          flow: "yield",
+          sayp: "Say!",
+          textp: "Text!",
+          to: "entry",
+        };
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const facebookCarouselPayload = require("../requests/dialogflow/facebookCarouselPayload.json");
+
+      const reply = await dialogflowAgent.execute(event);
+      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookCarouselPayload);
+    });
+  });
+
+  describe("FacebookList", () => {
+    it("should send a FacebookList template using a reply view", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        reply: "Facebook.List",
+        to: "entry",
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const facebookListPayload = require("../requests/dialogflow/facebookListPayload.json");
+
+      const reply = await dialogflowAgent.execute(event);
+      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookListPayload);
+    });
+
+    it("should send a FacebookList template", async () => {
+      app.onIntent("LaunchIntent", (voxaEvent: DialogflowEvent) => {
+        const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+        const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+        const elementBuilder1 = new FacebookElementTemplateBuilder();
+        const elementBuilder2 = new FacebookElementTemplateBuilder();
+        const elementBuilder3 = new FacebookElementTemplateBuilder();
+        const facebookTemplateBuilder = new FacebookTemplateBuilder();
+
+        buttonBuilder1
+          .setPayload("payload")
+          .setTitle("View More")
+          .setType("postback");
+
+        buttonBuilder2
+          .setFallbackUrl("https://www.example.com")
+          .setMessengerExtensions(false)
+          .setTitle("View")
+          .setType("web_url")
+          .setUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
+          .setWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.FULL);
+
+        elementBuilder1
+          .addButton(buttonBuilder2.build())
+          .setImageUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
+          .setSubtitle("See all our colors")
+          .setTitle("Classic T-Shirt Collection")
+          .setDefaultActionFallbackUrl("https://www.example.com");
+
+        elementBuilder2
+          .setDefaultActionUrl("https://www.w3schools.com")
+          .setDefaultWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL)
+          .setImageUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
+          .setSubtitle("See all our colors")
+          .setTitle("Classic T-Shirt Collection")
+          .setSharable(false);
+
+        buttonBuilder2.setWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL);
+
+        elementBuilder3
+          .addButton(buttonBuilder2.build())
+          .setDefaultActionUrl("https://www.w3schools.com")
+          .setDefaultWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL)
+          .setImageUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
+          .setSubtitle("100% Cotton, 200% Comfortable")
+          .setTitle("Classic T-Shirt Collection");
+
+        facebookTemplateBuilder
+          .addButton(buttonBuilder1.build())
+          .addElement(elementBuilder1.build())
+          .addElement(elementBuilder2.build())
+          .addElement(elementBuilder3.build())
+          .setSharable(true)
+          .setTopElementStyle(FACEBOOK_TOP_ELEMENT_STYLE.LARGE);
+
+        return {
+          facebookList: facebookTemplateBuilder.build(),
+          flow: "yield",
+          sayp: "Say!",
+          textp: "Text!",
+          to: "entry",
+        };
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const facebookListPayload = require("../requests/dialogflow/facebookListPayload.json");
+
+      const reply = await dialogflowAgent.execute(event);
+      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookListPayload);
     });
   });
 });

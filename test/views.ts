@@ -171,6 +171,16 @@ export const views = {
           say: "Say!",
           text: "Text!",
         },
+        Carousel: {
+          facebookCarousel: "{facebookCarousel}",
+          say: "Say!",
+          text: "Text!",
+        },
+        List: {
+          facebookList: "{facebookList}",
+          say: "Say!",
+          text: "Text!",
+        },
         QuickReplyLocation: {
           facebookQuickReplyLocation: "Send me your location",
           say: "Say!",
