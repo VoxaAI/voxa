@@ -311,6 +311,17 @@ export const FacebookQuickReplyUserEmail = createQuickReplyDirective(
   "facebookQuickReplyUserEmail",
 );
 
+export enum FACEBOOK_BUTTONS {
+  ACCOUNT_LINK = "account_link",
+  ACCOUNT_UNLINK = "account_unlink",
+  ELEMENT_SHARE = "element_share",
+  GAME_PLAY = "game_play",
+  PAYMENT = "payment",
+  PHONE_NUMBER = "phone_number",
+  POSTBACK = "postback",
+  WEB_URL = "web_url",
+}
+
 export enum FACEBOOK_IMAGE_ASPECT_RATIO {
   HORIZONTAL = "horizontal",
   SQUARE = "square",
@@ -332,7 +343,7 @@ export interface IFacebookGenericButtonTemplate {
   messengerExtensions?: boolean;
   payload?: string;
   title: string;
-  type: string;
+  type: FACEBOOK_BUTTONS;
   url?: string;
   webviewHeightRatio?: FACEBOOK_WEBVIEW_HEIGHT_RATIO;
 }
@@ -364,7 +375,7 @@ export interface IVoxaFacebookGenericButtonTemplate {
   messenger_extensions?: boolean;
   payload?: string;
   title: string;
-  type: string;
+  type: FACEBOOK_BUTTONS;
   url?: string;
   webview_height_ratio?: FACEBOOK_WEBVIEW_HEIGHT_RATIO;
 }

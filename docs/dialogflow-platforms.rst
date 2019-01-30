@@ -277,6 +277,7 @@ You need to include in your controller the following field: ``facebookCarousel``
 
 .. code-block:: javascript
   const {
+    FACEBOOK_BUTTONS,
     FACEBOOK_WEBVIEW_HEIGHT_RATIO,
     FacebookButtonTemplateBuilder,
     FacebookElementTemplateBuilder,
@@ -292,13 +293,13 @@ You need to include in your controller the following field: ``facebookCarousel``
 
     buttonBuilder1
       .setTitle("Go to see this URL")
-      .setType("web_url")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
       .setUrl("https://www.example.com/imgs/imageExample.png");
 
     buttonBuilder2
       .setPayload("value")
       .setTitle("Send this to chat")
-      .setType("postback");
+      .setType(FACEBOOK_BUTTONS.POSTBACK);
 
     elementBuilder1
       .addButton(buttonBuilder1.build())
@@ -353,13 +354,13 @@ Or you can also handle these values from your views file
     const buttons = [
       {
         title: "Go to see this URL",
-        type: "web_url",
+        type: FACEBOOK_BUTTONS.WEB_URL,
         url: "https://www.example.com/imgs/imageExample.png",
       },
       {
         payload: "value",
         title: "Send this to chat",
-        type: "postback",
+        type: FACEBOOK_BUTTONS.POSTBACK,
       },
     ];
 
@@ -395,6 +396,7 @@ You need to include in your controller the following field: ``facebookList``, wh
 
 .. code-block:: javascript
   const {
+    FACEBOOK_BUTTONS,
     FACEBOOK_WEBVIEW_HEIGHT_RATIO,
     FACEBOOK_TOP_ELEMENT_STYLE,
     FacebookButtonTemplateBuilder,
@@ -413,11 +415,11 @@ You need to include in your controller the following field: ``facebookList``, wh
     buttonBuilder1
       .setPayload("payload")
       .setTitle("View More")
-      .setType("postback");
+      .setType(FACEBOOK_BUTTONS.POSTBACK);
 
     buttonBuilder2
       .setTitle("View")
-      .setType("web_url")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
       .setUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
       .setWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.FULL);
 
@@ -486,11 +488,11 @@ Or you can also handle these values from your views file
     buttonBuilder1
       .setPayload("payload")
       .setTitle("View More")
-      .setType("postback");
+      .setType(FACEBOOK_BUTTONS.POSTBACK);
 
     buttonBuilder2
       .setTitle("View")
-      .setType("web_url")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
       .setUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
       .setWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.FULL);
 
@@ -532,6 +534,7 @@ You need to include in your controller the following field: ``facebookButtonTemp
 
 .. code-block:: javascript
   const {
+    FACEBOOK_BUTTONS,
     FacebookButtonTemplateBuilder,
     FacebookTemplateBuilder,
   } = require('voxa');
@@ -545,16 +548,16 @@ You need to include in your controller the following field: ``facebookButtonTemp
     buttonBuilder1
       .setPayload("payload")
       .setTitle("View More")
-      .setType("postback");
+      .setType(FACEBOOK_BUTTONS.POSTBACK);
 
     buttonBuilder2
       .setPayload("1234567890")
       .setTitle("Call John")
-      .setType("phone_number");
+      .setType(FACEBOOK_BUTTONS.PHONE_NUMBER);
 
     buttonBuilder3
       .setTitle("Go to Twitter")
-      .setType("web_url")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
       .setUrl("http://www.twitter.com");
 
     facebookTemplateBuilder
@@ -597,16 +600,16 @@ Or you can also handle these values from your views file
     buttonBuilder1
       .setPayload("payload")
       .setTitle("View More")
-      .setType("postback");
+      .setType(FACEBOOK_BUTTONS.POSTBACK);
 
     buttonBuilder2
       .setPayload("1234567890")
       .setTitle("Call John")
-      .setType("phone_number");
+      .setType(FACEBOOK_BUTTONS.PHONE_NUMBER);
 
     buttonBuilder3
       .setTitle("Go to Twitter")
-      .setType("web_url")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
       .setUrl("http://www.twitter.com");
 
     facebookTemplateBuilder
@@ -624,6 +627,7 @@ You need to include in your controller the following field: ``facebookOpenGraphT
 
 .. code-block:: javascript
   const {
+    FACEBOOK_BUTTONS,
     FacebookButtonTemplateBuilder,
     FacebookTemplateBuilder,
   } = require('voxa');
@@ -636,12 +640,12 @@ You need to include in your controller the following field: ``facebookOpenGraphT
 
     buttonBuilder1
       .setTitle("Go to Wikipedia")
-      .setType("web_url")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
       .setUrl("https://en.wikipedia.org/wiki/Rickrolling");
 
     buttonBuilder2
       .setTitle("Go to Twitter")
-      .setType("web_url")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
       .setUrl("http://www.twitter.com");
 
     elementBuilder1
@@ -685,12 +689,12 @@ Or you can also handle these values from your views file
 
     buttonBuilder1
       .setTitle("Go to Wikipedia")
-      .setType("web_url")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
       .setUrl("https://en.wikipedia.org/wiki/Rickrolling");
 
     buttonBuilder2
       .setTitle("Go to Twitter")
-      .setType("web_url")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
       .setUrl("http://www.twitter.com");
 
     elementBuilder1
