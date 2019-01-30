@@ -72,6 +72,11 @@ function createGenericTemplateDirective(
   return class implements IDirective {
     public static platform: string = "dialogflow";
     public static key: string = key;
+    private configButtons: IFacebookGenericButtonTemplate[]|undefined;
+    private configElements: IFacebookElementTemplate[]|undefined;
+    private configSharable: boolean|undefined;
+    private configText: string|undefined;
+    private configTopElementStyle: FACEBOOK_TOP_ELEMENT_STYLE|undefined;
 
     constructor(public config: string|IFacebookPayloadTemplate) {}
 
@@ -81,40 +86,7 @@ function createGenericTemplateDirective(
       transition: ITransition,
     ): Promise<void> {
       const dialogflowReply = (reply as DialogflowReply);
-      let configElements: IFacebookElementTemplate[]|undefined;
-      let configButtons: IFacebookGenericButtonTemplate[]|undefined;
-      let configSharable: boolean|undefined;
-      let configText: string|undefined;
-      let configTopElementStyle: FACEBOOK_TOP_ELEMENT_STYLE|undefined;
-
-      if (_.isString(this.config)) {
-        const payloadTemplate: IFacebookPayloadTemplate = await event.renderer.renderPath(this.config, event);
-        configButtons = payloadTemplate.buttons;
-        configElements = payloadTemplate.elements;
-        configSharable = payloadTemplate.sharable;
-        configText = payloadTemplate.text;
-        configTopElementStyle = payloadTemplate.topElementStyle;
-      } else {
-        configButtons = this.config.buttons;
-        configElements = this.config.elements;
-        configSharable = this.config.sharable;
-        configText = this.config.text;
-        configTopElementStyle = this.config.topElementStyle;
-      }
-
-      const elements = getTemplateElements(configElements);
-
-      const facebookPayload: IVoxaFacebookPayloadTemplate = {
-        buttons: configButtons,
-        sharable: configSharable,
-        template_type: templateType,
-        text: configText,
-        top_element_style: configTopElementStyle,
-      };
-
-      if (!_.isEmpty(elements)) {
-        facebookPayload.elements = elements;
-      }
+      const facebookPayload = await this.getFacebookPayload(reply, event);
 
       dialogflowReply.source = "facebook";
       dialogflowReply.payload.facebook = {
@@ -123,6 +95,47 @@ function createGenericTemplateDirective(
           type: "template",
         },
       };
+    }
+
+    private async getFacebookPayload(
+      reply: IVoxaReply,
+      event: IVoxaEvent,
+    ): Promise<IVoxaFacebookPayloadTemplate> {
+      await this.setConfigValues(event);
+
+      const elements = getTemplateElements(this.configElements);
+
+      const facebookPayload: IVoxaFacebookPayloadTemplate = {
+        buttons: this.configButtons,
+        sharable: this.configSharable,
+        template_type: templateType,
+        text: this.configText,
+        top_element_style: this.configTopElementStyle,
+      };
+
+      if (!_.isEmpty(elements)) {
+        facebookPayload.elements = elements;
+      }
+
+      return facebookPayload;
+    }
+
+    private async setConfigValues(event: IVoxaEvent) {
+      if (_.isString(this.config)) {
+        const payloadTemplate: IFacebookPayloadTemplate = await event.renderer.renderPath(this.config, event);
+
+        this.configButtons = payloadTemplate.buttons;
+        this.configElements = payloadTemplate.elements;
+        this.configSharable = payloadTemplate.sharable;
+        this.configText = payloadTemplate.text;
+        this.configTopElementStyle = payloadTemplate.topElementStyle;
+      } else {
+        this.configButtons = this.config.buttons;
+        this.configElements = this.config.elements;
+        this.configSharable = this.config.sharable;
+        this.configText = this.config.text;
+        this.configTopElementStyle = this.config.topElementStyle;
+      }
     }
   };
 }
