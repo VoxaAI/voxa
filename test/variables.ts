@@ -8,6 +8,7 @@ import * as _ from "lodash";
 
 import { Hint, HomeCard } from "../src/platforms/alexa/directives";
 import {
+  FACEBOOK_BUTTONS,
   FACEBOOK_TOP_ELEMENT_STYLE,
   FACEBOOK_WEBVIEW_HEIGHT_RATIO,
   FacebookButtonTemplateBuilder,
@@ -136,16 +137,16 @@ export const variables = {
     buttonBuilder1
       .setPayload("payload")
       .setTitle("View More")
-      .setType("postback");
+      .setType(FACEBOOK_BUTTONS.POSTBACK);
 
     buttonBuilder2
       .setPayload("1234567890")
       .setTitle("Call John")
-      .setType("phone_number");
+      .setType(FACEBOOK_BUTTONS.PHONE_NUMBER);
 
     buttonBuilder3
       .setTitle("Go to Twitter")
-      .setType("web_url")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
       .setUrl("http://www.twitter.com");
 
     facebookTemplateBuilder
@@ -161,13 +162,13 @@ export const variables = {
     const buttons: IFacebookGenericButtonTemplate[] = [
       {
         title: "Go to see this URL",
-        type: "web_url",
+        type: FACEBOOK_BUTTONS.WEB_URL,
         url: "https://www.example.com/imgs/imageExample.png",
       },
       {
         payload: "value",
         title: "Send this to chat",
-        type: "postback",
+        type: FACEBOOK_BUTTONS.POSTBACK,
       },
     ];
 
@@ -202,7 +203,7 @@ export const variables = {
       {
         payload: "payload",
         title: "View More",
-        type: "postback",
+        type: FACEBOOK_BUTTONS.POSTBACK,
       },
     ];
 
@@ -215,7 +216,7 @@ export const variables = {
               fallbackUrl: "https://www.example.com",
               messengerExtensions: false,
               title: "View",
-              type: "web_url",
+              type: FACEBOOK_BUTTONS.WEB_URL,
               url: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
               webviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.FULL,
             },
@@ -237,7 +238,7 @@ export const variables = {
               fallbackUrl: "https://www.example.com",
               messengerExtensions: false,
               title: "View",
-              type: "web_url",
+              type: FACEBOOK_BUTTONS.WEB_URL,
               url: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
               webviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
             },
@@ -264,12 +265,12 @@ export const variables = {
 
     buttonBuilder1
       .setTitle("Go to Wikipedia")
-      .setType("web_url")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
       .setUrl("https://en.wikipedia.org/wiki/Rickrolling");
 
     buttonBuilder2
       .setTitle("Go to Twitter")
-      .setType("web_url")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
       .setUrl("http://www.twitter.com");
 
     elementBuilder1

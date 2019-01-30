@@ -23,6 +23,7 @@
 import * as _ from "lodash";
 
 import {
+  FACEBOOK_BUTTONS,
   FACEBOOK_WEBVIEW_HEIGHT_RATIO,
   IFacebookGenericButtonTemplate,
 } from "../../directives";
@@ -35,7 +36,7 @@ export class FacebookButtonTemplateBuilder {
   private messengerExtensions?: boolean;
   private payload?: string;
   private title: string = "";
-  private type: string = "";
+  private type: FACEBOOK_BUTTONS = FACEBOOK_BUTTONS.POSTBACK;
   private url?: string;
   private webviewHeightRatio?: FACEBOOK_WEBVIEW_HEIGHT_RATIO;
 
@@ -63,7 +64,7 @@ export class FacebookButtonTemplateBuilder {
     return this;
   }
 
-  public setType(type: string): FacebookButtonTemplateBuilder {
+  public setType(type: FACEBOOK_BUTTONS): FacebookButtonTemplateBuilder {
     this.type = type;
 
     return this;

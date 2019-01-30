@@ -198,7 +198,7 @@ export class FacebookAccountLink implements IDirective {
         payload: {
           buttons: [
             {
-              type: "account_link",
+              type: FACEBOOK_BUTTONS.ACCOUNT_LINK,
               url: renderedUrl,
             },
           ],
@@ -228,7 +228,7 @@ export class FacebookAccountUnlink implements IDirective {
         payload: {
           buttons: [
             {
-              type: "account_unlink",
+              type: FACEBOOK_BUTTONS.ACCOUNT_UNLINK,
             },
           ],
           template_type: "button",
@@ -385,7 +385,7 @@ export interface IVoxaFacebookElementTemplate {
   default_action?: {
     fallback_url?: string;
     messenger_extensions?: boolean;
-    type?: string;
+    type?: FACEBOOK_BUTTONS;
     url?: string;
     webview_height_ratio?: FACEBOOK_WEBVIEW_HEIGHT_RATIO;
   };
