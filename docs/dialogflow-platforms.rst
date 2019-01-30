@@ -277,6 +277,7 @@ You need to include in your controller the following field: ``facebookCarousel``
 
 .. code-block:: javascript
   const {
+    FACEBOOK_BUTTONS,
     FACEBOOK_WEBVIEW_HEIGHT_RATIO,
     FacebookButtonTemplateBuilder,
     FacebookElementTemplateBuilder,
@@ -292,13 +293,13 @@ You need to include in your controller the following field: ``facebookCarousel``
 
     buttonBuilder1
       .setTitle("Go to see this URL")
-      .setType("web_url")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
       .setUrl("https://www.example.com/imgs/imageExample.png");
 
     buttonBuilder2
       .setPayload("value")
       .setTitle("Send this to chat")
-      .setType("postback");
+      .setType(FACEBOOK_BUTTONS.POSTBACK);
 
     elementBuilder1
       .addButton(buttonBuilder1.build())
@@ -353,13 +354,13 @@ Or you can also handle these values from your views file
     const buttons = [
       {
         title: "Go to see this URL",
-        type: "web_url",
+        type: FACEBOOK_BUTTONS.WEB_URL,
         url: "https://www.example.com/imgs/imageExample.png",
       },
       {
         payload: "value",
         title: "Send this to chat",
-        type: "postback",
+        type: FACEBOOK_BUTTONS.POSTBACK,
       },
     ];
 
@@ -395,6 +396,7 @@ You need to include in your controller the following field: ``facebookList``, wh
 
 .. code-block:: javascript
   const {
+    FACEBOOK_BUTTONS,
     FACEBOOK_WEBVIEW_HEIGHT_RATIO,
     FACEBOOK_TOP_ELEMENT_STYLE,
     FacebookButtonTemplateBuilder,
@@ -413,11 +415,11 @@ You need to include in your controller the following field: ``facebookList``, wh
     buttonBuilder1
       .setPayload("payload")
       .setTitle("View More")
-      .setType("postback");
+      .setType(FACEBOOK_BUTTONS.POSTBACK);
 
     buttonBuilder2
       .setTitle("View")
-      .setType("web_url")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
       .setUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
       .setWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.FULL);
 
@@ -486,11 +488,11 @@ Or you can also handle these values from your views file
     buttonBuilder1
       .setPayload("payload")
       .setTitle("View More")
-      .setType("postback");
+      .setType(FACEBOOK_BUTTONS.POSTBACK);
 
     buttonBuilder2
       .setTitle("View")
-      .setType("web_url")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
       .setUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
       .setWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.FULL);
 
@@ -525,6 +527,187 @@ Or you can also handle these values from your views file
 
     return facebookTemplateBuilder.build();
   },
+
+
+- Button Template
+You need to include in your controller the following field: ``facebookButtonTemplate``, which takes an object with an array of buttons to be taken as items in a list of buttons. For more information about the button template, check how to add a `Button Template <https://developers.facebook.com/docs/messenger-platform/send-messages/template/button>`_.
+
+.. code-block:: javascript
+  const {
+    FACEBOOK_BUTTONS,
+    FacebookButtonTemplateBuilder,
+    FacebookTemplateBuilder,
+  } = require('voxa');
+
+  app.onState('someState', () => {
+    const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder3 = new FacebookButtonTemplateBuilder();
+    const facebookTemplateBuilder = new FacebookTemplateBuilder();
+
+    buttonBuilder1
+      .setPayload("payload")
+      .setTitle("View More")
+      .setType(FACEBOOK_BUTTONS.POSTBACK);
+
+    buttonBuilder2
+      .setPayload("1234567890")
+      .setTitle("Call John")
+      .setType(FACEBOOK_BUTTONS.PHONE_NUMBER);
+
+    buttonBuilder3
+      .setTitle("Go to Twitter")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
+      .setUrl("http://www.twitter.com");
+
+    facebookTemplateBuilder
+      .addButton(buttonBuilder1.build())
+      .addButton(buttonBuilder2.build())
+      .addButton(buttonBuilder3.build())
+      .setText("What do you want to do?");
+
+    return {
+      facebookButtonTemplate: facebookTemplateBuilder.build(),
+    };
+  });
+
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookButtonTemplate"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookButtonTemplate": {
+      "facebookButtonTemplate": "{buttonTemplate}"
+    }
+  }
+  .........
+  variables
+  .........
+  buttonTemplate: function buttonTemplate(request) {
+    const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder3 = new FacebookButtonTemplateBuilder();
+    const facebookTemplateBuilder = new FacebookTemplateBuilder();
+
+    buttonBuilder1
+      .setPayload("payload")
+      .setTitle("View More")
+      .setType(FACEBOOK_BUTTONS.POSTBACK);
+
+    buttonBuilder2
+      .setPayload("1234567890")
+      .setTitle("Call John")
+      .setType(FACEBOOK_BUTTONS.PHONE_NUMBER);
+
+    buttonBuilder3
+      .setTitle("Go to Twitter")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
+      .setUrl("http://www.twitter.com");
+
+    facebookTemplateBuilder
+      .addButton(buttonBuilder1.build())
+      .addButton(buttonBuilder2.build())
+      .addButton(buttonBuilder3.build())
+      .setText("What do you want to do?");
+
+    return facebookTemplateBuilder.build();
+  },
+
+
+- Open Graph Template
+You need to include in your controller the following field: ``facebookOpenGraphTemplate``, which takes an object with an array of buttons to be taken as items in a list of buttons and a url for the open graph link. For more information about the button template, check how to add a `Open Graph Template <https://developers.facebook.com/docs/messenger-platform/send-messages/template/open-graph>`_.
+
+.. code-block:: javascript
+  const {
+    FACEBOOK_BUTTONS,
+    FacebookButtonTemplateBuilder,
+    FacebookTemplateBuilder,
+  } = require('voxa');
+
+  app.onState('someState', () => {
+    const elementBuilder1 = new FacebookElementTemplateBuilder();
+    const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+    const facebookTemplateBuilder = new FacebookTemplateBuilder();
+
+    buttonBuilder1
+      .setTitle("Go to Wikipedia")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
+      .setUrl("https://en.wikipedia.org/wiki/Rickrolling");
+
+    buttonBuilder2
+      .setTitle("Go to Twitter")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
+      .setUrl("http://www.twitter.com");
+
+    elementBuilder1
+      .addButton(buttonBuilder1.build())
+      .addButton(buttonBuilder2.build())
+      .setUrl("https://open.spotify.com/track/7GhIk7Il098yCjg4BQjzvb");
+
+    facebookTemplateBuilder
+      .addElement(elementBuilder1.build());
+
+    return {
+      facebookOpenGraphTemplate: facebookTemplateBuilder.build(),
+    };
+  });
+
+Or you can also handle these values from your views file
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      reply: "FacebookOpenGraphTemplate"
+    };
+  });
+  .....
+  views
+  .....
+  {
+    "FacebookOpenGraphTemplate": {
+      "facebookOpenGraphTemplate": "{openGraphTemplate}"
+    }
+  }
+  .........
+  variables
+  .........
+  openGraphTemplate: function openGraphTemplate(request) {
+    const elementBuilder1 = new FacebookElementTemplateBuilder();
+    const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+    const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+    const facebookTemplateBuilder = new FacebookTemplateBuilder();
+
+    buttonBuilder1
+      .setTitle("Go to Wikipedia")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
+      .setUrl("https://en.wikipedia.org/wiki/Rickrolling");
+
+    buttonBuilder2
+      .setTitle("Go to Twitter")
+      .setType(FACEBOOK_BUTTONS.WEB_URL)
+      .setUrl("http://www.twitter.com");
+
+    elementBuilder1
+      .addButton(buttonBuilder1.build())
+      .addButton(buttonBuilder2.build())
+      .setUrl("https://open.spotify.com/track/7GhIk7Il098yCjg4BQjzvb");
+
+    facebookTemplateBuilder
+      .addElement(elementBuilder1.build());
+
+    return facebookTemplateBuilder.build();
+  },
+
 
 
 For more information check the `Dialogflow documentation for Facebook Messenger <https://dialogflow.com/docs/integrations/facebook>`_

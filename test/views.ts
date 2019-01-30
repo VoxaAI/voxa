@@ -171,6 +171,11 @@ export const views = {
           say: "Say!",
           text: "Text!",
         },
+        ButtonTemplate: {
+          facebookButtonTemplate: "{facebookButtonTemplate}",
+          say: "Say!",
+          text: "Text!",
+        },
         Carousel: {
           facebookCarousel: "{facebookCarousel}",
           say: "Say!",
@@ -178,6 +183,11 @@ export const views = {
         },
         List: {
           facebookList: "{facebookList}",
+          say: "Say!",
+          text: "Text!",
+        },
+        OpenGraphTemplate: {
+          facebookOpenGraphTemplate: "{facebookOpenGraphTemplate}",
           say: "Say!",
           text: "Text!",
         },

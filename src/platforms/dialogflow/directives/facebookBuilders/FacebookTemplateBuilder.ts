@@ -38,6 +38,7 @@ export class FacebookTemplateBuilder {
   private elements: IFacebookElementTemplate[] = [];
   private imageAspectRatio?: FACEBOOK_IMAGE_ASPECT_RATIO;
   private sharable?: boolean;
+  private text?: string;
   private topElementStyle?: FACEBOOK_TOP_ELEMENT_STYLE;
 
   public addButton(button: IFacebookGenericButtonTemplate): FacebookTemplateBuilder {
@@ -64,6 +65,12 @@ export class FacebookTemplateBuilder {
     return this;
   }
 
+  public setText(text: string): FacebookTemplateBuilder {
+    this.text = text;
+
+    return this;
+  }
+
   public setTopElementStyle(topElementStyle: FACEBOOK_TOP_ELEMENT_STYLE): FacebookTemplateBuilder {
     this.topElementStyle = topElementStyle;
 
@@ -75,6 +82,7 @@ export class FacebookTemplateBuilder {
       elements: this.elements,
       imageAspectRatio: this.imageAspectRatio,
       sharable: this.sharable,
+      text: this.text,
       topElementStyle: this.topElementStyle,
     };
 

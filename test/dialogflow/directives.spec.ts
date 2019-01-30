@@ -9,6 +9,7 @@ import {
   DialogflowEvent,
   DialogflowPlatform,
   DialogflowReply,
+  FACEBOOK_BUTTONS,
   FACEBOOK_IMAGE_ASPECT_RATIO,
   FACEBOOK_TOP_ELEMENT_STYLE,
   FACEBOOK_WEBVIEW_HEIGHT_RATIO,
@@ -1070,7 +1071,7 @@ describe("Dialogflow Directives", () => {
       expect(reply.payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
           {
-            type: "account_link",
+            type: FACEBOOK_BUTTONS.ACCOUNT_LINK,
             url: "https://www.messenger.com",
           },
         ],
@@ -1094,7 +1095,7 @@ describe("Dialogflow Directives", () => {
       expect(reply.payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
           {
-            type: "account_link",
+            type: FACEBOOK_BUTTONS.ACCOUNT_LINK,
             url: "https://www.messenger.com",
           },
         ],
@@ -1119,7 +1120,7 @@ describe("Dialogflow Directives", () => {
       expect(reply.payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
           {
-            type: "account_unlink",
+            type: FACEBOOK_BUTTONS.ACCOUNT_UNLINK,
           },
         ],
         template_type: "button",
@@ -1142,7 +1143,7 @@ describe("Dialogflow Directives", () => {
       expect(reply.payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
           {
-            type: "account_unlink",
+            type: FACEBOOK_BUTTONS.ACCOUNT_UNLINK,
           },
         ],
         template_type: "button",
@@ -1168,12 +1169,12 @@ describe("Dialogflow Directives", () => {
           {
             payload: "Suggestion 1",
             title: "Suggestion 1",
-            type: "postback",
+            type: FACEBOOK_BUTTONS.POSTBACK,
           },
           {
             payload: "Suggestion 2",
             title: "Suggestion 2",
-            type: "postback",
+            type: FACEBOOK_BUTTONS.POSTBACK,
           },
         ],
         template_type: "button",
@@ -1198,12 +1199,12 @@ describe("Dialogflow Directives", () => {
           {
             payload: "yes",
             title: "yes",
-            type: "postback",
+            type: FACEBOOK_BUTTONS.POSTBACK,
           },
           {
             payload: "no",
             title: "no",
-            type: "postback",
+            type: FACEBOOK_BUTTONS.POSTBACK,
           },
         ],
         template_type: "button",
@@ -1414,6 +1415,68 @@ describe("Dialogflow Directives", () => {
     });
   });
 
+  describe("FacebookButtonTemplate", () => {
+    it("should send a FacebookButtonTemplate using a reply view", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        reply: "Facebook.ButtonTemplate",
+        to: "entry",
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const facebookButtonTemplatePayload = require("../requests/dialogflow/facebookButtonTemplatePayload.json");
+
+      const reply = await dialogflowAgent.execute(event);
+      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookButtonTemplatePayload);
+    });
+
+    it("should send a FacebookButtonTemplate", async () => {
+      app.onIntent("LaunchIntent", (voxaEvent: DialogflowEvent) => {
+        const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+        const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+        const buttonBuilder3 = new FacebookButtonTemplateBuilder();
+        const facebookTemplateBuilder = new FacebookTemplateBuilder();
+
+        buttonBuilder1
+          .setPayload("payload")
+          .setTitle("View More")
+          .setType(FACEBOOK_BUTTONS.POSTBACK);
+
+        buttonBuilder2
+          .setPayload("1234567890")
+          .setTitle("Call John")
+          .setType(FACEBOOK_BUTTONS.PHONE_NUMBER);
+
+        buttonBuilder3
+          .setTitle("Go to Twitter")
+          .setType(FACEBOOK_BUTTONS.WEB_URL)
+          .setUrl("http://www.twitter.com");
+
+        facebookTemplateBuilder
+          .addButton(buttonBuilder1.build())
+          .addButton(buttonBuilder2.build())
+          .addButton(buttonBuilder3.build())
+          .setText("What do you want to do?");
+
+        return {
+          facebookButtonTemplate: facebookTemplateBuilder.build(),
+          flow: "yield",
+          sayp: "Say!",
+          textp: "Text!",
+          to: "entry",
+        };
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const facebookButtonTemplatePayload = require("../requests/dialogflow/facebookButtonTemplatePayload.json");
+
+      const reply = await dialogflowAgent.execute(event);
+      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookButtonTemplatePayload);
+    });
+  });
+
   describe("FacebookCarousel", () => {
     it("should send a FacebookCarousel template using a reply view", async () => {
       app.onIntent("LaunchIntent", {
@@ -1440,13 +1503,13 @@ describe("Dialogflow Directives", () => {
 
         buttonBuilder1
           .setTitle("Go to see this URL")
-          .setType("web_url")
+          .setType(FACEBOOK_BUTTONS.WEB_URL)
           .setUrl("https://www.example.com/imgs/imageExample.png");
 
         buttonBuilder2
           .setPayload("value")
           .setTitle("Send this to chat")
-          .setType("postback");
+          .setType(FACEBOOK_BUTTONS.POSTBACK);
 
         elementBuilder1
           .addButton(buttonBuilder1.build())
@@ -1519,13 +1582,13 @@ describe("Dialogflow Directives", () => {
         buttonBuilder1
           .setPayload("payload")
           .setTitle("View More")
-          .setType("postback");
+          .setType(FACEBOOK_BUTTONS.POSTBACK);
 
         buttonBuilder2
           .setFallbackUrl("https://www.example.com")
           .setMessengerExtensions(false)
           .setTitle("View")
-          .setType("web_url")
+          .setType(FACEBOOK_BUTTONS.WEB_URL)
           .setUrl("https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg")
           .setWebviewHeightRatio(FACEBOOK_WEBVIEW_HEIGHT_RATIO.FULL);
 
@@ -1577,6 +1640,65 @@ describe("Dialogflow Directives", () => {
 
       const reply = await dialogflowAgent.execute(event);
       expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookListPayload);
+    });
+  });
+
+  describe("FacebookOpenGraphTemplate", () => {
+    it("should send a FacebookOpenGraphTemplate using a reply view", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        reply: "Facebook.OpenGraphTemplate",
+        to: "entry",
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const facebookOpenGraphTemplatePayload = require("../requests/dialogflow/facebookOpenGraphTemplatePayload.json");
+
+      const reply = await dialogflowAgent.execute(event);
+      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookOpenGraphTemplatePayload);
+    });
+
+    it("should send a FacebookOpenGraphTemplate", async () => {
+      app.onIntent("LaunchIntent", (voxaEvent: DialogflowEvent) => {
+        const elementBuilder1 = new FacebookElementTemplateBuilder();
+        const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+        const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+        const facebookTemplateBuilder = new FacebookTemplateBuilder();
+
+        buttonBuilder1
+          .setTitle("Go to Wikipedia")
+          .setType(FACEBOOK_BUTTONS.WEB_URL)
+          .setUrl("https://en.wikipedia.org/wiki/Rickrolling");
+
+        buttonBuilder2
+          .setTitle("Go to Twitter")
+          .setType(FACEBOOK_BUTTONS.WEB_URL)
+          .setUrl("http://www.twitter.com");
+
+        elementBuilder1
+          .addButton(buttonBuilder1.build())
+          .addButton(buttonBuilder2.build())
+          .setUrl("https://open.spotify.com/track/7GhIk7Il098yCjg4BQjzvb");
+
+        facebookTemplateBuilder
+          .addElement(elementBuilder1.build());
+
+        return {
+          facebookOpenGraphTemplate: facebookTemplateBuilder.build(),
+          flow: "yield",
+          sayp: "Say!",
+          textp: "Text!",
+          to: "entry",
+        };
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const facebookOpenGraphTemplatePayload = require("../requests/dialogflow/facebookOpenGraphTemplatePayload.json");
+
+      const reply = await dialogflowAgent.execute(event);
+      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookOpenGraphTemplatePayload);
     });
   });
 });
