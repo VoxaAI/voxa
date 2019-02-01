@@ -26,7 +26,7 @@ import {
   FACEBOOK_BUTTONS,
   FACEBOOK_WEBVIEW_HEIGHT_RATIO,
   IFacebookGenericButtonTemplate,
-} from "../../directives";
+} from "../directives";
 
 /**
  * Template Builder class reference

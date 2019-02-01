@@ -21,14 +21,12 @@
  */
 
 import * as _ from "lodash";
-import { IDirectiveClass } from "../../directives";
-import { ITransition } from "../../StateMachine";
-import { VoxaApp } from "../../VoxaApp";
-import { IVoxaEvent } from "../../VoxaEvent";
-import { IVoxaReply } from "../../VoxaReply";
-import { IVoxaPlatformConfig, VoxaPlatform } from "../VoxaPlatform";
-import { DialogflowEvent } from "./DialogflowEvent";
-import { DialogflowReply } from "./DialogflowReply";
+import { IDirectiveClass } from "../../../directives";
+import { ITransition } from "../../../StateMachine";
+import { VoxaApp } from "../../../VoxaApp";
+import { IVoxaEvent } from "../../../VoxaEvent";
+import { IVoxaReply } from "../../../VoxaReply";
+import { IVoxaPlatformConfig, VoxaPlatform } from "../../VoxaPlatform";
 import {
   AccountLinkingCard,
   BasicCard,
@@ -38,25 +36,6 @@ import {
   Context,
   DateTime,
   DeepLink,
-  FACEBOOK_BUTTONS,
-  FACEBOOK_IMAGE_ASPECT_RATIO,
-  FACEBOOK_TOP_ELEMENT_STYLE,
-  FACEBOOK_WEBVIEW_HEIGHT_RATIO,
-  FacebookAccountLink,
-  FacebookAccountUnlink,
-  FacebookButtonTemplate,
-  FacebookCarousel,
-  FacebookList,
-  FacebookOpenGraphTemplate,
-  FacebookQuickReplyLocation,
-  FacebookQuickReplyPhoneNumber,
-  FacebookQuickReplyText,
-  FacebookQuickReplyUserEmail,
-  FacebookSuggestionChips,
-  IFacebookElementTemplate,
-  IFacebookGenericButtonTemplate,
-  IFacebookPayloadTemplate,
-  IFacebookQuickReply,
   LinkOutSuggestion,
   List,
   MediaResponse,
@@ -69,23 +48,25 @@ import {
   TransactionDecision,
   TransactionRequirements,
   UpdatePermission,
-} from "./index";
+} from "./directives";
+import { GoogleAssistantEvent } from "./GoogleAssistantEvent";
+import { GoogleAssistantReply } from "./GoogleAssistantReply";
 
-export interface IDialogflowPlatformConfig extends IVoxaPlatformConfig {
+export interface IGoogleAssistantPlatformConfig extends IVoxaPlatformConfig {
   clientId?: string; // id used to verify user's identify from Google Sign-In
 }
 
-export class DialogflowPlatform extends VoxaPlatform {
+export class GoogleAssistantPlatform extends VoxaPlatform {
   public name = "dialogflow";
-  protected EventClass = DialogflowEvent;
+  protected EventClass = GoogleAssistantEvent;
 
-  constructor(app: VoxaApp, config: IDialogflowPlatformConfig = {}) {
+  constructor(app: VoxaApp, config: IGoogleAssistantPlatformConfig = {}) {
     super(app, config);
     app.onBeforeReplySent(this.saveStorage, true, this.name);
   }
 
-  protected getReply(event: DialogflowEvent) {
-    return new DialogflowReply(event.google.conv);
+  protected getReply(event: GoogleAssistantEvent) {
+    return new GoogleAssistantReply();
   }
 
   protected saveStorage(
@@ -93,8 +74,8 @@ export class DialogflowPlatform extends VoxaPlatform {
     reply: IVoxaReply,
     transition: ITransition,
   ) {
-    const { conv } = (voxaEvent as DialogflowEvent).google;
-    const dialogflowReply = reply as DialogflowReply;
+    const { conv } = (voxaEvent as GoogleAssistantEvent).google;
+    const dialogflowReply = reply as GoogleAssistantReply;
 
     if (_.isEmpty(conv.user.storage)) {
       dialogflowReply.payload.google.resetUserStorage = true;
@@ -113,17 +94,6 @@ export class DialogflowPlatform extends VoxaPlatform {
       Confirmation,
       DateTime,
       DeepLink,
-      FacebookAccountLink,
-      FacebookAccountUnlink,
-      FacebookButtonTemplate,
-      FacebookCarousel,
-      FacebookList,
-      FacebookOpenGraphTemplate,
-      FacebookQuickReplyLocation,
-      FacebookQuickReplyPhoneNumber,
-      FacebookQuickReplyText,
-      FacebookQuickReplyUserEmail,
-      FacebookSuggestionChips,
       LinkOutSuggestion,
       List,
       MediaResponse,

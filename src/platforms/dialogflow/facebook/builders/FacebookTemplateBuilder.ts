@@ -28,7 +28,7 @@ import {
   IFacebookElementTemplate,
   IFacebookGenericButtonTemplate,
   IFacebookPayloadTemplate,
-} from "../../directives";
+} from "../directives";
 
 /**
  * Template Builder class reference

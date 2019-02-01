@@ -31,20 +31,30 @@ import { TokenPayload } from "google-auth-library/build/src/auth/loginticket";
 import { LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
 import { v1 } from "uuid";
-import { VoxaEvent } from "../../VoxaEvent";
-import { DialogflowIntent } from "./DialogflowIntent";
-import { DialogflowSession } from "./DialogflowSession";
+import { IVoxaUserProfile, VoxaEvent } from "../../../VoxaEvent";
+import { DialogflowSession } from "../DialogflowSession";
+import { GoogleAssistantIntent } from "./GoogleAssistantIntent";
 
 export interface IGoogle {
   conv: DialogflowConversation;
 }
 
-export class DialogflowEvent extends VoxaEvent {
+export class GoogleAssistantEvent extends VoxaEvent {
+
+  get supportedInterfaces(): string[] {
+    let capabilities = _.map(
+      this.google.conv.surface.capabilities.list,
+      "name",
+    );
+    capabilities = _.filter(capabilities);
+
+    return capabilities as string[];
+  }
   public rawEvent!: GoogleCloudDialogflowV2WebhookRequest;
   public session!: DialogflowSession;
   public google!: IGoogle;
-  public intent: DialogflowIntent;
-  public source: string | undefined;
+  public intent: GoogleAssistantIntent;
+  public source: string = "google";
 
   constructor(
     rawEvent: GoogleCloudDialogflowV2WebhookRequest,
@@ -58,11 +68,7 @@ export class DialogflowEvent extends VoxaEvent {
       type: "IntentRequest",
     };
 
-    this.intent = new DialogflowIntent(this.google.conv);
-  }
-
-  public async getUserInformation(): Promise<any> {
-    return undefined;
+    this.intent = new GoogleAssistantIntent(this.google.conv);
   }
 
   public async verifyProfile(): Promise<TokenPayload | undefined> {
@@ -75,6 +81,27 @@ export class DialogflowEvent extends VoxaEvent {
     );
 
     return payload;
+  }
+
+  public async getUserInformation(): Promise<IVoxaGoogleUserProfile> {
+    const voxaEvent: any = _.cloneDeep(this);
+    const dialogflowUser = this.google.conv.user;
+
+    if (!dialogflowUser.profile.token) {
+      throw new Error("conv.user.profile.token is empty");
+    }
+
+    const result: any = await this.verifyProfile();
+
+    result.emailVerified = result.email_verified;
+    result.familyName = result.family_name;
+    result.givenName = result.given_name;
+
+    delete result.email_verified;
+    delete result.family_name;
+    delete result.given_name;
+
+    return result as IVoxaGoogleUserProfile;
   }
 
   protected initSession(): void {
@@ -103,21 +130,15 @@ export class DialogflowEvent extends VoxaEvent {
     const storage = conv.user.storage as any;
     let userId: string = "";
 
-    this.source = _.get(originalDetectIntentRequest, "source") || "google";
-
-    if (this.source === "google") {
-      if (conv.user.id) {
-        userId = conv.user.id;
-      } else if (_.get(storage, "voxa.userId")) {
-        userId = storage.voxa.userId;
-      } else {
-        userId = v1();
-      }
-
-      _.set(this.google.conv.user.storage, "voxa.userId", userId);
-    } else if (this.source === "facebook") {
-      userId = _.get(originalDetectIntentRequest, "payload.data.sender.id");
+    if (conv.user.id) {
+      userId = conv.user.id;
+    } else if (_.get(storage, "voxa.userId")) {
+      userId = storage.voxa.userId;
+    } else {
+      userId = v1();
     }
+
+    _.set(this.google.conv.user.storage, "voxa.userId", userId);
 
     this.user = {
       accessToken: conv.user.access.token,
@@ -125,14 +146,16 @@ export class DialogflowEvent extends VoxaEvent {
       userId,
     };
   }
+}
 
-  get supportedInterfaces(): string[] {
-    let capabilities = _.map(
-      this.google.conv.surface.capabilities.list,
-      "name",
-    );
-    capabilities = _.filter(capabilities);
-
-    return capabilities as string[];
-  }
+export interface IVoxaGoogleUserProfile extends IVoxaUserProfile {
+  aud: string; // Client ID assigned to your Actions project
+  emailVerified: boolean;
+  exp: number; // Unix timestamp of the token's expiration time
+  familyName: string;
+  givenName: string;
+  iat: number; // Unix timestamp of the token's creation time
+  iss: string; // The token's issuer
+  locale: string;
+  sub: string; // The unique ID of the user's Google Account
 }

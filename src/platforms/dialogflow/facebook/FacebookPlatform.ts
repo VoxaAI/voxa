@@ -21,23 +21,9 @@
  */
 
 import * as _ from "lodash";
-import { IDirectiveClass } from "../../directives";
-import { ITransition } from "../../StateMachine";
-import { VoxaApp } from "../../VoxaApp";
-import { IVoxaEvent } from "../../VoxaEvent";
-import { IVoxaReply } from "../../VoxaReply";
-import { IVoxaPlatformConfig, VoxaPlatform } from "../VoxaPlatform";
-import { DialogflowEvent } from "./DialogflowEvent";
-import { DialogflowReply } from "./DialogflowReply";
+import { IDirectiveClass } from "../../../directives";
+import { VoxaPlatform } from "../../VoxaPlatform";
 import {
-  AccountLinkingCard,
-  BasicCard,
-  BrowseCarousel,
-  Carousel,
-  Confirmation,
-  Context,
-  DateTime,
-  DeepLink,
   FACEBOOK_BUTTONS,
   FACEBOOK_IMAGE_ASPECT_RATIO,
   FACEBOOK_TOP_ELEMENT_STYLE,
@@ -57,62 +43,20 @@ import {
   IFacebookGenericButtonTemplate,
   IFacebookPayloadTemplate,
   IFacebookQuickReply,
-  LinkOutSuggestion,
-  List,
-  MediaResponse,
-  NewSurface,
-  Permission,
-  Place,
-  RegisterUpdate,
-  Suggestions,
-  Table,
-  TransactionDecision,
-  TransactionRequirements,
-  UpdatePermission,
-} from "./index";
+} from "./directives";
+import { FacebookEvent } from "./FacebookEvent";
+import { FacebookReply } from "./FacebookReply";
 
-export interface IDialogflowPlatformConfig extends IVoxaPlatformConfig {
-  clientId?: string; // id used to verify user's identify from Google Sign-In
-}
-
-export class DialogflowPlatform extends VoxaPlatform {
+export class FacebookPlatform extends VoxaPlatform {
   public name = "dialogflow";
-  protected EventClass = DialogflowEvent;
+  protected EventClass = FacebookEvent;
 
-  constructor(app: VoxaApp, config: IDialogflowPlatformConfig = {}) {
-    super(app, config);
-    app.onBeforeReplySent(this.saveStorage, true, this.name);
-  }
-
-  protected getReply(event: DialogflowEvent) {
-    return new DialogflowReply(event.google.conv);
-  }
-
-  protected saveStorage(
-    voxaEvent: IVoxaEvent,
-    reply: IVoxaReply,
-    transition: ITransition,
-  ) {
-    const { conv } = (voxaEvent as DialogflowEvent).google;
-    const dialogflowReply = reply as DialogflowReply;
-
-    if (_.isEmpty(conv.user.storage)) {
-      dialogflowReply.payload.google.resetUserStorage = true;
-      delete dialogflowReply.payload.google.userStorage;
-    } else {
-      dialogflowReply.payload.google.userStorage = conv.user._serialize();
-    }
+  protected getReply(event: FacebookEvent) {
+    return new FacebookReply(event);
   }
 
   protected getDirectiveHandlers(): IDirectiveClass[] {
     return [
-      AccountLinkingCard,
-      BasicCard,
-      BrowseCarousel,
-      Carousel,
-      Confirmation,
-      DateTime,
-      DeepLink,
       FacebookAccountLink,
       FacebookAccountUnlink,
       FacebookButtonTemplate,
@@ -124,19 +68,6 @@ export class DialogflowPlatform extends VoxaPlatform {
       FacebookQuickReplyText,
       FacebookQuickReplyUserEmail,
       FacebookSuggestionChips,
-      LinkOutSuggestion,
-      List,
-      MediaResponse,
-      Permission,
-      NewSurface,
-      Place,
-      RegisterUpdate,
-      Suggestions,
-      Table,
-      TransactionDecision,
-      TransactionRequirements,
-      UpdatePermission,
-      Context,
     ];
   }
 }
