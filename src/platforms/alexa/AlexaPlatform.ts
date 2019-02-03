@@ -58,6 +58,7 @@ const AlexaRequests = [
   "PlaybackController.PauseCommandIssued",
   "PlaybackController.PlayCommandIssued",
   "PlaybackController.PreviousCommandIssued",
+  "AlexaSkillEvent.ProactiveSubscriptionChanged",
   "AlexaSkillEvent.SkillAccountLinked",
   "AlexaSkillEvent.SkillEnabled",
   "AlexaSkillEvent.SkillDisabled",
@@ -71,6 +72,7 @@ const AlexaRequests = [
   "CanFulfillIntentRequest",
   "GameEngine.InputHandlerEvent",
   "Alexa.Presentation.APL.UserEvent",
+  "Messaging.MessageReceived",
 ];
 
 export interface IAlexaPlatformConfig extends IVoxaPlatformConfig {

@@ -31,7 +31,7 @@ import {
 } from "botbuilder";
 import * as _ from "lodash";
 import * as rp from "request-promise";
-import * as urljoin from "url-join";
+import urljoin = require("url-join");
 import * as uuid from "uuid";
 import { NotImplementedError } from "../../errors";
 import { IBag, IVoxaEvent } from "../../VoxaEvent";

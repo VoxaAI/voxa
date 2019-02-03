@@ -1,0 +1,51 @@
+{
+  "elements": [
+    {
+      "buttons": [
+        {
+          "url": "https://www.example.com/imgs/imageExample.png",
+          "title": "Go to see this URL",
+          "type": "web_url"
+        },
+        {
+          "payload": "value",
+          "title": "Send this to chat",
+          "type": "postback"
+        }
+      ],
+      "default_action": {
+        "type": "web_url",
+        "url": "https://www.example.com/imgs/imageExample.png",
+        "messenger_extensions": false,
+        "webview_height_ratio": "compact"
+      },
+      "image_url": "https://www.w3schools.com/colors/img_colormap.gif",
+      "subtitle": "subtitle",
+      "title": "title"
+    },
+    {
+      "buttons": [
+        {
+          "url": "https://www.example.com/imgs/imageExample.png",
+          "title": "Go to see this URL",
+          "type": "web_url"
+        },
+        {
+          "payload": "value",
+          "title": "Send this to chat",
+          "type": "postback"
+        }
+      ],
+      "default_action": {
+        "type": "web_url",
+        "url": "https://www.example.com/imgs/imageExample.png",
+        "messenger_extensions": false,
+        "webview_height_ratio": "tall"
+      },
+      "image_url": "https://www.w3schools.com/colors/img_colormap.gif",
+      "subtitle": "subtitle",
+      "title": "title"
+    }
+  ],
+  "template_type": "generic"
+}

@@ -271,6 +271,21 @@ export class AlexaRequestBuilder {
       version: this.version,
     };
   }
+
+  public getMessageReceivedRequest(message: any): RequestEnvelope {
+    return {
+      context: this.getContextData(),
+      request: {
+        locale: "en-US",
+        message,
+        requestId: `EdwRequestId.${v1()}`,
+        timestamp: new Date().toISOString(),
+        type: "Messaging.MessageReceived",
+      },
+      session: this.getSessionData(),
+      version: this.version,
+    };
+  }
 }
 
 export function getLambdaContext(

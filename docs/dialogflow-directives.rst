@@ -17,7 +17,7 @@ The single-select list presents the user with a vertical list of multiple items 
 
   app.onState('someState', () => {
     return {
-      dialogFlowList: {
+      dialogflowList: {
         title: 'List Title',
         items: {
           // Add the first item to the list
@@ -80,7 +80,7 @@ The carousel scrolls horizontally and allows for selecting one item. Compared to
 
   app.onState('someState', () => {
     return {
-      dialogFlowCarousel: {
+      dialogflowCarousel: {
         items: {
           // Add the first item to the carousel
           [SELECTION_KEY_ONE]: {
@@ -142,7 +142,7 @@ Whenever possible, you should incorporate one key suggestion as part of the chat
 
   app.onState('someState', () => {
     return {
-      dialogFlowSuggestions: ['Exit', 'Continue']
+      dialogflowSuggestions: ['Exit', 'Continue']
     }
   });
 
@@ -151,7 +151,7 @@ Whenever possible, you should incorporate one key suggestion as part of the chat
 
   app.onState('someState', () => {
     return {
-      dialogFlowLinkOutSuggestion: {
+      dialogflowLinkOutSuggestion: {
         name: "Suggestion Link",
         url: 'https://assistant.google.com/',
       }
@@ -183,7 +183,7 @@ Avoid repeating the information presented in the card in the chat bubble at all 
 
   app.onState('someState', () => {
     return {
-      dialogFlowBasicCard: {
+      dialogflowBasicCard: {
         text: `This is a basic card.  Text in a basic card can include "quotes" and
         most other unicode characters including emoji.  Basic cards also support
         some markdown formatting like *emphasis* or _italics_, **strong** or
@@ -214,7 +214,7 @@ Account linking is a great way to lets users connect their Google accounts to ex
 
   app.onState('someState', () => {
     return {
-      dialogFlowAccountLinkingCard: "To track your exercise"
+      dialogflowAccountLinkingCard: "To track your exercise"
     }
   });
 
@@ -244,7 +244,7 @@ Media responses let your app play audio content with a playback duration longer 
     });
 
     return {
-      dialogFlowMediaResponse: mediaObject
+      dialogflowMediaResponse: mediaObject
     };
   });
 
@@ -267,7 +267,7 @@ You can obtain the following user information with this helper:
 
   app.onState('someState', () => {
     return {
-      dialogFlowPermission: {
+      dialogflowPermission: {
         context: 'To read your mind',
         permissions: 'NAME',
       }
@@ -286,7 +286,7 @@ You can obtain a date and time from users by requesting fulfillment of the actio
 
   app.onState('someState', () => {
     return {
-      dialogFlowDateTime: {
+      dialogflowDateTime: {
         prompts: {
           initial: 'When do you want to come in?',
           date: 'Which date works best for you?',
@@ -308,7 +308,7 @@ You can ask a generic confirmation from the user (yes/no question) and get the r
 
   app.onState('someState', () => {
     return {
-      dialogFlowConfirmation: 'Can you confirm?',
+      dialogflowConfirmation: 'Can you confirm?',
     };
   });
 
@@ -333,7 +333,7 @@ You can ask the user to continue an interaction via your Android app. This helpe
     };
 
     return {
-      dialogFlowDeepLink: options
+      dialogflowDeepLink: options
     };
   });
 
@@ -351,7 +351,7 @@ Saved locations will only return the address, not the associated mapping (e.g. "
 
   app.onState('someState', () => {
     return {
-      dialogFlowPlace: {
+      dialogflowPlace: {
         context: 'To find a place to pick you up',
         prompt: 'Where would you like to be picked up?',
       }
@@ -377,7 +377,7 @@ To consistently re-engage with users, you need to become a part of their daily h
 
   app.onState('someState', () => {
     return {
-      dialogFlowRegisterUpdate: {
+      dialogflowRegisterUpdate: {
         intent: 'Show Image',
         frequency: 'ROUTINES'
       }
@@ -397,7 +397,7 @@ Your app can send push notifications to users whenever relevant, such as sending
 
   app.onState('someState', () => {
     return {
-      dialogFlowUpdatePermission: {
+      dialogflowUpdatePermission: {
         intent: 'tell_latest_tip'
       }
     };
@@ -429,7 +429,7 @@ At any point during your app's flow, you can check if the user has any other sur
           sayp: 'Hello',
           to: 'entry',
           flow: 'yield',
-          dialogFlowNewSurface: {
+          dialogflowNewSurface: {
             context, notification, capabilities,
           },
         };
@@ -453,12 +453,12 @@ Output Contexts
 
 `Actions on Google Documentation <https://actions-on-google.github.io/actions-on-google-nodejs/classes/dialogflow.contextvalues.html#set>`_
 
-If you need to add output contexts to the dialog flow webhook you can use the `dialogFlowContext` directive
+If you need to add output contexts to the dialog flow webhook you can use the `dialogflowContext` directive
 
 .. code-block:: javascript
 
     app.onIntent("LaunchIntent", {
-      dialogFlowContext: {
+      dialogflowContext: {
         lifespan: 5,
         name: "DONE_YES_NO_CONTEXT",
       },

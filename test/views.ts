@@ -120,7 +120,7 @@ export const views = {
         Error: "There was an error trying to get your settings info.",
         FullSettings: "Your default settings are: {settingsInfo}",
       },
-      DialogFlowBasicCard: {
+      DialogflowBasicCard: {
         buttons: {
           openUrlAction: "https://example.com",
           title: "Example.com",
@@ -133,7 +133,7 @@ export const views = {
         text: "This is the text",
         title: "title",
       },
-      DialogFlowCarousel: {
+      DialogflowCarousel: {
         items: {
           LIST_ITEM: {
             description: "The item description",
@@ -141,7 +141,7 @@ export const views = {
           },
         },
       },
-      DialogFlowListSelect: {
+      DialogflowListSelect: {
         items: [
           {
             description: "The item description",
@@ -154,8 +154,62 @@ export const views = {
         ],
         title: "The list select",
       },
+      DialogflowSuggestions: {
+        dialogflowSuggestions: ["Suggestion 1", "Suggestion 2"],
+      },
       ExitIntent: {
         Farewell: "Ok. For more info visit {site} site.",
+      },
+      Facebook: {
+        AccountLink: {
+          facebookAccountLink: "https://www.messenger.com",
+          say: "Say!",
+          text: "Text!",
+        },
+        AccountUnlink: {
+          facebookAccountUnlink: true,
+          say: "Say!",
+          text: "Text!",
+        },
+        ButtonTemplate: {
+          facebookButtonTemplate: "{facebookButtonTemplate}",
+          say: "Say!",
+          text: "Text!",
+        },
+        Carousel: {
+          facebookCarousel: "{facebookCarousel}",
+          say: "Say!",
+          text: "Text!",
+        },
+        List: {
+          facebookList: "{facebookList}",
+          say: "Say!",
+          text: "Text!",
+        },
+        OpenGraphTemplate: {
+          facebookOpenGraphTemplate: "{facebookOpenGraphTemplate}",
+          say: "Say!",
+          text: "Text!",
+        },
+        QuickReplyLocation: {
+          facebookQuickReplyLocation: "Send me your location",
+          say: "Say!",
+          text: "Text!",
+        },
+        QuickReplyPhoneNumber: {
+          facebookQuickReplyPhoneNumber: "Send me your phone number",
+          say: "Say!",
+          text: "Text!",
+        },
+        QuickReplyUserEmail: {
+          facebookQuickReplyUserEmail: "Send me your email",
+          say: "Say!",
+          text: "Text!",
+        },
+        Suggestions: {
+          facebookSuggestionChips: ["Suggestion 1", "Suggestion 2"],
+          text: "Pick a suggestion",
+        },
       },
       Help: "This is the help",
       HelpIntent: {
@@ -177,7 +231,7 @@ export const views = {
       LaunchIntent: {
         OpenResponse: {
           alexa: "Hello! Good {time}",
-          dialogflow: "Hello from DialogFlow",
+          dialogflow: "Hello from Dialogflow",
         },
       },
       Lists: {
@@ -195,6 +249,13 @@ export const views = {
         },
       },
       RandomResponse: ["Random 1", "Random 2", "Random 3", "Random 4"],
+      Reminder: {
+        Created: "Reminder created with ID: {reminderId}",
+        Deleted: "Reminder deleted",
+        Get: "Reminder content: {reminderContent}",
+        GetAllReminders: "Reminder content: {reminderAllContent}",
+        Updated: "Reminder updated with ID: {reminderId}",
+      },
       RenderTemplate: {
         template: {
           backButton: "VISIBLE",

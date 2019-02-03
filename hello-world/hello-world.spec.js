@@ -123,16 +123,47 @@ describe("Hello World", () => {
       const lambdaCallbackResult = dockerLambda({
         dockerImage: `lambci/lambda:nodejs${NODE_VERSION}`,
         event: lambdaProxyLaunchIntent,
-        handler: "hello-world.dialogFlowActionLambdaHTTPHandler"
+        handler: "hello-world.dialogflowActionLambdaHTTPHandler"
       });
 
-      expect(lambdaCallbackResult).to.deep.equal({
-        body:
-          '{"outputContexts":[{"name":"projects/project/agent/sessions/1525973454075/contexts/attributes","lifespanCount":10000,"parameters":{"attributes":"{\\"model\\":{},\\"state\\":\\"likesVoxa?\\"}"}}],"fulfillmentText":"<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>","source":"google","payload":{"google":{"expectUserResponse":true,"isSsml":true,"richResponse":{"items":[{"simpleResponse":{"textToSpeech":"<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>"}}]},"resetUserStorage":true}}}',
-        headers: {
-          "Content-Type": "application/json; charset=utf-8"
-        },
-        statusCode: 200
+      expect(lambdaCallbackResult.headers).to.deep.equal({
+        "Content-Type": "application/json; charset=utf-8"
+      });
+      expect(lambdaCallbackResult.statusCode).to.equal(200);
+      expect(JSON.parse(lambdaCallbackResult.body)).to.deep.equal({
+        outputContexts: [
+          {
+            name:
+              "projects/project/agent/sessions/1525973454075/contexts/attributes",
+            lifespanCount: 10000,
+            parameters: {
+              attributes: '{"model":{},"state":"likesVoxa?"}'
+            }
+          }
+        ],
+        fulfillmentText:
+          "Welcome to this voxa app, are you enjoying voxa so far?",
+        source: "google",
+        payload: {
+          google: {
+            expectUserResponse: true,
+            userStorage:
+              '{"data":{"voxa":{"userId":"ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y"}}}',
+            isSsml: true,
+            richResponse: {
+              items: [
+                {
+                  simpleResponse: {
+                    textToSpeech:
+                      "<speak>Welcome to this voxa app, are you enjoying voxa so far?</speak>",
+                    displayText:
+                      "Welcome to this voxa app, are you enjoying voxa so far?"
+                  }
+                }
+              ]
+            }
+          }
+        }
       });
     });
   });

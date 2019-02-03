@@ -27,7 +27,7 @@ import { LambdaLog, LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
 import * as rp from "request-promise";
 import { Model } from "./Model";
-import { DialogFlowEvent } from "./platforms/dialogflow/DialogFlowEvent";
+import { DialogflowEvent } from "./platforms/dialogflow/DialogflowEvent";
 import { VoxaPlatform } from "./platforms/VoxaPlatform";
 import { Renderer } from "./renderers/Renderer";
 
@@ -40,9 +40,7 @@ export interface IVoxaRequest {
   type: string;
 }
 
-export interface IVoxaEventClass {
-  new (rawEvent: any, logOptions: LambdaLogOptions, context: any): IVoxaEvent;
-}
+export type IVoxaEventClass = new (rawEvent: any, logOptions: LambdaLogOptions, context: any) => IVoxaEvent;
 
 export interface IVoxaIntentEvent extends IVoxaEvent {
   intent: IVoxaIntent;
@@ -99,14 +97,14 @@ export abstract class VoxaEvent implements IVoxaEvent {
 
   public async getUserInformationWithGoogle(): Promise<IVoxaGoogleUserProfile> {
     const voxaEvent: any = _.cloneDeep(this);
-    const dialogFlowEvent = voxaEvent as DialogFlowEvent;
-    const dialogFlowUser = dialogFlowEvent.google.conv.user;
+    const dialogflowEvent = voxaEvent as DialogflowEvent;
+    const dialogflowUser = dialogflowEvent.google.conv.user;
 
-    if (!dialogFlowUser.profile.token) {
+    if (!dialogflowUser.profile.token) {
       throw new Error("conv.user.profile.token is empty");
     }
 
-    const result: any = await dialogFlowEvent.verifyProfile();
+    const result: any = await dialogflowEvent.verifyProfile();
 
     result.emailVerified = result.email_verified;
     result.familyName = result.family_name;

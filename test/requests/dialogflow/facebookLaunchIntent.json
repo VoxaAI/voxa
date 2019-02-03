@@ -1,0 +1,46 @@
+{
+  "responseId": "cb4e1752-1df0-4437-9b74-c691834869bc",
+  "queryResult": {
+    "queryText": "FACEBOOK_WELCOME",
+    "action": "LaunchIntent",
+    "parameters": {},
+    "allRequiredParamsPresent": true,
+    "outputContexts": [
+      {
+        "name": "projects/project/agent/sessions/99785bb9f088/contexts/generic",
+        "lifespanCount": 4,
+        "parameters": {
+          "facebook_sender_id": "1234567890"
+        }
+      }
+    ],
+    "intent": {
+      "name": "projects/project/agent/intents/58e5f75abf76",
+      "displayName": "DefaultFallbackIntent",
+      "isFallback": true
+    },
+    "intentDetectionConfidence": 1,
+    "languageCode": "en-US"
+  },
+  "originalDetectIntentRequest": {
+    "source": "facebook",
+    "payload": {
+      "data": {
+        "sender": {
+          "id": "1234567890"
+        },
+        "recipient": {
+          "id": "0987654321"
+        },
+        "message": {
+          "mid": "fzEyI3RxJTs9v4x_HA_eqQwa5KFsIqDWx4Fw8HckpidviaVPQ1bkVF2q9oLWjZZgNxWqV46LTXqn-FO9gV25Sg",
+          "text": "FACEBOOK_WELCOME",
+          "seq": 7066
+        },
+        "timestamp": 1546612826009
+      },
+      "source": "facebook"
+    }
+  },
+  "session": "projects/project/agent/sessions/99785bb9f088"
+}

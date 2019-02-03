@@ -30,9 +30,17 @@ import { DialogflowConversation } from "actions-on-google";
 import * as _ from "lodash";
 import { IBag, IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
-import { DialogFlowEvent } from "./DialogFlowEvent";
+import { DialogflowEvent } from "./DialogflowEvent";
 
-export interface IDialogFlowPayload {
+export interface IDialogflowPayload {
+  facebook?: {
+    attachment?: {
+      payload: any;
+      type: string;
+    };
+    quick_replies?: any[];
+    text?: any;
+  };
   google: {
     expectUserResponse: boolean;
     noInputPrompts?: any[];
@@ -47,38 +55,52 @@ export interface IDialogFlowPayload {
   };
 }
 
-export class DialogFlowReply implements IVoxaReply {
+export class DialogflowReply implements IVoxaReply {
   public outputContexts: GoogleCloudDialogflowV2Context[] = [];
   public fulfillmentText: string = "";
   public source: string = "google";
-  public payload: IDialogFlowPayload;
+  public payload: IDialogflowPayload;
 
   constructor(conv: DialogflowConversation) {
     this.payload = {
       google: {
         expectUserResponse: true,
         isSsml: true,
-        userStorage: conv.user.storage,
+        userStorage: {},
       },
     };
   }
 
   public async saveSession(attributes: IBag, event: IVoxaEvent): Promise<void> {
-    const dialogFlowEvent = event as DialogFlowEvent;
+    const dialogflowEvent = event as DialogflowEvent;
     const serializedData = JSON.stringify(attributes);
-    dialogFlowEvent.google.conv.contexts.set("attributes", 10000, {
+    dialogflowEvent.google.conv.contexts.set("attributes", 10000, {
       attributes: serializedData,
     });
 
-    this.outputContexts = dialogFlowEvent.google.conv.contexts._serialize();
+    this.outputContexts = dialogflowEvent.google.conv.contexts._serialize();
   }
 
-  public get speech() {
-    return this.fulfillmentText;
+  public get speech(): string {
+    const richResponse = this.payload.google.richResponse;
+    if (!richResponse) {
+      return "";
+    }
+
+    const simpleResponseItem = _.find(
+      richResponse.items,
+      (item) => !!item.simpleResponse,
+    );
+
+    if (!simpleResponseItem) {
+      return "";
+    }
+
+    return simpleResponseItem.simpleResponse!.textToSpeech || "";
   }
 
   public get hasMessages(): boolean {
-    return this.fulfillmentText !== "";
+    return !!this.getSimpleResponse().textToSpeech;
   }
 
   public get hasDirectives(): boolean {
@@ -112,10 +134,10 @@ export class DialogFlowReply implements IVoxaReply {
   }
 
   public addStatement(statement: string, isPlain: boolean = false) {
-    this.fulfillmentText = addToSSML(this.fulfillmentText, statement);
     const simpleResponse: GoogleActionsV2SimpleResponse = this.getSimpleResponse();
 
     if (isPlain) {
+      this.fulfillmentText = addToText(this.fulfillmentText, statement);
       simpleResponse.displayText = addToText(
         simpleResponse.displayText,
         statement,
