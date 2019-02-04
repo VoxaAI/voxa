@@ -28,7 +28,7 @@ import {
 } from "actions-on-google";
 import { expect } from "chai";
 import * as _ from "lodash";
-import { FacebookEvent, FacebookReply, GoogleAssistantReply } from "../../src/platforms/dialogflow";
+import { DialogflowReply, FacebookEvent, FacebookReply } from "../../src/platforms/dialogflow";
 
 /* tslint:disable-next-line:no-var-requires */
 const rawEvent = require("../requests/dialogflow/launchIntent.json");
@@ -87,11 +87,11 @@ describe("FacebookReply", () => {
   });
 });
 
-describe("GoogleAssistantReply", () => {
-  let reply: GoogleAssistantReply;
+describe("DialogflowReply", () => {
+  let reply: DialogflowReply;
 
   beforeEach(() => {
-    reply = new GoogleAssistantReply();
+    reply = new DialogflowReply();
   });
 
   describe("hasTerminated", () => {

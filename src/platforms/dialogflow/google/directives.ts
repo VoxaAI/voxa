@@ -276,7 +276,7 @@ export class Context implements IDirective {
     event: IVoxaEvent,
     transition: ITransition,
   ): Promise<void> {
-    const conv: DialogflowConversation = (event as DialogflowEvent).google.conv;
+    const conv: DialogflowConversation = (event as DialogflowEvent).dialogflow.conv;
     conv.contexts.set(
       this.contextConfig.name,
       this.contextConfig.lifespan,

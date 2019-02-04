@@ -153,7 +153,7 @@ describe("GoogleAssistantEvent", () => {
         PERMISSION: true,
       });
 
-      expect(event.google.conv.user.permissions).to.deep.equal(["NAME"]);
+      expect(event.dialogflow.conv.user.permissions).to.deep.equal(["NAME"]);
     });
 
     it("should extract the correct parameters from a datetimeIntent", () => {
@@ -202,7 +202,7 @@ describe("GoogleAssistantEvent", () => {
     it("should get the correct userId when present", () => {
       const event = new GoogleAssistantEvent(newSurfaceIntent, {});
       expect(event.user.id).to.equal("1527283153072");
-      expect(event.google.conv.user.storage).to.deep.equal({
+      expect(event.dialogflow.conv.user.storage).to.deep.equal({
         voxa: { userId: "1527283153072" },
       });
     });
@@ -210,7 +210,7 @@ describe("GoogleAssistantEvent", () => {
     it("should generate a new userId when missing", () => {
       const event = new GoogleAssistantEvent(confirmationIntent, {});
       expect(event.user.id).to.not.be.undefined;
-      expect(event.google.conv.user.storage).to.deep.equal({
+      expect(event.dialogflow.conv.user.storage).to.deep.equal({
         voxa: { userId: event.user.userId },
       });
     });

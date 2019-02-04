@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Copyright (c) 2019 Rain Agency <contact@rain.agency>
  * Author: Rain Agency <contact@rain.agency>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -26,7 +26,9 @@ import { ITransition } from "../../../StateMachine";
 import { VoxaApp } from "../../../VoxaApp";
 import { IVoxaEvent } from "../../../VoxaEvent";
 import { IVoxaReply } from "../../../VoxaReply";
-import { IVoxaPlatformConfig, VoxaPlatform } from "../../VoxaPlatform";
+import { IVoxaPlatformConfig } from "../../VoxaPlatform";
+import { DialogflowPlatform } from "../DialogflowPlatform";
+import { DialogflowReply } from "../DialogflowReply";
 import {
   AccountLinkingCard,
   BasicCard,
@@ -50,14 +52,12 @@ import {
   UpdatePermission,
 } from "./directives";
 import { GoogleAssistantEvent } from "./GoogleAssistantEvent";
-import { GoogleAssistantReply } from "./GoogleAssistantReply";
 
 export interface IGoogleAssistantPlatformConfig extends IVoxaPlatformConfig {
   clientId?: string; // id used to verify user's identify from Google Sign-In
 }
 
-export class GoogleAssistantPlatform extends VoxaPlatform {
-  public name = "dialogflow";
+export class GoogleAssistantPlatform extends DialogflowPlatform {
   protected EventClass = GoogleAssistantEvent;
 
   constructor(app: VoxaApp, config: IGoogleAssistantPlatformConfig = {}) {
@@ -66,7 +66,7 @@ export class GoogleAssistantPlatform extends VoxaPlatform {
   }
 
   protected getReply(event: GoogleAssistantEvent) {
-    return new GoogleAssistantReply();
+    return new DialogflowReply();
   }
 
   protected saveStorage(
@@ -74,8 +74,8 @@ export class GoogleAssistantPlatform extends VoxaPlatform {
     reply: IVoxaReply,
     transition: ITransition,
   ) {
-    const { conv } = (voxaEvent as GoogleAssistantEvent).google;
-    const dialogflowReply = reply as GoogleAssistantReply;
+    const { conv } = (voxaEvent as GoogleAssistantEvent).dialogflow;
+    const dialogflowReply = reply as DialogflowReply;
 
     if (_.isEmpty(conv.user.storage)) {
       dialogflowReply.payload.google.resetUserStorage = true;
@@ -92,6 +92,7 @@ export class GoogleAssistantPlatform extends VoxaPlatform {
       BrowseCarousel,
       Carousel,
       Confirmation,
+      Context,
       DateTime,
       DeepLink,
       LinkOutSuggestion,
@@ -106,7 +107,6 @@ export class GoogleAssistantPlatform extends VoxaPlatform {
       TransactionDecision,
       TransactionRequirements,
       UpdatePermission,
-      Context,
     ];
   }
 }

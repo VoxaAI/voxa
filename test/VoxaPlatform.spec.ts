@@ -37,8 +37,8 @@ import * as rp from "request-promise";
 import {
   AlexaPlatform,
   AlexaReply,
+  DialogflowReply,
   GoogleAssistantPlatform,
-  GoogleAssistantReply,
   VoxaApp,
 } from "../src";
 import { azureLog } from "../src/azure";
@@ -239,7 +239,7 @@ describe("VoxaPlatform", () => {
 
       const dialogfloweReply = (await dialogflowAction.execute(
         dialogflowLaunch,
-      )) as GoogleAssistantReply;
+      )) as DialogflowReply;
 
       expect(dialogfloweReply.speech).to.include("Hello from dialogflow");
     });
@@ -247,17 +247,17 @@ describe("VoxaPlatform", () => {
     it("should not modify the original transition in the state definition", async () => {
       let reply = (await dialogflowAction.execute(
         dialogflowLaunch,
-      )) as GoogleAssistantReply;
+      )) as DialogflowReply;
       expect(reply.speech).to.equal("<speak>Hello from dialogflow</speak>");
 
       reply = (await dialogflowAction.execute(
         dialogflowLaunch,
-      )) as GoogleAssistantReply;
+      )) as DialogflowReply;
       expect(reply.speech).to.equal("<speak>Hello from dialogflow</speak>");
 
       reply = (await dialogflowAction.execute(
         dialogflowLaunch,
-      )) as GoogleAssistantReply;
+      )) as DialogflowReply;
       expect(reply.speech).to.equal("<speak>Hello from dialogflow</speak>");
     });
   });

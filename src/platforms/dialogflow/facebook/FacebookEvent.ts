@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Copyright (c) 2019 Rain Agency <contact@rain.agency>
  * Author: Rain Agency <contact@rain.agency>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -20,50 +20,16 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { Context as AWSLambdaContext } from "aws-lambda";
-import { Context as AzureContext } from "azure-functions-ts-essentials";
-import { LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
-import { v1 } from "uuid";
-import { IVoxaUserProfile, VoxaEvent } from "../../../VoxaEvent";
-import { FacebookIntent } from "./FacebookIntent";
-import { FacebookSession } from "./FacebookSession";
+import { DialogflowEvent } from "../DialogflowEvent";
 
-export class FacebookEvent extends VoxaEvent {
+export class FacebookEvent extends DialogflowEvent {
 
   get supportedInterfaces(): string[] {
     // FACEBOOK MESSENGER DOES NOT HAVE SURFACES
     return [];
   }
-  public rawEvent!: any;
-  public session!: FacebookSession;
-  public intent: FacebookIntent;
   public source: string = "facebook";
-
-  constructor(
-    rawEvent: any,
-    logOptions?: LambdaLogOptions,
-    executionContext?: AWSLambdaContext | AzureContext,
-  ) {
-    super(rawEvent, logOptions, executionContext);
-
-    this.request = {
-      locale: _.get(rawEvent.queryResult, "languageCode") || "",
-      type: "IntentRequest",
-    };
-
-    this.intent = new FacebookIntent(rawEvent);
-  }
-
-  public async getUserInformation(): Promise<IVoxaUserProfile> {
-    // TODO: RETURN USER'S FACEBOOK INFORMATION
-    const userInformation: any = {};
-    return userInformation;
-  }
-
-  protected initSession(): void {
-    this.session = new FacebookSession(this.rawEvent);
-  }
 
   protected initUser(): void {
     const { originalDetectIntentRequest } = this.rawEvent;

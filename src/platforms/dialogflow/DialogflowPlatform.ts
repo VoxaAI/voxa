@@ -29,114 +29,20 @@ import { IVoxaReply } from "../../VoxaReply";
 import { IVoxaPlatformConfig, VoxaPlatform } from "../VoxaPlatform";
 import { DialogflowEvent } from "./DialogflowEvent";
 import { DialogflowReply } from "./DialogflowReply";
-import {
-  AccountLinkingCard,
-  BasicCard,
-  BrowseCarousel,
-  Carousel,
-  Confirmation,
-  Context,
-  DateTime,
-  DeepLink,
-  FACEBOOK_BUTTONS,
-  FACEBOOK_IMAGE_ASPECT_RATIO,
-  FACEBOOK_TOP_ELEMENT_STYLE,
-  FACEBOOK_WEBVIEW_HEIGHT_RATIO,
-  FacebookAccountLink,
-  FacebookAccountUnlink,
-  FacebookButtonTemplate,
-  FacebookCarousel,
-  FacebookList,
-  FacebookOpenGraphTemplate,
-  FacebookQuickReplyLocation,
-  FacebookQuickReplyPhoneNumber,
-  FacebookQuickReplyText,
-  FacebookQuickReplyUserEmail,
-  FacebookSuggestionChips,
-  IFacebookElementTemplate,
-  IFacebookGenericButtonTemplate,
-  IFacebookPayloadTemplate,
-  IFacebookQuickReply,
-  LinkOutSuggestion,
-  List,
-  MediaResponse,
-  NewSurface,
-  Permission,
-  Place,
-  RegisterUpdate,
-  Suggestions,
-  Table,
-  TransactionDecision,
-  TransactionRequirements,
-  UpdatePermission,
-} from "./index";
-
-export interface IDialogflowPlatformConfig extends IVoxaPlatformConfig {
-  clientId?: string; // id used to verify user's identify from Google Sign-In
-}
 
 export class DialogflowPlatform extends VoxaPlatform {
   public name = "dialogflow";
   protected EventClass = DialogflowEvent;
 
-  constructor(app: VoxaApp, config: IDialogflowPlatformConfig = {}) {
+  constructor(app: VoxaApp, config: IVoxaPlatformConfig = {}) {
     super(app, config);
-    app.onBeforeReplySent(this.saveStorage, true, this.name);
   }
 
   protected getReply(event: DialogflowEvent) {
-    return new DialogflowReply(event.google.conv);
-  }
-
-  protected saveStorage(
-    voxaEvent: IVoxaEvent,
-    reply: IVoxaReply,
-    transition: ITransition,
-  ) {
-    const { conv } = (voxaEvent as DialogflowEvent).google;
-    const dialogflowReply = reply as DialogflowReply;
-
-    if (_.isEmpty(conv.user.storage)) {
-      dialogflowReply.payload.google.resetUserStorage = true;
-      delete dialogflowReply.payload.google.userStorage;
-    } else {
-      dialogflowReply.payload.google.userStorage = conv.user._serialize();
-    }
+    return new DialogflowReply();
   }
 
   protected getDirectiveHandlers(): IDirectiveClass[] {
-    return [
-      AccountLinkingCard,
-      BasicCard,
-      BrowseCarousel,
-      Carousel,
-      Confirmation,
-      DateTime,
-      DeepLink,
-      FacebookAccountLink,
-      FacebookAccountUnlink,
-      FacebookButtonTemplate,
-      FacebookCarousel,
-      FacebookList,
-      FacebookOpenGraphTemplate,
-      FacebookQuickReplyLocation,
-      FacebookQuickReplyPhoneNumber,
-      FacebookQuickReplyText,
-      FacebookQuickReplyUserEmail,
-      FacebookSuggestionChips,
-      LinkOutSuggestion,
-      List,
-      MediaResponse,
-      Permission,
-      NewSurface,
-      Place,
-      RegisterUpdate,
-      Suggestions,
-      Table,
-      TransactionDecision,
-      TransactionRequirements,
-      UpdatePermission,
-      Context,
-    ];
+    return [];
   }
 }

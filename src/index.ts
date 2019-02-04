@@ -108,7 +108,6 @@ export {
   FacebookSuggestionChips,
   GoogleAssistantEvent,
   GoogleAssistantPlatform,
-  GoogleAssistantReply,
   IFacebookGenericButtonTemplate,
   IFacebookElementTemplate,
   IFacebookPayloadTemplate,

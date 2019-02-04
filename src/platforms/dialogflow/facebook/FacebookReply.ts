@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Copyright (c) 2019 Rain Agency <contact@rain.agency>
  * Author: Rain Agency <contact@rain.agency>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -23,8 +23,8 @@
 import * as _ from "lodash";
 import { IBag, IVoxaEvent } from "../../../VoxaEvent";
 import { addToSSML, addToText, IVoxaReply } from "../../../VoxaReply";
+import { DialogflowReply } from "../DialogflowReply";
 import { FacebookEvent } from "./FacebookEvent";
-import { FacebookSession, IFacebookContext } from "./FacebookSession";
 
 export interface IFacebookPayload {
   facebook: {
@@ -37,46 +37,35 @@ export interface IFacebookPayload {
   };
 }
 
-export class FacebookReply implements IVoxaReply {
-  public fulfillmentText: string = "";
-  public source: string = "facebook";
-  public outputContexts: IFacebookContext[];
-  public payload: IFacebookPayload;
-
-  constructor(event: FacebookEvent) {
-    this.payload = {
-      facebook: {},
-    };
-
-    this.outputContexts = event.session.contexts;
-  }
-
-  public async saveSession(attributes: IBag, event: IVoxaEvent): Promise<void> {
-    const serializedData = JSON.stringify(attributes);
-    let sessionContext = _.find(this.outputContexts,
-      (x) => _.endsWith(x.name, "attributes"));
-
-    if (!sessionContext) {
-      sessionContext = {
-        lifespanCount: 10000,
-        name: `${event.session.sessionId}/contexts/attributes`,
-        parameters: {
-          attributes: serializedData,
-        },
-      };
-
-      this.outputContexts.push(sessionContext);
-    } else {
-      sessionContext.parameters.attributes = serializedData;
-    }
-  }
+export class FacebookReply extends DialogflowReply {
 
   public get speech(): string {
     return this.payload.facebook.text || this.fulfillmentText;
   }
 
+  public get hasDirectives(): boolean {
+    const directives = this.getResponseDirectives();
+
+    return !_.isEmpty(directives);
+  }
+
   public get hasMessages(): boolean {
     return !!this.fulfillmentText;
+  }
+
+  public get hasTerminated(): boolean {
+    // WE CAN'T TERMINATE A SESSION IN FACEBOOK MESSENGER
+    return false;
+  }
+  public fulfillmentText: string = "";
+  public source: string = "facebook";
+  public payload: IFacebookPayload;
+
+  constructor(event: FacebookEvent) {
+    super();
+    this.payload = {
+      facebook: {},
+    };
   }
 
   public clear() {
@@ -94,26 +83,35 @@ export class FacebookReply implements IVoxaReply {
     }
   }
 
+  public hasDirective(type: string | RegExp): boolean {
+    if (!this.hasDirectives) {
+      return false;
+    }
+
+    const responseDirectives = this.getResponseDirectives();
+    if (_.includes(responseDirectives, type)) {
+      return true;
+    }
+
+    return false;
+  }
+
   public addReprompt(reprompt: string) {
     // FACEBOOK MESSENGER DOES NOT USE REPROMPTS
   }
 
-  public hasDirective(type: string | RegExp): boolean {
-    // FACEBOOK MESSENGER DOES NOT USE SURFACES
-    return false;
-  }
-
-  public get hasDirectives(): boolean {
-    // FACEBOOK MESSENGER DOES NOT USE SURFACES
-    return false;
-  }
-
-  public get hasTerminated(): boolean {
-    // WE CAN'T TERMINATE A SESSION IN FACEBOOK MESSENGER
-    return false;
-  }
-
   public terminate() {
     // WE CAN'T TERMINATE A SESSION IN FACEBOOK MESSENGER
+  }
+
+  protected getResponseDirectives(): string[] {
+    const quickRepliesKeys: string[] = _.map(this.payload.facebook.quick_replies, "content_type");
+    const templateType: string = _.get(this.payload.facebook, "attachment.payload.template_type");
+
+    return _.chain(quickRepliesKeys)
+      .concat(templateType)
+      .uniq()
+      .compact()
+      .value();
   }
 }

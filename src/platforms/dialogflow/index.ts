@@ -6,7 +6,6 @@ export { FacebookPlatform } from "./facebook/FacebookPlatform";
 export { FacebookReply } from "./facebook/FacebookReply";
 export { GoogleAssistantEvent, IVoxaGoogleUserProfile } from "./google/GoogleAssistantEvent";
 export { GoogleAssistantPlatform, IGoogleAssistantPlatformConfig } from "./google/GoogleAssistantPlatform";
-export { GoogleAssistantReply } from "./google/GoogleAssistantReply";
 export {
   AccountLinkingCard,
   BasicCard,

@@ -22,10 +22,10 @@
 
 import { expect } from "chai";
 import {
+  DialogflowReply,
   FacebookPlatform,
   FacebookReply,
   GoogleAssistantPlatform,
-  GoogleAssistantReply,
 } from "../../src";
 import { VoxaApp } from "../../src/VoxaApp";
 import { views } from "../views";
@@ -77,7 +77,7 @@ describe("GoogleAssistantPlatform", () => {
 
       const platform = new GoogleAssistantPlatform(voxaApp);
 
-      const reply = (await platform.execute(rawEvent)) as GoogleAssistantReply;
+      const reply = (await platform.execute(rawEvent)) as DialogflowReply;
       expect(reply.speech).to.equal("<speak>Hello from Dialogflow</speak>");
     });
 
@@ -92,7 +92,7 @@ describe("GoogleAssistantPlatform", () => {
 
       const platform = new GoogleAssistantPlatform(voxaApp);
 
-      const reply = (await platform.execute(rawEvent)) as GoogleAssistantReply;
+      const reply = (await platform.execute(rawEvent)) as DialogflowReply;
       expect(reply.speech).to.equal("<speak>This is the help</speak>");
       expect(reply.payload.google.expectUserResponse).to.be.true;
     });

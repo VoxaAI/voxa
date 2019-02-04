@@ -6,6 +6,7 @@ import * as _ from "lodash";
 import "mocha";
 
 import {
+  DialogflowReply,
   FACEBOOK_BUTTONS,
   FACEBOOK_IMAGE_ASPECT_RATIO,
   FACEBOOK_TOP_ELEMENT_STYLE,
@@ -18,7 +19,6 @@ import {
   FacebookTemplateBuilder,
   GoogleAssistantEvent,
   GoogleAssistantPlatform,
-  GoogleAssistantReply,
   IFacebookGenericButtonTemplate,
   IFacebookPayloadTemplate,
   IFacebookQuickReply,
@@ -143,7 +143,7 @@ describe("Google Assistant Directives", () => {
     });
 
     it("should throw an error if trying to add a MediaResponse without a simpleResponse first", async () => {
-      const reply = new GoogleAssistantReply();
+      const reply = new DialogflowReply();
       const googleAssistantEvent = new GoogleAssistantEvent(event);
       const mediaResponse = new MediaResponse(mediaObject);
 

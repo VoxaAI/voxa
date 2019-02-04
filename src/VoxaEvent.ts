@@ -86,14 +86,6 @@ export abstract class VoxaEvent implements IVoxaEvent {
     this.initLogger(logOptions);
   }
 
-  /*public abstract async getUserInformation(): Promise<IVoxaUserProfile> {
-    if (this.platform.name === "dialogflow") {
-      return await this.getUserInformationWithGoogle();
-    }
-
-    return await this.getUserInformationWithLWA();
-  }*/
-
   public abstract async getUserInformation(): Promise<IVoxaUserProfile>;
   protected abstract initSession(): void;
   protected abstract initUser(): void;

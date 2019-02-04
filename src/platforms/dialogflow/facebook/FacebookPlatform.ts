@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Copyright (c) 2019 Rain Agency <contact@rain.agency>
  * Author: Rain Agency <contact@rain.agency>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -22,7 +22,7 @@
 
 import * as _ from "lodash";
 import { IDirectiveClass } from "../../../directives";
-import { VoxaPlatform } from "../../VoxaPlatform";
+import { DialogflowPlatform } from "../DialogflowPlatform";
 import {
   FACEBOOK_BUTTONS,
   FACEBOOK_IMAGE_ASPECT_RATIO,
@@ -47,8 +47,7 @@ import {
 import { FacebookEvent } from "./FacebookEvent";
 import { FacebookReply } from "./FacebookReply";
 
-export class FacebookPlatform extends VoxaPlatform {
-  public name = "dialogflow";
+export class FacebookPlatform extends DialogflowPlatform {
   protected EventClass = FacebookEvent;
 
   protected getReply(event: FacebookEvent) {
