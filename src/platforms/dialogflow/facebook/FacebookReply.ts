@@ -23,10 +23,10 @@
 import * as _ from "lodash";
 import { IBag, IVoxaEvent } from "../../../VoxaEvent";
 import { addToSSML, addToText, IVoxaReply } from "../../../VoxaReply";
-import { DialogflowReply } from "../DialogflowReply";
+import { DialogflowReply, IDialogflowPayload } from "../DialogflowReply";
 import { FacebookEvent } from "./FacebookEvent";
 
-export interface IFacebookPayload {
+export interface IFacebookPayload extends IDialogflowPayload {
   facebook: {
     attachment?: {
       payload: any;

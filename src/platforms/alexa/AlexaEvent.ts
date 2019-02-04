@@ -30,7 +30,7 @@ import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
 import { LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
-import * as rp from "request-promise";
+import rp = require("request-promise");
 
 import { IVoxaIntent, IVoxaUserProfile, VoxaEvent } from "../../VoxaEvent";
 import { AlexaIntent } from "./AlexaIntent";

@@ -40,6 +40,11 @@ export interface IDialogflow {
 }
 
 export class DialogflowEvent extends VoxaEvent {
+  // DEPRECATED: INSTEAD USE dialogflow
+  get google() {
+    return this.dialogflow;
+  }
+
   public rawEvent!: GoogleCloudDialogflowV2WebhookRequest;
   public session!: DialogflowSession;
   public dialogflow!: IDialogflow;

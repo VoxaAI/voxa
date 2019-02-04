@@ -32,6 +32,11 @@ import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 import { DialogflowEvent } from "./DialogflowEvent";
 
 export interface IDialogflowPayload {
+  facebook?: any;
+  google?: any;
+}
+
+export interface IGooglePayload extends IDialogflowPayload {
   google: {
     expectUserResponse: boolean;
     noInputPrompts?: any[];
@@ -50,7 +55,7 @@ export class DialogflowReply implements IVoxaReply {
   public outputContexts: GoogleCloudDialogflowV2Context[] = [];
   public fulfillmentText: string = "";
   public source: string = "google";
-  public payload: any;
+  public payload: IDialogflowPayload;
 
   constructor() {
     this.payload = {
