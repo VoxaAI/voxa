@@ -41,7 +41,7 @@ describe("FacebookReply", () => {
     reply = new FacebookReply(new FacebookEvent({
       queryResult: {
         intent: {
-          displayName: 'LaunchIntent',
+          displayName: "LaunchIntent",
         },
       },
     }));
