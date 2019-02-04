@@ -21,6 +21,6 @@ export function createServer(skill: VoxaPlatform): http.Server {
       }
     });
 
-    return res.writeHead(200, { "Content-Type": "application/json" });
+    return res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
   });
 }
