@@ -1,3 +1,6 @@
+export { DialogflowEvent } from "./DialogflowEvent";
+export { DialogflowReply } from "./DialogflowReply";
+export { DialogflowPlatform } from "./DialogflowPlatform";
 export { FacebookEvent } from "./facebook/FacebookEvent";
 export { FacebookPlatform } from "./facebook/FacebookPlatform";
 export { FacebookReply } from "./facebook/FacebookReply";
