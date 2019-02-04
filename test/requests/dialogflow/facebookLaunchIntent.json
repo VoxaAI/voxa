@@ -16,7 +16,7 @@
     ],
     "intent": {
       "name": "projects/project/agent/intents/58e5f75abf76",
-      "displayName": "DefaultFallbackIntent",
+      "displayName": "LaunchIntent",
       "isFallback": true
     },
     "intentDetectionConfidence": 1,
