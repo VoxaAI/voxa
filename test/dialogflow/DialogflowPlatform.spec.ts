@@ -23,12 +23,47 @@
 import { expect } from "chai";
 import {
   DialogflowReply,
+  DialogflowPlatform,
   FacebookPlatform,
   FacebookReply,
   GoogleAssistantPlatform,
 } from "../../src";
 import { VoxaApp } from "../../src/VoxaApp";
 import { views } from "../views";
+
+describe("DialogflowPlatform", () => {
+  describe("execute", () => {
+    it("should convert the voxaReply to a Dialog Flow response", async () => {
+      const rawEvent = require("../requests/dialogflow/launchIntent.json");
+      const voxaApp = new VoxaApp({ views });
+
+      voxaApp.onIntent("LaunchIntent", () => ({
+        say: "LaunchIntent.OpenResponse",
+      }));
+
+      const platform = new DialogflowPlatform(voxaApp);
+
+      const reply = (await platform.execute(rawEvent)) as DialogflowReply;
+      expect(reply.speech).to.equal("<speak>Hello from Dialogflow</speak>");
+    });
+
+    it("should not close the session on Help Intent", async () => {
+      const rawEvent = require("../requests/dialogflow/helpIntent.json");
+      const voxaApp = new VoxaApp({ views });
+
+      voxaApp.onIntent("HelpIntent", {
+        ask: "Help",
+        to: "entry",
+      });
+
+      const platform = new DialogflowPlatform(voxaApp);
+
+      const reply = (await platform.execute(rawEvent)) as DialogflowReply;
+      expect(reply.speech).to.equal("<speak>This is the help</speak>");
+      expect(reply.payload.google.expectUserResponse).to.be.true;
+    });
+  });
+});
 
 describe("FacebookPlatform", () => {
   describe("execute", () => {

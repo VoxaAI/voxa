@@ -47,6 +47,28 @@ describe("FacebookReply", () => {
     }));
   });
 
+  describe("hasTerminated", () => {
+    it("should return false for a new reply", () => {
+      expect(reply.hasTerminated).to.be.false;
+    });
+
+    it("should return true after a call to reply.terminate", () => {
+      reply.terminate();
+      expect(reply.hasTerminated).to.be.false;
+    });
+  });
+
+  describe("hasDirectives", () => {
+    it("should return false for a new reply", () => {
+      expect(reply.hasDirectives).to.be.false;
+    });
+
+    it("should return false for a reply with just a simple response", () => {
+      reply.addStatement("Hello World");
+      expect(reply.hasDirectives).to.be.false;
+    });
+  });
+
   describe("speech", () => {
     it("should return an empty string for a new reply", () => {
       expect(reply.speech).to.equal("");
@@ -70,6 +92,13 @@ describe("FacebookReply", () => {
       expect(reply.payload.facebook.text).to.equal("THIS IS A TEST");
       expect(reply.fulfillmentText).to.equal("THIS IS A TEST");
       expect(reply.speech).to.equal("THIS IS A TEST");
+    });
+
+    it("should not add speech", () => {
+      reply.addStatement("THIS IS A TEST");
+      expect(reply.payload.facebook.text).to.be.undefined;
+      expect(reply.fulfillmentText).to.equal("");
+      expect(reply.speech).to.equal("");
     });
   });
 

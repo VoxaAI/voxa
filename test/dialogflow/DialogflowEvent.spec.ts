@@ -3,6 +3,7 @@ import * as _ from "lodash";
 import * as simple from "simple-mock";
 
 import {
+  DialogflowEvent,
   FacebookEvent,
   FacebookPlatform,
   GoogleAssistantEvent,
@@ -48,15 +49,45 @@ const slotsIntent = require("../requests/dialogflow/slots.json");
 /* tslint:disable-next-line:no-var-requires */
 const newSurfaceIntent = require("../requests/dialogflow/actions.intent.NEW_SURFACE.json");
 
+describe("DialogflowEvent", () => {
+  describe("General Platform Integrations", () => {
+    it("should get the right userId", async () => {
+      const event = new DialogflowEvent(launchIntent, {});
+      expect(event.user.id).to.equal("ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y");
+    });
+
+    it("should get the right source", async () => {
+      const event = new DialogflowEvent(launchIntent, {});
+      expect(event.source).to.equal("dialogflow");
+    });
+
+    it("should return supported capabilities", () => {
+      const event = new DialogflowEvent(launchIntent, {});
+      expect(event.supportedInterfaces).to.deep.equal([
+        "actions.capability.AUDIO_OUTPUT",
+        "actions.capability.SCREEN_OUTPUT",
+        "actions.capability.MEDIA_RESPONSE_AUDIO",
+        "actions.capability.WEB_BROWSER",
+      ]);
+    });
+  });
+});
+
 describe("FacebookEvent", () => {
   describe("Facebook Messenger", () => {
     it("should get the right userId for Facebook Messenger", async () => {
       const event = new FacebookEvent(facebookLaunchIntent, {});
       expect(event.user.id).to.equal("1234567890");
     });
+
     it("should get the right source for Facebook Messenger", async () => {
       const event = new FacebookEvent(facebookLaunchIntent, {});
       expect(event.source).to.equal("facebook");
+    });
+
+    it("should return supported capabilities", () => {
+      const event = new FacebookEvent(facebookLaunchIntent, {});
+      expect(event.supportedInterfaces).to.deep.equal([]);
     });
   });
 });

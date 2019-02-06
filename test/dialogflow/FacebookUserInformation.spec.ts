@@ -67,6 +67,11 @@ describe("FacebookUserInformation", () => {
       .reply(
          200,
          JSON.stringify(userInfo),
+       )
+      .get(`/${recipient.id}?fields=${FACEBOOK_USER_FIELDS.NAME},${FACEBOOK_USER_FIELDS.TIMEZONE}&access_token=accessToken`)
+      .reply(
+         200,
+         JSON.stringify(userInfo),
        );
   });
 
@@ -74,7 +79,7 @@ describe("FacebookUserInformation", () => {
     nock.cleanAll();
   });
 
-  it("should get full contact information and send Facebook Actions", async () => {
+  it("should get full contact information and send all Facebook Actions", async () => {
     app.onIntent(
       "LaunchIntent",
       async (voxaEvent: FacebookEvent) => {
@@ -83,6 +88,40 @@ describe("FacebookUserInformation", () => {
         await voxaEvent.sendTypingOffAction();
 
         const info = await voxaEvent.getUserInformation(FACEBOOK_USER_FIELDS.ALL);
+
+        voxaEvent.model.info = info;
+        return {
+          flow: "terminate",
+          text: "Facebook.User.FullInfo",
+          to: "die",
+        };
+      },
+    );
+
+    const reply = await facebookBot.execute(event);
+    const outputSpeech = "Nice to meet you John Doe!";
+
+    let sessionAttributes = _.find(reply.outputContexts, (x) => _.endsWith(x.name, "attributes"));
+    sessionAttributes = JSON.parse(sessionAttributes.parameters.attributes);
+
+    expect(reply.payload.facebook.text).to.equal(outputSpeech);
+    expect(sessionAttributes.state).to.equal("die");
+  });
+
+  it("should get full contact information and send an array of Facebook Actions", async () => {
+    app.onIntent(
+      "LaunchIntent",
+      async (voxaEvent: FacebookEvent) => {
+        await voxaEvent.sendMarkSeenAction();
+        await voxaEvent.sendTypingOnAction();
+        await voxaEvent.sendTypingOffAction();
+
+        const actionsArray: FACEBOOK_USER_FIELDS[] = [
+          FACEBOOK_USER_FIELDS.NAME,
+          FACEBOOK_USER_FIELDS.TIMEZONE,
+        ];
+
+        const info = await voxaEvent.getUserInformation(actionsArray);
 
         voxaEvent.model.info = info;
         return {

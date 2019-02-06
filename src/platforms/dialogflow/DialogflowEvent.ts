@@ -49,6 +49,7 @@ export class DialogflowEvent extends VoxaEvent {
   public session!: DialogflowSession;
   public dialogflow!: IDialogflow;
   public intent: DialogflowIntent;
+  public source: string = "dialogflow";
 
   constructor(
     rawEvent: GoogleCloudDialogflowV2WebhookRequest,
