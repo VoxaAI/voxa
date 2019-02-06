@@ -62,13 +62,20 @@ describe("FacebookUserInformation", () => {
 
     mockFacebookActions();
 
+    const actionsArray: FACEBOOK_USER_FIELDS[] = [
+      FACEBOOK_USER_FIELDS.NAME,
+      FACEBOOK_USER_FIELDS.TIMEZONE,
+    ];
+
     nock("https://graph.facebook.com")
       .get(`/${recipient.id}?fields=${FACEBOOK_USER_FIELDS.ALL}&access_token=accessToken`)
       .reply(
-         200,
-         JSON.stringify(userInfo),
-       )
-      .get(`/${recipient.id}?fields=${FACEBOOK_USER_FIELDS.NAME},${FACEBOOK_USER_FIELDS.TIMEZONE}&access_token=accessToken`)
+        200,
+        JSON.stringify(userInfo),
+      )
+      .get(
+        `/${recipient.id}?fields=${_.join(actionsArray, ",")}&access_token=accessToken`,
+      )
       .reply(
          200,
          JSON.stringify(userInfo),

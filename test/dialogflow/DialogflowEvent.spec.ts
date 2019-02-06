@@ -53,7 +53,10 @@ describe("DialogflowEvent", () => {
   describe("General Platform Integrations", () => {
     it("should get the right userId", async () => {
       const event = new DialogflowEvent(launchIntent, {});
-      expect(event.user.id).to.equal("ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y");
+      /* tslint:disable-next-line:max-line-length */
+      expect(event.user.id).to.equal(
+        "ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y",
+      );
     });
 
     it("should get the right source", async () => {

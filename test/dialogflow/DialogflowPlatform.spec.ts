@@ -22,8 +22,8 @@
 
 import { expect } from "chai";
 import {
-  DialogflowReply,
   DialogflowPlatform,
+  DialogflowReply,
   FacebookPlatform,
   FacebookReply,
   GoogleAssistantPlatform,
