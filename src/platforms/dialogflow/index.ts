@@ -1,8 +1,13 @@
 export { DialogflowEvent } from "./DialogflowEvent";
 export { DialogflowReply } from "./DialogflowReply";
 export { DialogflowPlatform } from "./DialogflowPlatform";
-export { FacebookEvent } from "./facebook/FacebookEvent";
-export { FacebookPlatform } from "./facebook/FacebookPlatform";
+export {
+  FACEBOOK_ACTIONS,
+  FacebookEvent,
+  FACEBOOK_USER_FIELDS,
+  IVoxaFacebookUserProfile,
+} from "./facebook/FacebookEvent";
+export { FacebookPlatform, IFacebookPlatformConfig } from "./facebook/FacebookPlatform";
 export { FacebookReply } from "./facebook/FacebookReply";
 export { GoogleAssistantEvent, IVoxaGoogleUserProfile } from "./google/GoogleAssistantEvent";
 export { GoogleAssistantPlatform, IGoogleAssistantPlatformConfig } from "./google/GoogleAssistantPlatform";

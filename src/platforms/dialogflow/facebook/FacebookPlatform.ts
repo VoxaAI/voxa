@@ -22,6 +22,8 @@
 
 import * as _ from "lodash";
 import { IDirectiveClass } from "../../../directives";
+import { VoxaApp } from "../../../VoxaApp";
+import { IVoxaPlatformConfig } from "../../VoxaPlatform";
 import { DialogflowPlatform } from "../DialogflowPlatform";
 import {
   FACEBOOK_BUTTONS,
@@ -47,8 +49,16 @@ import {
 import { FacebookEvent } from "./FacebookEvent";
 import { FacebookReply } from "./FacebookReply";
 
+export interface IFacebookPlatformConfig extends IVoxaPlatformConfig {
+  pageAccessToken?: string; // Facebok Page Access Token
+}
+
 export class FacebookPlatform extends DialogflowPlatform {
   protected EventClass = FacebookEvent;
+
+  constructor(app: VoxaApp, config: IFacebookPlatformConfig = {}) {
+    super(app, config);
+  }
 
   protected getReply(event: FacebookEvent) {
     return new FacebookReply(event);
