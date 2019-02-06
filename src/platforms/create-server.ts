@@ -19,6 +19,7 @@ export function createServer(skill: VoxaPlatform): http.Server {
           "Content-Length": Buffer.byteLength(json),
           "Content-Type": "application/json; charset=utf-8",
         });
+
         res.end(json);
       } catch (error) {
         console.error(error);
@@ -27,10 +28,9 @@ export function createServer(skill: VoxaPlatform): http.Server {
           "Content-Length": Buffer.byteLength(json),
           "Content-Type": "application/json; charset=utf-8",
         });
+
         res.end(json);
       }
     });
-
-    return res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
   });
 }
