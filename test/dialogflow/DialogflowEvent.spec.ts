@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import * as _ from "lodash";
 import * as simple from "simple-mock";
+import { OAuth2Client } from "google-auth-library";
 
 import {
   DialogflowEvent,
@@ -288,9 +289,14 @@ describe("GoogleAssistantEvent", () => {
       googleAction = new GoogleAssistantPlatform(voxaApp, { clientId: "clientId" });
 
       const userDetailsMocked: any = _.cloneDeep(googleResponse);
+
       simple
-        .mock(GoogleAssistantEvent.prototype, "verifyProfile")
-        .resolveWith(userDetailsMocked);
+        .mock(OAuth2Client.prototype, "verifySignedJwtWithCerts")
+        .returnWith({
+          getPayload: () => {
+            return userDetailsMocked;
+          }
+        });
     });
 
     afterEach(() => {
