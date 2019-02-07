@@ -58,6 +58,30 @@ describe("FacebookReply", () => {
     });
   });
 
+  describe("hasDirective", () => {
+    it("should return false for a new reply", () => {
+      expect(reply.hasDirective("whatever")).to.be.false;
+    });
+
+    it("should return false for a reply with a directive not found", () => {
+      reply.payload.facebook.quick_replies = [
+        {
+          content_type: "Email",
+        },
+      ];
+      expect(reply.hasDirective("Location")).to.be.false;
+    });
+
+    it("should return true for a reply with a directive", () => {
+      reply.payload.facebook.quick_replies = [
+        {
+          content_type: "Location",
+        },
+      ];
+      expect(reply.hasDirective("Location")).to.be.true;
+    });
+  });
+
   describe("hasDirectives", () => {
     it("should return false for a new reply", () => {
       expect(reply.hasDirectives).to.be.false;
