@@ -1,7 +1,7 @@
 import { expect } from "chai";
+import { OAuth2Client } from "google-auth-library";
 import * as _ from "lodash";
 import * as simple from "simple-mock";
-import { OAuth2Client } from "google-auth-library";
 
 import {
   DialogflowEvent,
@@ -295,7 +295,7 @@ describe("GoogleAssistantEvent", () => {
         .returnWith({
           getPayload: () => {
             return userDetailsMocked;
-          }
+          },
         });
     });
 
