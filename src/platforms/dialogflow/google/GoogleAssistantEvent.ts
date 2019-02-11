@@ -23,6 +23,7 @@
 import { OAuth2Client } from "google-auth-library";
 import { TokenPayload } from "google-auth-library/build/src/auth/loginticket";
 import * as _ from "lodash";
+import { v1 } from "uuid";
 
 import { IVoxaUserProfile } from "../../../VoxaEvent";
 import { DialogflowEvent } from "../DialogflowEvent";
@@ -61,6 +62,32 @@ export class GoogleAssistantEvent extends DialogflowEvent {
     delete result.given_name;
 
     return result as IVoxaGoogleUserProfile;
+  }
+
+  /**
+   * conv.user.id is a deprecated feature that will be removed soon
+   * this makes it so skills using voxa are future proof
+   *
+   * We use conv.user.id if it's available, but we store it in userStorage,
+   * If there's no conv.user.id we generate a uuid.v1 and store it in userStorage
+   *
+   * After that we'll default to the userStorage value
+   */
+  protected getUserId(conv: any): string {
+    const storage = conv.user.storage as any;
+    let userId: string = "";
+
+    if (conv.user.id) {
+      userId = conv.user.id;
+    } else if (_.get(storage, "voxa.userId")) {
+      userId = storage.voxa.userId;
+    } else {
+      userId = v1();
+    }
+
+    _.set(this.dialogflow.conv.user.storage, "voxa.userId", userId);
+
+    return userId;
   }
 }
 

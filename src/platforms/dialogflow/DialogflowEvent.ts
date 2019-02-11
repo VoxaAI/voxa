@@ -81,6 +81,17 @@ export class DialogflowEvent extends VoxaEvent {
     this.session = new DialogflowSession(this.dialogflow.conv);
   }
 
+  protected initUser(): void {
+    const { conv } = this.dialogflow;
+    const userId: string = this.getUserId(conv);
+
+    this.user = {
+      accessToken: conv.user.access.token,
+      id: userId,
+      userId,
+    };
+  }
+
   /**
    * conv.user.id is a deprecated feature that will be removed soon
    * this makes it so skills using voxa are future proof
@@ -90,27 +101,16 @@ export class DialogflowEvent extends VoxaEvent {
    *
    * After that we'll default to the userStorage value
    */
-  protected initUser(): void {
-    const { originalDetectIntentRequest } = this.rawEvent;
-    const { conv } = this.dialogflow;
-    const storage = conv.user.storage as any;
+  protected getUserId(conv: any): string {
     let userId: string = "";
 
     if (conv.user.id) {
       userId = conv.user.id;
-    } else if (_.get(storage, "voxa.userId")) {
-      userId = storage.voxa.userId;
     } else {
       userId = v1();
     }
 
-    _.set(this.dialogflow.conv.user.storage, "voxa.userId", userId);
-
-    this.user = {
-      accessToken: conv.user.access.token,
-      id: userId,
-      userId,
-    };
+    return userId;
   }
 
   get supportedInterfaces(): string[] {
