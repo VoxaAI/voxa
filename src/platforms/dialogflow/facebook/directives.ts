@@ -192,8 +192,17 @@ export class FacebookAccountLink implements IDirective {
       renderedUrl = this.url;
     }
 
+    const { fulfillmentText } = dialogflowReply;
+    const facebookPayload = this.getFacebookPayload(renderedUrl, fulfillmentText);
+
     dialogflowReply.source = "facebook";
-    dialogflowReply.payload.facebook = {
+    dialogflowReply.payload.facebook = facebookPayload;
+  }
+
+  private getFacebookPayload(
+    renderedUrl: string, fulfillmentText: string,
+  ) {
+    return {
       attachment: {
         payload: {
           buttons: [
@@ -203,7 +212,7 @@ export class FacebookAccountLink implements IDirective {
             },
           ],
           template_type: "button",
-          text: dialogflowReply.fulfillmentText,
+          text: fulfillmentText,
         },
         type: "template",
       },
@@ -251,6 +260,25 @@ export class FacebookSuggestionChips implements IDirective {
     event: IVoxaEvent,
     transition: ITransition,
   ): Promise<void> {
+    const suggestionChips: any[] = await this.getSuggestionChips(event);
+    const dialogflowReply = reply as FacebookReply;
+
+    dialogflowReply.source = "facebook";
+    dialogflowReply.payload.facebook = {
+      attachment: {
+        payload: {
+          buttons: suggestionChips,
+          template_type: "button",
+          text: dialogflowReply.fulfillmentText,
+        },
+        type: "template",
+      },
+    };
+  }
+
+  private async getSuggestionChips(
+    event: IVoxaEvent,
+  ): Promise<string[]> {
     let options = this.suggestions;
 
     if (_.isString(options)) {
@@ -269,19 +297,7 @@ export class FacebookSuggestionChips implements IDirective {
       suggestionChips.push(button);
     });
 
-    const dialogflowReply = reply as FacebookReply;
-
-    dialogflowReply.source = "facebook";
-    dialogflowReply.payload.facebook = {
-      attachment: {
-        payload: {
-          buttons: suggestionChips,
-          template_type: "button",
-          text: dialogflowReply.fulfillmentText,
-        },
-        type: "template",
-      },
-    };
+    return suggestionChips;
   }
 }
 

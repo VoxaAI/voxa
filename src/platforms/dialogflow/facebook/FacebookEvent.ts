@@ -37,8 +37,6 @@ export class FacebookEvent extends DialogflowEvent {
   public async getUserInformation(
     userFields?: FACEBOOK_USER_FIELDS|FACEBOOK_USER_FIELDS[],
   ): Promise<IVoxaFacebookUserProfile> {
-    const voxaEvent: any = _.cloneDeep(this);
-    const dialogflowUser = this.dialogflow.conv.user;
     let fields: string = FACEBOOK_USER_FIELDS.BASIC;
 
     if (_.isArray(userFields)) {
@@ -47,18 +45,7 @@ export class FacebookEvent extends DialogflowEvent {
       fields = userFields.toString();
     }
 
-    const params = [
-      `fields=${fields}`,
-      `access_token=${this.platform.config.pageAccessToken}`,
-    ];
-
-    const httpOptions: any = {
-      json: true,
-      method: "GET",
-      uri: `https://graph.facebook.com/${this.user.id}?${_.join(params, "&")}`,
-    };
-
-    const result: any = await rp(httpOptions);
+    const result: any = await this.getFacebookProfile(fields);
 
     result.firstName = result.first_name;
     result.lastName = result.last_name;
@@ -105,6 +92,21 @@ export class FacebookEvent extends DialogflowEvent {
       id: userId,
       userId,
     };
+  }
+
+  private getFacebookProfile(userFields: string) {
+    const params = [
+      `fields=${userFields}`,
+      `access_token=${this.platform.config.pageAccessToken}`,
+    ];
+
+    const httpOptions: any = {
+      json: true,
+      method: "GET",
+      uri: `https://graph.facebook.com/${this.user.id}?${_.join(params, "&")}`,
+    };
+
+    return rp(httpOptions);
   }
 }
 

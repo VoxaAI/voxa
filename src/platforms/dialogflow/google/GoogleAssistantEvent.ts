@@ -28,17 +28,6 @@ import { IVoxaUserProfile } from "../../../VoxaEvent";
 import { DialogflowEvent } from "../DialogflowEvent";
 
 export class GoogleAssistantEvent extends DialogflowEvent {
-
-  get supportedInterfaces(): string[] {
-    let capabilities = _.map(
-      this.dialogflow.conv.surface.capabilities.list,
-      "name",
-    );
-    capabilities = _.filter(capabilities);
-
-    return capabilities as string[];
-  }
-
   public source: string = "google";
 
   public async verifyProfile(): Promise<TokenPayload | undefined> {
