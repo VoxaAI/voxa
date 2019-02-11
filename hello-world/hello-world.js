@@ -28,7 +28,7 @@ try {
 }
 
 const VoxaApp = voxa.VoxaApp;
-const DialogflowPlatform = voxa.DialogflowPlatform;
+const GoogleAssistantPlatform = voxa.GoogleAssistantPlatform;
 const AlexaPlatform = voxa.AlexaPlatform;
 
 const views = require("./views.json");
@@ -76,13 +76,13 @@ app.onIntent("UserIdIntent", voxaEvent => {
 
 const alexaSkill = new AlexaPlatform(app);
 
-const dialogflowAction = new DialogflowPlatform(app);
+const googleAssistantAction = new GoogleAssistantPlatform(app);
 
 module.exports = {
   alexaSkill,
   alexaLambdaHandler: alexaSkill.lambda(),
   alexaLambdaHTTPHandler: alexaSkill.lambdaHTTP(),
-  dialogflowAction: dialogflowAction,
-  dialogflowActionLambdaHandler: dialogflowAction.lambda(),
-  dialogflowActionLambdaHTTPHandler: dialogflowAction.lambdaHTTP()
+  googleAssistantAction: googleAssistantAction,
+  googleAssistantActionLambdaHandler: googleAssistantAction.lambda(),
+  googleAssistantActionLambdaHTTPHandler: googleAssistantAction.lambdaHTTP()
 };

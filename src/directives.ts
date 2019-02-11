@@ -87,12 +87,12 @@ export class Ask implements IDirective {
       if (!statement.ask) {
         reply.addStatement(sampleOrItem(statement, event.platform));
       } else {
-        this.addSttementToReply(statement, reply, event);
+        this.addStatementToReply(statement, reply, event);
       }
     }
   }
 
-  private addSttementToReply(
+  private addStatementToReply(
     statement: IAskStatement,
     reply: IVoxaReply,
     event: IVoxaEvent,

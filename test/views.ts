@@ -210,6 +210,12 @@ export const views = {
           facebookSuggestionChips: ["Suggestion 1", "Suggestion 2"],
           text: "Pick a suggestion",
         },
+        User: {
+          FullInfo:
+            "Nice to meet you {name}!",
+          PermissionNotGranted:
+            "To get the user's info, go to your Alexa app and grant permission to the skill.",
+        },
       },
       Help: "This is the help",
       HelpIntent: {

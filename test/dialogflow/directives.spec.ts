@@ -6,8 +6,6 @@ import * as _ from "lodash";
 import "mocha";
 
 import {
-  DialogflowEvent,
-  DialogflowPlatform,
   DialogflowReply,
   FACEBOOK_BUTTONS,
   FACEBOOK_IMAGE_ASPECT_RATIO,
@@ -15,8 +13,12 @@ import {
   FACEBOOK_WEBVIEW_HEIGHT_RATIO,
   FacebookButtonTemplateBuilder,
   FacebookElementTemplateBuilder,
+  FacebookEvent,
+  FacebookPlatform,
   FacebookQuickReplyText,
   FacebookTemplateBuilder,
+  GoogleAssistantEvent,
+  GoogleAssistantPlatform,
   IFacebookGenericButtonTemplate,
   IFacebookPayloadTemplate,
   IFacebookQuickReply,
@@ -26,10 +28,10 @@ import { VoxaApp } from "../../src/VoxaApp";
 import { variables } from "./../variables";
 import { views } from "./../views";
 
-describe("Dialogflow Directives", () => {
+describe("Google Assistant Directives", () => {
   let event: any;
   let app: VoxaApp;
-  let dialogflowAgent: DialogflowPlatform;
+  let dialogflowAgent: GoogleAssistantPlatform;
 
   before(() => {
     i18n.init({
@@ -41,7 +43,7 @@ describe("Dialogflow Directives", () => {
 
   beforeEach(() => {
     app = new VoxaApp({ views, variables });
-    dialogflowAgent = new DialogflowPlatform(app);
+    dialogflowAgent = new GoogleAssistantPlatform(app);
     event = _.cloneDeep(require("../requests/dialogflow/launchIntent.json"));
   });
 
@@ -141,17 +143,13 @@ describe("Dialogflow Directives", () => {
     });
 
     it("should throw an error if trying to add a MediaResponse without a simpleResponse first", async () => {
-      const conv = new DialogflowConversation({
-        body: event,
-        headers: {},
-      });
-      const reply = new DialogflowReply(conv);
-      const dialogflowEvent = new DialogflowEvent(event);
+      const reply = new DialogflowReply();
+      const googleAssistantEvent = new GoogleAssistantEvent(event);
       const mediaResponse = new MediaResponse(mediaObject);
 
       let error: Error | null = null;
       try {
-        await mediaResponse.writeToReply(reply, dialogflowEvent, {});
+        await mediaResponse.writeToReply(reply, googleAssistantEvent, {});
       } catch (e) {
         error = e;
       }
@@ -1055,6 +1053,26 @@ describe("Dialogflow Directives", () => {
       });
     });
   });
+});
+
+describe("Facebook Directives", () => {
+  let event: any;
+  let app: VoxaApp;
+  let dialogflowAgent: FacebookPlatform;
+
+  before(() => {
+    i18n.init({
+      load: "all",
+      nonExplicitWhitelist: true,
+      resources: views,
+    });
+  });
+
+  beforeEach(() => {
+    app = new VoxaApp({ views, variables });
+    dialogflowAgent = new FacebookPlatform(app);
+    event = _.cloneDeep(require("../requests/dialogflow/launchIntent.json"));
+  });
 
   describe("FacebookAccountLink", () => {
     it("should add a facebook account link button using a reply view", async () => {
@@ -1304,7 +1322,7 @@ describe("Dialogflow Directives", () => {
         title: "Square Multicolor",
       };
 
-      app.onIntent("LaunchIntent", (voxaEvent: DialogflowEvent) => {
+      app.onIntent("LaunchIntent", (voxaEvent: FacebookEvent) => {
         const facebookQuickReplyText = new FacebookQuickReplyText(quickReplyMessage, quickReplySingleElement);
 
         return {
@@ -1344,7 +1362,7 @@ describe("Dialogflow Directives", () => {
         },
       ];
 
-      app.onIntent("LaunchIntent", (voxaEvent: DialogflowEvent) => {
+      app.onIntent("LaunchIntent", (voxaEvent: FacebookEvent) => {
         const facebookQuickReplyText = new FacebookQuickReplyText("What's your favorite shape?", quickReplyTextArray);
 
         return {
@@ -1432,7 +1450,7 @@ describe("Dialogflow Directives", () => {
     });
 
     it("should send a FacebookButtonTemplate", async () => {
-      app.onIntent("LaunchIntent", (voxaEvent: DialogflowEvent) => {
+      app.onIntent("LaunchIntent", (voxaEvent: FacebookEvent) => {
         const buttonBuilder1 = new FacebookButtonTemplateBuilder();
         const buttonBuilder2 = new FacebookButtonTemplateBuilder();
         const buttonBuilder3 = new FacebookButtonTemplateBuilder();
@@ -1494,7 +1512,7 @@ describe("Dialogflow Directives", () => {
     });
 
     it("should send a FacebookCarousel template", async () => {
-      app.onIntent("LaunchIntent", (voxaEvent: DialogflowEvent) => {
+      app.onIntent("LaunchIntent", (voxaEvent: FacebookEvent) => {
         const buttonBuilder1 = new FacebookButtonTemplateBuilder();
         const buttonBuilder2 = new FacebookButtonTemplateBuilder();
         const elementBuilder1 = new FacebookElementTemplateBuilder();
@@ -1571,7 +1589,7 @@ describe("Dialogflow Directives", () => {
     });
 
     it("should send a FacebookList template", async () => {
-      app.onIntent("LaunchIntent", (voxaEvent: DialogflowEvent) => {
+      app.onIntent("LaunchIntent", (voxaEvent: FacebookEvent) => {
         const buttonBuilder1 = new FacebookButtonTemplateBuilder();
         const buttonBuilder2 = new FacebookButtonTemplateBuilder();
         const elementBuilder1 = new FacebookElementTemplateBuilder();
@@ -1660,7 +1678,7 @@ describe("Dialogflow Directives", () => {
     });
 
     it("should send a FacebookOpenGraphTemplate", async () => {
-      app.onIntent("LaunchIntent", (voxaEvent: DialogflowEvent) => {
+      app.onIntent("LaunchIntent", (voxaEvent: FacebookEvent) => {
         const elementBuilder1 = new FacebookElementTemplateBuilder();
         const buttonBuilder1 = new FacebookButtonTemplateBuilder();
         const buttonBuilder2 = new FacebookButtonTemplateBuilder();

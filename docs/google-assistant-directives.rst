@@ -1,7 +1,7 @@
-.. _dialogflow-directives:
+.. _google-assistant-directives:
 
-Dialog Flow Directives
-==========================
+Google Assistant Directives
+===========================
 
 Dialog Flow directives expose google actions functionality that's platform specific. In general they take the same parameters you would pass to the Actions on Google Node JS SDK.
 

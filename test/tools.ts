@@ -332,6 +332,7 @@ export function getAPIGatewayProxyEvent(
     requestContext: {
       accountId: "",
       apiId: "",
+      connectedAt: 0,
       httpMethod: method,
       identity: {
         accessKey: null,

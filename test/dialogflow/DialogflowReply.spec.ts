@@ -28,21 +28,123 @@ import {
 } from "actions-on-google";
 import { expect } from "chai";
 import * as _ from "lodash";
-import { DialogflowReply } from "../../src/platforms/dialogflow";
+import { DialogflowReply, FacebookEvent, FacebookReply } from "../../src/platforms/dialogflow";
 
 /* tslint:disable-next-line:no-var-requires */
 const rawEvent = require("../requests/dialogflow/launchIntent.json");
 import { DialogflowConversation } from "actions-on-google";
 
+describe("FacebookReply", () => {
+  let reply: FacebookReply;
+
+  beforeEach(() => {
+    reply = new FacebookReply(new FacebookEvent({
+      queryResult: {
+        intent: {
+          displayName: "LaunchIntent",
+        },
+      },
+    }));
+  });
+
+  describe("hasTerminated", () => {
+    it("should return false for a new reply", () => {
+      expect(reply.hasTerminated).to.be.false;
+    });
+
+    it("should return true after a call to reply.terminate", () => {
+      reply.terminate();
+      expect(reply.hasTerminated).to.be.false;
+    });
+  });
+
+  describe("hasDirective", () => {
+    it("should return false for a new reply", () => {
+      expect(reply.hasDirective("whatever")).to.be.false;
+    });
+
+    it("should return false for a reply with a directive not found", () => {
+      reply.payload.facebook.quick_replies = [
+        {
+          content_type: "Email",
+        },
+      ];
+      expect(reply.hasDirective("Location")).to.be.false;
+    });
+
+    it("should return true for a reply with a directive", () => {
+      reply.payload.facebook.quick_replies = [
+        {
+          content_type: "Location",
+        },
+      ];
+      expect(reply.hasDirective("Location")).to.be.true;
+    });
+  });
+
+  describe("hasDirectives", () => {
+    it("should return false for a new reply", () => {
+      expect(reply.hasDirectives).to.be.false;
+    });
+
+    it("should return false for a reply with just a simple response", () => {
+      reply.addStatement("Hello World");
+      expect(reply.hasDirectives).to.be.false;
+    });
+  });
+
+  describe("speech", () => {
+    it("should return an empty string for a new reply", () => {
+      expect(reply.speech).to.equal("");
+    });
+
+    it("should return an empty string for a reply without a simple response", () => {
+      reply.payload.facebook.text = "";
+      expect(reply.speech).to.equal("");
+    });
+  });
+
+  describe("hasMessages", () => {
+    it("should return false for a new reply", () => {
+      expect(reply.hasMessages).to.be.false;
+    });
+  });
+
+  describe("addStatement", () => {
+    it("should add to both the speech and richResponse", () => {
+      reply.addStatement("THIS IS A TEST", true);
+      expect(reply.payload.facebook.text).to.equal("THIS IS A TEST");
+      expect(reply.fulfillmentText).to.equal("THIS IS A TEST");
+      expect(reply.speech).to.equal("THIS IS A TEST");
+    });
+
+    it("should not add speech", () => {
+      reply.addStatement("THIS IS A TEST");
+      expect(reply.payload.facebook.text).to.be.undefined;
+      expect(reply.fulfillmentText).to.equal("");
+      expect(reply.speech).to.equal("");
+    });
+  });
+
+  describe("clear", () => {
+    it("should empty the rich response, speech and reprompts", () => {
+      reply.addStatement("THIS IS A TEST");
+      reply.clear();
+
+      expect(reply.payload.facebook.attachment).to.be.undefined;
+      expect(reply.payload.facebook.quick_replies).to.be.undefined;
+      expect(reply.payload.facebook.text).to.be.undefined;
+      expect(reply.fulfillmentText).to.equal("");
+      expect(reply.speech).to.be.empty;
+    });
+  });
+});
+
 describe("DialogflowReply", () => {
   let reply: DialogflowReply;
 
   beforeEach(() => {
-    const conv = new DialogflowConversation({
-      body: rawEvent,
-      headers: {},
-    });
-    reply = new DialogflowReply(conv);
+    reply = new DialogflowReply();
   });
 
   describe("hasTerminated", () => {

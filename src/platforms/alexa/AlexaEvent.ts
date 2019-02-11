@@ -30,7 +30,9 @@ import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
 import { LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
-import { IVoxaIntent, VoxaEvent } from "../../VoxaEvent";
+import rp = require("request-promise");
+
+import { IVoxaIntent, IVoxaUserProfile, VoxaEvent } from "../../VoxaEvent";
 import { AlexaIntent } from "./AlexaIntent";
 import {
   CustomerContact,
@@ -43,6 +45,19 @@ import {
 import { isLocalizedRequest } from "./utils";
 
 export class AlexaEvent extends VoxaEvent {
+
+  get token() {
+    return _.get(this.rawEvent, "request.token");
+  }
+
+  get supportedInterfaces() {
+    const interfaces = _.get(
+      this.rawEvent,
+      "context.System.device.supportedInterfaces",
+      {},
+    );
+    return _.keys(interfaces);
+  }
   public intent?: IVoxaIntent;
   public rawEvent!: RequestEnvelope;
   public alexa!: {
@@ -82,6 +97,27 @@ export class AlexaEvent extends VoxaEvent {
     this.initUser();
   }
 
+  public async getUserInformation(): Promise<IVoxaAlexaUserProfile> {
+    if (!this.user.accessToken) {
+      throw new Error("this.user.accessToken is empty");
+    }
+
+    const httpOptions: any = {
+      json: true,
+      method: "GET",
+      uri: `https://api.amazon.com/user/profile?access_token=${this.user.accessToken}`,
+    };
+
+    const result: any = await rp(httpOptions);
+    result.zipCode = result.postal_code;
+    result.userId = result.user_id;
+
+    delete result.postal_code;
+    delete result.user_id;
+
+    return result as IVoxaAlexaUserProfile;
+  }
+
   protected initUser() {
     const user: IAlexaUser =
       _.get(this.rawEvent, "session.user") ||
@@ -96,19 +132,6 @@ export class AlexaEvent extends VoxaEvent {
       id: user.userId,
       userId: user.userId,
     };
-  }
-
-  get token() {
-    return _.get(this.rawEvent, "request.token");
-  }
-
-  get supportedInterfaces() {
-    const interfaces = _.get(
-      this.rawEvent,
-      "context.System.device.supportedInterfaces",
-      {},
-    );
-    return _.keys(interfaces);
   }
 
   protected initApis() {
@@ -146,4 +169,9 @@ function isIntentRequest(
     request.type === "IntentRequest" ||
     request.type === "CanFulfillIntentRequest"
   );
+}
+
+export interface IVoxaAlexaUserProfile extends IVoxaUserProfile {
+  userId: string;
+  zipCode: string;
 }

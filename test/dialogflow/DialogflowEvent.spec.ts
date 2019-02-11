@@ -1,8 +1,16 @@
 import { expect } from "chai";
+import { OAuth2Client } from "google-auth-library";
 import * as _ from "lodash";
 import * as simple from "simple-mock";
 
-import { DialogflowEvent, DialogflowPlatform, VoxaApp } from "../../src/";
+import {
+  DialogflowEvent,
+  FacebookEvent,
+  FacebookPlatform,
+  GoogleAssistantEvent,
+  GoogleAssistantPlatform,
+  VoxaApp,
+} from "../../src/";
 import { variables } from "../variables";
 import { views } from "../views";
 
@@ -43,9 +51,67 @@ const slotsIntent = require("../requests/dialogflow/slots.json");
 const newSurfaceIntent = require("../requests/dialogflow/actions.intent.NEW_SURFACE.json");
 
 describe("DialogflowEvent", () => {
+  describe("General Platform Integrations", () => {
+    it("should get the right userId", async () => {
+      const event = new DialogflowEvent(launchIntent, {});
+      /* tslint:disable-next-line:max-line-length */
+      expect(event.user.id).to.equal(
+        "ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y",
+      );
+    });
+
+    it("should get the right source", async () => {
+      const event = new DialogflowEvent(launchIntent, {});
+      expect(event.source).to.equal("dialogflow");
+    });
+
+    it("should return supported capabilities", () => {
+      const event = new DialogflowEvent(launchIntent, {});
+      expect(event.supportedInterfaces).to.deep.equal([
+        "actions.capability.AUDIO_OUTPUT",
+        "actions.capability.SCREEN_OUTPUT",
+        "actions.capability.MEDIA_RESPONSE_AUDIO",
+        "actions.capability.WEB_BROWSER",
+      ]);
+    });
+
+    it("should return undefined for getUserInformation", async () => {
+      const event = new DialogflowEvent(launchIntent, {});
+      expect(await event.getUserInformation()).to.be.undefined;
+    });
+
+    it("should return undefined for getUserInformation", () => {
+      const event = new DialogflowEvent(launchIntent, {});
+      expect(event.google.conv.user._id).to.equal(
+        "ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y",
+      );
+    });
+  });
+});
+
+describe("FacebookEvent", () => {
+  describe("Facebook Messenger", () => {
+    it("should get the right userId for Facebook Messenger", async () => {
+      const event = new FacebookEvent(facebookLaunchIntent, {});
+      expect(event.user.id).to.equal("1234567890");
+    });
+
+    it("should get the right source for Facebook Messenger", async () => {
+      const event = new FacebookEvent(facebookLaunchIntent, {});
+      expect(event.source).to.equal("facebook");
+    });
+
+    it("should return supported capabilities", () => {
+      const event = new FacebookEvent(facebookLaunchIntent, {});
+      expect(event.supportedInterfaces).to.deep.equal([]);
+    });
+  });
+});
+
+describe("GoogleAssistantEvent", () => {
   describe("Google Actions", () => {
     it("should format option values", () => {
-      const event = new DialogflowEvent(optionIntent, {});
+      const event = new GoogleAssistantEvent(optionIntent, {});
       expect(event.intent.name).to.equal("actions.intent.OPTION");
       expect(event.intent.params).to.deep.equal({
         OPTION: "today",
@@ -54,7 +120,7 @@ describe("DialogflowEvent", () => {
     });
 
     it("should format dialogflow parms", () => {
-      const event = new DialogflowEvent(slotsIntent, {});
+      const event = new GoogleAssistantEvent(slotsIntent, {});
       expect(event.intent.name).to.equal("SleepSingleIntent");
       expect(event.intent.params).to.deep.equal({
         VOICE: "10 minutes sleep exercise",
@@ -68,7 +134,7 @@ describe("DialogflowEvent", () => {
     });
 
     it("should find users on the session", () => {
-      const event = new DialogflowEvent(launchIntent, {});
+      const event = new GoogleAssistantEvent(launchIntent, {});
       /* tslint:disable-next-line:max-line-length */
       expect(event.user.id).to.equal(
         "ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y",
@@ -76,7 +142,7 @@ describe("DialogflowEvent", () => {
     });
 
     it("should return supported capabilities", () => {
-      const event = new DialogflowEvent(launchIntent, {});
+      const event = new GoogleAssistantEvent(launchIntent, {});
       expect(event.supportedInterfaces).to.deep.equal([
         "actions.capability.AUDIO_OUTPUT",
         "actions.capability.SCREEN_OUTPUT",
@@ -86,7 +152,7 @@ describe("DialogflowEvent", () => {
     });
 
     it("should return inputs", () => {
-      const event = new DialogflowEvent(launchIntent, {});
+      const event = new GoogleAssistantEvent(launchIntent, {});
       expect(event.intent.name).to.equal("LaunchIntent");
       expect(event.intent.params).to.deep.equal({
         KEYBOARD: "Talk to my test app",
@@ -95,7 +161,7 @@ describe("DialogflowEvent", () => {
     });
 
     it("should return the MEDIA_STATUS information", () => {
-      const event = new DialogflowEvent(mediaStatusIntent, {});
+      const event = new GoogleAssistantEvent(mediaStatusIntent, {});
       expect(event.intent.name).to.equal("MEDIA_STATUS");
       expect(event.intent.params).to.deep.equal({
         MEDIA_STATUS: {
@@ -106,7 +172,7 @@ describe("DialogflowEvent", () => {
     });
 
     it("should return the SIGN_IN information", () => {
-      const event = new DialogflowEvent(signinIntent, {});
+      const event = new GoogleAssistantEvent(signinIntent, {});
       expect(event.intent.params).to.deep.equal({
         SIGN_IN: {
           "@type": "type.googleapis.com/google.actions.v2.SignInValue",
@@ -116,29 +182,29 @@ describe("DialogflowEvent", () => {
     });
 
     it("should return the correct intent", () => {
-      const event = new DialogflowEvent(helpIntent, {});
+      const event = new GoogleAssistantEvent(helpIntent, {});
       expect(event.intent.name).to.equal("HelpIntent");
     });
 
     it("should extract the session attributes from the context", () => {
-      const event = new DialogflowEvent(helpIntent, {});
+      const event = new GoogleAssistantEvent(helpIntent, {});
       expect(event.session.attributes).to.deep.equal({
         key: "value",
       });
     });
 
     it("should extract the correct parameters from a permissionIntent", () => {
-      const event = new DialogflowEvent(permissionIntent, {});
+      const event = new GoogleAssistantEvent(permissionIntent, {});
       expect(event.intent.params).to.deep.equal({
         KEYBOARD: "yes",
         PERMISSION: true,
       });
 
-      expect(event.google.conv.user.permissions).to.deep.equal(["NAME"]);
+      expect(event.dialogflow.conv.user.permissions).to.deep.equal(["NAME"]);
     });
 
     it("should extract the correct parameters from a datetimeIntent", () => {
-      const event = new DialogflowEvent(datetimeIntent, {});
+      const event = new GoogleAssistantEvent(datetimeIntent, {});
       expect(event.intent.params).to.deep.equal({
         DATETIME: {
           date: {
@@ -155,7 +221,7 @@ describe("DialogflowEvent", () => {
     });
 
     it("should extract the correct parameters from a confirmationIntent", () => {
-      const event = new DialogflowEvent(placeIntent, {});
+      const event = new GoogleAssistantEvent(placeIntent, {});
       expect(event.intent.params).to.deep.equal({
         KEYBOARD: "Query handled by Actions on Google",
         PLACE: {
@@ -171,7 +237,7 @@ describe("DialogflowEvent", () => {
     });
 
     it("should extract the NEW_SURFACE confirmationIntent", () => {
-      const event = new DialogflowEvent(newSurfaceIntent, {});
+      const event = new GoogleAssistantEvent(newSurfaceIntent, {});
       expect(event.intent.params).to.deep.equal({
         NEW_SURFACE: {
           "@type": "type.googleapis.com/google.actions.v2.NewSurfaceValue",
@@ -181,35 +247,25 @@ describe("DialogflowEvent", () => {
     });
 
     it("should get the correct userId when present", () => {
-      const event = new DialogflowEvent(newSurfaceIntent, {});
+      const event = new GoogleAssistantEvent(newSurfaceIntent, {});
       expect(event.user.id).to.equal("1527283153072");
-      expect(event.google.conv.user.storage).to.deep.equal({
+      expect(event.dialogflow.conv.user.storage).to.deep.equal({
         voxa: { userId: "1527283153072" },
       });
     });
 
     it("should generate a new userId when missing", () => {
-      const event = new DialogflowEvent(confirmationIntent, {});
+      const event = new GoogleAssistantEvent(confirmationIntent, {});
       expect(event.user.id).to.not.be.undefined;
-      expect(event.google.conv.user.storage).to.deep.equal({
+      expect(event.dialogflow.conv.user.storage).to.deep.equal({
         voxa: { userId: event.user.userId },
       });
     });
   });
 
-  describe("Facebook Messenger", () => {
-    it("should get the right userId for Facebook Messenger", async () => {
-      const event = new DialogflowEvent(facebookLaunchIntent, {});
-      expect(event.user.id).to.equal("1234567890");
-    });
-    it("should get the right source for Facebook Messenger", async () => {
-      const event = new DialogflowEvent(facebookLaunchIntent, {});
-      expect(event.source).to.equal("facebook");
-    });
-  });
   describe("Google Sign-In", () => {
     let voxaApp: VoxaApp;
-    let googleAction: DialogflowPlatform;
+    let googleAction: GoogleAssistantPlatform;
 
     const googleResponse: any = {
       aud: "1234567890-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com",
@@ -230,12 +286,17 @@ describe("DialogflowEvent", () => {
 
     beforeEach(() => {
       voxaApp = new VoxaApp({ views, variables });
-      googleAction = new DialogflowPlatform(voxaApp, { clientId: "clientId" });
+      googleAction = new GoogleAssistantPlatform(voxaApp, { clientId: "clientId" });
 
       const userDetailsMocked: any = _.cloneDeep(googleResponse);
+
       simple
-        .mock(DialogflowEvent.prototype, "verifyProfile")
-        .resolveWith(userDetailsMocked);
+        .mock(OAuth2Client.prototype, "verifySignedJwtWithCerts")
+        .returnWith({
+          getPayload: () => {
+            return userDetailsMocked;
+          },
+        });
     });
 
     afterEach(() => {
@@ -247,7 +308,7 @@ describe("DialogflowEvent", () => {
       const pathToIdToken = "originalDetectIntentRequest.payload.user.idToken";
       _.set(launchIntentWithIdToken, pathToIdToken, "idToken");
 
-      const event = new DialogflowEvent(launchIntentWithIdToken, {});
+      const event = new GoogleAssistantEvent(launchIntentWithIdToken, {});
       event.platform = googleAction;
 
       const userInformation = await event.getUserInformation();
@@ -265,7 +326,7 @@ describe("DialogflowEvent", () => {
     });
 
     it("should throw an error when idToken is empty", async () => {
-      const event = new DialogflowEvent(launchIntent, {});
+      const event = new GoogleAssistantEvent(launchIntent, {});
       event.platform = googleAction;
 
       let exceptionWasThrown: boolean = false;

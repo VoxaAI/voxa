@@ -53,6 +53,12 @@ describe("BotFrameworkEvent", () => {
     expect(event.request.type).to.equal("SessionEndedRequest");
   });
 
+  it("should return undefined when requesting user information", async () => {
+    const message = require("../requests/botframework/endOfRequest.json");
+    const event = new BotFrameworkEvent({ message, stateData });
+    expect(await event.getUserInformation()).to.deep.equal({});
+  });
+
   const utilitiesIntentMapping = {
     "Utilities.Cancel": "CancelIntent",
     "Utilities.Confirm": "YesIntent",
