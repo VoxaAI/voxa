@@ -94,16 +94,18 @@ export class FacebookEvent extends DialogflowEvent {
     };
   }
 
-  private getFacebookProfile(userFields: string) {
-    const params = [
-      `fields=${userFields}`,
-      `access_token=${this.platform.config.pageAccessToken}`,
-    ];
+  private getFacebookProfile(fields: string) {
+    const queryStringParams = {
+      access_token: this.platform.config.pageAccessToken,
+      fields,
+    };
 
     const httpOptions: any = {
       json: true,
       method: "GET",
-      uri: `https://graph.facebook.com/${this.user.id}?${_.join(params, "&")}`,
+      qs: queryStringParams,
+      qsStringifyOptions: { encode: false },
+      uri: `https://graph.facebook.com/${this.user.id}`,
     };
 
     return rp(httpOptions);

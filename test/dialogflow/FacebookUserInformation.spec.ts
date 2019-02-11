@@ -68,13 +68,13 @@ describe("FacebookUserInformation", () => {
     ];
 
     nock("https://graph.facebook.com")
-      .get(`/${recipient.id}?fields=${FACEBOOK_USER_FIELDS.ALL}&access_token=accessToken`)
+      .get(`/${recipient.id}?access_token=accessToken&fields=${FACEBOOK_USER_FIELDS.ALL}`)
       .reply(
         200,
         JSON.stringify(userInfo),
       )
       .get(
-        `/${recipient.id}?fields=${_.join(actionsArray, ",")}&access_token=accessToken`,
+        `/${recipient.id}?access_token=accessToken&fields=${_.join(actionsArray, ",")}`,
       )
       .reply(
          200,

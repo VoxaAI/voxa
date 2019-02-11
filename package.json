@@ -37,6 +37,7 @@
     "@types/lambda-log": "^2.0.0",
     "@types/lodash": "^4.14.88",
     "@types/node": "^10.12.11",
+    "@types/query-string": "^6.2.0",
     "@types/request-promise": "^4.1.39",
     "@types/tedious": "^2.6.1",
     "@types/url-join": "^4.0.0",
