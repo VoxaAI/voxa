@@ -95,4 +95,28 @@ describe("AlexaPlatform", () => {
       version: "1.0",
     });
   });
+
+  it("should throw an error for invalid SSML", async () => {
+    const rb = new AlexaRequestBuilder("userId", "applicationId");
+    const launchRequest = rb.getLaunchRequest();
+    const voxaApp = new VoxaApp({ views });
+    const alexaSkill = new AlexaPlatform(voxaApp, {});
+    alexaSkill.onIntent("LaunchIntent", {
+      flow: "terminate",
+      say: "XML.invalidTag",
+    });
+
+    const reply = await alexaSkill.execute(launchRequest);
+    expect(reply).to.deep.equal({
+      response: {
+        outputSpeech: {
+          ssml: "<speak>An unrecoverable error occurred.</speak>",
+          type: "SSML",
+        },
+        shouldEndSession: true,
+      },
+      sessionAttributes: {},
+      version: "1.0",
+    });
+  });
 });

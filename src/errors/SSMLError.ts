@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Copyright (c) 2019 Rain Agency <contact@rain.agency>
  * Author: Rain Agency <contact@rain.agency>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -20,27 +20,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export { OnSessionEndedError } from "./OnSessionEndedError";
-export { NotImplementedError } from "./NotImplementedError";
-export { TimeoutError } from "./TimeoutError";
-export { errorHandler } from "./handler";
-export { SSMLError } from "./SSMLError";
-
-function createError(messageTemplate: string, key: string) {
-  return class implements Error {
-    public name: string = key;
-    public message: string;
-    [key: string]: any;
-
-    constructor(value: string) {
-      this.message = messageTemplate.replace("{" + key + "}", value);
-      this[key] = value;
-    }
-  };
+export class SSMLError implements Error {
+  public name = "SSMLError";
+  constructor(public message: string, public ssml: string) {
+  }
 }
-
-export const UnknownState = createError("Unknown state {state}", "state");
-export const UnknownRequestType = createError(
-  "Unknown request type: {requestType}",
-  "requestType",
-);

@@ -20,6 +20,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import { SSMLError } from "./errors";
 import { IBag, IVoxaEvent } from "./VoxaEvent";
 
 export interface IVoxaReply {
@@ -91,7 +92,7 @@ export function addToSSML(ssml: string|undefined, statement: string): string {
     return reply;
   }
 
-  throw new Error(validationResult.err.msg);
+  throw new SSMLError(validationResult.err.msg, reply);
 }
 
 export function addToText(text: string|undefined, statement: string): string {
