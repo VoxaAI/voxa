@@ -69,15 +69,29 @@ export interface IVoxaReply {
    */
   saveSession: (attributes: IBag, event: IVoxaEvent) => Promise<void>;
 }
+import * as parser from "fast-xml-parser";
 
 export function addToSSML(ssml: string|undefined, statement: string): string {
+  let reply: string;
+
   ssml = ssml || "";
   const base = ssml.replace(/^<speak>([\s\S]*)<\/speak>$/g, "$1");
+
+  statement = statement.replace(/&/g, "&amp;");
+
   if (!base) {
-    return `<speak>${statement}</speak>`;
+    reply =  `<speak>${statement}</speak>`;
+  } else {
+    reply =  `<speak>${base}\n${statement}</speak>`;
   }
 
-  return `<speak>${base}\n${statement}</speak>`;
+  const validationResult = parser.validate(reply);
+
+  if (validationResult === true) {
+    return reply;
+  }
+
+  throw new Error(validationResult.err.msg);
 }
 
 export function addToText(text: string|undefined, statement: string): string {

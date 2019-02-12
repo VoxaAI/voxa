@@ -106,7 +106,7 @@ export const views = {
       },
       CustomerContact: {
         FullInfo:
-          "Welcome {customerContactGivenName}, your email address is {customerContactEmail}, and your phone number is {customerContactCountry} {customerContactNumber}",
+        "Welcome {customerContactGivenName}, your email address is {customerContactEmail}, and your phone number is {customerContactCountry} {customerContactNumber}",
         PermissionNotGranted:
           "To get the user's info, go to your Alexa app and grant permission to the skill.",
       },
@@ -309,6 +309,10 @@ export const views = {
       SayRandom: ["say1", "say2", "say3"],
       Tell: "tell",
       TellRandom: ["tell1", "tell2", "tell3"],
+      XML: {
+        ampersand: "Some & Some",
+        invalidTag: "<audio />Test</audio>",
+      },
     },
   },
 };
