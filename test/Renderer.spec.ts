@@ -28,8 +28,8 @@ import {
   AlexaEvent,
   AlexaPlatform,
   AlexaReply,
-  DialogflowEvent,
-  DialogflowPlatform,
+  GoogleAssistantEvent,
+  GoogleAssistantPlatform,
   Model,
   PlayAudio,
   Renderer,
@@ -259,12 +259,12 @@ describe("Renderer", () => {
   });
 
   it("should use the dialogflow view if available", async () => {
-    const dialogflowEvent = new DialogflowEvent(
+    const dialogflowEvent = new GoogleAssistantEvent(
       require("./requests/dialogflow/launchIntent.json"),
       {},
     );
     dialogflowEvent.t = event.t;
-    dialogflowEvent.platform = new DialogflowPlatform(voxaApp);
+    dialogflowEvent.platform = new GoogleAssistantPlatform(voxaApp);
     const rendered = await renderer.renderPath(
       "LaunchIntent.OpenResponse",
       dialogflowEvent,

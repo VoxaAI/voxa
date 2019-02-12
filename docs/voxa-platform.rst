@@ -65,15 +65,18 @@ The Alexa Platform allows you to use Voxa with Alexa
 Dialogflow
 -------------
 
-The Dialogflow Platform allows you to use Voxa with Dialogflow
+The GoogleAssistant and Facebook Platforms allow you to use Voxa with these 2 type of bots
 
 .. code-block:: javascript
 
-  const { DialogflowPlatform } = require('voxa');
+  const { GoogleAssistantPlatform, FacebookPlatform } = require('voxa');
   const { voxaApp } = require('./app');
 
-  const dialogflowAction = new DialogflowPlatform(voxaApp);
-  exports.handler = dialogflowAction.lambdaHTTP();
+  const googleAction = new GoogleAssistantPlatform(voxaApp);
+  exports.handler = googleAction.lambdaHTTP();
+
+  const facebookBot = new FacebookPlatform(voxaApp);
+  exports.handler = facebookBot.lambdaHTTP();
 
 
 .. _botframework-platform:

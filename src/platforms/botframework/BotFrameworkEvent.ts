@@ -24,6 +24,15 @@ export interface IBotframeworkPayload {
 }
 
 export class BotFrameworkEvent extends VoxaEvent {
+
+  public get supportedInterfaces() {
+    const entity: any = getEntity(this.rawEvent.message, "DeviceInfo");
+    if (!entity) {
+      return [];
+    }
+
+    return entity.supportsDisplay === "true" ? ["Display"] : [];
+  }
   public rawEvent!: IBotframeworkPayload;
 
   public requestToRequest: ITypeMap = {
@@ -64,6 +73,11 @@ export class BotFrameworkEvent extends VoxaEvent {
     this.initUser();
   }
 
+  public async getUserInformation(): Promise<any> {
+    // TODO: RETURN USER'S INFORMATION
+    return {};
+  }
+
   protected initSession(): void {
     const privateConversationData =
       this.rawEvent.stateData.privateConversationData || {};
@@ -75,15 +89,6 @@ export class BotFrameworkEvent extends VoxaEvent {
       outputAttributes: {},
       sessionId,
     };
-  }
-
-  public get supportedInterfaces() {
-    const entity: any = getEntity(this.rawEvent.message, "DeviceInfo");
-    if (!entity) {
-      return [];
-    }
-
-    return entity.supportsDisplay === "true" ? ["Display"] : [];
   }
 
   protected getIntentFromEntity(): void {

@@ -111,6 +111,10 @@ export const variables = {
     return request.model.deviceInfo;
   },
 
+  name: function name(request: IVoxaEvent) {
+    return request.model.info.name;
+  },
+
   settingsInfo: function settingsInfo(request: IVoxaEvent) {
     return request.model.settingsInfo;
   },

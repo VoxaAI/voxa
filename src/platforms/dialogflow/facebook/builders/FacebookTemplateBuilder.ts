@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Copyright (c) 2019 Rain Agency <contact@rain.agency>
  * Author: Rain Agency <contact@rain.agency>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -28,7 +28,7 @@ import {
   IFacebookElementTemplate,
   IFacebookGenericButtonTemplate,
   IFacebookPayloadTemplate,
-} from "../../directives";
+} from "../directives";
 
 /**
  * Template Builder class reference

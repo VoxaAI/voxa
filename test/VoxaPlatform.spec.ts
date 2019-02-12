@@ -37,8 +37,8 @@ import * as rp from "request-promise";
 import {
   AlexaPlatform,
   AlexaReply,
-  DialogflowPlatform,
   DialogflowReply,
+  GoogleAssistantPlatform,
   VoxaApp,
 } from "../src";
 import { azureLog } from "../src/azure";
@@ -55,13 +55,13 @@ describe("VoxaPlatform", () => {
   let app: VoxaApp;
   let alexaSkill: AlexaPlatform;
   let processData: any;
-  let dialogflowAction: DialogflowPlatform;
+  let dialogflowAction: GoogleAssistantPlatform;
 
   beforeEach(() => {
     app = new VoxaApp({ views });
     alexaSkill = new AlexaPlatform(app);
     processData = _.clone(process.env);
-    dialogflowAction = new DialogflowPlatform(app);
+    dialogflowAction = new GoogleAssistantPlatform(app);
   });
 
   afterEach(() => {

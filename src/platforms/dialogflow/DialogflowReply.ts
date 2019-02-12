@@ -26,21 +26,17 @@ import {
   RichResponse,
   SimpleResponse,
 } from "actions-on-google";
-import { DialogflowConversation } from "actions-on-google";
 import * as _ from "lodash";
 import { IBag, IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
 import { DialogflowEvent } from "./DialogflowEvent";
 
 export interface IDialogflowPayload {
-  facebook?: {
-    attachment?: {
-      payload: any;
-      type: string;
-    };
-    quick_replies?: any[];
-    text?: any;
-  };
+  facebook?: any;
+  google?: any;
+}
+
+export interface IGooglePayload extends IDialogflowPayload {
   google: {
     expectUserResponse: boolean;
     noInputPrompts?: any[];
@@ -61,7 +57,7 @@ export class DialogflowReply implements IVoxaReply {
   public source: string = "google";
   public payload: IDialogflowPayload;
 
-  constructor(conv: DialogflowConversation) {
+  constructor() {
     this.payload = {
       google: {
         expectUserResponse: true,
@@ -74,11 +70,11 @@ export class DialogflowReply implements IVoxaReply {
   public async saveSession(attributes: IBag, event: IVoxaEvent): Promise<void> {
     const dialogflowEvent = event as DialogflowEvent;
     const serializedData = JSON.stringify(attributes);
-    dialogflowEvent.google.conv.contexts.set("attributes", 10000, {
+    dialogflowEvent.dialogflow.conv.contexts.set("attributes", 10000, {
       attributes: serializedData,
     });
 
-    this.outputContexts = dialogflowEvent.google.conv.contexts._serialize();
+    this.outputContexts = dialogflowEvent.dialogflow.conv.contexts._serialize();
   }
 
   public get speech(): string {

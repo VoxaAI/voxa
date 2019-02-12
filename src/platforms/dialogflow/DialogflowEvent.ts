@@ -35,16 +35,21 @@ import { VoxaEvent } from "../../VoxaEvent";
 import { DialogflowIntent } from "./DialogflowIntent";
 import { DialogflowSession } from "./DialogflowSession";
 
-export interface IGoogle {
+export interface IDialogflow {
   conv: DialogflowConversation;
 }
 
 export class DialogflowEvent extends VoxaEvent {
+  // DEPRECATED: INSTEAD USE dialogflow
+  get google() {
+    return this.dialogflow;
+  }
+
   public rawEvent!: GoogleCloudDialogflowV2WebhookRequest;
   public session!: DialogflowSession;
-  public google!: IGoogle;
+  public dialogflow!: IDialogflow;
   public intent: DialogflowIntent;
-  public source: string | undefined;
+  public source: string = "dialogflow";
 
   constructor(
     rawEvent: GoogleCloudDialogflowV2WebhookRequest,
@@ -58,30 +63,33 @@ export class DialogflowEvent extends VoxaEvent {
       type: "IntentRequest",
     };
 
-    this.intent = new DialogflowIntent(this.google.conv);
+    this.intent = new DialogflowIntent(this.dialogflow.conv);
   }
 
-  public async verifyProfile(): Promise<TokenPayload | undefined> {
-    const client = new OAuth2Client(this.platform.config.clientId);
-    const payload:
-      | TokenPayload
-      | undefined = await this.google.conv.user._verifyProfile(
-      client,
-      this.platform.config.clientId,
-    );
-
-    return payload;
+  public async getUserInformation(): Promise<any> {
+    return undefined;
   }
 
   protected initSession(): void {
-    this.google = {
+    this.dialogflow = {
       conv: new DialogflowConversation({
         body: this.rawEvent,
         headers: {},
       }),
     };
 
-    this.session = new DialogflowSession(this.google.conv);
+    this.session = new DialogflowSession(this.dialogflow.conv);
+  }
+
+  protected initUser(): void {
+    const { conv } = this.dialogflow;
+    const userId: string = this.getUserId(conv);
+
+    this.user = {
+      accessToken: conv.user.access.token,
+      id: userId,
+      userId,
+    };
   }
 
   /**
@@ -93,38 +101,21 @@ export class DialogflowEvent extends VoxaEvent {
    *
    * After that we'll default to the userStorage value
    */
-  protected initUser(): void {
-    const { originalDetectIntentRequest } = this.rawEvent;
-    const { conv } = this.google;
-    const storage = conv.user.storage as any;
+  protected getUserId(conv: any): string {
     let userId: string = "";
 
-    this.source = _.get(originalDetectIntentRequest, "source") || "google";
-
-    if (this.source === "google") {
-      if (conv.user.id) {
-        userId = conv.user.id;
-      } else if (_.get(storage, "voxa.userId")) {
-        userId = storage.voxa.userId;
-      } else {
-        userId = v1();
-      }
-
-      _.set(this.google.conv.user.storage, "voxa.userId", userId);
-    } else if (this.source === "facebook") {
-      userId = _.get(originalDetectIntentRequest, "payload.data.sender.id");
+    if (conv.user.id) {
+      userId = conv.user.id;
+    } else {
+      userId = v1();
     }
 
-    this.user = {
-      accessToken: conv.user.access.token,
-      id: userId,
-      userId,
-    };
+    return userId;
   }
 
   get supportedInterfaces(): string[] {
     let capabilities = _.map(
-      this.google.conv.surface.capabilities.list,
+      this.dialogflow.conv.surface.capabilities.list,
       "name",
     );
     capabilities = _.filter(capabilities);
