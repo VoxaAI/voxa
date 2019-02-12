@@ -54,18 +54,53 @@ const rb = new AlexaRequestBuilder();
 describe("VoxaPlatform", () => {
   let app: VoxaApp;
   let alexaSkill: AlexaPlatform;
+  let processData: any;
   let dialogflowAction: GoogleAssistantPlatform;
 
   beforeEach(() => {
     app = new VoxaApp({ views });
     alexaSkill = new AlexaPlatform(app);
+    processData = _.clone(process.env);
     dialogflowAction = new GoogleAssistantPlatform(app);
+  });
+
+  afterEach(() => {
+    process.env = processData;
   });
 
   describe("startServer", () => {
     it("should call the execute method with an http server", async () => {
       const port = await portfinder.getPortPromise();
       const server = await alexaSkill.startServer(port);
+
+      const options = {
+        body: {
+          request: "Hello World",
+        },
+        json: true,
+        method: "POST",
+        uri: `http://localhost:${port}/`,
+      };
+      const response = await rp(options);
+      expect(response).to.deep.equal({
+        response: {
+          outputSpeech: {
+            ssml: "<speak>An unrecoverable error occurred.</speak>",
+            type: "SSML",
+          },
+          shouldEndSession: true,
+        },
+        sessionAttributes: {},
+        version: "1.0",
+      });
+
+      server.close();
+    });
+
+    it("should start the server on a port defined by the PORT environment variable", async () => {
+      const port = await portfinder.getPortPromise();
+      process.env.PORT = port.toString();
+      const server = await alexaSkill.startServer();
 
       const options = {
         body: {
@@ -184,14 +219,9 @@ describe("VoxaPlatform", () => {
   describe("onState", () => {
     let alexaLaunch: any;
     let dialogflowLaunch: any;
-    let processData: any;
-
-    afterEach(() => {
-      process.env = processData;
-    });
 
     beforeEach(() => {
-      processData = _.clone(process.env);
+      process.env.DEBUG = "voxa";
       app.onIntent("LaunchIntent", {
         flow: "continue",
         to: "someState",

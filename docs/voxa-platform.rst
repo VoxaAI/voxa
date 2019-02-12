@@ -12,6 +12,12 @@ Voxa Platforms wrap your :js:class:`VoxaApp <VoxaApp>` and allows you to define 
   :param VoxaApp voxaApp: The app
   :param config: The config
 
+  .. js:method:: startServer([port])
+
+    :returns: A promise that resolves to a running ``http.Server`` on the specified port number, if no port number is specified it will try to get a port number from the ``PORT`` environment variable or default to port 3000
+
+    This method can then be used in combination with a proxy server like `ngrok <https://ngrok.com/>`_ or `Bespoken tools proxy <http://docs.bespoken.io/en/latest/commands/proxy/>`_ to enable local development of your voice application
+
 
   .. js:method:: lambda()
 

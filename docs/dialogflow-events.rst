@@ -1,5 +1,7 @@
 .. _dialogflow-events:
 
+.. _googleassistant-event:
+
 The ``GoogleAssistantEvent`` Object
 ==============================
 
@@ -11,6 +13,7 @@ The ``GoogleAssistantEvent`` Object
 
     The conversation instance that contains the raw input sent by Dialogflow
 
+.. _facebook-event:
 
 The ``FacebookEvent`` Object
 ==============================
