@@ -130,6 +130,7 @@ export {
   UnknownState,
   UnknownRequestType,
   NotImplementedError,
+  SSMLError,
 } from "./errors";
 export { Model } from "./Model";
 

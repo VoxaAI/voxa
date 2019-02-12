@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Copyright (c) 2019 Rain Agency <contact@rain.agency>
  * Author: Rain Agency <contact@rain.agency>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -20,25 +20,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { expect } from "chai";
-import * as ssml from "../src/ssml";
-
-describe("ssml", () => {
-  describe("toSSML", () => {
-    it("should return undefined if empty statement", () => {
-      expect(ssml.toSSML()).to.be.undefined;
-    });
-
-    it("should not double wrap ssml with <speak /> tags", () => {
-      expect(ssml.toSSML("<speak>Some Text</speak>")).to.equal(
-        "<speak>Some Text</speak>",
-      );
-    });
-
-    it("should escape &", () => {
-      expect(ssml.toSSML("Some & Some")).to.equal(
-        "<speak>Some &amp; Some</speak>",
-      );
-    });
-  });
-});
+export class SSMLError implements Error {
+  public name = "SSMLError";
+  constructor(public message: string, public ssml: string) {
+  }
+}

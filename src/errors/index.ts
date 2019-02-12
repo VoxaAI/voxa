@@ -24,6 +24,7 @@ export { OnSessionEndedError } from "./OnSessionEndedError";
 export { NotImplementedError } from "./NotImplementedError";
 export { TimeoutError } from "./TimeoutError";
 export { errorHandler } from "./handler";
+export { SSMLError } from "./SSMLError";
 
 function createError(messageTemplate: string, key: string) {
   return class implements Error {
