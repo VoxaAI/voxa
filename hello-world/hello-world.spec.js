@@ -27,7 +27,7 @@ const dockerLambda = require("docker-lambda");
 const { getPortPromise } = require("portfinder");
 const { spawn, execSync } = require("child_process");
 
-const NODE_VERSION = process.env.TRAVIS_NODE_VERSION || "8.10";
+const NODE_VERSION = process.env.NODE_VERSION;
 const launchIntent = require("../test/requests/alexa/launchRequest.json");
 const lambdaProxyLaunchIntent = require("../test/requests/dialogflow/lambdaProxyLaunchIntent.json");
 const alexaEvent = require("../test/requests/alexa/launchRequest.json");

@@ -21,8 +21,7 @@
  */
 
 import { expect } from "chai";
-import { AlexaPlatform } from "../../src";
-import { VoxaApp } from "../../src/VoxaApp";
+import { AlexaPlatform, IVoxaReply, VoxaApp, VoxaEvent } from "../../src";
 import { AlexaRequestBuilder } from "../tools";
 import { views } from "../views";
 
@@ -118,5 +117,38 @@ describe("AlexaPlatform", () => {
       sessionAttributes: {},
       version: "1.0",
     });
+  });
+
+  it("should not throw a new error when rendering a reply on an error session ended request", async () => {
+    const voxaApp = new VoxaApp({ views });
+    voxaApp.onError(async (event: VoxaEvent, error: Error, reply: IVoxaReply) => {
+      const message = await event.renderer.renderPath("Error", event);
+      reply.clear();
+      reply.addStatement(message);
+
+      return reply;
+    });
+
+    const alexaSkill = new AlexaPlatform(voxaApp);
+    const rb = new AlexaRequestBuilder("userId", "applicationId");
+    const sessioneEndedRequest = rb.getSessionEndedRequest("ERROR", {
+      message:
+        "The target device does not support directives for the AudioPlayer interface",
+      type: "INVALID_RESPONSE",
+    });
+    const result = await alexaSkill.execute(sessioneEndedRequest);
+
+    expect(result).to.deep.equal({
+        response: {
+          outputSpeech: {
+            ssml: "<speak>There was some error, please try again later</speak>",
+            type: "SSML",
+          },
+          shouldEndSession: false,
+        },
+        sessionAttributes: {},
+        version: "1.0",
+    });
+
   });
 });

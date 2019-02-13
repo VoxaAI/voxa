@@ -179,6 +179,7 @@ export const views = {
       DialogflowSuggestions: {
         dialogflowSuggestions: ["Suggestion 1", "Suggestion 2"],
       },
+      Error: "There was some error, please try again later",
       ExitIntent: {
         Farewell: "Ok. For more info visit {site} site.",
       },
