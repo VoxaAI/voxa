@@ -122,7 +122,6 @@ describe("AlexaPlatform", () => {
   it("should not throw a new error when rendering a reply on an error session ended request", async () => {
     const voxaApp = new VoxaApp({ views });
     voxaApp.onError(async (event: VoxaEvent, error: Error, reply: IVoxaReply) => {
-      console.log("ON ERROR");
       const message = await event.renderer.renderPath("Error", event);
       reply.clear();
       reply.addStatement(message);
