@@ -568,7 +568,17 @@ export class VoxaApp {
         .fromPairs()
         .value();
 
-      finalReply = _.merge(finalReply, replyData);
+      finalReply = _.mergeWith(finalReply, replyData, function customizer(objValue, srcValue) {
+        if (!objValue) {
+          return; // use default merge behavior
+        }
+
+        if (_.isArray(objValue)) {
+          return objValue.concat(srcValue);
+        }
+
+        return [objValue, srcValue];
+      });
     }
 
     return finalReply;

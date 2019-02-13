@@ -325,6 +325,9 @@ export const views = {
           reprompt: "this is a reprompt",
           say: "this is a say",
         },
+        Say2: {
+          say: "this is another say",
+        },
       },
       Reprompt: "reprompt",
       RepromptRandom: ["reprompt1", "reprompt2", "reprompt3"],

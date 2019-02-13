@@ -911,6 +911,23 @@ describe("VoxaApp", () => {
       });
     });
 
+    it("should add the says from multiple replies", async () => {
+      const voxaApp = new VoxaApp({ views, variables });
+      voxaApp.onIntent("SomeIntent", {
+        flow: "yield",
+        reply: ["Reply.Say", "Reply.Say2"],
+        to: "entry",
+      });
+      const alexaSkill = new AlexaPlatform(voxaApp);
+      const response = await alexaSkill.execute(event);
+
+      expect(response.speech).to.deep.equal("<speak>this is a say\nthis is another say</speak>");
+      expect(response.reprompt).to.deep.equal(
+        "<speak>this is a reprompt</speak>",
+      );
+      expect(response.hasTerminated).to.be.false;
+    });
+
     it("should add reply keys to the transiiton", async () => {
       const voxaApp = new VoxaApp({ views, variables });
       const launchEvent = rb.getIntentRequest("LaunchIntent");
