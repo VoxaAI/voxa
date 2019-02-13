@@ -48,5 +48,3 @@ The ``FacebookEvent`` Object
   });
 
   const reply = await facebookBot.execute(event);
-
-You need to pass a configuration object with the `pageAccessToken` property that takes the accessToken of your Facebook page. Voxa will then use this object along with the sender userId to send this action to the messenger chat windows. The window will automatically put the SEEN label on the right bottom of the message sent by the user and will show the typing bubble until the response is sent back from your backend to Facebook or if you send the TypingOff action.

@@ -13,7 +13,22 @@ More integrations comming soon to Voxa
 Facebook Messenger
 ==================
 
-The ``DialogflowPlatform`` for voxa has available some of the core functionalities to send to your chatbot in responses. For now, you can integrate:
+The ``DialogflowPlatform`` for voxa has available some of the core functionalities to send to your chatbot in responses. When you initialize the Facebook Platform object, you can optionally pass a configuration object with the Facebook Page Access Token:
+
+.. code-block:: javascript
+
+  const { FacebookPlatform } = require('voxa');
+
+  const config = {
+    pageAccessToken: 'EAAaKuJF183EBAApxv.........',
+  };
+  const app = new VoxaApp({ views, variables });
+  const facebookBot = new FacebookPlatform(app, config);
+
+
+Voxa will use this token to perform some authentication operations like sending actions to the user's chat window. Check the `Facebook Event <dialogflow-events.html#the-facebookevent-object>`_ object for more details.
+
+Voxa also offers a variety of built-in rich components for you to send along with your response. For now, you can integrate the following:
 
 - Account Linking button
 You need to include in your controller the following field: ``facebookAccountLink``, which takes a URL to go into the account linking flow. For more information about the account linking flow, check how to add a `Log In Button <https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#login>`_, and `Account Linking <https://developers.facebook.com/docs/messenger-platform/identity/account-linking>`_.
