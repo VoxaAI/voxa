@@ -75,6 +75,14 @@ export type IErrorHandler = (
 
 export class VoxaApp {
   [key: string]: any;
+
+  /*
+   * This way we can simply override the method if we want different request types
+   */
+  get requestTypes(): string[] {
+    // eslint-disable-line class-methods-use-this
+    return ["IntentRequest", "SessionEndedRequest"];
+  }
   public eventHandlers: any;
   public requestHandlers: any;
 
@@ -137,14 +145,6 @@ export class VoxaApp {
     ) {
       throw new Error("Model should have a serialize method");
     }
-  }
-
-  /*
-   * This way we can simply override the method if we want different request types
-   */
-  get requestTypes(): string[] {
-    // eslint-disable-line class-methods-use-this
-    return ["IntentRequest", "SessionEndedRequest"];
   }
 
   public async handleOnSessionEnded(
@@ -458,19 +458,7 @@ export class VoxaApp {
 
     const directivesKeyOrder = _.map(directiveClasses, "key");
     if (transition.reply) {
-      // special handling for `transition.reply`
-      const reply = await voxaEvent.renderer.renderPath(
-        transition.reply,
-        voxaEvent,
-      );
-      const replyKeys = _.keys(reply);
-      const replyTransition = _(replyKeys)
-        .map((key) => {
-          return [key, transition.reply + "." + key];
-        })
-        .fromPairs()
-        .value();
-
+      const replyTransition = await this.getReplyTransitions(voxaEvent, transition);
       transition = _.merge(transition, replyTransition);
     }
 
@@ -482,7 +470,7 @@ export class VoxaApp {
       })
       .map(
         _.spread(
-          (key, value): IDirective[] => {
+          function instantiateDirectives(key, value): IDirective[]  {
             const handlers: IDirectiveClass[] = _.filter(
               directiveClasses,
               (classObject: IDirectiveClass) => classObject.key === key,
@@ -495,7 +483,6 @@ export class VoxaApp {
         ),
       )
       .flatten()
-
       .concat(transition.directives || [])
       .filter()
       .filter(
@@ -553,6 +540,38 @@ export class VoxaApp {
     voxaEvent.log.debug("Initialized model ", { model: voxaEvent.model });
     voxaEvent.t = this.i18n.getFixedT(voxaEvent.request.locale);
     voxaEvent.renderer = this.renderer;
+  }
+
+  private async getReplyTransitions(voxaEvent: IVoxaEvent, transition: ITransition): Promise<ITransition> {
+    if (!transition.reply) {
+      return {};
+    }
+    let finalReply = {};
+
+    let replies = [];
+    if (_.isArray(transition.reply)) {
+      replies = transition.reply;
+    } else {
+      replies = [transition.reply];
+    }
+
+    for (const replyItem of replies) {
+      const reply = await voxaEvent.renderer.renderPath(
+        replyItem,
+        voxaEvent,
+      );
+      const replyKeys = _.keys(reply);
+      const replyData =  _(replyKeys)
+        .map((key) => {
+          return [key, replyItem + "." + key];
+        })
+        .fromPairs()
+        .value();
+
+      finalReply = _.merge(finalReply, replyData);
+    }
+
+    return finalReply;
   }
 }
 

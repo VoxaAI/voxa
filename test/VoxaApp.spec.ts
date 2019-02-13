@@ -829,18 +829,14 @@ describe("VoxaApp", () => {
     it("should pick up the say and reprompt statements", async () => {
       const voxaApp = new VoxaApp({ views, variables });
       const platform = new AlexaPlatform(voxaApp);
-      const launchEvent = new AlexaEvent(rb.getIntentRequest("LaunchIntent"));
-      launchEvent.platform = platform;
+      const launchEvent = rb.getIntentRequest("LaunchIntent");
 
       voxaApp.onIntent("LaunchIntent", {
         flow: "yield",
         reply: "Reply.Say",
         to: "entry",
       });
-      const response = (await voxaApp.execute(
-        launchEvent,
-        new AlexaReply(),
-      )) as AlexaReply;
+      const response = await platform.execute(launchEvent);
       expect(response.speech).to.deep.equal("<speak>this is a say</speak>");
       expect(response.reprompt).to.deep.equal(
         "<speak>this is a reprompt</speak>",
@@ -866,6 +862,38 @@ describe("VoxaApp", () => {
       expect(
         _.get(response, "response.reprompt.outputSpeech.ssml"),
       ).to.deep.equal("<speak>reprompt</speak>");
+      expect(response.response.card).to.deep.equal({
+        image: {
+          largeImageUrl: "https://example.com/large.jpg",
+          smallImageUrl: "https://example.com/small.jpg",
+        },
+        title: "Title",
+        type: "Standard",
+      });
+      expect(_.get(response, "response.directives[0]")).to.deep.equal({
+        hint: {
+          text: "this is the hint",
+          type: "PlainText",
+        },
+        type: "Hint",
+      });
+    });
+
+    it("should pickup arrays in the reply", async () => {
+      const voxaApp = new VoxaApp({ views, variables });
+      voxaApp.onIntent("SomeIntent", {
+        flow: "yield",
+        reply: ["Reply.Say", "Reply.Card"],
+        to: "entry",
+      });
+      const alexaSkill = new AlexaPlatform(voxaApp);
+      const response = await alexaSkill.execute(event);
+
+      expect(response.speech).to.deep.equal("<speak>this is a say</speak>");
+      expect(response.reprompt).to.deep.equal(
+        "<speak>this is a reprompt</speak>",
+      );
+      expect(response.hasTerminated).to.be.false;
       expect(response.response.card).to.deep.equal({
         image: {
           largeImageUrl: "https://example.com/large.jpg",
