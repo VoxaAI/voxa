@@ -199,6 +199,14 @@ export class VoxaApp {
     voxaEvent.log.debug("Received new event", { event: voxaEvent.rawEvent });
 
     try {
+      // call all onRequestStarted callbacks serially.
+      await bluebird.mapSeries(
+        this.getOnRequestStartedHandlers(voxaEvent.platform.name),
+        (fn: IEventHandler) => {
+          return fn(voxaEvent, reply);
+        },
+      );
+
       if (!this.requestHandlers[voxaEvent.request.type]) {
         throw new UnknownRequestType(voxaEvent.request.type);
       }
@@ -208,13 +216,6 @@ export class VoxaApp {
         switch (voxaEvent.request.type) {
           case "IntentRequest":
           case "SessionEndedRequest": {
-            // call all onRequestStarted callbacks serially.
-            await bluebird.mapSeries(
-              this.getOnRequestStartedHandlers(voxaEvent.platform.name),
-              (fn: IEventHandler) => {
-                return fn(voxaEvent, reply);
-              },
-            );
 
             if (voxaEvent.session.new) {
               // call all onSessionStarted callbacks serially.
@@ -405,8 +406,8 @@ export class VoxaApp {
     response: IVoxaReply,
   ): Promise<IVoxaReply> {
     let fromState = voxaEvent.session.new
-      ? "entry"
-      : _.get(voxaEvent, "session.attributes.state", "entry");
+    ? "entry"
+    : _.get(voxaEvent, "session.attributes.state", "entry");
     if (fromState === "die") {
       fromState = "entry";
     }
@@ -475,39 +476,39 @@ export class VoxaApp {
     }
 
     const directives: IDirective[] = _(transition)
-      .toPairs()
-      .sortBy((pair) => {
-        const [key, value] = pair;
-        return _.indexOf(directivesKeyOrder, key);
-      })
-      .map(
-        _.spread(
-          (key, value): IDirective[] => {
-            const handlers: IDirectiveClass[] = _.filter(
-              directiveClasses,
-              (classObject: IDirectiveClass) => classObject.key === key,
-            );
-            return _.map(
-              handlers,
-              (Directive: IDirectiveClass) => new Directive(value),
-            ) as IDirective[];
-          },
-        ),
-      )
-      .flatten()
-
-      .concat(transition.directives || [])
-      .filter()
-      .filter(
-        (directive: IDirective): boolean => {
-          const constructor: any = directive.constructor;
-          return _.includes(
-            ["core", voxaEvent.platform.name],
-            constructor.platform,
+    .toPairs()
+    .sortBy((pair) => {
+      const [key, value] = pair;
+      return _.indexOf(directivesKeyOrder, key);
+    })
+    .map(
+      _.spread(
+        (key, value): IDirective[] => {
+          const handlers: IDirectiveClass[] = _.filter(
+            directiveClasses,
+            (classObject: IDirectiveClass) => classObject.key === key,
           );
+          return _.map(
+            handlers,
+            (Directive: IDirectiveClass) => new Directive(value),
+          ) as IDirective[];
         },
-      )
-      .value();
+      ),
+    )
+    .flatten()
+
+    .concat(transition.directives || [])
+    .filter()
+    .filter(
+      (directive: IDirective): boolean => {
+        const constructor: any = directive.constructor;
+        return _.includes(
+          ["core", voxaEvent.platform.name],
+          constructor.platform,
+        );
+      },
+    )
+    .value();
 
     for (const handler of directives) {
       await handler.writeToReply(response, voxaEvent, transition);
