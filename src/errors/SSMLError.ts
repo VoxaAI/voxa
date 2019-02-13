@@ -20,8 +20,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export class SSMLError implements Error {
-  public name = "SSMLError";
-  constructor(public message: string, public ssml: string) {
+export class SSMLError extends Error {
+  constructor( message: string, public ssml: string) {
+    super(message);
   }
 }
