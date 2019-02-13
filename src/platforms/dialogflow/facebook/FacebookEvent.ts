@@ -27,9 +27,15 @@ import { IVoxaUserProfile } from "../../../VoxaEvent";
 import { DialogflowEvent } from "../DialogflowEvent";
 
 export class FacebookEvent extends DialogflowEvent {
+  public facebook = {
+    sendFacebookAction: this.sendFacebookAction.bind(this),
+    sendMarkSeenAction: this.sendMarkSeenAction.bind(this),
+    sendTypingOffAction: this.sendTypingOffAction.bind(this),
+    sendTypingOnAction: this.sendTypingOnAction.bind(this),
+  };
 
   get supportedInterfaces(): string[] {
-    // FACEBOOK MESSENGER DOES NOT HAVE SURFACES
+    // FACEBOOK MESSENGER DOES NOT HAVE INTERFACES
     return [];
   }
   public source: string = "facebook";
@@ -58,7 +64,17 @@ export class FacebookEvent extends DialogflowEvent {
     return result as IVoxaFacebookUserProfile;
   }
 
-  public async sendFacebookAction(event: FACEBOOK_ACTIONS) {
+  protected initUser(): void {
+    const { originalDetectIntentRequest } = this.rawEvent;
+    const userId = _.get(originalDetectIntentRequest, "payload.data.sender.id");
+
+    this.user = {
+      id: userId,
+      userId,
+    };
+  }
+
+  private async sendFacebookAction(event: FACEBOOK_ACTIONS) {
     const params = {
       body: {
         recipient: { id: this.user.id },
@@ -72,26 +88,16 @@ export class FacebookEvent extends DialogflowEvent {
     await rp(params);
   }
 
-  public async sendMarkSeenAction() {
+  private async sendMarkSeenAction() {
     await this.sendFacebookAction(FACEBOOK_ACTIONS.MARK_SEEN);
   }
 
-  public async sendTypingOnAction() {
+  private async sendTypingOnAction() {
     await this.sendFacebookAction(FACEBOOK_ACTIONS.TYPING_ON);
   }
 
-  public async sendTypingOffAction() {
+  private async sendTypingOffAction() {
     await this.sendFacebookAction(FACEBOOK_ACTIONS.TYPING_OFF);
-  }
-
-  protected initUser(): void {
-    const { originalDetectIntentRequest } = this.rawEvent;
-    const userId = _.get(originalDetectIntentRequest, "payload.data.sender.id");
-
-    this.user = {
-      id: userId,
-      userId,
-    };
   }
 
   private getFacebookProfile(fields: string) {

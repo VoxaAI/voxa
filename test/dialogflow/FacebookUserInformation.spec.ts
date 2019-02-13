@@ -90,9 +90,9 @@ describe("FacebookUserInformation", () => {
     app.onIntent(
       "LaunchIntent",
       async (voxaEvent: FacebookEvent) => {
-        await voxaEvent.sendMarkSeenAction();
-        await voxaEvent.sendTypingOnAction();
-        await voxaEvent.sendTypingOffAction();
+        await voxaEvent.facebook.sendMarkSeenAction();
+        await voxaEvent.facebook.sendTypingOnAction();
+        await voxaEvent.facebook.sendTypingOffAction();
 
         const info = await voxaEvent.getUserInformation(FACEBOOK_USER_FIELDS.ALL);
 
@@ -119,9 +119,9 @@ describe("FacebookUserInformation", () => {
     app.onIntent(
       "LaunchIntent",
       async (voxaEvent: FacebookEvent) => {
-        await voxaEvent.sendMarkSeenAction();
-        await voxaEvent.sendTypingOnAction();
-        await voxaEvent.sendTypingOffAction();
+        await voxaEvent.facebook.sendMarkSeenAction();
+        await voxaEvent.facebook.sendTypingOnAction();
+        await voxaEvent.facebook.sendTypingOffAction();
 
         const actionsArray: FACEBOOK_USER_FIELDS[] = [
           FACEBOOK_USER_FIELDS.NAME,
@@ -164,9 +164,9 @@ describe("FacebookUserInformation", () => {
     app.onIntent(
       "LaunchIntent",
       async (voxaEvent: FacebookEvent) => {
-        await voxaEvent.sendMarkSeenAction();
-        await voxaEvent.sendTypingOnAction();
-        await voxaEvent.sendTypingOffAction();
+        await voxaEvent.facebook.sendMarkSeenAction();
+        await voxaEvent.facebook.sendTypingOnAction();
+        await voxaEvent.facebook.sendTypingOffAction();
 
         const info = await voxaEvent.getUserInformation(FACEBOOK_USER_FIELDS.ALL);
 
@@ -199,9 +199,9 @@ describe("FacebookUserInformation", () => {
     app.onIntent(
       "LaunchIntent",
       async (voxaEvent: FacebookEvent) => {
-        await voxaEvent.sendMarkSeenAction();
-        await voxaEvent.sendTypingOnAction();
-        await voxaEvent.sendTypingOffAction();
+        await voxaEvent.facebook.sendMarkSeenAction();
+        await voxaEvent.facebook.sendTypingOnAction();
+        await voxaEvent.facebook.sendTypingOffAction();
 
         const info = await voxaEvent.getUserInformation(FACEBOOK_USER_FIELDS.ALL);
 

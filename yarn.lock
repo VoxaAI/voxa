@@ -153,8 +153,8 @@
     "@types/node" "*"
 
 "@types/fs-extra@^5.0.3":
-  version "5.0.4"
-  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-5.0.4.tgz#b971134d162cc0497d221adde3dbb67502225599"
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-5.0.5.tgz#080d90a792f3fa2c5559eb44bd8ef840aae9104b"
   dependencies:
     "@types/node" "*"
 
@@ -217,9 +217,13 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*", "@types/node@^10.12.11":
-  version "10.12.24"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.24.tgz#b13564af612a22a20b5d95ca40f1bffb3af315cf"
+"@types/node@*":
+  version "11.9.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-11.9.3.tgz#14adbb5ab8cd563f549fbae8dbe92e0b7d6e76cc"
+
+"@types/node@^10.12.11":
+  version "10.12.26"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.26.tgz#2dec19f1f7981c95cb54bab8f618ecb5dc983d0e"
 
 "@types/node@^9.4.6", "@types/node@^9.6.1":
   version "9.6.42"
@@ -291,6 +295,12 @@
   resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-3.4.4.tgz#7af69360fa65ef0decb41fd150bf4ca5c0cefdf5"
   dependencies:
     "@types/node" "*"
+
+abort-controller@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/abort-controller/-/abort-controller-2.0.2.tgz#f0c059173ac7fdc4dba73e3833102def407a6a29"
+  dependencies:
+    event-target-shim "^5.0.0"
 
 actions-on-google@^2.5.0:
   version "2.5.0"
@@ -384,18 +394,18 @@ async@^1.5.2:
   resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
 
 async@^2.5.0:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/async/-/async-2.6.1.tgz#b245a23ca71930044ec53fa46aa00a3e87c6a610"
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/async/-/async-2.6.2.tgz#18330ea7e6e313887f5d2f2a904bac6fe4dd5381"
   dependencies:
-    lodash "^4.17.10"
+    lodash "^4.17.11"
 
 asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
 
 aws-sdk@^2.246.1:
-  version "2.400.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.400.0.tgz#21041439ceeba8e6339b7bed54f2f3703243bbef"
+  version "2.401.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.401.0.tgz#867fd36fa4fc789da8b7c1c387f4ca41b757af75"
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
@@ -770,6 +780,10 @@ esutils@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.2.tgz#0abf4f1caa5bcb1f7a9d8acc6dea4faaa04bac9b"
 
+event-target-shim@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/event-target-shim/-/event-target-shim-5.0.0.tgz#8fabe06975219af64c36ceed4771cf1ad1c3455c"
+
 events@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
@@ -809,7 +823,6 @@ fast-json-stable-stringify@^2.0.0:
 fast-xml-parser@^3.12.13:
   version "3.12.13"
   resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-3.12.13.tgz#15cea8faad48ce78baadd918b1e781303584d35e"
-  integrity sha512-AW0qennqoHQ65BAMZX/7Y2he6WUz3iqmW4L4/EgMXNvTd5Jfubig50F+N2JVthC5DnkhPWRUp+eO6bbaMCnjHA==
   dependencies:
     nimnjs "^1.3.2"
 
@@ -865,9 +878,10 @@ fs.realpath@^1.0.0:
   resolved "https://registry.yarnpkg.com/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
 
 gaxios@^1.0.4:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/gaxios/-/gaxios-1.5.1.tgz#11b6fa57dbc9aa2d88de9069ee6f1a61615a707d"
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/gaxios/-/gaxios-1.7.0.tgz#cf1638426411cb362403038e0787105f5bf08d22"
   dependencies:
+    abort-controller "^2.0.2"
     extend "^3.0.2"
     https-proxy-agent "^2.2.1"
     node-fetch "^2.2.0"
@@ -1311,7 +1325,7 @@ lodash.once@^4.0.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/lodash.once/-/lodash.once-4.1.1.tgz#0dd3971213c7c56df880977d504c88fb471a97ac"
 
-lodash@^4.13.1, lodash@^4.17.10, lodash@^4.17.4, lodash@^4.17.5:
+lodash@^4.13.1, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.4, lodash@^4.17.5:
   version "4.17.11"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
 
@@ -1446,17 +1460,14 @@ nice-try@^1.0.4:
 nimn-date-parser@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/nimn-date-parser/-/nimn-date-parser-1.0.0.tgz#4ce55d1fd5ea206bbe82b76276f7b7c582139351"
-  integrity sha512-1Nf+x3EeMvHUiHsVuEhiZnwA8RMeOBVTQWfB1S2n9+i6PYCofHd2HRMD+WOHIHYshy4T4Gk8wQoCol7Hq3av8Q==
 
 nimn_schema_builder@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/nimn_schema_builder/-/nimn_schema_builder-1.1.0.tgz#b370ccf5b647d66e50b2dcfb20d0aa12468cd247"
-  integrity sha512-DK5/B8CM4qwzG2URy130avcwPev4uO0ev836FbQyKo1ms6I9z/i6EJyiZ+d9xtgloxUri0W+5gfR8YbPq7SheA==
 
 nimnjs@^1.3.2:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/nimnjs/-/nimnjs-1.3.2.tgz#a6a877968d87fad836375a4f616525e55079a5ba"
-  integrity sha512-TIOtI4iqkQrUM1tiM76AtTQem0c7e56SkDZ7sj1d1MfUsqRcq2ZWQvej/O+HBTZV7u/VKnwlKTDugK/75IRPPw==
   dependencies:
     nimn-date-parser "^1.0.0"
     nimn_schema_builder "^1.0.0"
