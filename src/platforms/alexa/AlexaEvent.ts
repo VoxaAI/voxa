@@ -59,7 +59,6 @@ export class AlexaEvent extends VoxaEvent {
     return _.keys(interfaces);
   }
   public intent?: IVoxaIntent;
-  public source: string = "alexa";
   public rawEvent!: RequestEnvelope;
   public alexa!: {
     customerContact: CustomerContact;

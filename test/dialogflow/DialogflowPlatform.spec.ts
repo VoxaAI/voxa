@@ -29,6 +29,7 @@ import {
   GoogleAssistantPlatform,
 } from "../../src";
 import { VoxaApp } from "../../src/VoxaApp";
+import { variables } from "../variables";
 import { views } from "../views";
 
 describe("DialogflowPlatform", () => {
@@ -69,7 +70,7 @@ describe("FacebookPlatform", () => {
   describe("execute", () => {
     it("should convert the voxaReply to a Dialogflow response", async () => {
       const rawEvent = require("../requests/dialogflow/launchIntent.json");
-      const voxaApp = new VoxaApp({ views });
+      const voxaApp = new VoxaApp({ variables, views });
 
       voxaApp.onIntent("LaunchIntent", () => ({
         text: "LaunchIntent.OpenResponse",
@@ -78,7 +79,7 @@ describe("FacebookPlatform", () => {
       const platform = new FacebookPlatform(voxaApp);
 
       const reply = (await platform.execute(rawEvent)) as FacebookReply;
-      expect(reply.speech).to.equal("Hello from Dialogflow");
+      expect(reply.speech).to.equal("Hello from Facebook");
     });
 
     it("should not close the session on Help Intent", async () => {
@@ -104,7 +105,7 @@ describe("GoogleAssistantPlatform", () => {
   describe("execute", () => {
     it("should convert the voxaReply to a Dialogflow response", async () => {
       const rawEvent = require("../requests/dialogflow/launchIntent.json");
-      const voxaApp = new VoxaApp({ views });
+      const voxaApp = new VoxaApp({ variables, views });
 
       voxaApp.onIntent("LaunchIntent", () => ({
         say: "LaunchIntent.OpenResponse",
@@ -113,7 +114,7 @@ describe("GoogleAssistantPlatform", () => {
       const platform = new GoogleAssistantPlatform(voxaApp);
 
       const reply = (await platform.execute(rawEvent)) as DialogflowReply;
-      expect(reply.speech).to.equal("<speak>Hello from Dialogflow</speak>");
+      expect(reply.speech).to.equal("<speak>Hello from Google Assistant</speak>");
     });
 
     it("should not close the session on Help Intent", async () => {

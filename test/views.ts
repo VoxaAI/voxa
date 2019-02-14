@@ -261,6 +261,8 @@ export const views = {
         OpenResponse: {
           alexa: "Hello! Good {time}",
           dialogflow: "Hello from Dialogflow",
+          facebook: "Hello from Facebook",
+          google: "Hello from Google Assistant",
         },
       },
       Lists: {

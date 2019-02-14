@@ -58,7 +58,6 @@ export class FacebookReply extends DialogflowReply {
     return false;
   }
   public fulfillmentText: string = "";
-  public source: string = "facebook";
   public payload: IFacebookPayload;
 
   constructor(event: FacebookEvent) {

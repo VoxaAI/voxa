@@ -12,7 +12,7 @@ function createQuickReplyDirective(
   key: string,
 ): IDirectiveClass {
   return class implements IDirective {
-    public static platform: string = "dialogflow";
+    public static platform: string = "facebook";
     public static key: string = key;
 
     constructor(
@@ -56,7 +56,7 @@ function createQuickReplyDirective(
         text = this.message;
       }
 
-      dialogflowReply.source = "facebook";
+      dialogflowReply.source = event.platform.name;
       dialogflowReply.payload.facebook = {
         quick_replies: quickReplies,
         text,
@@ -70,7 +70,7 @@ function createGenericTemplateDirective(
   templateType: string,
 ): IDirectiveClass {
   return class implements IDirective {
-    public static platform: string = "dialogflow";
+    public static platform: string = "facebook";
     public static key: string = key;
 
     constructor(public config: string|IFacebookPayloadTemplate) {}
@@ -116,7 +116,7 @@ function createGenericTemplateDirective(
         facebookPayload.elements = elements;
       }
 
-      dialogflowReply.source = "facebook";
+      dialogflowReply.source = event.platform.name;
       dialogflowReply.payload.facebook = {
         attachment: {
           payload: _.omitBy(facebookPayload, _.isNil),
@@ -171,7 +171,7 @@ function getTemplateElements(configElements: IFacebookElementTemplate[]|undefine
 }
 
 export class FacebookAccountLink implements IDirective {
-  public static platform: string = "dialogflow";
+  public static platform: string = "facebook";
   public static key: string = "facebookAccountLink";
 
   constructor(public url: string) {}
@@ -195,7 +195,7 @@ export class FacebookAccountLink implements IDirective {
     const { fulfillmentText } = dialogflowReply;
     const facebookPayload = this.getFacebookPayload(renderedUrl, fulfillmentText);
 
-    dialogflowReply.source = "facebook";
+    dialogflowReply.source = event.platform.name;
     dialogflowReply.payload.facebook = facebookPayload;
   }
 
@@ -221,7 +221,7 @@ export class FacebookAccountLink implements IDirective {
 }
 
 export class FacebookAccountUnlink implements IDirective {
-  public static platform: string = "dialogflow";
+  public static platform: string = "facebook";
   public static key: string = "facebookAccountUnlink";
 
   public async writeToReply(
@@ -231,7 +231,7 @@ export class FacebookAccountUnlink implements IDirective {
   ): Promise<void> {
     const dialogflowReply = reply as FacebookReply;
 
-    dialogflowReply.source = "facebook";
+    dialogflowReply.source = event.platform.name;
     dialogflowReply.payload.facebook = {
       attachment: {
         payload: {
@@ -250,7 +250,7 @@ export class FacebookAccountUnlink implements IDirective {
 }
 
 export class FacebookSuggestionChips implements IDirective {
-  public static platform: string = "dialogflow";
+  public static platform: string = "facebook";
   public static key: string = "facebookSuggestionChips";
 
   constructor(public suggestions: string | string[]) {}
@@ -263,7 +263,7 @@ export class FacebookSuggestionChips implements IDirective {
     const suggestionChips: any[] = await this.getSuggestionChips(event);
     const dialogflowReply = reply as FacebookReply;
 
-    dialogflowReply.source = "facebook";
+    dialogflowReply.source = event.platform.name;
     dialogflowReply.payload.facebook = {
       attachment: {
         payload: {

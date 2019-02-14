@@ -50,7 +50,6 @@ export interface IVoxaEvent {
   session: IVoxaSession;
   intent?: IVoxaIntent;
   request: IVoxaRequest;
-  source: string;
   model: Model;
   t: i18n.TranslationFunction;
   log: LambdaLog;
@@ -67,7 +66,6 @@ export abstract class VoxaEvent implements IVoxaEvent {
   public session!: IVoxaSession;
   public intent?: IVoxaIntent;
   public request!: IVoxaRequest;
-  public source!: string;
   public model!: Model;
   public t!: i18n.TranslationFunction;
   public log!: LambdaLog;

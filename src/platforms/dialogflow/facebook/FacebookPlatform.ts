@@ -54,6 +54,7 @@ export interface IFacebookPlatformConfig extends IVoxaPlatformConfig {
 }
 
 export class FacebookPlatform extends DialogflowPlatform {
+  public name = "facebook";
   protected EventClass = FacebookEvent;
 
   constructor(app: VoxaApp, config: IFacebookPlatformConfig = {}) {
