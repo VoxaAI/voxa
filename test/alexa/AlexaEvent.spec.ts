@@ -23,6 +23,14 @@ describe("AlexaEvent", () => {
     expect(alexaEvent.intent.params).to.deep.equal({ Dish: "Fried Chicken" });
   });
 
+  it("should get the right source", async () => {
+    const rawEvent = rb.getIntentRequest("SomeIntent", {
+      Dish: "Fried Chicken",
+    });
+    const alexaEvent = new AlexaEvent(rawEvent) as IVoxaIntentEvent;
+    expect(alexaEvent.source).to.equal("alexa");
+  });
+
   it("should get token", () => {
     const rawEvent = rb.getPlaybackStoppedRequest("some-token");
     const alexaEvent = new AlexaEvent(rawEvent);
