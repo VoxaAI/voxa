@@ -33,7 +33,7 @@ import { views } from "../views";
 
 describe("DialogflowPlatform", () => {
   describe("execute", () => {
-    it("should convert the voxaReply to a Dialog Flow response", async () => {
+    it("should convert the voxaReply to a Dialogflow response", async () => {
       const rawEvent = require("../requests/dialogflow/launchIntent.json");
       const voxaApp = new VoxaApp({ views });
 
@@ -67,7 +67,7 @@ describe("DialogflowPlatform", () => {
 
 describe("FacebookPlatform", () => {
   describe("execute", () => {
-    it("should convert the voxaReply to a Dialog Flow response", async () => {
+    it("should convert the voxaReply to a Dialogflow response", async () => {
       const rawEvent = require("../requests/dialogflow/launchIntent.json");
       const voxaApp = new VoxaApp({ views });
 
