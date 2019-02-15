@@ -38,7 +38,6 @@ export class FacebookEvent extends DialogflowEvent {
     // FACEBOOK MESSENGER DOES NOT HAVE INTERFACES
     return [];
   }
-  public source: string = "facebook";
 
   public async getUserInformation(
     userFields?: FACEBOOK_USER_FIELDS|FACEBOOK_USER_FIELDS[],

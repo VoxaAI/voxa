@@ -58,6 +58,7 @@ export interface IGoogleAssistantPlatformConfig extends IVoxaPlatformConfig {
 }
 
 export class GoogleAssistantPlatform extends DialogflowPlatform {
+  public name = "google";
   protected EventClass = GoogleAssistantEvent;
 
   constructor(app: VoxaApp, config: IGoogleAssistantPlatformConfig = {}) {

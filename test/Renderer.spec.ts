@@ -28,6 +28,8 @@ import {
   AlexaEvent,
   AlexaPlatform,
   AlexaReply,
+  DialogflowEvent,
+  DialogflowPlatform,
   GoogleAssistantEvent,
   GoogleAssistantPlatform,
   Model,
@@ -259,6 +261,20 @@ describe("Renderer", () => {
   });
 
   it("should use the dialogflow view if available", async () => {
+    const dialogflowEvent = new DialogflowEvent(
+      require("./requests/dialogflow/launchIntent.json"),
+      {},
+    );
+    dialogflowEvent.t = event.t;
+    dialogflowEvent.platform = new DialogflowPlatform(voxaApp);
+    const rendered = await renderer.renderPath(
+      "LaunchIntent.OpenResponse",
+      dialogflowEvent,
+    );
+    expect(rendered).to.equal("Hello from Dialogflow");
+  });
+
+  it("should use the google view if available", async () => {
     const dialogflowEvent = new GoogleAssistantEvent(
       require("./requests/dialogflow/launchIntent.json"),
       {},
@@ -269,6 +285,6 @@ describe("Renderer", () => {
       "LaunchIntent.OpenResponse",
       dialogflowEvent,
     );
-    expect(rendered).to.equal("Hello from Dialogflow");
+    expect(rendered).to.equal("Hello from Google Assistant");
   });
 });

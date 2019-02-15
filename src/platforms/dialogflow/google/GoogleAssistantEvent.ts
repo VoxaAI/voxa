@@ -29,8 +29,6 @@ import { IVoxaUserProfile } from "../../../VoxaEvent";
 import { DialogflowEvent } from "../DialogflowEvent";
 
 export class GoogleAssistantEvent extends DialogflowEvent {
-  public source: string = "google";
-
   public async verifyProfile(): Promise<TokenPayload | undefined> {
     const client = new OAuth2Client(this.platform.config.clientId);
     const payload:

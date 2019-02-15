@@ -60,11 +60,6 @@ describe("DialogflowEvent", () => {
       );
     });
 
-    it("should get the right source", async () => {
-      const event = new DialogflowEvent(launchIntent, {});
-      expect(event.source).to.equal("dialogflow");
-    });
-
     it("should return supported capabilities", () => {
       const event = new DialogflowEvent(launchIntent, {});
       expect(event.supportedInterfaces).to.deep.equal([
@@ -94,11 +89,6 @@ describe("FacebookEvent", () => {
     it("should get the right userId for Facebook Messenger", async () => {
       const event = new FacebookEvent(facebookLaunchIntent, {});
       expect(event.user.id).to.equal("1234567890");
-    });
-
-    it("should get the right source for Facebook Messenger", async () => {
-      const event = new FacebookEvent(facebookLaunchIntent, {});
-      expect(event.source).to.equal("facebook");
     });
 
     it("should return supported capabilities", () => {

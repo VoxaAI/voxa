@@ -67,7 +67,7 @@ function createSystemIntentDirective<IOptions>(
   requiredCapability?: string,
 ): IDirectiveClass {
   return class extends DialogflowDirective<IOptions> implements IDirective {
-    public static platform: string = "dialogflow";
+    public static platform: string = "google";
     public static key: string = key;
 
     constructor(public options: IOptions) {
@@ -100,7 +100,7 @@ function createRichResponseDirective<IOptions>(
   requiredCapability?: string,
 ): IDirectiveClass {
   return class extends DialogflowDirective<IOptions> implements IDirective {
-    public static platform: string = "dialogflow";
+    public static platform: string = "google";
     public static key: string = key;
 
     constructor(public options: IOptions) {
@@ -236,7 +236,7 @@ export const BrowseCarousel = createRichResponseDirective<BasicCardOptions>(
 );
 
 export class Suggestions implements IDirective {
-  public static platform: string = "dialogflow";
+  public static platform: string = "google";
   public static key: string = "dialogflowSuggestions";
 
   constructor(public suggestions: string | string[]) {}
@@ -266,7 +266,7 @@ export interface IContextConfig {
 }
 
 export class Context implements IDirective {
-  public static platform: string = "dialogflow";
+  public static platform: string = "google";
   public static key: string = "dialogflowContext";
 
   constructor(public contextConfig: IContextConfig) {}
