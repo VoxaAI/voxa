@@ -66,7 +66,7 @@ export class GoogleAssistantPlatform extends DialogflowPlatform {
     app.onBeforeReplySent(this.saveStorage, true, this.name);
   }
 
-  protected getReply(event: GoogleAssistantEvent) {
+  protected getReply() {
     return new DialogflowReply();
   }
 

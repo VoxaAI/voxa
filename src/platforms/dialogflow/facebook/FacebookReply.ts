@@ -21,26 +21,27 @@
  */
 
 import * as _ from "lodash";
-import { IBag, IVoxaEvent } from "../../../VoxaEvent";
-import { addToSSML, addToText, IVoxaReply } from "../../../VoxaReply";
+import { addToText } from "../../../VoxaReply";
 import { DialogflowReply, IDialogflowPayload } from "../DialogflowReply";
-import { FacebookEvent } from "./FacebookEvent";
 
 export interface IFacebookPayload extends IDialogflowPayload {
-  facebook: {
-    attachment?: {
-      payload: any;
-      type: string;
+  payload: {
+    facebook: {
+      attachment?: {
+        payload: any;
+        type: string;
+      };
+      quick_replies?: any[];
+      text?: any;
     };
-    quick_replies?: any[];
-    text?: any;
   };
 }
 
 export class FacebookReply extends DialogflowReply {
+  public fulfillmentMessages: IFacebookPayload[] = [];
 
   public get speech(): string {
-    return this.payload.facebook.text || this.fulfillmentText;
+    return this.fulfillmentText;
   }
 
   public get hasDirectives(): boolean {
@@ -58,28 +59,31 @@ export class FacebookReply extends DialogflowReply {
     return false;
   }
   public fulfillmentText: string = "";
-  public payload: IFacebookPayload;
   public source: string = "facebook";
 
-  constructor(event: FacebookEvent) {
+  constructor() {
     super();
-    this.payload = {
-      facebook: {},
-    };
+    _.unset(this, "payload");
   }
 
   public clear() {
-    delete this.payload.facebook.attachment;
-    delete this.payload.facebook.quick_replies;
-    delete this.payload.facebook.text;
-
+    this.fulfillmentMessages = [];
     this.fulfillmentText = "";
   }
 
   public addStatement(statement: string, isPlain: boolean = false) {
     if (isPlain) {
       this.fulfillmentText = addToText(this.fulfillmentText, statement);
-      this.payload.facebook.text = this.fulfillmentText;
+
+      const customFacebookPayload = {
+        payload: {
+          facebook: {
+            text: statement,
+          },
+        },
+      };
+
+      this.fulfillmentMessages.push(customFacebookPayload);
     }
   }
 
@@ -105,13 +109,17 @@ export class FacebookReply extends DialogflowReply {
   }
 
   protected getResponseDirectives(): string[] {
-    const quickRepliesKeys: string[] = _.map(this.payload.facebook.quick_replies, "content_type");
-    const templateType: string = _.get(this.payload.facebook, "attachment.payload.template_type");
+    const responseDirectives = _.map(this.fulfillmentMessages, (message) => {
+      const quickRepliesKeys: string[] = _.map(message.payload.facebook.quick_replies, "content_type");
+      const templateType: string = _.get(message.payload.facebook, "attachment.payload.template_type");
 
-    return _.chain(quickRepliesKeys)
-      .concat(templateType)
-      .uniq()
-      .compact()
-      .value();
+      return _.chain(quickRepliesKeys)
+        .concat(templateType)
+        .uniq()
+        .compact()
+        .value();
+    });
+
+    return _.flattenDeep(responseDirectives) as string[];
   }
 }

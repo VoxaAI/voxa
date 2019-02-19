@@ -56,11 +56,17 @@ function createQuickReplyDirective(
         text = this.message;
       }
 
-      dialogflowReply.source = event.platform.name;
-      dialogflowReply.payload.facebook = {
-        quick_replies: quickReplies,
-        text,
+      const facebookPayload = {
+        payload: {
+          facebook: {
+            quick_replies: quickReplies,
+            text,
+          },
+        },
       };
+
+      dialogflowReply.fulfillmentMessages.push(facebookPayload);
+      dialogflowReply.source = event.platform.name;
     }
   };
 }
@@ -116,13 +122,19 @@ function createGenericTemplateDirective(
         facebookPayload.elements = elements;
       }
 
-      dialogflowReply.source = event.platform.name;
-      dialogflowReply.payload.facebook = {
-        attachment: {
-          payload: _.omitBy(facebookPayload, _.isNil),
-          type: "template",
+      const customFacebookPayload = {
+        payload: {
+          facebook: {
+            attachment: {
+              payload: _.omitBy(facebookPayload, _.isNil),
+              type: "template",
+            },
+          },
         },
       };
+
+      dialogflowReply.fulfillmentMessages.push(customFacebookPayload);
+      dialogflowReply.source = event.platform.name;
     }
   };
 }
@@ -192,29 +204,33 @@ export class FacebookAccountLink implements IDirective {
       renderedUrl = this.url;
     }
 
-    const { fulfillmentText } = dialogflowReply;
+    const fulfillmentText = getTextFromTextTemplate(dialogflowReply);
     const facebookPayload = this.getFacebookPayload(renderedUrl, fulfillmentText);
 
     dialogflowReply.source = event.platform.name;
-    dialogflowReply.payload.facebook = facebookPayload;
+    dialogflowReply.fulfillmentMessages.push(facebookPayload);
   }
 
   private getFacebookPayload(
     renderedUrl: string, fulfillmentText: string,
   ) {
     return {
-      attachment: {
-        payload: {
-          buttons: [
-            {
-              type: FACEBOOK_BUTTONS.ACCOUNT_LINK,
-              url: renderedUrl,
+      payload: {
+        facebook: {
+          attachment: {
+            payload: {
+              buttons: [
+                {
+                  type: FACEBOOK_BUTTONS.ACCOUNT_LINK,
+                  url: renderedUrl,
+                },
+              ],
+              template_type: "button",
+              text: fulfillmentText,
             },
-          ],
-          template_type: "button",
-          text: fulfillmentText,
+            type: "template",
+          },
         },
-        type: "template",
       },
     };
   }
@@ -231,21 +247,27 @@ export class FacebookAccountUnlink implements IDirective {
   ): Promise<void> {
     const dialogflowReply = reply as FacebookReply;
 
-    dialogflowReply.source = event.platform.name;
-    dialogflowReply.payload.facebook = {
-      attachment: {
-        payload: {
-          buttons: [
-            {
-              type: FACEBOOK_BUTTONS.ACCOUNT_UNLINK,
+    const facebookPayload = {
+      payload: {
+        facebook: {
+          attachment: {
+            payload: {
+              buttons: [
+                {
+                  type: FACEBOOK_BUTTONS.ACCOUNT_UNLINK,
+                },
+              ],
+              template_type: "button",
+              text: getTextFromTextTemplate(dialogflowReply),
             },
-          ],
-          template_type: "button",
-          text: dialogflowReply.fulfillmentText,
+            type: "template",
+          },
         },
-        type: "template",
       },
     };
+
+    dialogflowReply.fulfillmentMessages.push(facebookPayload);
+    dialogflowReply.source = event.platform.name;
   }
 }
 
@@ -263,17 +285,23 @@ export class FacebookSuggestionChips implements IDirective {
     const suggestionChips: any[] = await this.getSuggestionChips(event);
     const dialogflowReply = reply as FacebookReply;
 
-    dialogflowReply.source = event.platform.name;
-    dialogflowReply.payload.facebook = {
-      attachment: {
-        payload: {
-          buttons: suggestionChips,
-          template_type: "button",
-          text: dialogflowReply.fulfillmentText,
+    const facebookPayload = {
+      payload: {
+        facebook: {
+          attachment: {
+            payload: {
+              buttons: suggestionChips,
+              template_type: "button",
+              text: getTextFromTextTemplate(dialogflowReply),
+            },
+            type: "template",
+          },
         },
-        type: "template",
       },
     };
+
+    dialogflowReply.fulfillmentMessages.push(facebookPayload);
+    dialogflowReply.source = event.platform.name;
   }
 
   private async getSuggestionChips(
@@ -299,6 +327,18 @@ export class FacebookSuggestionChips implements IDirective {
 
     return suggestionChips;
   }
+}
+
+function getTextFromTextTemplate(dialogflowReply: FacebookReply): string {
+  const textTemplate = _.findLast(dialogflowReply.fulfillmentMessages,
+    x => _.has(x, "payload.facebook.text"));
+
+  if (textTemplate) {
+    _.pull(dialogflowReply.fulfillmentMessages, textTemplate);
+    return textTemplate.payload.facebook.text;
+  }
+
+  return dialogflowReply.fulfillmentText;
 }
 
 export interface IFacebookQuickReply {

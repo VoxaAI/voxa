@@ -38,7 +38,7 @@ export class DialogflowPlatform extends VoxaPlatform {
     super(app, config);
   }
 
-  protected getReply(event: DialogflowEvent) {
+  protected getReply() {
     return new DialogflowReply();
   }
 

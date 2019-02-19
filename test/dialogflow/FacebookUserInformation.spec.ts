@@ -111,7 +111,7 @@ describe("FacebookUserInformation", () => {
     let sessionAttributes = _.find(reply.outputContexts, (x) => _.endsWith(x.name, "attributes"));
     sessionAttributes = JSON.parse(sessionAttributes.parameters.attributes);
 
-    expect(reply.payload.facebook.text).to.equal(outputSpeech);
+    expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal(outputSpeech);
     expect(sessionAttributes.state).to.equal("die");
   });
 
@@ -145,7 +145,7 @@ describe("FacebookUserInformation", () => {
     let sessionAttributes = _.find(reply.outputContexts, (x) => _.endsWith(x.name, "attributes"));
     sessionAttributes = JSON.parse(sessionAttributes.parameters.attributes);
 
-    expect(reply.payload.facebook.text).to.equal(outputSpeech);
+    expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal(outputSpeech);
     expect(sessionAttributes.state).to.equal("die");
   });
 

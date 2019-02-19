@@ -1086,7 +1086,7 @@ describe("Facebook Directives", () => {
 
       const reply = await dialogflowAgent.execute(event);
       expect(reply.fulfillmentText).to.equal("Text!");
-      expect(reply.payload.facebook.attachment.payload).to.deep.equal({
+      expect(reply.fulfillmentMessages[0].payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
           {
             type: FACEBOOK_BUTTONS.ACCOUNT_LINK,
@@ -1110,7 +1110,9 @@ describe("Facebook Directives", () => {
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
       const reply = await dialogflowAgent.execute(event);
-      expect(reply.payload.facebook.attachment.payload).to.deep.equal({
+      const { payload } = reply.fulfillmentMessages[0].payload.facebook.attachment;
+
+      expect(payload).to.deep.equal({
         buttons: [
           {
             type: FACEBOOK_BUTTONS.ACCOUNT_LINK,
@@ -1135,7 +1137,7 @@ describe("Facebook Directives", () => {
 
       const reply = await dialogflowAgent.execute(event);
       expect(reply.fulfillmentText).to.equal("Text!");
-      expect(reply.payload.facebook.attachment.payload).to.deep.equal({
+      expect(reply.fulfillmentMessages[0].payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
           {
             type: FACEBOOK_BUTTONS.ACCOUNT_UNLINK,
@@ -1158,7 +1160,9 @@ describe("Facebook Directives", () => {
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
       const reply = await dialogflowAgent.execute(event);
-      expect(reply.payload.facebook.attachment.payload).to.deep.equal({
+      const { payload } = reply.fulfillmentMessages[0].payload.facebook.attachment;
+
+      expect(payload).to.deep.equal({
         buttons: [
           {
             type: FACEBOOK_BUTTONS.ACCOUNT_UNLINK,
@@ -1182,7 +1186,7 @@ describe("Facebook Directives", () => {
 
       const reply = await dialogflowAgent.execute(event);
       expect(reply.fulfillmentText).to.equal("Pick a suggestion");
-      expect(reply.payload.facebook.attachment.payload).to.deep.equal({
+      expect(reply.fulfillmentMessages[0].payload.facebook.attachment.payload).to.deep.equal({
         buttons: [
           {
             payload: "Suggestion 1",
@@ -1212,7 +1216,9 @@ describe("Facebook Directives", () => {
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
       const reply = await dialogflowAgent.execute(event);
-      expect(reply.payload.facebook.attachment.payload).to.deep.equal({
+      const { payload } = reply.fulfillmentMessages[0].payload.facebook.attachment;
+
+      expect(payload).to.deep.equal({
         buttons: [
           {
             payload: "yes",
@@ -1243,8 +1249,9 @@ describe("Facebook Directives", () => {
 
       const reply = await dialogflowAgent.execute(event);
       expect(reply.fulfillmentText).to.equal("Text!");
-      expect(reply.payload.facebook.text).to.equal("Send me your location");
-      expect(reply.payload.facebook.quick_replies).to.deep.equal([
+      expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("Text!");
+      expect(reply.fulfillmentMessages[1].payload.facebook.text).to.equal("Send me your location");
+      expect(reply.fulfillmentMessages[1].payload.facebook.quick_replies).to.deep.equal([
         {
           content_type: "location",
         },
@@ -1263,8 +1270,11 @@ describe("Facebook Directives", () => {
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
       const reply = await dialogflowAgent.execute(event);
-      expect(reply.payload.facebook.text).to.equal("Send me your location");
-      expect(reply.payload.facebook.quick_replies).to.deep.equal([
+      const { payload } = reply.fulfillmentMessages[1].payload.facebook;
+
+      expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("Text!");
+      expect(reply.fulfillmentMessages[1].payload.facebook.text).to.equal("Send me your location");
+      expect(reply.fulfillmentMessages[1].payload.facebook.quick_replies).to.deep.equal([
         {
           content_type: "location",
         },
@@ -1283,9 +1293,10 @@ describe("Facebook Directives", () => {
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
       const reply = await dialogflowAgent.execute(event);
-      expect(reply.fulfillmentText).to.equal("Text!");
-      expect(reply.payload.facebook.text).to.equal("Send me your phone number");
-      expect(reply.payload.facebook.quick_replies).to.deep.equal([
+
+      expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("Text!");
+      expect(reply.fulfillmentMessages[1].payload.facebook.text).to.equal("Send me your phone number");
+      expect(reply.fulfillmentMessages[1].payload.facebook.quick_replies).to.deep.equal([
         {
           content_type: "user_phone_number",
         },
@@ -1304,8 +1315,10 @@ describe("Facebook Directives", () => {
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
       const reply = await dialogflowAgent.execute(event);
-      expect(reply.payload.facebook.text).to.equal("Send me your phone number");
-      expect(reply.payload.facebook.quick_replies).to.deep.equal([
+
+      expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("Text!");
+      expect(reply.fulfillmentMessages[1].payload.facebook.text).to.equal("Send me your phone number");
+      expect(reply.fulfillmentMessages[1].payload.facebook.quick_replies).to.deep.equal([
         {
           content_type: "user_phone_number",
         },
@@ -1344,8 +1357,9 @@ describe("Facebook Directives", () => {
 
       _.unset(quickReplyExpect, "imageUrl");
 
-      expect(reply.payload.facebook.text).to.equal(quickReplyMessage);
-      expect(reply.payload.facebook.quick_replies).to.deep.equal([quickReplyExpect]);
+      expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("Text!");
+      expect(reply.fulfillmentMessages[1].payload.facebook.text).to.equal(quickReplyMessage);
+      expect(reply.fulfillmentMessages[1].payload.facebook.quick_replies).to.deep.equal([quickReplyExpect]);
     });
 
     it("should send a quick reply for options request from an array", async () => {
@@ -1387,8 +1401,9 @@ describe("Facebook Directives", () => {
       _.unset(quickReplyExpect[0], "imageUrl");
       _.unset(quickReplyExpect[1], "imageUrl");
 
-      expect(reply.payload.facebook.text).to.equal("What's your favorite shape?");
-      expect(reply.payload.facebook.quick_replies).to.deep.equal(quickReplyExpect);
+      expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("Text!");
+      expect(reply.fulfillmentMessages[1].payload.facebook.text).to.equal("What's your favorite shape?");
+      expect(reply.fulfillmentMessages[1].payload.facebook.quick_replies).to.deep.equal(quickReplyExpect);
     });
   });
 
@@ -1404,8 +1419,8 @@ describe("Facebook Directives", () => {
 
       const reply = await dialogflowAgent.execute(event);
       expect(reply.fulfillmentText).to.equal("Text!");
-      expect(reply.payload.facebook.text).to.equal("Send me your email");
-      expect(reply.payload.facebook.quick_replies).to.deep.equal([
+      expect(reply.fulfillmentMessages[1].payload.facebook.text).to.equal("Send me your email");
+      expect(reply.fulfillmentMessages[1].payload.facebook.quick_replies).to.deep.equal([
         {
           content_type: "user_email",
         },
@@ -1424,8 +1439,10 @@ describe("Facebook Directives", () => {
       event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
 
       const reply = await dialogflowAgent.execute(event);
-      expect(reply.payload.facebook.text).to.equal("Send me your email");
-      expect(reply.payload.facebook.quick_replies).to.deep.equal([
+
+      expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("Text!");
+      expect(reply.fulfillmentMessages[1].payload.facebook.text).to.equal("Send me your email");
+      expect(reply.fulfillmentMessages[1].payload.facebook.quick_replies).to.deep.equal([
         {
           content_type: "user_email",
         },
@@ -1446,7 +1463,10 @@ describe("Facebook Directives", () => {
       const facebookButtonTemplatePayload = require("../requests/dialogflow/facebookButtonTemplatePayload.json");
 
       const reply = await dialogflowAgent.execute(event);
-      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookButtonTemplatePayload);
+      const { payload } = reply.fulfillmentMessages[1].payload.facebook.attachment;
+
+      expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("Text!");
+      expect(payload).to.deep.equal(facebookButtonTemplatePayload);
     });
 
     it("should send a FacebookButtonTemplate", async () => {
@@ -1491,7 +1511,10 @@ describe("Facebook Directives", () => {
       const facebookButtonTemplatePayload = require("../requests/dialogflow/facebookButtonTemplatePayload.json");
 
       const reply = await dialogflowAgent.execute(event);
-      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookButtonTemplatePayload);
+      const { payload } = reply.fulfillmentMessages[1].payload.facebook.attachment;
+
+      expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("Text!");
+      expect(payload).to.deep.equal(facebookButtonTemplatePayload);
     });
   });
 
@@ -1508,7 +1531,10 @@ describe("Facebook Directives", () => {
       const facebookCarouselPayload = require("../requests/dialogflow/facebookCarouselPayload.json");
 
       const reply = await dialogflowAgent.execute(event);
-      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookCarouselPayload);
+      const { payload } = reply.fulfillmentMessages[1].payload.facebook.attachment;
+
+      expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("Text!");
+      expect(payload).to.deep.equal(facebookCarouselPayload);
     });
 
     it("should send a FacebookCarousel template", async () => {
@@ -1568,7 +1594,10 @@ describe("Facebook Directives", () => {
       const facebookCarouselPayload = require("../requests/dialogflow/facebookCarouselPayload.json");
 
       const reply = await dialogflowAgent.execute(event);
-      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookCarouselPayload);
+      const { payload } = reply.fulfillmentMessages[1].payload.facebook.attachment;
+
+      expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("Text!");
+      expect(payload).to.deep.equal(facebookCarouselPayload);
     });
   });
 
@@ -1585,7 +1614,10 @@ describe("Facebook Directives", () => {
       const facebookListPayload = require("../requests/dialogflow/facebookListPayload.json");
 
       const reply = await dialogflowAgent.execute(event);
-      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookListPayload);
+      const { payload } = reply.fulfillmentMessages[1].payload.facebook.attachment;
+
+      expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("Text!");
+      expect(payload).to.deep.equal(facebookListPayload);
     });
 
     it("should send a FacebookList template", async () => {
@@ -1657,7 +1689,10 @@ describe("Facebook Directives", () => {
       const facebookListPayload = require("../requests/dialogflow/facebookListPayload.json");
 
       const reply = await dialogflowAgent.execute(event);
-      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookListPayload);
+      const { payload } = reply.fulfillmentMessages[1].payload.facebook.attachment;
+
+      expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("Text!");
+      expect(payload).to.deep.equal(facebookListPayload);
     });
   });
 
@@ -1674,7 +1709,10 @@ describe("Facebook Directives", () => {
       const facebookOpenGraphTemplatePayload = require("../requests/dialogflow/facebookOpenGraphTemplatePayload.json");
 
       const reply = await dialogflowAgent.execute(event);
-      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookOpenGraphTemplatePayload);
+      const { payload } = reply.fulfillmentMessages[1].payload.facebook.attachment;
+
+      expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("Text!");
+      expect(payload).to.deep.equal(facebookOpenGraphTemplatePayload);
     });
 
     it("should send a FacebookOpenGraphTemplate", async () => {
@@ -1716,7 +1754,154 @@ describe("Facebook Directives", () => {
       const facebookOpenGraphTemplatePayload = require("../requests/dialogflow/facebookOpenGraphTemplatePayload.json");
 
       const reply = await dialogflowAgent.execute(event);
-      expect(reply.payload.facebook.attachment.payload).to.deep.equal(facebookOpenGraphTemplatePayload);
+      const { payload } = reply.fulfillmentMessages[1].payload.facebook.attachment;
+
+      expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("Text!");
+      expect(payload).to.deep.equal(facebookOpenGraphTemplatePayload);
+    });
+  });
+
+  describe("Multiple directives", () => {
+    it("should send a text, accountlink, suggestion chip and " +
+      "FacebookOpenGraphTemplate directive in the right order using a reply view", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "continue",
+        reply: "Facebook.AccountLink",
+        to: "state1",
+      });
+
+      app.onState("state1", {
+        flow: "continue",
+        reply: "Facebook.Suggestions",
+        to: "state2",
+      });
+
+      app.onState("state2", {
+        flow: "yield",
+        reply: "Facebook.OpenGraphTemplate",
+        to: "entry",
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const facebookOpenGraphTemplatePayload = require("../requests/dialogflow/facebookOpenGraphTemplatePayload.json");
+
+      const reply = await dialogflowAgent.execute(event);
+
+      expect(reply.fulfillmentMessages[0].payload.facebook.attachment.payload).to.deep.equal({
+        buttons: [
+          {
+            type: FACEBOOK_BUTTONS.ACCOUNT_LINK,
+            url: "https://www.messenger.com",
+          },
+        ],
+        template_type: "button",
+        text: "Text!",
+      });
+      expect(reply.fulfillmentMessages[1].payload.facebook.attachment.payload).to.deep.equal({
+        buttons: [
+          {
+            payload: "Suggestion 1",
+            title: "Suggestion 1",
+            type: FACEBOOK_BUTTONS.POSTBACK,
+          },
+          {
+            payload: "Suggestion 2",
+            title: "Suggestion 2",
+            type: FACEBOOK_BUTTONS.POSTBACK,
+          },
+        ],
+        template_type: "button",
+        text: "Pick a suggestion",
+      });
+      expect(reply.fulfillmentMessages[2].payload.facebook.text).to.deep.equal("Text!");
+      expect(reply.fulfillmentMessages[3].payload.facebook.attachment.payload).to.deep.equal(
+        facebookOpenGraphTemplatePayload,
+      );
+    });
+
+    it("should send a text, accountlink, suggestion chip and " +
+      "FacebookOpenGraphTemplate directive in the right order", async () => {
+      app.onIntent("LaunchIntent", {
+        facebookAccountLink: "https://www.messenger.com",
+        flow: "continue",
+        sayp: "Say!",
+        textp: "Text!",
+        to: "state1",
+      });
+
+      app.onState("state1", {
+        facebookSuggestionChips: ["yes", "no"],
+        flow: "continue",
+        to: "state2",
+      });
+
+      app.onState("state2", (voxaEvent: FacebookEvent) => {
+        const elementBuilder1 = new FacebookElementTemplateBuilder();
+        const buttonBuilder1 = new FacebookButtonTemplateBuilder();
+        const buttonBuilder2 = new FacebookButtonTemplateBuilder();
+        const facebookTemplateBuilder = new FacebookTemplateBuilder();
+
+        buttonBuilder1
+          .setTitle("Go to Wikipedia")
+          .setType(FACEBOOK_BUTTONS.WEB_URL)
+          .setUrl("https://en.wikipedia.org/wiki/Rickrolling");
+
+        buttonBuilder2
+          .setTitle("Go to Twitter")
+          .setType(FACEBOOK_BUTTONS.WEB_URL)
+          .setUrl("http://www.twitter.com");
+
+        elementBuilder1
+          .addButton(buttonBuilder1.build())
+          .addButton(buttonBuilder2.build())
+          .setUrl("https://open.spotify.com/track/7GhIk7Il098yCjg4BQjzvb");
+
+        facebookTemplateBuilder
+          .addElement(elementBuilder1.build());
+
+        return {
+          facebookOpenGraphTemplate: facebookTemplateBuilder.build(),
+          flow: "yield",
+          to: "entry",
+        };
+      });
+
+      event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+
+      const facebookOpenGraphTemplatePayload = require("../requests/dialogflow/facebookOpenGraphTemplatePayload.json");
+
+      const reply = await dialogflowAgent.execute(event);
+
+      expect(reply.fulfillmentMessages[0].payload.facebook.attachment.payload).to.deep.equal({
+        buttons: [
+          {
+            type: FACEBOOK_BUTTONS.ACCOUNT_LINK,
+            url: "https://www.messenger.com",
+          },
+        ],
+        template_type: "button",
+        text: "Text!",
+      });
+      expect(reply.fulfillmentMessages[1].payload.facebook.attachment.payload).to.deep.equal({
+        buttons: [
+          {
+            payload: "yes",
+            title: "yes",
+            type: FACEBOOK_BUTTONS.POSTBACK,
+          },
+          {
+            payload: "no",
+            title: "no",
+            type: FACEBOOK_BUTTONS.POSTBACK,
+          },
+        ],
+        template_type: "button",
+        text: "Text!",
+      });
+      expect(reply.fulfillmentMessages[2].payload.facebook.attachment.payload).to.deep.equal(
+        facebookOpenGraphTemplatePayload,
+      );
     });
   });
 });
