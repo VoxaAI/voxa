@@ -331,7 +331,7 @@ export class FacebookSuggestionChips implements IDirective {
 
 function getTextFromTextTemplate(dialogflowReply: FacebookReply): string {
   const textTemplate = _.findLast(dialogflowReply.fulfillmentMessages,
-    x => _.has(x, "payload.facebook.text"));
+    (x) => _.has(x, "payload.facebook.text"));
 
   if (textTemplate) {
     _.pull(dialogflowReply.fulfillmentMessages, textTemplate);
