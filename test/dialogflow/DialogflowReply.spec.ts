@@ -38,13 +38,7 @@ describe("FacebookReply", () => {
   let reply: FacebookReply;
 
   beforeEach(() => {
-    reply = new FacebookReply(new FacebookEvent({
-      queryResult: {
-        intent: {
-          displayName: "LaunchIntent",
-        },
-      },
-    }));
+    reply = new FacebookReply();
   });
 
   describe("hasTerminated", () => {
@@ -64,20 +58,26 @@ describe("FacebookReply", () => {
     });
 
     it("should return false for a reply with a directive not found", () => {
-      reply.payload.facebook.quick_replies = [
-        {
-          content_type: "Email",
+      const facebookPayload = {
+        payload: {
+          facebook: {},
         },
-      ];
+      };
+      _.set(facebookPayload.payload.facebook, "quick_replies", [{ content_type: "Email" }]);
+
+      reply.fulfillmentMessages.push(facebookPayload);
       expect(reply.hasDirective("Location")).to.be.false;
     });
 
     it("should return true for a reply with a directive", () => {
-      reply.payload.facebook.quick_replies = [
-        {
-          content_type: "Location",
+      const facebookPayload = {
+        payload: {
+          facebook: {},
         },
-      ];
+      };
+      _.set(facebookPayload.payload.facebook, "quick_replies", [{ content_type: "Location" }]);
+
+      reply.fulfillmentMessages.push(facebookPayload);
       expect(reply.hasDirective("Location")).to.be.true;
     });
   });
@@ -99,7 +99,14 @@ describe("FacebookReply", () => {
     });
 
     it("should return an empty string for a reply without a simple response", () => {
-      reply.payload.facebook.text = "";
+      const facebookPayload = {
+        payload: {
+          facebook: {},
+        },
+      };
+      _.set(facebookPayload.payload.facebook, "text", "");
+
+      reply.fulfillmentMessages.push(facebookPayload);
       expect(reply.speech).to.equal("");
     });
   });
@@ -113,14 +120,14 @@ describe("FacebookReply", () => {
   describe("addStatement", () => {
     it("should add to both the speech and richResponse", () => {
       reply.addStatement("THIS IS A TEST", true);
-      expect(reply.payload.facebook.text).to.equal("THIS IS A TEST");
+      expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("THIS IS A TEST");
       expect(reply.fulfillmentText).to.equal("THIS IS A TEST");
       expect(reply.speech).to.equal("THIS IS A TEST");
     });
 
     it("should not add speech", () => {
       reply.addStatement("THIS IS A TEST");
-      expect(reply.payload.facebook.text).to.be.undefined;
+      expect(_.get(reply, "fulfillmentMessages[0].payload.facebook.text")).to.be.undefined;
       expect(reply.fulfillmentText).to.equal("");
       expect(reply.speech).to.equal("");
     });
@@ -131,9 +138,9 @@ describe("FacebookReply", () => {
       reply.addStatement("THIS IS A TEST");
       reply.clear();
 
-      expect(reply.payload.facebook.attachment).to.be.undefined;
-      expect(reply.payload.facebook.quick_replies).to.be.undefined;
-      expect(reply.payload.facebook.text).to.be.undefined;
+      expect(_.get(reply, "fulfillmentMessages[0].payload.facebook.attachment")).to.be.undefined;
+      expect(_.get(reply, "fulfillmentMessages[0].payload.facebook.quick_replies")).to.be.undefined;
+      expect(_.get(reply, "fulfillmentMessages[0].payload.facebook.text")).to.be.undefined;
       expect(reply.fulfillmentText).to.equal("");
       expect(reply.speech).to.be.empty;
     });

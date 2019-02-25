@@ -53,6 +53,7 @@ export interface IGooglePayload extends IDialogflowPayload {
 
 export class DialogflowReply implements IVoxaReply {
   public outputContexts: GoogleCloudDialogflowV2Context[] = [];
+  public fulfillmentMessages?: any[];
   public fulfillmentText: string = "";
   public source: string = "google";
   public payload: IDialogflowPayload;

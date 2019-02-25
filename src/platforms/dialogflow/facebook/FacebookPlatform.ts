@@ -61,8 +61,8 @@ export class FacebookPlatform extends DialogflowPlatform {
     super(app, config);
   }
 
-  protected getReply(event: FacebookEvent) {
-    return new FacebookReply(event);
+  protected getReply() {
+    return new FacebookReply();
   }
 
   protected getDirectiveHandlers(): IDirectiveClass[] {

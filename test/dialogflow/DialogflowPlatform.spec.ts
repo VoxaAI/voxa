@@ -96,7 +96,7 @@ describe("FacebookPlatform", () => {
 
       const reply = (await platform.execute(rawEvent)) as FacebookReply;
       expect(reply.speech).to.equal("This is the help");
-      expect(reply.payload.facebook.text).to.equal("This is the help");
+      expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("This is the help");
     });
   });
 });
