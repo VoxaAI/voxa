@@ -193,7 +193,7 @@ export class DialogElicitSlot extends AlexaDirective implements IDirective {
   public static platform: string = "alexa";
   public static key: string = "alexaElicitDialog";
 
-  private static validate(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition) {
+  private static validate(options: IElicitDialogOptions, reply: IVoxaReply, event: IVoxaEvent, transition: ITransition) {
     if (reply.hasDirective("Dialog.ElicitSlot")) {
       throw new Error(
         "At most one Dialog.ElicitSlot directive can be specified in a response",
@@ -203,6 +203,11 @@ export class DialogElicitSlot extends AlexaDirective implements IDirective {
     if (transition.to && transition.to !== "die" && transition.to !== _.get(event, "rawEvent.request.intent.name")) {
       throw new Error(
         "You cannot transition to a new intent while using a Dialog.ElicitSlot directive");
+    }
+
+    if (!options.slotToElicit) {
+      throw new Error(
+        "slotToElicit is required for the Dialog.ElicitSlot directive");
     }
 
     if (!_.has(event, "rawEvent.request.dialogState") || _.get(event, "rawEvent.request.dialogState") === "COMPLETED") {
@@ -222,7 +227,7 @@ export class DialogElicitSlot extends AlexaDirective implements IDirective {
     event: IVoxaEvent,
     transition: ITransition,
   ): Promise<void> {
-    DialogElicitSlot.validate(reply, event, transition);
+    DialogElicitSlot.validate(this.options, reply, event, transition);
     this.buildDirective(event);
     // Alexa is always going to return to this intent with the results of this dialog
     // so we can't move anywhere else.
@@ -237,9 +242,12 @@ export class DialogElicitSlot extends AlexaDirective implements IDirective {
     const slots = intent.slots;
 
     if (this.options.slots) {
-      _.forEach(_.values(this.options.slots), (value) => {
-        if (_.has(slots, value.name)) {
-          slots[value.name] = value;
+      _.forOwn(this.options.slots, (value, key) => {
+        if (_.has(slots, key)) {
+          if (!_.has(value, "name")) {
+            _.set(value, "name", key);
+          }
+          slots[key] = value;
         }
       });
     }
