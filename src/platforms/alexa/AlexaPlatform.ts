@@ -20,7 +20,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {dialog, RequestEnvelope} from "ask-sdk-model";
+import { RequestEnvelope} from "ask-sdk-model";
 import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
 import * as _ from "lodash";
@@ -46,7 +46,6 @@ import {
   RenderTemplate,
   StopAudio,
 } from "./directives";
-import ElicitSlotDirective = dialog.ElicitSlotDirective;
 
 const AlexaRequests = [
   "AudioPlayer.PlaybackStarted",
