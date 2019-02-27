@@ -20,7 +20,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {dialog, Directive, interfaces, Response, Slot, ui} from "ask-sdk-model";
+import { dialog, Directive, interfaces, Response, Slot, ui } from "ask-sdk-model";
 import * as _ from "lodash";
 import { IDirective } from "../../directives";
 import { ITransition } from "../../StateMachine";
