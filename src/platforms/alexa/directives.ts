@@ -20,7 +20,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { dialog, Directive, interfaces, Response, ui } from "ask-sdk-model";
+import {dialog, Directive, interfaces, Response, Slot, ui} from "ask-sdk-model";
 import * as _ from "lodash";
 import { IDirective } from "../../directives";
 import { ITransition } from "../../StateMachine";
@@ -180,6 +180,78 @@ export class DialogDelegate extends AlexaDirective implements IDirective {
   protected buildDirective(event: IVoxaEvent) {
     this.directive = {
       type: "Dialog.Delegate",
+    };
+  }
+}
+
+export interface IElicitDialogOptions {
+  slotToElicit: string;
+  slots: { [key: string]: Slot };
+}
+
+export class DialogElicitSlot extends AlexaDirective implements IDirective {
+  public static platform: string = "alexa";
+  public static key: string = "alexaElicitDialog";
+
+  private static validate(reply: IVoxaReply, event: IVoxaEvent, transition: ITransition) {
+    if (reply.hasDirective("Dialog.ElicitSlot")) {
+      throw new Error(
+        "At most one Dialog.ElicitSlot directive can be specified in a response",
+      );
+    }
+
+    if (transition.to && transition.to !== "die" && transition.to !== _.get(event, "rawEvent.request.intent.name")) {
+      throw new Error(
+        "You cannot transition to a new intent while using a Dialog.ElicitSlot directive");
+    }
+
+    if (!_.has(event, "rawEvent.request.dialogState") || _.get(event, "rawEvent.request.dialogState") === "COMPLETED") {
+      throw new Error(
+        "Intent is missing dialogState or has already completed this dialog and cannot elicit any slots");
+    }
+  }
+
+  public directive!: dialog.ElicitSlotDirective;
+
+  constructor(public options: IElicitDialogOptions) {
+    super();
+  }
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    DialogElicitSlot.validate(reply, event, transition);
+    this.buildDirective(event);
+    // Alexa is always going to return to this intent with the results of this dialog
+    // so we can't move anywhere else.
+    transition.flow = "yield";
+    transition.to = _.get(event, "rawEvent.request.intent.name");
+
+    this.addDirective(reply);
+  }
+
+  protected buildDirective(event: IVoxaEvent) {
+    const intent = _.get(event, "rawEvent.request.intent");
+    const slots = intent.slots;
+
+    if (this.options.slots) {
+      _.forEach(_.values(this.options.slots), (value) => {
+        if (_.has(slots, value.name)) {
+          slots[value.name] = value;
+        }
+      });
+    }
+
+    this.directive = {
+      slotToElicit: this.options.slotToElicit,
+      type: "Dialog.ElicitSlot",
+      updatedIntent: {
+        confirmationStatus: "NONE",
+        name: intent.name,
+        slots,
+      },
     };
   }
 }

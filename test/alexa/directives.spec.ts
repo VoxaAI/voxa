@@ -318,6 +318,28 @@ describe("Alexa directives", () => {
     });
   });
 
+  describe("DialogElicitSlot", () => {
+    it("should render a DialogElicitSlot directive", async () => {
+      app.onIntent("YesIntent", {
+        alexaElicitDialog: {
+          slotToElicit: "hello_world",
+        },
+      });
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          slotToElicit: "hello_world",
+          type: "Dialog.ElicitSlot",
+          updatedIntent: {
+            confirmationStatus: "NONE",
+            name: "AMAZON.YesIntent",
+            slots: {},
+          },
+        },
+      ]);
+    });
+  });
+
   describe("HomeCard", () => {
     it("should be usable from the directives", async () => {
       app.onIntent("YesIntent", {

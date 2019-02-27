@@ -20,7 +20,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { RequestEnvelope } from "ask-sdk-model";
+import {dialog, RequestEnvelope} from "ask-sdk-model";
 import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
 import * as _ from "lodash";
@@ -36,7 +36,7 @@ import {
   APLCommand,
   APLTemplate,
   ConnectionsSendRequest,
-  DialogDelegate,
+  DialogDelegate, DialogElicitSlot,
   GadgetControllerLightDirective,
   GameEngineStartInputHandler,
   GameEngineStopInputHandler,
@@ -46,6 +46,7 @@ import {
   RenderTemplate,
   StopAudio,
 } from "./directives";
+import ElicitSlotDirective = dialog.ElicitSlotDirective;
 
 const AlexaRequests = [
   "AudioPlayer.PlaybackStarted",
@@ -110,6 +111,7 @@ export class AlexaPlatform extends VoxaPlatform {
       AccountLinkingCard,
       ConnectionsSendRequest,
       DialogDelegate,
+      DialogElicitSlot,
       GadgetControllerLightDirective,
       GameEngineStartInputHandler,
       GameEngineStopInputHandler,
