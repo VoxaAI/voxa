@@ -458,34 +458,42 @@ export class VoxaApp {
 
     const directivesKeyOrder = _.map(directiveClasses, "key");
     if (transition.reply) {
-      const replyTransition = await this.getReplyTransitions(voxaEvent, transition);
+      const replyTransition = await this.getReplyTransitions(
+        voxaEvent,
+        transition,
+      );
       transition = _.merge(transition, replyTransition);
     }
 
     const directives: IDirective[] = _(transition)
       .toPairs()
-      .sortBy((pair) => {
+      .sortBy((pair: any[]) => {
         const [key, value] = pair;
         return _.indexOf(directivesKeyOrder, key);
       })
       .map(
-        _.spread(
-          function instantiateDirectives(key, value): IDirective[]  {
-            let handlers: IDirectiveClass[] = _.filter(
-              directiveClasses,
-              (classObject: IDirectiveClass) => classObject.key === key,
-            );
+        _.spread(function instantiateDirectives(
+          key: string,
+          value: any,
+        ): IDirective[] {
+          let handlers: IDirectiveClass[] = _.filter(
+            directiveClasses,
+            (classObject: IDirectiveClass) => classObject.key === key,
+          );
 
-            if (handlers.length > 1) {
-              handlers = _.filter(handlers, (handler: IDirectiveClass) => handler.platform === voxaEvent.platform.name);
-            }
-
-            return _.map(
+          if (handlers.length > 1) {
+            handlers = _.filter(
               handlers,
-              (Directive: IDirectiveClass) => new Directive(value),
-            ) as IDirective[];
-          },
-        ),
+              (handler: IDirectiveClass) =>
+                handler.platform === voxaEvent.platform.name,
+            );
+          }
+
+          return _.map(
+            handlers,
+            (Directive: IDirectiveClass) => new Directive(value),
+          ) as IDirective[];
+        }),
       )
       .flatten()
       .concat(transition.directives || [])
@@ -547,7 +555,10 @@ export class VoxaApp {
     voxaEvent.renderer = this.renderer;
   }
 
-  private async getReplyTransitions(voxaEvent: IVoxaEvent, transition: ITransition): Promise<ITransition> {
+  private async getReplyTransitions(
+    voxaEvent: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<ITransition> {
     if (!transition.reply) {
       return {};
     }
@@ -561,19 +572,19 @@ export class VoxaApp {
     }
 
     for (const replyItem of replies) {
-      const reply = await voxaEvent.renderer.renderPath(
-        replyItem,
-        voxaEvent,
-      );
+      const reply = await voxaEvent.renderer.renderPath(replyItem, voxaEvent);
       const replyKeys = _.keys(reply);
-      const replyData =  _(replyKeys)
+      const replyData = _(replyKeys)
         .map((key) => {
           return [key, replyItem + "." + key];
         })
         .fromPairs()
         .value();
 
-      finalReply = _.mergeWith(finalReply, replyData, function customizer(objValue, srcValue) {
+      finalReply = _.mergeWith(finalReply, replyData, function customizer(
+        objValue,
+        srcValue,
+      ) {
         if (!objValue) {
           return; // use default merge behavior
         }
