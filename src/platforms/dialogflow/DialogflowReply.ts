@@ -84,16 +84,11 @@ export class DialogflowReply implements IVoxaReply {
       return "";
     }
 
-    const simpleResponseItem = _.find(
-      richResponse.items,
-      (item) => !!item.simpleResponse,
-    );
-
-    if (!simpleResponseItem) {
-      return "";
-    }
-
-    return simpleResponseItem.simpleResponse!.textToSpeech || "";
+    return _(richResponse.items)
+      .filter((item) => !!item.simpleResponse)
+      .map("simpleResponse.textToSpeech")
+      .value()
+      .join("\n");
   }
 
   public get hasMessages(): boolean {
@@ -193,7 +188,7 @@ export class DialogflowReply implements IVoxaReply {
     const richResponse = this.payload.google.richResponse || new RichResponse();
     this.payload.google.richResponse = richResponse;
 
-    const simpleResponseItem = _.find(
+    const simpleResponseItem = _.findLast(
       richResponse.items,
       (item) => !!item.simpleResponse,
     );

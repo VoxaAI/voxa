@@ -29,7 +29,7 @@ export interface IDirective {
   ) => Promise<void>;
 }
 
-function sampleOrItem(
+export function sampleOrItem(
   statement: string | string[],
   platform: VoxaPlatform,
 ): string {
@@ -114,7 +114,7 @@ export class Say implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition,
+   transition: ITransition,
   ): Promise<void> {
     let viewPaths = this.viewPaths;
     if (_.isString(viewPaths)) {

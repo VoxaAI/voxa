@@ -25,7 +25,9 @@ import {
   Place as ActionsOnGooglePlace,
   RegisterUpdate as ActionsOnGoogleRegisterUpdate,
   RegisterUpdateOptions,
+  RichResponse,
   SignIn as ActionsOnGoogleSignIn,
+  SimpleResponse,
   Suggestions as ActionsOnGoogleSuggestions,
   Table as ActionsOnGoogleTable,
   TransactionDecision as ActionsOnGoogleTransactionDecision,
@@ -35,6 +37,7 @@ import {
 } from "actions-on-google";
 import * as _ from "lodash";
 
+import * as bluebird from "bluebird";
 import { IDirective, IDirectiveClass } from "../../../directives";
 import { ITransition } from "../../../StateMachine";
 import { IVoxaEvent } from "../../../VoxaEvent";
@@ -282,5 +285,38 @@ export class Context implements IDirective {
       this.contextConfig.lifespan,
       this.contextConfig.parameters,
     );
+  }
+}
+
+import { sampleOrItem, Say as BaseSay } from "../../../directives";
+
+export class Say extends BaseSay {
+  public static key: string = "say";
+  public static platform: string = "google";
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    const google = (reply as DialogflowReply).payload.google;
+    let richResponse: RichResponse = google.richResponse;
+    if (!richResponse) {
+      richResponse = new RichResponse([]);
+    }
+    google.richResponse = richResponse;
+
+    let viewPaths = this.viewPaths;
+    if (_.isString(viewPaths)) {
+      viewPaths = [viewPaths];
+    }
+
+    await bluebird.mapSeries(viewPaths, async (view: string) => {
+      const statement = await event.renderer.renderPath(view, event);
+      if (transition.dialogflowSplitSimpleResponses) {
+        richResponse.add(new SimpleResponse(""));
+      }
+      reply.addStatement(sampleOrItem(statement, event.platform));
+    });
   }
 }

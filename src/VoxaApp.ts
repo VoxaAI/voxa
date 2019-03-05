@@ -471,10 +471,15 @@ export class VoxaApp {
       .map(
         _.spread(
           function instantiateDirectives(key, value): IDirective[]  {
-            const handlers: IDirectiveClass[] = _.filter(
+            let handlers: IDirectiveClass[] = _.filter(
               directiveClasses,
               (classObject: IDirectiveClass) => classObject.key === key,
             );
+
+            if (handlers.length > 1) {
+              handlers = _.filter(handlers, (handler: IDirectiveClass) => handler.platform === voxaEvent.platform.name);
+            }
+
             return _.map(
               handlers,
               (Directive: IDirectiveClass) => new Directive(value),
