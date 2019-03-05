@@ -264,30 +264,30 @@ describe("VoxaPlatform", () => {
     });
 
     it("should register states as platform specific", async () => {
-      const alexaReply = (await alexaSkill.execute(alexaLaunch)) as AlexaReply;
+      const alexaReply = await alexaSkill.execute(alexaLaunch);
       expect(alexaReply.speech).to.include("Hello from alexa");
 
-      const dialogfloweReply = (await dialogflowAction.execute(
+      const dialogfloweReply = await dialogflowAction.execute(
         dialogflowLaunch,
-      )) as DialogflowReply;
+      );
 
       expect(dialogfloweReply.speech).to.include("Hello from dialogflow");
     });
 
     it("should not modify the original transition in the state definition", async () => {
-      let reply = (await dialogflowAction.execute(
+      let reply = await dialogflowAction.execute(
         dialogflowLaunch,
-      )) as DialogflowReply;
+      );
       expect(reply.speech).to.equal("<speak>Hello from dialogflow</speak>");
 
-      reply = (await dialogflowAction.execute(
+      reply = await dialogflowAction.execute(
         dialogflowLaunch,
-      )) as DialogflowReply;
+      );
       expect(reply.speech).to.equal("<speak>Hello from dialogflow</speak>");
 
-      reply = (await dialogflowAction.execute(
+      reply = await dialogflowAction.execute(
         dialogflowLaunch,
-      )) as DialogflowReply;
+      );
       expect(reply.speech).to.equal("<speak>Hello from dialogflow</speak>");
     });
   });

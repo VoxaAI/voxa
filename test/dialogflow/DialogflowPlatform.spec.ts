@@ -44,7 +44,7 @@ describe("DialogflowPlatform", () => {
 
       const platform = new DialogflowPlatform(voxaApp);
 
-      const reply = (await platform.execute(rawEvent)) as DialogflowReply;
+      const reply = await platform.execute(rawEvent);
       expect(reply.speech).to.equal("<speak>Hello from Dialogflow</speak>");
     });
 
@@ -59,7 +59,7 @@ describe("DialogflowPlatform", () => {
 
       const platform = new DialogflowPlatform(voxaApp);
 
-      const reply = (await platform.execute(rawEvent)) as DialogflowReply;
+      const reply = await platform.execute(rawEvent);
       expect(reply.speech).to.equal("<speak>This is the help</speak>");
       expect(reply.payload.google.expectUserResponse).to.be.true;
     });
@@ -78,7 +78,7 @@ describe("FacebookPlatform", () => {
 
       const platform = new FacebookPlatform(voxaApp);
 
-      const reply = (await platform.execute(rawEvent)) as FacebookReply;
+      const reply = await platform.execute(rawEvent);
       expect(reply.speech).to.equal("Hello from Facebook");
     });
 
@@ -94,7 +94,7 @@ describe("FacebookPlatform", () => {
 
       const platform = new FacebookPlatform(voxaApp);
 
-      const reply = (await platform.execute(rawEvent)) as FacebookReply;
+      const reply = await platform.execute(rawEvent);
       expect(reply.speech).to.equal("This is the help");
       expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("This is the help");
     });
@@ -128,7 +128,7 @@ describe("GoogleAssistantPlatform", () => {
 
       const platform = new GoogleAssistantPlatform(voxaApp);
 
-      const reply = (await platform.execute(rawEvent)) as DialogflowReply;
+      const reply = await platform.execute(rawEvent);
       expect(reply.speech).to.equal("<speak>This is the help</speak>");
       expect(reply.payload.google.expectUserResponse).to.be.true;
     });
@@ -150,7 +150,7 @@ describe("GoogleAssistantPlatform", () => {
 
       const platform = new GoogleAssistantPlatform(voxaApp);
 
-      const reply = (await platform.execute(rawEvent)) as DialogflowReply;
+      const reply = await platform.execute(rawEvent);
       console.log(JSON.stringify(reply.payload.google.richResponse, null, 2));
       expect(reply.payload.google.richResponse.items.length).to.equal(3);
       expect(reply.payload.google.richResponse.items[2]).to.deep.equal({

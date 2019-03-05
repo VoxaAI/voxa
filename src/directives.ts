@@ -114,7 +114,7 @@ export class Say implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-   transition: ITransition,
+    transition: ITransition,
   ): Promise<void> {
     let viewPaths = this.viewPaths;
     if (_.isString(viewPaths)) {
