@@ -151,7 +151,6 @@ describe("GoogleAssistantPlatform", () => {
       const platform = new GoogleAssistantPlatform(voxaApp);
 
       const reply = await platform.execute(rawEvent);
-      console.log(JSON.stringify(reply.payload.google.richResponse, null, 2));
       expect(reply.payload.google.richResponse.items.length).to.equal(3);
       expect(reply.payload.google.richResponse.items[2]).to.deep.equal({
         basicCard: {
