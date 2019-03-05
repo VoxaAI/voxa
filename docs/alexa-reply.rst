@@ -1,7 +1,7 @@
 .. _alexa-reply:
 
 The ``AlexaReply`` Object
-====================
+=========================
 
 
 .. js:class:: AlexaReply()

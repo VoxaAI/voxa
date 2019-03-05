@@ -96,7 +96,7 @@ Voxa provides a `DisplayTemplate` builder that can be used with the `alexaRender
 
 
 Alexa Presentation Language (APL) Templates
---------------
+-------------------------------------------
 
 `Alexa Documentation <https://developer.amazon.com/docs/alexa-presentation-language/apl-overview.html>`_
 
@@ -152,7 +152,7 @@ One important thing to know is that is you sent a Render Template and a APL Temp
 
 
 Alexa Presentation Language (APL) Commands
---------------
+------------------------------------------
 
 `Alexa Documentation <https://developer.amazon.com/docs/alexa-presentation-language/apl-commands.html>`_
 

@@ -138,6 +138,7 @@ Links
   botframework-directives
   dialogflow-platforms
   alexa-apis
+  canFulfillIntentRequest
   lwa
   google-sign-in
   voxa-reply

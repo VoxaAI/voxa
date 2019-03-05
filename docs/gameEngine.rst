@@ -95,7 +95,7 @@ A very simple example on how the GameEngine.InputHandlerEvent JSON request from 
   }
 
 
-The field `originatingRequestId`_ provides the requestId of the request to which you responded with a StartInputHandler directive. You need to save this value in your session attributes to send the `StopInputHandler <https://developer.amazon.com/docs/gadget-skills/gameengine-interface-reference.html#stop>`_ directive. You can send this directive with Voxa as follows:
+The field ``originatingRequestId`` provides the requestId of the request to which you responded with a StartInputHandler directive. You need to save this value in your session attributes to send the `StopInputHandler <https://developer.amazon.com/docs/gadget-skills/gameengine-interface-reference.html#stop>`_ directive. You can send this directive with Voxa as follows:
 
 .. code-block:: javascript
 
@@ -111,4 +111,3 @@ The field `originatingRequestId`_ provides the requestId of the request to which
   });
 
 This will stop Echo Button events to be sent to your skill.
-

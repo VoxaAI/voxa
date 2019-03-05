@@ -44,4 +44,7 @@ The ``reply`` Object
 
 For the speceific classes used in every platform you can check:
 
-- :ref:`AlexaReply <alexa-reply>`
+.. toctree::
+  :maxdepth: 2
+
+  alexa-reply

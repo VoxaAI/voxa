@@ -3,7 +3,7 @@
 .. _googleassistant-event:
 
 The ``GoogleAssistantEvent`` Object
-==============================
+===================================
 
 .. js:class:: GoogleAssistantEvent(event, lambdaContext)
 
