@@ -7,6 +7,20 @@ Dialogflow offers a variety of integrations so you share your base code across s
 
 More integrations comming soon to Voxa
 
+.. _google_assistant:
+
+Google Assistant
+----------------
+
+The most common Dialogflow integration is the GoogleAssistantPlatform.
+
+.. code-block:: javascript
+
+  const { GoogleAssistantPlatform } = require('voxa');
+
+  const app = new VoxaApp({ views, variables });
+  const googleAction = new GoogleAssistantPlatform(app);
+
 
 .. _facebook:
 
