@@ -472,28 +472,9 @@ export class VoxaApp {
         return _.indexOf(directivesKeyOrder, key);
       })
       .map(
-        _.spread(function instantiateDirectives(
-          key: string,
-          value: any,
-        ): IDirective[] {
-          let handlers: IDirectiveClass[] = _.filter(
-            directiveClasses,
-            (classObject: IDirectiveClass) => classObject.key === key,
-          );
-
-          if (handlers.length > 1) {
-            handlers = _.filter(
-              handlers,
-              (handler: IDirectiveClass) =>
-                handler.platform === voxaEvent.platform.name,
-            );
-          }
-
-          return _.map(
-            handlers,
-            (Directive: IDirectiveClass) => new Directive(value),
-          ) as IDirective[];
-        }),
+        _.spread((key, value) =>
+          instantiateDirectives(key, value, voxaEvent, directiveClasses),
+        ),
       )
       .flatten()
       .concat(transition.directives || [])
@@ -619,4 +600,28 @@ export function initializeI118n(
     nonExplicitWhitelist: true,
     resources: views,
   });
+}
+
+function instantiateDirectives(
+  key: string,
+  value: any,
+  voxaEvent: IVoxaEvent,
+  directiveClasses: IDirectiveClass[],
+): IDirective[] {
+  let handlers: IDirectiveClass[] = _.filter(
+    directiveClasses,
+    (classObject: IDirectiveClass) => classObject.key === key,
+  );
+
+  if (handlers.length > 1) {
+    handlers = _.filter(
+      handlers,
+      (handler: IDirectiveClass) => handler.platform === voxaEvent.platform.name,
+    );
+  }
+
+  return _.map(
+    handlers,
+    (Directive: IDirectiveClass) => new Directive(value),
+  ) as IDirective[];
 }
