@@ -45,6 +45,7 @@ import {
   Permission,
   Place,
   RegisterUpdate,
+  Say,
   Suggestions,
   Table,
   TransactionDecision,
@@ -108,6 +109,7 @@ export class GoogleAssistantPlatform extends DialogflowPlatform {
       TransactionDecision,
       TransactionRequirements,
       UpdatePermission,
+      Say,
     ];
   }
 }

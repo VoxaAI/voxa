@@ -29,7 +29,7 @@ export interface IDirective {
   ) => Promise<void>;
 }
 
-function sampleOrItem(
+export function sampleOrItem(
   statement: string | string[],
   platform: VoxaPlatform,
 ): string {

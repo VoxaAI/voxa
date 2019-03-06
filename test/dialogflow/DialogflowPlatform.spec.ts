@@ -44,7 +44,7 @@ describe("DialogflowPlatform", () => {
 
       const platform = new DialogflowPlatform(voxaApp);
 
-      const reply = (await platform.execute(rawEvent)) as DialogflowReply;
+      const reply = await platform.execute(rawEvent);
       expect(reply.speech).to.equal("<speak>Hello from Dialogflow</speak>");
     });
 
@@ -59,7 +59,7 @@ describe("DialogflowPlatform", () => {
 
       const platform = new DialogflowPlatform(voxaApp);
 
-      const reply = (await platform.execute(rawEvent)) as DialogflowReply;
+      const reply = await platform.execute(rawEvent);
       expect(reply.speech).to.equal("<speak>This is the help</speak>");
       expect(reply.payload.google.expectUserResponse).to.be.true;
     });
@@ -78,7 +78,7 @@ describe("FacebookPlatform", () => {
 
       const platform = new FacebookPlatform(voxaApp);
 
-      const reply = (await platform.execute(rawEvent)) as FacebookReply;
+      const reply = await platform.execute(rawEvent);
       expect(reply.speech).to.equal("Hello from Facebook");
     });
 
@@ -94,7 +94,7 @@ describe("FacebookPlatform", () => {
 
       const platform = new FacebookPlatform(voxaApp);
 
-      const reply = (await platform.execute(rawEvent)) as FacebookReply;
+      const reply = await platform.execute(rawEvent);
       expect(reply.speech).to.equal("This is the help");
       expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal("This is the help");
     });
@@ -128,9 +128,49 @@ describe("GoogleAssistantPlatform", () => {
 
       const platform = new GoogleAssistantPlatform(voxaApp);
 
-      const reply = (await platform.execute(rawEvent)) as DialogflowReply;
+      const reply = await platform.execute(rawEvent);
       expect(reply.speech).to.equal("<speak>This is the help</speak>");
       expect(reply.payload.google.expectUserResponse).to.be.true;
+    });
+  });
+
+  describe("simple responses", () => {
+    it("should separate simple responses when dialogflowSplitSimpleResponses is present and true", async () => {
+      const rawEvent = require("../requests/dialogflow/launchIntent.json");
+      const voxaApp = new VoxaApp({ variables, views });
+
+      voxaApp.onIntent("LaunchIntent", () => ({
+        dialogflowSplitSimpleResponses: true,
+        reply: [
+          "Reply.Say",
+          "Reply.DialogflowBasicCard",
+          "Reply.Say2",
+        ],
+      }));
+
+      const platform = new GoogleAssistantPlatform(voxaApp);
+
+      const reply = await platform.execute(rawEvent);
+      expect(reply.payload.google.richResponse.items.length).to.equal(3);
+      expect(reply.payload.google.richResponse.items[2]).to.deep.equal({
+        basicCard: {
+          buttons: [
+            {
+              openUrlAction: "https://example.com",
+              title: "Example.com",
+            },
+          ],
+          formattedText: "This is the text",
+          image: {
+            url: "https://example.com/image.png",
+          },
+          imageDisplayOptions: "DEFAULT",
+          subtitle: "subtitle",
+          title: "title",
+        },
+      });
+
+      expect(reply.speech).to.deep.equal("<speak>this is a say</speak>\n<speak>this is another say</speak>");
     });
   });
 });

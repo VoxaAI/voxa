@@ -2,6 +2,7 @@ import {
   BasicCard as ActionsOnGoogleBasicCard,
   BasicCardOptions,
   BrowseCarousel as ActionsOnGoogleBrowseCarousel,
+  BrowseCarouselOptions,
   Carousel as ActionsOnGoogleCarousel,
   CarouselOptions,
   Confirmation as ActionsOnGoogleConfirmation,
@@ -17,6 +18,7 @@ import {
   List as ActionsOnGoogleList,
   ListOptions,
   MediaResponse as ActionsOnGoogleMediaResponse,
+  MediaResponseOptions,
   NewSurface as ActionsOnGoogleNewSurface,
   NewSurfaceOptions,
   Parameters,
@@ -25,17 +27,25 @@ import {
   Place as ActionsOnGooglePlace,
   RegisterUpdate as ActionsOnGoogleRegisterUpdate,
   RegisterUpdateOptions,
+  RichResponse,
   SignIn as ActionsOnGoogleSignIn,
+  SimpleResponse,
   Suggestions as ActionsOnGoogleSuggestions,
   Table as ActionsOnGoogleTable,
+  TableOptions,
   TransactionDecision as ActionsOnGoogleTransactionDecision,
   TransactionRequirements as ActionsOnGoogleTransactionRequirements,
   UpdatePermission as ActionsOnGoogleUpdatePermission,
   UpdatePermissionOptions,
 } from "actions-on-google";
+import * as bluebird from "bluebird";
 import * as _ from "lodash";
-
-import { IDirective, IDirectiveClass } from "../../../directives";
+import {
+  IDirective,
+  IDirectiveClass,
+  sampleOrItem,
+  Say as BaseSay,
+} from "../../../directives";
 import { ITransition } from "../../../StateMachine";
 import { IVoxaEvent } from "../../../VoxaEvent";
 import { IVoxaReply } from "../../../VoxaReply";
@@ -217,19 +227,21 @@ export const BasicCard = createRichResponseDirective<string | BasicCardOptions>(
   "actions.capability.SCREEN_OUTPUT",
 );
 
-export const MediaResponse = createRichResponseDirective<BasicCardOptions>(
+export const MediaResponse = createRichResponseDirective<MediaResponseOptions>(
   ActionsOnGoogleMediaResponse,
   "dialogflowMediaResponse",
   "actions.capability.AUDIO_OUTPUT",
 );
 
-export const Table = createRichResponseDirective<BasicCardOptions>(
+export const Table = createRichResponseDirective<TableOptions>(
   ActionsOnGoogleTable,
   "dialogflowTable",
   "actions.capability.SCREEN_OUTPUT",
 );
 
-export const BrowseCarousel = createRichResponseDirective<BasicCardOptions>(
+export const BrowseCarousel = createRichResponseDirective<
+  BrowseCarouselOptions
+>(
   ActionsOnGoogleBrowseCarousel,
   "dialogflowBrowseCarousel",
   "actions.capability.SCREEN_OUTPUT",
@@ -276,11 +288,43 @@ export class Context implements IDirective {
     event: IVoxaEvent,
     transition: ITransition,
   ): Promise<void> {
-    const conv: DialogflowConversation = (event as DialogflowEvent).dialogflow.conv;
+    const conv: DialogflowConversation = (event as DialogflowEvent).dialogflow
+      .conv;
     conv.contexts.set(
       this.contextConfig.name,
       this.contextConfig.lifespan,
       this.contextConfig.parameters,
     );
+  }
+}
+
+export class Say extends BaseSay {
+  public static key: string = "say";
+  public static platform: string = "google";
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    const google = (reply as DialogflowReply).payload.google;
+    let richResponse: RichResponse = google.richResponse;
+    if (!richResponse) {
+      richResponse = new RichResponse([]);
+    }
+    google.richResponse = richResponse;
+
+    let viewPaths = this.viewPaths;
+    if (_.isString(viewPaths)) {
+      viewPaths = [viewPaths];
+    }
+
+    await bluebird.mapSeries(viewPaths, async (view: string) => {
+      const statement = await event.renderer.renderPath(view, event);
+      if (transition.dialogflowSplitSimpleResponses) {
+        richResponse.add(new SimpleResponse(""));
+      }
+      reply.addStatement(sampleOrItem(statement, event.platform));
+    });
   }
 }

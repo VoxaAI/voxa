@@ -5,6 +5,7 @@
     "sourceMap": true,
     "strictNullChecks": true,
     "module": "commonjs",
+    "preserveConstEnums": true,
     "target": "ES2017",
     "noImplicitAny": true,
     "allowJs": false,
@@ -15,5 +16,6 @@
   "include": [
     "./src/",
     "./test/"
-    ]
+  ],
+  "exclude": ["node_modules"]
 }

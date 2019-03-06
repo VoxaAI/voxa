@@ -7,6 +7,20 @@ Dialogflow offers a variety of integrations so you share your base code across s
 
 More integrations comming soon to Voxa
 
+.. _google_assistant:
+
+Google Assistant
+----------------
+
+The most common Dialogflow integration is the GoogleAssistantPlatform.
+
+.. code-block:: javascript
+
+  const { GoogleAssistantPlatform } = require('voxa');
+
+  const app = new VoxaApp({ views, variables });
+  const googleAction = new GoogleAssistantPlatform(app);
+
 
 .. _facebook:
 
@@ -30,7 +44,9 @@ Voxa will use this token to perform some authentication operations like sending 
 
 Voxa also offers a variety of built-in rich components for you to send along with your response. For now, you can integrate the following:
 
-- Account Linking button
+Account Linking button
+----------------------
+
 You need to include in your controller the following field: ``facebookAccountLink``, which takes a URL to go into the account linking flow. For more information about the account linking flow, check how to add a `Log In Button <https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#login>`_, and `Account Linking <https://developers.facebook.com/docs/messenger-platform/identity/account-linking>`_.
 
 .. code-block:: javascript
@@ -59,7 +75,9 @@ Or you can also handle these values from your views file
     }
   }
 
-- Account Unlink button
+Account Unlink button
+---------------------
+
 You need to include in your controller the following field: ``facebookAccountUnlink``, which can take any value like a boolean, just to indicate to Voxa we're adding this button to the response. For more information about the account linking flow, check how to add a `Log Out Button <https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#logout>`_, and `Account Linking <https://developers.facebook.com/docs/messenger-platform/identity/account-linking>`_.
 
 .. code-block:: javascript
@@ -89,7 +107,9 @@ Or you can also handle these values from your views file
   }
 
 
-- Location Quick Reply
+Location Quick Reply
+--------------------
+
 You need to include in your controller the following field: ``facebookQuickReplyLocation``, which takes a string with the title of the message that goes along with the button requesting user's location. For more information about the account linking flow, check how to add a `Location Quick Reply <https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies#locations>`_.
 
 .. code-block:: javascript
@@ -119,7 +139,9 @@ Or you can also handle these values from your views file
   }
 
 
-- Phone Number Quick Reply
+Phone Number Quick Reply
+------------------------
+
 You need to include in your controller the following field: ``facebookQuickReplyPhoneNumber``, which takes a string with the title of the message that goes along with the button requesting user's phone number. For more information about the account linking flow, check how to add a `User Phone Number Quick Reply <https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies#phone>`_.
 
 .. code-block:: javascript
@@ -149,7 +171,9 @@ Or you can also handle these values from your views file
   }
 
 
-- Text Quick Reply
+Text Quick Reply
+----------------
+
 You need to include in your controller the following field: ``directives``, which takes an array of directives, and the one you're going to send is a FacebookQuickReplyText directive, that takes 2 parameters:
 - message: string with the title of the message that goes along with the button requesting user's email.
 - replyArray: a IFacebookQuickReply object or array of objets with the options to render in the chat.
@@ -225,7 +249,9 @@ Or you can also handle these values from your views file
   },
 
 
-- Email Quick Reply
+Email Quick Reply
+-----------------
+
 You need to include in your controller the following field: ``facebookQuickReplyUserEmail``, which takes a string with the title of the message that goes along with the button requesting user's email. For more information about the account linking flow, check how to add a `User Email Quick Reply <https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies#email>`_.
 
 .. code-block:: javascript
@@ -255,7 +281,9 @@ Or you can also handle these values from your views file
   }
 
 
-- Postbacks buttons (Suggestion chips)
+Postbacks buttons (Suggestion chips)
+------------------------------------
+
 You need to include in your controller the following field: ``facebookSuggestionChips``, which could be a simple string that the Voxa renderer will get from your views file with an array of strings, or directly an array of strings. For more information about this, check how to add `Postback Buttons <https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback>`_.
 
 .. code-block:: javascript
@@ -287,10 +315,13 @@ Or you can also handle these values from your views file
   }
 
 
-- Carousel
+Carousel
+--------
+
 You need to include in your controller the following field: ``facebookCarousel``, which takes an object with an array of elements to be taken as items in a generic list of buttons. For more information about the carousel, check how to add a `Generic Template <https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic>`_.
 
 .. code-block:: javascript
+
   const {
     FACEBOOK_BUTTONS,
     FACEBOOK_WEBVIEW_HEIGHT_RATIO,
@@ -406,10 +437,13 @@ Or you can also handle these values from your views file
   },
 
 
-- List
+List
+----
+
 You need to include in your controller the following field: ``facebookList``, which takes an object with an array of elements to be taken as items in a list of buttons. For more information about the carousel, check how to add a `List Template <https://developers.facebook.com/docs/messenger-platform/send-messages/template/list>`_.
 
 .. code-block:: javascript
+
   const {
     FACEBOOK_BUTTONS,
     FACEBOOK_WEBVIEW_HEIGHT_RATIO,
@@ -544,10 +578,13 @@ Or you can also handle these values from your views file
   },
 
 
-- Button Template
+Button Template
+---------------
+
 You need to include in your controller the following field: ``facebookButtonTemplate``, which takes an object with an array of buttons to be taken as items in a list of buttons. For more information about the button template, check how to add a `Button Template <https://developers.facebook.com/docs/messenger-platform/send-messages/template/button>`_.
 
 .. code-block:: javascript
+
   const {
     FACEBOOK_BUTTONS,
     FacebookButtonTemplateBuilder,
@@ -637,10 +674,13 @@ Or you can also handle these values from your views file
   },
 
 
-- Open Graph Template
+Open Graph Template
+-------------------
+
 You need to include in your controller the following field: ``facebookOpenGraphTemplate``, which takes an object with an array of buttons to be taken as items in a list of buttons and a url for the open graph link. For more information about the button template, check how to add a `Open Graph Template <https://developers.facebook.com/docs/messenger-platform/send-messages/template/open-graph>`_.
 
 .. code-block:: javascript
+
   const {
     FACEBOOK_BUTTONS,
     FacebookButtonTemplateBuilder,

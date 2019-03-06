@@ -323,6 +323,21 @@ export const views = {
           },
           alexaHint: "this is the hint",
         },
+        DialogflowBasicCard: {
+          dialogflowBasicCard: {
+            buttons: {
+              openUrlAction: "https://example.com",
+              title: "Example.com",
+            },
+            display: "DEFAULT",
+            image: {
+              url: "https://example.com/image.png",
+            },
+            subtitle: "subtitle",
+            text: "This is the text",
+            title: "title",
+          },
+        },
         Say: {
           reprompt: "this is a reprompt",
           say: "this is a say",
