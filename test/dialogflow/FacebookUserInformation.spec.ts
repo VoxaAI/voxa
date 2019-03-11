@@ -31,6 +31,7 @@ import {
   FacebookReply,
   VoxaApp,
 } from "../../src";
+import { PAGE_INBOX_ID } from "../../src/platforms/dialogflow/facebook/FacebookEvent";
 import { variables } from "./../variables";
 import { views } from "./../views";
 
@@ -149,6 +150,87 @@ describe("FacebookUserInformation", () => {
     expect(sessionAttributes.state).to.equal("die");
   });
 
+  it("should pass control over Page Inbox", async () => {
+    event.queryResult.action = "PassControlIntent";
+    event.queryResult.intent.displayName = "PassControlIntent";
+
+    app.onIntent(
+      "PassControlIntent",
+      async (voxaEvent: FacebookEvent) => {
+        await voxaEvent.facebook.passThreadControlToPageInbox("metadata");
+
+        return {
+          flow: "terminate",
+          text: "Facebook.ControlPassed.text",
+          to: "die",
+        };
+      },
+    );
+
+    const reply = await facebookBot.execute(event);
+    const outputSpeech = "Ok. An agent will talk to you soon!";
+
+    let sessionAttributes = _.find(reply.outputContexts, (x) => _.endsWith(x.name, "attributes"));
+    sessionAttributes = JSON.parse(sessionAttributes.parameters.attributes);
+
+    expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal(outputSpeech);
+    expect(sessionAttributes.state).to.equal("die");
+  });
+
+  it("should request control from Page Inbox", async () => {
+    event.queryResult.action = "RequestControlIntent";
+    event.queryResult.intent.displayName = "RequestControlIntent";
+
+    app.onIntent(
+      "RequestControlIntent",
+      async (voxaEvent: FacebookEvent) => {
+        await voxaEvent.facebook.requestThreadControl("metadata");
+
+        return {
+          flow: "terminate",
+          text: "Facebook.ControlRequested.text",
+          to: "die",
+        };
+      },
+    );
+
+    const reply = await facebookBot.execute(event);
+    const outputSpeech = "Ok. Now I'm talking to you!";
+
+    let sessionAttributes = _.find(reply.outputContexts, (x) => _.endsWith(x.name, "attributes"));
+    sessionAttributes = JSON.parse(sessionAttributes.parameters.attributes);
+
+    expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal(outputSpeech);
+    expect(sessionAttributes.state).to.equal("die");
+  });
+
+  it("should take control from Page Inbox", async () => {
+    event.queryResult.action = "TakeControlIntent";
+    event.queryResult.intent.displayName = "TakeControlIntent";
+
+    app.onIntent(
+      "TakeControlIntent",
+      async (voxaEvent: FacebookEvent) => {
+        await voxaEvent.facebook.takeThreadControl("metadata");
+
+        return {
+          flow: "terminate",
+          text: "Facebook.ControlTaken.text",
+          to: "die",
+        };
+      },
+    );
+
+    const reply = await facebookBot.execute(event);
+    const outputSpeech = "Ok. Now I'm taking the control!";
+
+    let sessionAttributes = _.find(reply.outputContexts, (x) => _.endsWith(x.name, "attributes"));
+    sessionAttributes = JSON.parse(sessionAttributes.parameters.attributes);
+
+    expect(reply.fulfillmentMessages[0].payload.facebook.text).to.equal(outputSpeech);
+    expect(sessionAttributes.state).to.equal("die");
+  });
+
   it("should throw an error when sending Facebook MarkSeen Action", async () => {
     nock.cleanAll();
     nock("https://graph.facebook.com")
@@ -236,6 +318,22 @@ function mockFacebookActions() {
     .post("/v3.2/me/messages?access_token=accessToken", {
       recipient,
       sender_action: FACEBOOK_ACTIONS.TYPING_OFF,
+    })
+    .reply(200)
+    .post("/v3.2/me/pass_thread_control?access_token=accessToken", {
+      metadata: "metadata",
+      recipient,
+      target_app_id: PAGE_INBOX_ID,
+    })
+    .reply(200)
+    .post("/v3.2/me/request_thread_control?access_token=accessToken", {
+      metadata: "metadata",
+      recipient,
+    })
+    .reply(200)
+    .post("/v3.2/me/take_thread_control?access_token=accessToken", {
+      metadata: "metadata",
+      recipient,
     })
     .reply(200);
 }

@@ -10,6 +10,8 @@ export {
   APLTemplate,
   ConnectionsSendRequest,
   DialogDelegate,
+  DialogElicitSlot,
+  IElicitDialogOptions,
   GadgetControllerLightDirective,
   GameEngineStartInputHandler,
   GameEngineStopInputHandler,
