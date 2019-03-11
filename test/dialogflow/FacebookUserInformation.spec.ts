@@ -211,7 +211,7 @@ describe("FacebookUserInformation", () => {
     app.onIntent(
       "TakeControlIntent",
       async (voxaEvent: FacebookEvent) => {
-        await voxaEvent.facebook.requestThreadControl("metadata");
+        await voxaEvent.facebook.takeThreadControl("metadata");
 
         return {
           flow: "terminate",
