@@ -28,10 +28,14 @@ import { DialogflowEvent } from "../DialogflowEvent";
 
 export class FacebookEvent extends DialogflowEvent {
   public facebook = {
+    passThreadControl: this.passThreadControl.bind(this),
+    passThreadControlToPageInbox: this.passThreadControlToPageInbox.bind(this),
+    requestThreadControl: this.requestThreadControl.bind(this),
     sendFacebookAction: this.sendFacebookAction.bind(this),
     sendMarkSeenAction: this.sendMarkSeenAction.bind(this),
     sendTypingOffAction: this.sendTypingOffAction.bind(this),
     sendTypingOnAction: this.sendTypingOnAction.bind(this),
+    takeThreadControl: this.takeThreadControl.bind(this),
   };
 
   get supportedInterfaces(): string[] {
@@ -73,18 +77,64 @@ export class FacebookEvent extends DialogflowEvent {
     };
   }
 
-  private async sendFacebookAction(event: FACEBOOK_ACTIONS) {
-    const params = {
-      body: {
-        recipient: { id: this.user.id },
-        sender_action: event,
-      },
+  private async sendFacebookRequest(path: string, body?: any) {
+    const params: any = {
       json: true,
-      method: "POST",
-      uri: `https://graph.facebook.com/v3.2/me/messages?access_token=${this.platform.config.pageAccessToken}`,
+      method: "GET",
+      uri: `https://graph.facebook.com/v3.2/me/${path}?access_token=${this.platform.config.pageAccessToken}`,
     };
 
+    if (body) {
+      body.recipient = { id: this.user.id };
+      params.body = body;
+      params.method = "POST";
+    }
+
     await rp(params);
+  }
+
+  private async passThreadControl(targetAppId: string, metadata?: string) {
+    const body: any = {
+      target_app_id: targetAppId,
+    };
+
+    if (metadata) {
+      body.metadata = metadata;
+    }
+
+    await this.sendFacebookRequest("pass_thread_control", body);
+  }
+
+  private async passThreadControlToPageInbox(metadata?: string) {
+    await this.passThreadControl(PAGE_INBOX_ID, metadata);
+  }
+
+  private async requestThreadControl(metadata?: string) {
+    let body;
+
+    if (metadata) {
+      body = { metadata };
+    }
+
+    await this.sendFacebookRequest("request_thread_control", body);
+  }
+
+  private async takeThreadControl(metadata?: string) {
+    let body;
+
+    if (metadata) {
+      body = { metadata };
+    }
+
+    await this.sendFacebookRequest("take_thread_control", body);
+  }
+
+  private async sendFacebookAction(event: FACEBOOK_ACTIONS) {
+    const body = {
+      sender_action: event,
+    };
+
+    await this.sendFacebookRequest("messages", body);
   }
 
   private async sendMarkSeenAction() {
@@ -116,6 +166,12 @@ export class FacebookEvent extends DialogflowEvent {
     return rp(httpOptions);
   }
 }
+
+/*
+ * Checkout https://developers.facebook.com/docs/messenger-platform/handover-protocol/pass-thread-control#page_inbox
+ * For more information about passing control from Facebook app to Page Inbox
+ */
+export const PAGE_INBOX_ID = "263902037430900";
 
 export enum FACEBOOK_USER_FIELDS {
   ALL = "first_name,gender,id,last_name,locale,name,profile_pic,timezone",
