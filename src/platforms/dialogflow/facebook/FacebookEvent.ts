@@ -109,24 +109,22 @@ export class FacebookEvent extends DialogflowEvent {
     await this.passThreadControl(PAGE_INBOX_ID, metadata);
   }
 
-  private async requestThreadControl(metadata?: string) {
+  private async sendThreadControlRequest(path: string, metadata?: string) {
     let body;
 
     if (metadata) {
       body = { metadata };
     }
 
-    await this.sendFacebookRequest("request_thread_control", body);
+    await this.sendFacebookRequest(path, body);
+  }
+
+  private async requestThreadControl(metadata?: string) {
+    await this.sendThreadControlRequest("request_thread_control", metadata);
   }
 
   private async takeThreadControl(metadata?: string) {
-    let body;
-
-    if (metadata) {
-      body = { metadata };
-    }
-
-    await this.sendFacebookRequest("take_thread_control", body);
+    await this.sendThreadControlRequest("take_thread_control", metadata);
   }
 
   private async sendFacebookAction(event: FACEBOOK_ACTIONS) {
