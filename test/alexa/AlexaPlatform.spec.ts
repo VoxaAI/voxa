@@ -44,7 +44,7 @@ describe("AlexaPlatform", () => {
   });
 
   it("should error if the application has a wrong appId", async () => {
-    const rb = new AlexaRequestBuilder("userId", "applicationId");
+    const rb = new AlexaRequestBuilder();
     const event = rb.getIntentRequest("LaunchIntent");
 
     const voxaApp = new VoxaApp({ views });
@@ -73,7 +73,7 @@ describe("AlexaPlatform", () => {
   });
 
   it("should fail with an OnSessionEndedError", async () => {
-    const rb = new AlexaRequestBuilder("userId", "applicationId");
+    const rb = new AlexaRequestBuilder();
     const sessioneEndedRequest = rb.getSessionEndedRequest("ERROR", {
       message:
         "The target device does not support directives for the AudioPlayer interface",
@@ -96,7 +96,7 @@ describe("AlexaPlatform", () => {
   });
 
   it("should throw an error for invalid SSML", async () => {
-    const rb = new AlexaRequestBuilder("userId", "applicationId");
+    const rb = new AlexaRequestBuilder();
     const launchRequest = rb.getLaunchRequest();
     const voxaApp = new VoxaApp({ views });
     const alexaSkill = new AlexaPlatform(voxaApp, {});
@@ -121,16 +121,18 @@ describe("AlexaPlatform", () => {
 
   it("should not throw a new error when rendering a reply on an error session ended request", async () => {
     const voxaApp = new VoxaApp({ views });
-    voxaApp.onError(async (event: VoxaEvent, error: Error, reply: IVoxaReply) => {
-      const message = await event.renderer.renderPath("Error", event);
-      reply.clear();
-      reply.addStatement(message);
+    voxaApp.onError(
+      async (event: VoxaEvent, error: Error, reply: IVoxaReply) => {
+        const message = await event.renderer.renderPath("Error", event);
+        reply.clear();
+        reply.addStatement(message);
 
-      return reply;
-    });
+        return reply;
+      },
+    );
 
     const alexaSkill = new AlexaPlatform(voxaApp);
-    const rb = new AlexaRequestBuilder("userId", "applicationId");
+    const rb = new AlexaRequestBuilder();
     const sessioneEndedRequest = rb.getSessionEndedRequest("ERROR", {
       message:
         "The target device does not support directives for the AudioPlayer interface",
@@ -139,16 +141,30 @@ describe("AlexaPlatform", () => {
     const result = await alexaSkill.execute(sessioneEndedRequest);
 
     expect(result).to.deep.equal({
-        response: {
-          outputSpeech: {
-            ssml: "<speak>There was some error, please try again later</speak>",
-            type: "SSML",
-          },
-          shouldEndSession: false,
+      response: {
+        outputSpeech: {
+          ssml: "<speak>There was some error, please try again later</speak>",
+          type: "SSML",
         },
-        sessionAttributes: {},
-        version: "1.0",
+        shouldEndSession: false,
+      },
+      sessionAttributes: {},
+      version: "1.0",
     });
+  });
 
+  it("should support views that are not available in english for a LaunchRequest", async () => {
+    const voxaApp = new VoxaApp({ views });
+    voxaApp.onState("LaunchIntent", { say: "GermanOnly", flow: "terminate" });
+
+    const alexaSkill = new AlexaPlatform(voxaApp);
+    const rb = new AlexaRequestBuilder();
+    rb.locale = "de-DE";
+
+    const launchRequest = rb.getLaunchRequest();
+    const result = await alexaSkill.execute(launchRequest);
+    expect(result.speech).to.equal(
+      "<speak>Dieses view ist nur in Deutsch verfügbar</speak>",
+    );
   });
 });
