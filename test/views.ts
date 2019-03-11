@@ -204,6 +204,15 @@ export const views = {
           say: "Say!",
           text: "Text!",
         },
+        ControlPassed: {
+          text: "Ok. An agent will talk to you soon!",
+        },
+        ControlRequested: {
+          text: "Ok. Now I'm talking to you!",
+        },
+        ControlTaken: {
+          text: "Ok. Now I'm taking the control!",
+        },
         List: {
           facebookList: "{facebookList}",
           say: "Say!",
