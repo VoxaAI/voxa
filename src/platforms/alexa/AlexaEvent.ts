@@ -45,7 +45,6 @@ import {
 import { isLocalizedRequest } from "./utils";
 
 export class AlexaEvent extends VoxaEvent {
-
   get token() {
     return _.get(this.rawEvent, "request.token");
   }
@@ -84,7 +83,9 @@ export class AlexaEvent extends VoxaEvent {
   ) {
     super(rawEvent, logOptions, executionContext);
 
-    const locale: string = isLocalizedRequest(rawEvent.request) ? rawEvent.request.locale as string : "en-us";
+    const locale: string = isLocalizedRequest(rawEvent.request)
+      ? (rawEvent.request.locale as string)
+      : "en-us";
 
     this.request = {
       locale,
@@ -105,7 +106,9 @@ export class AlexaEvent extends VoxaEvent {
     const httpOptions: any = {
       json: true,
       method: "GET",
-      uri: `https://api.amazon.com/user/profile?access_token=${this.user.accessToken}`,
+      uri: `https://api.amazon.com/user/profile?access_token=${
+        this.user.accessToken
+      }`,
     };
 
     const result: any = await rp(httpOptions);

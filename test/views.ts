@@ -45,6 +45,7 @@ export const views = {
       ExitIntent: {
         Farewell: "Ok für weitere Infos besuchen {site} Website",
       },
+      GermanOnly: "Dieses view ist nur in Deutsch verfügbar",
       LaunchIntent: {
         OpenResponse: "Hallo! guten {time}",
       },
@@ -128,7 +129,7 @@ export const views = {
       },
       CustomerContact: {
         FullInfo:
-        "Welcome {customerContactGivenName}, your email address is {customerContactEmail}, and your phone number is {customerContactCountry} {customerContactNumber}",
+          "Welcome {customerContactGivenName}, your email address is {customerContactEmail}, and your phone number is {customerContactCountry} {customerContactNumber}",
         PermissionNotGranted:
           "To get the user's info, go to your Alexa app and grant permission to the skill.",
       },
@@ -243,8 +244,7 @@ export const views = {
           text: "Pick a suggestion",
         },
         User: {
-          FullInfo:
-            "Nice to meet you {name}!",
+          FullInfo: "Nice to meet you {name}!",
           PermissionNotGranted:
             "To get the user's info, go to your Alexa app and grant permission to the skill.",
         },
