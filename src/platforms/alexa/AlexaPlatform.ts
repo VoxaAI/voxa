@@ -36,7 +36,8 @@ import {
   APLCommand,
   APLTemplate,
   ConnectionsSendRequest,
-  DialogDelegate, DialogElicitSlot,
+  DialogDelegate,
+  DialogElicitSlot,
   GadgetControllerLightDirective,
   GameEngineStartInputHandler,
   GameEngineStopInputHandler,
@@ -45,6 +46,7 @@ import {
   PlayAudio,
   RenderTemplate,
   StopAudio,
+  VideoAppLaunch,
 } from "./directives";
 
 const AlexaRequests = [
@@ -117,6 +119,7 @@ export class AlexaPlatform extends VoxaPlatform {
       Hint,
       HomeCard,
       PlayAudio,
+      VideoAppLaunch,
       RenderTemplate,
       APLTemplate,
       APLCommand,

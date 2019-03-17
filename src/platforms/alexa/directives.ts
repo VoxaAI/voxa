@@ -20,7 +20,14 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { dialog, Directive, interfaces, Response, Slot, ui } from "ask-sdk-model";
+import {
+  dialog,
+  Directive,
+  interfaces,
+  Response,
+  Slot,
+  ui,
+} from "ask-sdk-model";
 import * as _ from "lodash";
 import { IDirective } from "../../directives";
 import { ITransition } from "../../StateMachine";
@@ -193,26 +200,41 @@ export class DialogElicitSlot extends AlexaDirective implements IDirective {
   public static platform: string = "alexa";
   public static key: string = "alexaElicitDialog";
 
-  private static validate(options: IElicitDialogOptions, reply: IVoxaReply, event: IVoxaEvent, transition: ITransition) {
+  private static validate(
+    options: IElicitDialogOptions,
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ) {
     if (reply.hasDirective("Dialog.ElicitSlot")) {
       throw new Error(
         "At most one Dialog.ElicitSlot directive can be specified in a response",
       );
     }
 
-    if (transition.to && transition.to !== "die" && transition.to !== _.get(event, "rawEvent.request.intent.name")) {
+    if (
+      transition.to &&
+      transition.to !== "die" &&
+      transition.to !== _.get(event, "rawEvent.request.intent.name")
+    ) {
       throw new Error(
-        "You cannot transition to a new intent while using a Dialog.ElicitSlot directive");
+        "You cannot transition to a new intent while using a Dialog.ElicitSlot directive",
+      );
     }
 
     if (!options.slotToElicit) {
       throw new Error(
-        "slotToElicit is required for the Dialog.ElicitSlot directive");
+        "slotToElicit is required for the Dialog.ElicitSlot directive",
+      );
     }
 
-    if (!_.has(event, "rawEvent.request.dialogState") || _.get(event, "rawEvent.request.dialogState") === "COMPLETED") {
+    if (
+      !_.has(event, "rawEvent.request.dialogState") ||
+      _.get(event, "rawEvent.request.dialogState") === "COMPLETED"
+    ) {
       throw new Error(
-        "Intent is missing dialogState or has already completed this dialog and cannot elicit any slots");
+        "Intent is missing dialogState or has already completed this dialog and cannot elicit any slots",
+      );
     }
   }
 
@@ -316,7 +338,9 @@ export class APLTemplate extends AlexaDirective implements IDirective {
   public viewPath?: string;
   public directive?: interfaces.alexa.presentation.apl.RenderDocumentDirective;
 
-  constructor(viewPath: string | interfaces.alexa.presentation.apl.RenderDocumentDirective) {
+  constructor(
+    viewPath: string | interfaces.alexa.presentation.apl.RenderDocumentDirective,
+  ) {
     super();
 
     if (_.isString(viewPath)) {
@@ -360,7 +384,11 @@ export class APLCommand extends AlexaDirective implements IDirective {
   public viewPath?: string;
   public directive?: interfaces.alexa.presentation.apl.ExecuteCommandsDirective;
 
-  constructor(viewPath: string | interfaces.alexa.presentation.apl.ExecuteCommandsDirective) {
+  constructor(
+    viewPath:
+      | string
+      | interfaces.alexa.presentation.apl.ExecuteCommandsDirective,
+  ) {
     super();
 
     if (_.isString(viewPath)) {
@@ -586,5 +614,63 @@ export class ConnectionsSendRequest extends AlexaDirective
     }
 
     this.addDirective(reply);
+  }
+}
+
+export interface IAlexaVideoDataOptions {
+  source: string;
+  title?: string;
+  subtitle?: string;
+}
+
+export class VideoAppLaunch extends AlexaDirective {
+  public static key: string = "alexaVideoAppLaunch";
+  public static platform: string = "alexa";
+
+  public directive?: interfaces.videoapp.LaunchDirective;
+
+  constructor(public options: IAlexaVideoDataOptions | string) {
+    super();
+  }
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    this.validateReply(reply);
+
+    if (!_.includes(event.supportedInterfaces, "VideoApp")) {
+      return;
+    }
+
+    let options: IAlexaVideoDataOptions;
+    if (_.isString(this.options)) {
+      options = await event.renderer.renderPath(this.options, event);
+    } else {
+      options = this.options;
+    }
+
+    this.directive = {
+      type: "VideoApp.Launch",
+      videoItem: {
+        metadata: {
+          subtitle: options.subtitle,
+          title: options.title,
+        },
+        source: options.source,
+      },
+    };
+
+    this.addDirective(reply);
+  }
+
+  private validateReply(reply: IVoxaReply) {
+    if (reply.hasDirective("AudioPlayer.Play")) {
+      throw new Error(
+        "Do not include both an AudioPlayer.Play" +
+          " directive and a VideoApp.Launch directive in the same response",
+      );
+    }
   }
 }
