@@ -561,5 +561,30 @@ describe("Alexa directives", () => {
         },
       ]);
     });
+
+    it("should support setting the options directly from the controller", async () => {
+      app.onIntent("YesIntent", {
+        alexaVideoAppLaunch: {
+          source: "https://example.com/video.mp4",
+          subtitle: "Video Subtitle",
+          title: "Video Title",
+        },
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "VideoApp.Launch",
+          videoItem: {
+            metadata: {
+              subtitle: "Video Subtitle",
+              title: "Video Title",
+            },
+            source: "https://example.com/video.mp4",
+          },
+        },
+      ]);
+    });
   });
 });

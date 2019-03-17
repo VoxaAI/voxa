@@ -20,7 +20,6 @@ import {
 import { IVoxaEvent } from "../src/VoxaEvent";
 
 export const variables = {
-  alexaVideoAppLaunch: () => {},
   card2: () => {
     return new HomeCard({
       image: {
