@@ -20,6 +20,7 @@ import {
 import { IVoxaEvent } from "../src/VoxaEvent";
 
 export const variables = {
+  alexaVideoAppLaunch: () => {},
   card2: () => {
     return new HomeCard({
       image: {
@@ -45,10 +46,10 @@ export const variables = {
     };
   },
   exitDirectiveMessage: function exitDirectiveMessage() {
-    return ({
+    return {
       text: "Thanks for playing!",
       type: "PlainText",
-    });
+    };
   },
   hintDirective: () => {
     return new Hint("this is the hint");
@@ -88,7 +89,10 @@ export const variables = {
   },
 
   listsWithItems: function listsWithItems(request: IVoxaEvent) {
-    return `${_.join(_.initial(request.model.listsWithItems), ", ")}, and ${_.last(request.model.listsWithItems)}`;
+    return `${_.join(
+      _.initial(request.model.listsWithItems),
+      ", ",
+    )}, and ${_.last(request.model.listsWithItems)}`;
   },
 
   customerContactCountry: function customerContactCountry(request: IVoxaEvent) {
@@ -99,7 +103,9 @@ export const variables = {
     return request.model.info.email;
   },
 
-  customerContactGivenName: function customerContactGivenName(request: IVoxaEvent) {
+  customerContactGivenName: function customerContactGivenName(
+    request: IVoxaEvent,
+  ) {
     return request.model.info.givenName;
   },
 
@@ -120,7 +126,10 @@ export const variables = {
   },
 
   reminderAllContent: function reminderAllContent(request: IVoxaEvent) {
-    const reminderContent = _.map(request.model.reminders, (x) => x.alertInfo.spokenInfo.content[0].text);
+    const reminderContent = _.map(
+      request.model.reminders,
+      (x) => x.alertInfo.spokenInfo.content[0].text,
+    );
     return reminderContent.join(", ");
   },
 
@@ -221,18 +230,21 @@ export const variables = {
               messengerExtensions: false,
               title: "View",
               type: FACEBOOK_BUTTONS.WEB_URL,
-              url: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+              url:
+                "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
               webviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.FULL,
             },
           ],
-          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+          imageUrl:
+            "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
           subtitle: "See all our colors",
           title: "Classic T-Shirt Collection",
         },
         {
           defaultActionUrl: "https://www.w3schools.com",
           defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
-          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+          imageUrl:
+            "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
           subtitle: "See all our colors",
           title: "Classic T-Shirt Collection",
         },
@@ -243,13 +255,15 @@ export const variables = {
               messengerExtensions: false,
               title: "View",
               type: FACEBOOK_BUTTONS.WEB_URL,
-              url: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+              url:
+                "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
               webviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
             },
           ],
           defaultActionUrl: "https://www.w3schools.com",
           defaultWebviewHeightRatio: FACEBOOK_WEBVIEW_HEIGHT_RATIO.TALL,
-          imageUrl: "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
+          imageUrl:
+            "https://www.scottcountyiowa.com/sites/default/files/images/pages/IMG_6541-960x720_0.jpg",
           subtitle: "100% Cotton, 200% Comfortable",
           title: "Classic T-Shirt Collection",
         },
@@ -261,7 +275,9 @@ export const variables = {
     return list;
   },
 
-  facebookOpenGraphTemplate: function facebookOpenGraphTemplate(request: IVoxaEvent) {
+  facebookOpenGraphTemplate: function facebookOpenGraphTemplate(
+    request: IVoxaEvent,
+  ) {
     const elementBuilder1 = new FacebookElementTemplateBuilder();
     const buttonBuilder1 = new FacebookButtonTemplateBuilder();
     const buttonBuilder2 = new FacebookButtonTemplateBuilder();
@@ -282,8 +298,7 @@ export const variables = {
       .addButton(buttonBuilder2.build())
       .setUrl("https://open.spotify.com/track/7GhIk7Il098yCjg4BQjzvb");
 
-    facebookTemplateBuilder
-      .addElement(elementBuilder1.build());
+    facebookTemplateBuilder.addElement(elementBuilder1.build());
 
     return facebookTemplateBuilder.build();
   },

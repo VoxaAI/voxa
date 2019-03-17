@@ -518,4 +518,48 @@ describe("Alexa directives", () => {
       await alexaSkill.execute(event);
     });
   });
+
+  describe("VideoApp", () => {
+    it("should render a VideApp.Launch directive", async () => {
+      app.onIntent("YesIntent", {
+        alexaVideoAppLaunch: "Reply.VideoAppLaunch.alexaVideoAppLaunch",
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "VideoApp.Launch",
+          videoItem: {
+            metadata: {
+              subtitle: "Video Subtitle",
+              title: "Video Title",
+            },
+            source: "https://example.com/video.mp4",
+          },
+        },
+      ]);
+    });
+
+    it("should render a VideoApp.Directive when sending a reply response", async () => {
+      app.onIntent("YesIntent", {
+        reply: "Reply.VideoAppLaunch",
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "VideoApp.Launch",
+          videoItem: {
+            metadata: {
+              subtitle: "Video Subtitle",
+              title: "Video Title",
+            },
+            source: "https://example.com/video.mp4",
+          },
+        },
+      ]);
+    });
+  });
 });

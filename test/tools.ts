@@ -173,6 +173,7 @@ export class AlexaRequestBuilder {
             "Alexa.Presentation.APL": {},
             "AudioPlayer": {},
             "Display": {},
+            "VideoApp": {},
           },
         },
         user: {
