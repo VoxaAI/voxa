@@ -9,6 +9,7 @@ import {
   APLTemplate,
   DisplayTemplate,
   HomeCard,
+  PlayAudio,
   VoxaApp,
 } from "../../src/";
 import { AlexaRequestBuilder } from "./../tools";
@@ -346,9 +347,7 @@ describe("Alexa directives", () => {
 
       const reply = await alexaSkill.execute(event);
       expect(reply.response.card).to.be.undefined;
-      expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
-        "An unrecoverable error",
-      );
+      expect(reply.speech).to.include("An unrecoverable error");
     });
 
     it("should not allow more than one card", async () => {
@@ -369,7 +368,7 @@ describe("Alexa directives", () => {
         throw new Error("response missing");
       }
 
-      expect(_.get(reply.response, "outputSpeech.ssml")).to.equal(
+      expect(reply.speech).to.equal(
         "<speak>An unrecoverable error occurred.</speak>",
       );
     });
@@ -585,6 +584,17 @@ describe("Alexa directives", () => {
           },
         },
       ]);
+    });
+
+    it("should throw an error when trying to add both a video and audio directive", async () => {
+      app.onIntent("YesIntent", {
+        directives: [new PlayAudio("url", "token")],
+        reply: ["Reply.VideoAppLaunch"],
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.speech).to.include("An unrecoverable error");
     });
   });
 });
