@@ -9,6 +9,7 @@ import {
   APLTemplate,
   DisplayTemplate,
   HomeCard,
+  PlayAudio,
   VoxaApp,
 } from "../../src/";
 import { AlexaRequestBuilder } from "./../tools";
@@ -346,9 +347,7 @@ describe("Alexa directives", () => {
 
       const reply = await alexaSkill.execute(event);
       expect(reply.response.card).to.be.undefined;
-      expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
-        "An unrecoverable error",
-      );
+      expect(reply.speech).to.include("An unrecoverable error");
     });
 
     it("should not allow more than one card", async () => {
@@ -369,7 +368,7 @@ describe("Alexa directives", () => {
         throw new Error("response missing");
       }
 
-      expect(_.get(reply.response, "outputSpeech.ssml")).to.equal(
+      expect(reply.speech).to.equal(
         "<speak>An unrecoverable error occurred.</speak>",
       );
     });
@@ -516,6 +515,86 @@ describe("Alexa directives", () => {
       });
 
       await alexaSkill.execute(event);
+    });
+  });
+
+  describe("VideoApp", () => {
+    it("should render a VideApp.Launch directive", async () => {
+      app.onIntent("YesIntent", {
+        alexaVideoAppLaunch: "Reply.VideoAppLaunch.alexaVideoAppLaunch",
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "VideoApp.Launch",
+          videoItem: {
+            metadata: {
+              subtitle: "Video Subtitle",
+              title: "Video Title",
+            },
+            source: "https://example.com/video.mp4",
+          },
+        },
+      ]);
+    });
+
+    it("should render a VideoApp.Directive when sending a reply response", async () => {
+      app.onIntent("YesIntent", {
+        reply: "Reply.VideoAppLaunch",
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "VideoApp.Launch",
+          videoItem: {
+            metadata: {
+              subtitle: "Video Subtitle",
+              title: "Video Title",
+            },
+            source: "https://example.com/video.mp4",
+          },
+        },
+      ]);
+    });
+
+    it("should support setting the options directly from the controller", async () => {
+      app.onIntent("YesIntent", {
+        alexaVideoAppLaunch: {
+          source: "https://example.com/video.mp4",
+          subtitle: "Video Subtitle",
+          title: "Video Title",
+        },
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "VideoApp.Launch",
+          videoItem: {
+            metadata: {
+              subtitle: "Video Subtitle",
+              title: "Video Title",
+            },
+            source: "https://example.com/video.mp4",
+          },
+        },
+      ]);
+    });
+
+    it("should throw an error when trying to add both a video and audio directive", async () => {
+      app.onIntent("YesIntent", {
+        directives: [new PlayAudio("url", "token")],
+        reply: ["Reply.VideoAppLaunch"],
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.speech).to.include("An unrecoverable error");
     });
   });
 });

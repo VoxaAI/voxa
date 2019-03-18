@@ -354,6 +354,13 @@ export const views = {
         Say2: {
           say: "this is another say",
         },
+        VideoAppLaunch: {
+          alexaVideoAppLaunch: {
+            source: "https://example.com/video.mp4",
+            subtitle: "Video Subtitle",
+            title: "Video Title",
+          },
+        },
       },
       Reprompt: "reprompt",
       RepromptRandom: ["reprompt1", "reprompt2", "reprompt3"],

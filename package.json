@@ -42,7 +42,7 @@
     "@types/url-join": "^4.0.0",
     "@types/uuid": "^3.4.3",
     "actions-on-google": "^2.6.0",
-    "ask-sdk-model": "^1.11.1",
+    "ask-sdk-model": "^1.13.0",
     "azure-functions-ts-essentials": "^1.3.2",
     "bluebird": "^3.5.1",
     "botbuilder": "^3.16",

@@ -389,10 +389,10 @@ asap@~2.0.3:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
 
-ask-sdk-model@^1.11.1:
-  version "1.12.0"
-  resolved "https://registry.yarnpkg.com/ask-sdk-model/-/ask-sdk-model-1.12.0.tgz#b5483fd2493471b21911fa157d82f92623fa1b2a"
-  integrity sha512-JrWlnQ8VwWMXu70RxrIc09kLXrP1qbMTdfttoABRJzBrBnhvLzX9c1Ie112IRpDCp0SWzNfHbUqeq3Bah7aZ5A==
+ask-sdk-model@^1.13.0:
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/ask-sdk-model/-/ask-sdk-model-1.13.0.tgz#125a5e8c25449ce0d11250d61c138b9afc946cc3"
+  integrity sha512-LmW6/sZXM+RA3m9W4Vm9xpiG58HC4tg3q/EA0tFUWazIpt817p7WZdC4Tbk7vPkDtFOdnPoy94tw1P/gYqn8Cw==
 
 asn1@~0.2.3:
   version "0.2.4"
