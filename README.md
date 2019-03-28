@@ -4,7 +4,7 @@ Voxa is a framework that provides a way to organize a conversational experience 
 
 Why Voxa vs other frameworks
 ----------------------------
-Voxa provides a more robust framework for building Alexa skills, Cortana skills, or Google Assistant Actions.  It provides a design pattern that wasn’t found in other frameworks.   Critical to Voxa was providing a pluggable interface and supporting all of the latest platform features.  
+Voxa provides a more robust framework for building Alexa skills, Cortana skills, or Google Assistant Actions.  It provides a design pattern that wasn’t found in other frameworks.   Critical to Voxa was providing a pluggable interface and supporting all of the latest platform features.  Voxa is written primarily in TypeScript but skills and actions can utilize it in either JavaScript or TypeScript. 
 
 Platform Support
 -------------
