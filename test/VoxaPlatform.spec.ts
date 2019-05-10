@@ -37,8 +37,8 @@ import * as rp from "request-promise";
 import {
   AlexaPlatform,
   AlexaReply,
-  DialogFlowPlatform,
-  DialogFlowReply,
+  DialogflowReply,
+  GoogleAssistantPlatform,
   VoxaApp,
 } from "../src";
 import { azureLog } from "../src/azure";
@@ -54,18 +54,53 @@ const rb = new AlexaRequestBuilder();
 describe("VoxaPlatform", () => {
   let app: VoxaApp;
   let alexaSkill: AlexaPlatform;
-  let dialogFlowAction: DialogFlowPlatform;
+  let processData: any;
+  let dialogflowAction: GoogleAssistantPlatform;
 
   beforeEach(() => {
     app = new VoxaApp({ views });
     alexaSkill = new AlexaPlatform(app);
-    dialogFlowAction = new DialogFlowPlatform(app);
+    processData = _.clone(process.env);
+    dialogflowAction = new GoogleAssistantPlatform(app);
+  });
+
+  afterEach(() => {
+    process.env = processData;
   });
 
   describe("startServer", () => {
     it("should call the execute method with an http server", async () => {
       const port = await portfinder.getPortPromise();
       const server = await alexaSkill.startServer(port);
+
+      const options = {
+        body: {
+          request: "Hello World",
+        },
+        json: true,
+        method: "POST",
+        uri: `http://localhost:${port}/`,
+      };
+      const response = await rp(options);
+      expect(response).to.deep.equal({
+        response: {
+          outputSpeech: {
+            ssml: "<speak>An unrecoverable error occurred.</speak>",
+            type: "SSML",
+          },
+          shouldEndSession: true,
+        },
+        sessionAttributes: {},
+        version: "1.0",
+      });
+
+      server.close();
+    });
+
+    it("should start the server on a port defined by the PORT environment variable", async () => {
+      const port = await portfinder.getPortPromise();
+      process.env.PORT = port.toString();
+      const server = await alexaSkill.startServer();
 
       const options = {
         body: {
@@ -183,15 +218,10 @@ describe("VoxaPlatform", () => {
 
   describe("onState", () => {
     let alexaLaunch: any;
-    let dialogFlowLaunch: any;
-    let processData: any;
-
-    afterEach(() => {
-      process.env = processData;
-    });
+    let dialogflowLaunch: any;
 
     beforeEach(() => {
-      processData = _.clone(process.env);
+      process.env.DEBUG = "voxa";
       app.onIntent("LaunchIntent", {
         flow: "continue",
         to: "someState",
@@ -203,7 +233,7 @@ describe("VoxaPlatform", () => {
         to: "entry",
       });
 
-      dialogFlowAction.onState("someState", {
+      dialogflowAction.onState("someState", {
         flow: "yield",
         sayp: "Hello from dialogflow",
         to: "entry",
@@ -211,7 +241,7 @@ describe("VoxaPlatform", () => {
 
       alexaLaunch = rb.getIntentRequest("LaunchIntent");
       /* tslint:disable-next-line:no-var-requires */
-      dialogFlowLaunch = require("./requests/dialogflow/launchIntent.json");
+      dialogflowLaunch = require("./requests/dialogflow/launchIntent.json");
     });
 
     it("should enable logging when setting the DEBUG=voxa environment variable", async () => {
@@ -234,30 +264,30 @@ describe("VoxaPlatform", () => {
     });
 
     it("should register states as platform specific", async () => {
-      const alexaReply = (await alexaSkill.execute(alexaLaunch)) as AlexaReply;
+      const alexaReply = await alexaSkill.execute(alexaLaunch);
       expect(alexaReply.speech).to.include("Hello from alexa");
 
-      const dialogFloweReply = (await dialogFlowAction.execute(
-        dialogFlowLaunch,
-      )) as DialogFlowReply;
+      const dialogfloweReply = await dialogflowAction.execute(
+        dialogflowLaunch,
+      );
 
-      expect(dialogFloweReply.speech).to.include("Hello from dialogflow");
+      expect(dialogfloweReply.speech).to.include("Hello from dialogflow");
     });
 
     it("should not modify the original transition in the state definition", async () => {
-      let reply = (await dialogFlowAction.execute(
-        dialogFlowLaunch,
-      )) as DialogFlowReply;
+      let reply = await dialogflowAction.execute(
+        dialogflowLaunch,
+      );
       expect(reply.speech).to.equal("<speak>Hello from dialogflow</speak>");
 
-      reply = (await dialogFlowAction.execute(
-        dialogFlowLaunch,
-      )) as DialogFlowReply;
+      reply = await dialogflowAction.execute(
+        dialogflowLaunch,
+      );
       expect(reply.speech).to.equal("<speak>Hello from dialogflow</speak>");
 
-      reply = (await dialogFlowAction.execute(
-        dialogFlowLaunch,
-      )) as DialogFlowReply;
+      reply = await dialogflowAction.execute(
+        dialogflowLaunch,
+      );
       expect(reply.speech).to.equal("<speak>Hello from dialogflow</speak>");
     });
   });

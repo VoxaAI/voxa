@@ -21,7 +21,11 @@ export class AlexaRequestBuilder {
   public deviceId: string;
   public userId: string;
 
-  constructor(userId?: string, applicationId?: string) {
+  constructor(
+    userId?: string,
+    applicationId?: string,
+    public locale: string = "en-US",
+  ) {
     this.userId = userId || `amzn1.ask.account.${v1()}`;
     this.applicationId = applicationId || `amzn1.ask.skill.${v1()}`;
     this.deviceId = applicationId || `amzn1.ask.device.${v1()}`;
@@ -35,7 +39,7 @@ export class AlexaRequestBuilder {
       context: this.getContextData(),
       request: {
         error,
-        locale: "en-US",
+        locale: this.locale,
         reason,
         requestId: `EdwRequestId.${v1()}`,
         timestamp: new Date().toISOString(),
@@ -50,7 +54,7 @@ export class AlexaRequestBuilder {
     return {
       context: this.getContextData(),
       request: {
-        locale: "en-US",
+        locale: this.locale,
         requestId: `EdwRequestId.${v1()}`,
         timestamp: new Date().toISOString(),
         token,
@@ -93,10 +97,35 @@ export class AlexaRequestBuilder {
       context: this.getContextData(),
       request: {
         intent: { name: intentName, slots, confirmationStatus: "NONE" },
-        locale: "en-US",
+        locale: this.locale,
         requestId: `EdwRequestId.${v1()}`,
         timestamp: new Date().toISOString(),
         type: "CanFulfillIntentRequest",
+      },
+      session: this.getSessionData(),
+      version: this.version,
+    };
+  }
+
+  public getCompletedDialog(intentName: string, slots?: any): RequestEnvelope {
+    if (!slots) {
+      slots = {};
+    } else {
+      slots = _(slots)
+        .keys()
+        .map((key) => [key, { name: key, value: slots[key] }])
+        .fromPairs()
+        .value();
+    }
+    return {
+      context: this.getContextData(),
+      request: {
+        dialogState: "COMPLETED",
+        intent: { name: intentName, slots, confirmationStatus: "NONE" },
+        locale: this.locale,
+        requestId: `EdwRequestId.${v1()}`,
+        timestamp: new Date().toISOString(),
+        type: "IntentRequest",
       },
       session: this.getSessionData(),
       version: this.version,
@@ -119,7 +148,7 @@ export class AlexaRequestBuilder {
       request: {
         dialogState: "STARTED",
         intent: { name: intentName, slots, confirmationStatus: "NONE" },
-        locale: "en-US",
+        locale: this.locale,
         requestId: `EdwRequestId.${v1()}`,
         timestamp: new Date().toISOString(),
         type: "IntentRequest",
@@ -144,6 +173,7 @@ export class AlexaRequestBuilder {
             "Alexa.Presentation.APL": {},
             "AudioPlayer": {},
             "Display": {},
+            "VideoApp": {},
           },
         },
         user: {
@@ -175,7 +205,7 @@ export class AlexaRequestBuilder {
     return {
       context: this.getContextData(),
       request: {
-        locale: "en-US",
+        locale: this.locale,
         requestId: "EdwRequestId." + v1(),
         timestamp: new Date().toISOString(),
         type: "LaunchRequest",
@@ -187,7 +217,7 @@ export class AlexaRequestBuilder {
 
   public getPlaybackStoppedRequest(token?: string): RequestEnvelope {
     const request: interfaces.audioplayer.PlaybackStoppedRequest = {
-      locale: "en-US",
+      locale: this.locale,
       requestId: "EdwRequestId." + v1(),
       timestamp: new Date().toISOString(),
       token,
@@ -207,7 +237,7 @@ export class AlexaRequestBuilder {
   ): RequestEnvelope {
     const request: interfaces.gameEngine.InputHandlerEventRequest = {
       events: [],
-      locale: "en-US",
+      locale: this.locale,
       requestId: `amzn1.echo-api.request.${v1()}`,
       timestamp: new Date().toISOString(),
       type: "GameEngine.InputHandlerEvent",
@@ -254,7 +284,7 @@ export class AlexaRequestBuilder {
     status = status || { code: "200", message: "OK" };
 
     const request: interfaces.connections.ConnectionsResponse = {
-      locale: "en-US",
+      locale: this.locale,
       name,
       payload,
       requestId: `EdwRequestId.${v1()}`,
@@ -276,7 +306,7 @@ export class AlexaRequestBuilder {
     return {
       context: this.getContextData(),
       request: {
-        locale: "en-US",
+        locale: this.locale,
         message,
         requestId: `EdwRequestId.${v1()}`,
         timestamp: new Date().toISOString(),
@@ -332,6 +362,7 @@ export function getAPIGatewayProxyEvent(
     requestContext: {
       accountId: "",
       apiId: "",
+      connectedAt: 0,
       httpMethod: method,
       identity: {
         accessKey: null,

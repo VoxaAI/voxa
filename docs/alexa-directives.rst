@@ -96,7 +96,7 @@ Voxa provides a `DisplayTemplate` builder that can be used with the `alexaRender
 
 
 Alexa Presentation Language (APL) Templates
---------------
+-------------------------------------------
 
 `Alexa Documentation <https://developer.amazon.com/docs/alexa-presentation-language/apl-overview.html>`_
 
@@ -152,7 +152,7 @@ One important thing to know is that is you sent a Render Template and a APL Temp
 
 
 Alexa Presentation Language (APL) Commands
---------------
+------------------------------------------
 
 `Alexa Documentation <https://developer.amazon.com/docs/alexa-presentation-language/apl-commands.html>`_
 
@@ -231,5 +231,73 @@ PlayAudio
 
       return {
         directives: [playAudio],
+      };
+    });
+
+
+ElicitSlot Directive
+----------------------
+
+`Alexa Documentation <https://developer.amazon.com/docs/custom-skills/dialog-interface-reference.html#elicitslot>`_
+
+When there is an active dialog you can use the ``alexaElicitDialog`` to tell alexa to prompt the user for a specific slot in the next turn.  A prompt passed in as a ``say``, ``reply`` or another statement is required and will replace the prompt that is provided to the interaction model for the dialog.
+The ``flow`` and ``to`` keys should not be used or should always be ``flow: "yield"`` and ``to: "{current_intent}"`` since dialogs loop the same intent until all of the parameters are filled.
+
+The only required parameter is the ``slotToElicit``, but you can also pass in the values for slots to update the current values.  If a slot isn't declared in the interaction model it will be ignored or cause an error.
+
+
+.. code-block:: javascript
+
+    // simplest example
+    app.onIntent('someDialogIntent', () => {
+      // check if the dialog is complete and do some cool stuff here //
+
+      // if we need to ask the user for something //
+      return {
+        alexaElicitDialog: {
+          slotToElicit: "favoriteColor",
+        },
+        sayp: ["What is your favorite color?"],
+      };
+    });
+
+    // updating slots example
+    app.onIntent('someDialogIntent', () => {
+      // check if the dialog is complete and do some cool stuff here //
+
+      // if we need to ask the user for something //
+      return {
+        alexaElicitDialog: {
+          slotToElicit: "favoriteColor",
+          slots: {
+            bestLetter: {
+              value: "W",
+              confirmationStatus: "CONFIRMED",
+            },
+          },
+        },
+        sayp: ["What is your favorite color?"],
+      };
+    });
+
+    // This is still OK
+    app.onIntent('someDialogIntent', () => {
+      return {
+        alexaElicitDialog: {
+          slotToElicit: "favoriteColor",
+        },
+        sayp: ["What is your favorite color?"],
+        to: "someDialogIntent",
+      };
+    });
+
+    // This will break
+    app.onIntent('someDialogIntent', () => {
+      return {
+        alexaElicitDialog: {
+          slotToElicit: "favoriteColor",
+        },
+        sayp: ["What is your favorite color?"],
+        to: "someOtherThing",
       };
     });

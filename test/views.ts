@@ -1,3 +1,25 @@
+/*
+ * Copyright (c) 2019 Rain Agency <contact@rain.agency>
+ * Author: Rain Agency <contact@rain.agency>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 export const views = {
   "de-DE": {
     translation: {
@@ -23,6 +45,7 @@ export const views = {
       ExitIntent: {
         Farewell: "Ok für weitere Infos besuchen {site} Website",
       },
+      GermanOnly: "Dieses view ist nur in Deutsch verfügbar",
       LaunchIntent: {
         OpenResponse: "Hallo! guten {time}",
       },
@@ -120,7 +143,7 @@ export const views = {
         Error: "There was an error trying to get your settings info.",
         FullSettings: "Your default settings are: {settingsInfo}",
       },
-      DialogFlowBasicCard: {
+      DialogflowBasicCard: {
         buttons: {
           openUrlAction: "https://example.com",
           title: "Example.com",
@@ -133,7 +156,7 @@ export const views = {
         text: "This is the text",
         title: "title",
       },
-      DialogFlowCarousel: {
+      DialogflowCarousel: {
         items: {
           LIST_ITEM: {
             description: "The item description",
@@ -141,7 +164,7 @@ export const views = {
           },
         },
       },
-      DialogFlowListSelect: {
+      DialogflowListSelect: {
         items: [
           {
             description: "The item description",
@@ -154,15 +177,77 @@ export const views = {
         ],
         title: "The list select",
       },
-      DialogFlowSuggestions: {
-        dialogFlowSuggestions: ["Suggestion 1", "Suggestion 2"],
+      DialogflowSuggestions: {
+        dialogflowSuggestions: ["Suggestion 1", "Suggestion 2"],
       },
+      Error: "There was some error, please try again later",
       ExitIntent: {
         Farewell: "Ok. For more info visit {site} site.",
       },
-      FacebookSuggestions: {
-        facebookSuggestionChips: ["Suggestion 1", "Suggestion 2"],
-        text: "Pick a suggestion",
+      Facebook: {
+        AccountLink: {
+          facebookAccountLink: "https://www.messenger.com",
+          say: "Say!",
+          text: "Text!",
+        },
+        AccountUnlink: {
+          facebookAccountUnlink: true,
+          say: "Say!",
+          text: "Text!",
+        },
+        ButtonTemplate: {
+          facebookButtonTemplate: "{facebookButtonTemplate}",
+          say: "Say!",
+          text: "Text!",
+        },
+        Carousel: {
+          facebookCarousel: "{facebookCarousel}",
+          say: "Say!",
+          text: "Text!",
+        },
+        ControlPassed: {
+          text: "Ok. An agent will talk to you soon!",
+        },
+        ControlRequested: {
+          text: "Ok. Now I'm talking to you!",
+        },
+        ControlTaken: {
+          text: "Ok. Now I'm taking the control!",
+        },
+        List: {
+          facebookList: "{facebookList}",
+          say: "Say!",
+          text: "Text!",
+        },
+        OpenGraphTemplate: {
+          facebookOpenGraphTemplate: "{facebookOpenGraphTemplate}",
+          say: "Say!",
+          text: "Text!",
+        },
+        QuickReplyLocation: {
+          facebookQuickReplyLocation: "Send me your location",
+          say: "Say!",
+          text: "Text!",
+        },
+        QuickReplyPhoneNumber: {
+          facebookQuickReplyPhoneNumber: "Send me your phone number",
+          say: "Say!",
+          text: "Text!",
+        },
+        QuickReplyUserEmail: {
+          facebookQuickReplyUserEmail: "Send me your email",
+          say: "Say!",
+          text: "Text!",
+        },
+        Suggestions: {
+          facebookSuggestionChips: ["Suggestion 1", "Suggestion 2"],
+          text: "Pick a suggestion",
+        },
+        User: {
+          FullInfo: "Nice to meet you {name}!",
+          PermissionNotGranted:
+            "To get the user's info, go to your Alexa app and grant permission to the skill.",
+        },
       },
       Help: "This is the help",
       HelpIntent: {
@@ -184,7 +269,9 @@ export const views = {
       LaunchIntent: {
         OpenResponse: {
           alexa: "Hello! Good {time}",
-          dialogflow: "Hello from DialogFlow",
+          dialogflow: "Hello from Dialogflow",
+          facebook: "Hello from Facebook",
+          google: "Hello from Google Assistant",
         },
       },
       Lists: {
@@ -245,9 +332,34 @@ export const views = {
           },
           alexaHint: "this is the hint",
         },
+        DialogflowBasicCard: {
+          dialogflowBasicCard: {
+            buttons: {
+              openUrlAction: "https://example.com",
+              title: "Example.com",
+            },
+            display: "DEFAULT",
+            image: {
+              url: "https://example.com/image.png",
+            },
+            subtitle: "subtitle",
+            text: "This is the text",
+            title: "title",
+          },
+        },
         Say: {
           reprompt: "this is a reprompt",
           say: "this is a say",
+        },
+        Say2: {
+          say: "this is another say",
+        },
+        VideoAppLaunch: {
+          alexaVideoAppLaunch: {
+            source: "https://example.com/video.mp4",
+            subtitle: "Video Subtitle",
+            title: "Video Title",
+          },
         },
       },
       Reprompt: "reprompt",
@@ -256,6 +368,10 @@ export const views = {
       SayRandom: ["say1", "say2", "say3"],
       Tell: "tell",
       TellRandom: ["tell1", "tell2", "tell3"],
+      XML: {
+        ampersand: "Some & Some",
+        invalidTag: "<audio />Test</audio>",
+      },
     },
   },
 };

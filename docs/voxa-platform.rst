@@ -12,6 +12,12 @@ Voxa Platforms wrap your :js:class:`VoxaApp <VoxaApp>` and allows you to define 
   :param VoxaApp voxaApp: The app
   :param config: The config
 
+  .. js:method:: startServer([port])
+
+    :returns: A promise that resolves to a running ``http.Server`` on the specified port number, if no port number is specified it will try to get a port number from the ``PORT`` environment variable or default to port 3000
+
+    This method can then be used in combination with a proxy server like `ngrok <https://ngrok.com/>`_ or `Bespoken tools proxy <http://docs.bespoken.io/en/latest/commands/proxy/>`_ to enable local development of your voice application
+
 
   .. js:method:: lambda()
 
@@ -29,7 +35,7 @@ Voxa Platforms wrap your :js:class:`VoxaApp <VoxaApp>` and allows you to define 
 
     .. code-block:: javascript
 
-        exports.handler = dialogFlowAction.lambdaHTTP();
+        exports.handler = dialogflowAction.lambdaHTTP();
 
   .. js:method:: azureFunction()
 
@@ -62,18 +68,21 @@ The Alexa Platform allows you to use Voxa with Alexa
 
 .. _dialogflow-platform:
 
-DialogFlow
+Dialogflow
 -------------
 
-The DialogFlow Platform allows you to use Voxa with DialogFlow
+The GoogleAssistant and Facebook Platforms allow you to use Voxa with these 2 type of bots
 
 .. code-block:: javascript
 
-  const { DialogFlowPlatform } = require('voxa');
+  const { GoogleAssistantPlatform, FacebookPlatform } = require('voxa');
   const { voxaApp } = require('./app');
 
-  const dialogFlowAction = new DialogFlowPlatform(voxaApp);
-  exports.handler = dialogFlowAction.lambdaHTTP();
+  const googleAction = new GoogleAssistantPlatform(voxaApp);
+  exports.handler = googleAction.lambdaHTTP();
+
+  const facebookBot = new FacebookPlatform(voxaApp);
+  exports.handler = facebookBot.lambdaHTTP();
 
 
 .. _botframework-platform:

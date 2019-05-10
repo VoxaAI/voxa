@@ -149,4 +149,6 @@ The ``voxaEvent`` Object
 
 - :ref:`AlexaEvent <alexa-event>`
 - :ref:`BotFrameworkEvent <botframework-event>`
-- :ref:`DialogFlowEvent <dialogflow-event>`
+- :ref:`Dialogflow Event <dialogflow-events>`
+- :ref:`GoogleAssistantEvent <googleassistant-event>`
+- :ref:`FacebookEvent <facebook-event>`

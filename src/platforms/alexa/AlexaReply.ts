@@ -60,9 +60,11 @@ export class AlexaReply implements IVoxaReply, ResponseEnvelope {
     }
 
     if (
-      !this.hasDirective("VideoApp.Launch") &&
-      !this.hasDirective("GameEngine.StartInputHandler")
+      this.hasDirective("VideoApp.Launch") ||
+      this.hasDirective("GameEngine.StartInputHandler")
     ) {
+      delete this.response.shouldEndSession;
+    } else {
       this.response.shouldEndSession = true;
     }
   }

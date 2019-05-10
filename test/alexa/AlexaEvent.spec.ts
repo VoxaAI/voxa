@@ -1,8 +1,14 @@
 import { expect } from "chai";
 import * as _ from "lodash";
 import * as nock from "nock";
-import { AlexaEvent, AlexaPlatform, IVoxaIntentEvent, VoxaApp, VoxaEvent } from "../../src/";
-import { IVoxaAlexaUserProfile } from "../../src/VoxaEvent";
+import { IVoxaAlexaUserProfile } from "../../src";
+import {
+  AlexaEvent,
+  AlexaPlatform,
+  IVoxaIntentEvent,
+  VoxaApp,
+  VoxaEvent,
+} from "../../src/";
 import { AlexaRequestBuilder } from "../tools";
 import { variables } from "../variables";
 import { views } from "../views";
@@ -63,6 +69,7 @@ describe("AlexaEvent", () => {
       "Alexa.Presentation.APL",
       "AudioPlayer",
       "Display",
+      "VideoApp",
     ]);
   });
 

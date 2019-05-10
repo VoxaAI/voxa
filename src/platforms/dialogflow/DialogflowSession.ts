@@ -7,7 +7,7 @@ import {
 import * as _ from "lodash";
 import { IBag, IVoxaSession } from "../../VoxaEvent";
 
-export class DialogFlowSession implements IVoxaSession {
+export class DialogflowSession implements IVoxaSession {
   public attributes: IBag;
   public outputAttributes: IBag = {};
   public new: boolean;
@@ -21,7 +21,7 @@ export class DialogFlowSession implements IVoxaSession {
     this.attributes = this.getAttributes(conv);
   }
 
-  public getAttributes(conv: DialogflowConversation) {
+  private getAttributes(conv: DialogflowConversation) {
     const context: Context<Parameters> | undefined = this.contexts.attributes;
     if (!context) {
       return {};

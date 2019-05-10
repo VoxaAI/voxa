@@ -553,13 +553,14 @@ Use the Alexa Reminders API to create and manage reminders from your skill. This
 Note that you need to modify your skill manifest by adding the reminder permission:
 
 .. code-block:: json
-  ...
-  "permissions": [
-    {
-      "name": "alexa::alerts:reminders:skill:readwrite"
-    }
-  ],
-  ...
+
+  {
+    "permissions": [
+      {
+        "name": "alexa::alerts:reminders:skill:readwrite"
+      }
+    ],
+  }
 
 .. js:class:: Reminders(alexaEvent)
 
@@ -853,12 +854,14 @@ The main advantage of sending a message with the Messaging API is that it genera
 
 .. code-block:: json
 
-  "request": {
-    "type": "Messaging.MessageReceived",
-    "requestId": "amzn1.echo-api.request.VOID",
-    "timestamp": "2018-12-17T22:06:28Z",
-    "message": {
-      "name": "John"
+  {
+    "request": {
+      "type": "Messaging.MessageReceived",
+      "requestId": "amzn1.echo-api.request.VOID",
+      "timestamp": "2018-12-17T22:06:28Z",
+      "message": {
+        "name": "John"
+      }
     }
   }
 

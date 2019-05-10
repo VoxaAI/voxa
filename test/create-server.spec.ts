@@ -2,7 +2,7 @@ import { expect, use } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import * as http from "http";
 import * as portfinder from "portfinder";
-import * as rp from "request-promise";
+import rp = require("request-promise");
 import { StatusCodeError } from "request-promise/errors";
 import { AlexaPlatform } from "../src/platforms/alexa/AlexaPlatform";
 import { createServer } from "../src/platforms/create-server";
@@ -46,18 +46,23 @@ describe("createServer", () => {
     port = await portfinder.getPortPromise();
     server.listen(port, () => console.log(`Listening on ${port}`));
 
-    const options = {
+    const options: rp.OptionsWithUri = {
       body: {
         request: "Hello World",
       },
       json: true,
       method: "POST",
+      resolveWithFullResponse: true,
       uri: `http://localhost:${port}/`,
     };
 
     const response = await rp(options);
 
-    expect(response).to.deep.equal({
+    expect(response.headers["content-type"]).to.equal(
+       "application/json; charset=utf-8",
+    );
+
+    expect(response.body).to.deep.equal({
       response: {
         outputSpeech: {
           ssml: "<speak>An unrecoverable error occurred.</speak>",

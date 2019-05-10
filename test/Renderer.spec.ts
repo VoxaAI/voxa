@@ -28,8 +28,10 @@ import {
   AlexaEvent,
   AlexaPlatform,
   AlexaReply,
-  DialogFlowEvent,
-  DialogFlowPlatform,
+  DialogflowEvent,
+  DialogflowPlatform,
+  GoogleAssistantEvent,
+  GoogleAssistantPlatform,
   Model,
   PlayAudio,
   Renderer,
@@ -258,17 +260,31 @@ describe("Renderer", () => {
     expect(reply).to.deep.equal({ card: [{ a: 1 }, { b: 2 }, { c: 3 }] });
   });
 
-  it("should use the dialogFlow view if available", async () => {
-    const dialogFlowEvent = new DialogFlowEvent(
+  it("should use the dialogflow view if available", async () => {
+    const dialogflowEvent = new DialogflowEvent(
       require("./requests/dialogflow/launchIntent.json"),
       {},
     );
-    dialogFlowEvent.t = event.t;
-    dialogFlowEvent.platform = new DialogFlowPlatform(voxaApp);
+    dialogflowEvent.t = event.t;
+    dialogflowEvent.platform = new DialogflowPlatform(voxaApp);
     const rendered = await renderer.renderPath(
       "LaunchIntent.OpenResponse",
-      dialogFlowEvent,
+      dialogflowEvent,
     );
-    expect(rendered).to.equal("Hello from DialogFlow");
+    expect(rendered).to.equal("Hello from Dialogflow");
+  });
+
+  it("should use the google view if available", async () => {
+    const dialogflowEvent = new GoogleAssistantEvent(
+      require("./requests/dialogflow/launchIntent.json"),
+      {},
+    );
+    dialogflowEvent.t = event.t;
+    dialogflowEvent.platform = new GoogleAssistantPlatform(voxaApp);
+    const rendered = await renderer.renderPath(
+      "LaunchIntent.OpenResponse",
+      dialogflowEvent,
+    );
+    expect(rendered).to.equal("Hello from Google Assistant");
   });
 });

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Copyright (c) 2019 Rain Agency <contact@rain.agency>
  * Author: Rain Agency <contact@rain.agency>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -21,14 +21,14 @@
  */
 
 import * as _ from "lodash";
-import { IDirectiveClass } from "../../directives";
-import { ITransition } from "../../StateMachine";
-import { VoxaApp } from "../../VoxaApp";
-import { IVoxaEvent } from "../../VoxaEvent";
-import { IVoxaReply } from "../../VoxaReply";
-import { IVoxaPlatformConfig, VoxaPlatform } from "../VoxaPlatform";
-import { DialogFlowEvent } from "./DialogFlowEvent";
-import { DialogFlowReply } from "./DialogFlowReply";
+import { IDirectiveClass } from "../../../directives";
+import { ITransition } from "../../../StateMachine";
+import { VoxaApp } from "../../../VoxaApp";
+import { IVoxaEvent } from "../../../VoxaEvent";
+import { IVoxaReply } from "../../../VoxaReply";
+import { IVoxaPlatformConfig } from "../../VoxaPlatform";
+import { DialogflowPlatform } from "../DialogflowPlatform";
+import { DialogflowReply } from "../DialogflowReply";
 import {
   AccountLinkingCard,
   BasicCard,
@@ -38,8 +38,6 @@ import {
   Context,
   DateTime,
   DeepLink,
-  FacebookAccountLink,
-  FacebookSuggestionChips,
   LinkOutSuggestion,
   List,
   MediaResponse,
@@ -47,28 +45,30 @@ import {
   Permission,
   Place,
   RegisterUpdate,
+  Say,
   Suggestions,
   Table,
   TransactionDecision,
   TransactionRequirements,
   UpdatePermission,
 } from "./directives";
+import { GoogleAssistantEvent } from "./GoogleAssistantEvent";
 
-export interface IDialogFlowPlatformConfig extends IVoxaPlatformConfig {
+export interface IGoogleAssistantPlatformConfig extends IVoxaPlatformConfig {
   clientId?: string; // id used to verify user's identify from Google Sign-In
 }
 
-export class DialogFlowPlatform extends VoxaPlatform {
-  public name = "dialogflow";
-  protected EventClass = DialogFlowEvent;
+export class GoogleAssistantPlatform extends DialogflowPlatform {
+  public name = "google";
+  protected EventClass = GoogleAssistantEvent;
 
-  constructor(app: VoxaApp, config: IDialogFlowPlatformConfig = {}) {
+  constructor(app: VoxaApp, config: IGoogleAssistantPlatformConfig = {}) {
     super(app, config);
     app.onBeforeReplySent(this.saveStorage, true, this.name);
   }
 
-  protected getReply(event: DialogFlowEvent) {
-    return new DialogFlowReply(event.google.conv);
+  protected getReply() {
+    return new DialogflowReply();
   }
 
   protected saveStorage(
@@ -76,14 +76,14 @@ export class DialogFlowPlatform extends VoxaPlatform {
     reply: IVoxaReply,
     transition: ITransition,
   ) {
-    const { conv } = (voxaEvent as DialogFlowEvent).google;
-    const dialogFlowReply = reply as DialogFlowReply;
+    const { conv } = (voxaEvent as GoogleAssistantEvent).dialogflow;
+    const dialogflowReply = reply as DialogflowReply;
 
     if (_.isEmpty(conv.user.storage)) {
-      dialogFlowReply.payload.google.resetUserStorage = true;
-      delete dialogFlowReply.payload.google.userStorage;
+      dialogflowReply.payload.google.resetUserStorage = true;
+      delete dialogflowReply.payload.google.userStorage;
     } else {
-      dialogFlowReply.payload.google.userStorage = conv.user._serialize();
+      dialogflowReply.payload.google.userStorage = conv.user._serialize();
     }
   }
 
@@ -94,10 +94,9 @@ export class DialogFlowPlatform extends VoxaPlatform {
       BrowseCarousel,
       Carousel,
       Confirmation,
+      Context,
       DateTime,
       DeepLink,
-      FacebookAccountLink,
-      FacebookSuggestionChips,
       LinkOutSuggestion,
       List,
       MediaResponse,
@@ -110,7 +109,7 @@ export class DialogFlowPlatform extends VoxaPlatform {
       TransactionDecision,
       TransactionRequirements,
       UpdatePermission,
-      Context,
+      Say,
     ];
   }
 }

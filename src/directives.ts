@@ -15,7 +15,7 @@ import { IVoxaEvent } from "./VoxaEvent";
 import { IVoxaReply } from "./VoxaReply";
 
 export interface IDirectiveClass {
-  platform: string; // botframework, dialogFlow or alexa
+  platform: string; // botframework, dialogflow or alexa
   key: string; // The key in the transition that links to the specific directive
 
   new (...args: any[]): IDirective;
@@ -29,7 +29,7 @@ export interface IDirective {
   ) => Promise<void>;
 }
 
-function sampleOrItem(
+export function sampleOrItem(
   statement: string | string[],
   platform: VoxaPlatform,
 ): string {
@@ -87,12 +87,12 @@ export class Ask implements IDirective {
       if (!statement.ask) {
         reply.addStatement(sampleOrItem(statement, event.platform));
       } else {
-        this.addSttementToReply(statement, reply, event);
+        this.addStatementToReply(statement, reply, event);
       }
     }
   }
 
-  private addSttementToReply(
+  private addStatementToReply(
     statement: IAskStatement,
     reply: IVoxaReply,
     event: IVoxaEvent,
