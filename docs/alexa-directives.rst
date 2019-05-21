@@ -213,7 +213,7 @@ An APL Command is sent with the `alexaAPLCommand` key in your controller. Just l
 PlayAudio
 ---------
 
-`Alexa Documentation <https://developer.amazon.com/docs/custom-skills/audioplayer-interface-reference.html>`_
+`Alexa Documentation <https://developer.amazon.com/docs/custom-skills/audioplayer-interface-reference.html#play>`_
 
 
 .. code-block:: javascript
@@ -232,11 +232,50 @@ PlayAudio
       });
     }
 
+**Add metadata for your audio**
+
+The `PlayAudio` directive has a fifth parameter to set metadata for an audio, just pass it when creating a `PlayAudio` instance following the correct structure required by Amazon (refer to the Alexa documentation link above).
+
+
+.. code-block:: javascript
+
+    function register(app) {
+      app.onState('someState', () => {
+        const url = 'http://example.com/example.mp3';
+        const token = '{}';
+        const offsetInMilliseconds = 0;
+        const behavior = 'REPLACE_ALL';
+        const metadata = {
+          title: 'title of the track to display',
+          subtitle: 'subtitle of the track to display',
+          art: {
+            sources: [
+              {
+                url: 'https://cdn.example.com/url-of-the-album-art-image.png'
+              }
+            ]
+          },
+          backgroundImage: {
+            sources: [
+              {
+                url: 'https://cdn.example.com/url-of-the-background-image.png'
+              }
+            ]
+          }
+        };
+        const playAudio = new PlayAudio(url, token, offsetInMilliseconds, behavior, metadata);
+
+        return {
+          directives: [playAudio],
+        };
+      });
+    }
+
 
 StopAudio
 ---------
 
-`Alexa Documentation <https://developer.amazon.com/docs/custom-skills/audioplayer-interface-reference.html>`_
+`Alexa Documentation <https://developer.amazon.com/docs/custom-skills/audioplayer-interface-reference.html#stop>`_
 
 
 .. code-block:: javascript
