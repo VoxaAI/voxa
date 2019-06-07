@@ -10,7 +10,7 @@ plugins:
   git-legal:
     enabled: true
     config:
-      allow_permissive: true
+      license_whitelist: ["MIT"]
   shellcheck:
     enabled: true
   fixme:
