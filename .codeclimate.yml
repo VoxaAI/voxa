@@ -9,8 +9,7 @@ plugins:
     enabled: true
   git-legal:
     enabled: true
-    checks:
-      enabled: false
+
   shellcheck:
     enabled: true
   fixme:
