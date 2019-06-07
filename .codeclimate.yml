@@ -4,16 +4,13 @@ exclude_patterns: # Exclude files and/or directories from analysis
   - "src/index.ts"
   - "test/**"
   - "hello-world/**"
-engines:
-  git-legal:
-    enabled: true
-    checks:
-      enabled: false
 plugins:
   nodesecurity:
     enabled: true
   git-legal:
     enabled: true
+    checks:
+      enabled: false
   shellcheck:
     enabled: true
   fixme:
