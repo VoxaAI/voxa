@@ -22,7 +22,7 @@
 
 import { RequestEnvelope } from "ask-sdk-model";
 import { expect } from "chai";
-import * as i18n from "i18next";
+import i18next from "i18next";
 import * as _ from "lodash";
 import {
   AlexaEvent,
@@ -42,6 +42,7 @@ import { AlexaRequestBuilder } from "./tools";
 import { variables } from "./variables";
 import { views } from "./views";
 
+const i18n: i18next.i18n = require("i18next");
 const rb = new AlexaRequestBuilder();
 
 describe("Renderer", () => {
@@ -51,8 +52,8 @@ describe("Renderer", () => {
   let renderer: Renderer;
   let voxaApp: VoxaApp;
 
-  before(() => {
-    i18n.init({
+  before(async () => {
+    await i18n.init({
       load: "all",
       nonExplicitWhitelist: true,
       resources: views,

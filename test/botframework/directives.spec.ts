@@ -31,7 +31,7 @@ import {
   SuggestedActions,
 } from "botbuilder";
 import { expect } from "chai";
-import * as i18n from "i18next";
+import i18next from "i18next";
 import * as _ from "lodash";
 import * as nock from "nock";
 import * as simple from "simple-mock";
@@ -40,14 +40,16 @@ import { BotFrameworkReply } from "../../src/platforms/botframework/BotFramework
 import { VoxaApp } from "../../src/VoxaApp";
 import { views } from "../views";
 
+const i18n: i18next.i18n = require("i18next");
+
 describe("BotFramework directives", () => {
   let event: any;
   let app: VoxaApp;
   let botFrameworkSkill: BotFrameworkPlatform;
   let storage: MemoryBotStorage;
 
-  before(() => {
-    i18n.init({
+  before(async () => {
+    await i18n.init({
       load: "all",
       nonExplicitWhitelist: true,
       resources: views,
