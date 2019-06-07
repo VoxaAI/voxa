@@ -9,6 +9,7 @@ import {
   APLTemplate,
   DisplayTemplate,
   HomeCard,
+  IVoxaIntentEvent,
   PlayAudio,
   VoxaApp,
 } from "../../src/";
@@ -19,6 +20,7 @@ import { views } from "./../views";
 const i18n: i18next.i18n = require("i18next");
 
 describe("Alexa directives", () => {
+  let dialogStateEvent: any;
   let event: any;
   let app: VoxaApp;
   let alexaSkill: AlexaPlatform;
@@ -35,7 +37,8 @@ describe("Alexa directives", () => {
     const rb = new AlexaRequestBuilder();
     app = new VoxaApp({ views, variables });
     alexaSkill = new AlexaPlatform(app);
-    event = rb.getIntentRequest("AMAZON.YesIntent", { hello_world: "Hello" });
+    dialogStateEvent = rb.getIntentRequest("GreetingIntent", { hello_world: "Hello" });
+    event = rb.getIntentRequest("AMAZON.YesIntent");
   });
 
   describe("RenderTemplate", () => {
@@ -403,7 +406,7 @@ describe("Alexa directives", () => {
   });
 
   describe("DialogDelegate", () => {
-    it("should render a DialogDelegate directive", async () => {
+    it("should render a DialogDelegate directive with no slots", async () => {
       app.onIntent("YesIntent", {
         alexaDialogDelegate: undefined,
         to: "die",
@@ -415,23 +418,47 @@ describe("Alexa directives", () => {
         },
       ]);
     });
+
+    it("should render a DialogDelegate directive with slot values", async () => {
+      app.onIntent("GreetingIntent", (voxaEvent: IVoxaIntentEvent) => ({
+        alexaDialogDelegate: voxaEvent.intent.params,
+        to: "die",
+      }));
+      const reply = await alexaSkill.execute(dialogStateEvent);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "Dialog.Delegate",
+          updatedIntent: {
+            confirmationStatus: "NONE",
+            name: "GreetingIntent",
+            slots: {
+              hello_world: {
+                confirmationStatus: "NONE",
+                name: "hello_world",
+                value: "Hello",
+              },
+            },
+          },
+        },
+      ]);
+    });
   });
 
   describe("DialogElicitSlot", () => {
     it("should render a DialogElicitSlot directive", async () => {
-      app.onIntent("YesIntent", {
+      app.onIntent("GreetingIntent", {
         alexaElicitDialog: {
           slotToElicit: "hello_world",
         },
       });
-      const reply = await alexaSkill.execute(event);
+      const reply = await alexaSkill.execute(dialogStateEvent);
       expect(reply.response.directives).to.deep.equal([
         {
           slotToElicit: "hello_world",
           type: "Dialog.ElicitSlot",
           updatedIntent: {
             confirmationStatus: "NONE",
-            name: "AMAZON.YesIntent",
+            name: "GreetingIntent",
             slots: {
               hello_world: {
                 name: "hello_world",
@@ -444,7 +471,7 @@ describe("Alexa directives", () => {
     });
 
     it("should render a DialogElicitSlot directive with updated slot value", async () => {
-      app.onIntent("YesIntent", {
+      app.onIntent("GreetingIntent", {
         alexaElicitDialog: {
           slotToElicit: "hello_world",
           slots: {
@@ -452,14 +479,14 @@ describe("Alexa directives", () => {
           },
         },
       });
-      const reply = await alexaSkill.execute(event);
+      const reply = await alexaSkill.execute(dialogStateEvent);
       expect(reply.response.directives).to.deep.equal([
         {
           slotToElicit: "hello_world",
           type: "Dialog.ElicitSlot",
           updatedIntent: {
             confirmationStatus: "NONE",
-            name: "AMAZON.YesIntent",
+            name: "GreetingIntent",
             slots: {
               hello_world: {
                 name: "hello_world",
@@ -471,7 +498,7 @@ describe("Alexa directives", () => {
     });
 
     it("DialogElicitSlot no slotToElicit error", async () => {
-      app.onIntent("YesIntent", {
+      app.onIntent("GreetingIntent", {
         alexaElicitDialog: {},
       });
       app.onError((request: AlexaEvent, error: Error) => {
@@ -480,11 +507,11 @@ describe("Alexa directives", () => {
         );
       });
 
-      await alexaSkill.execute(event);
+      await alexaSkill.execute(dialogStateEvent);
     });
 
     it("DialogElicitSlot transition error", async () => {
-      app.onIntent("YesIntent", {
+      app.onIntent("GreetingIntent", {
         alexaElicitDialog: {
           slotToElicit: "hello_world",
         },
@@ -495,17 +522,17 @@ describe("Alexa directives", () => {
         );
       });
 
-      await alexaSkill.execute(event);
+      await alexaSkill.execute(dialogStateEvent);
     });
   });
 
   describe("DialogElicitSlot After Completion", () => {
     beforeEach(() => {
-      _.set(event, "dialogState", "COMPLETE");
+      _.set(dialogStateEvent, "dialogState", "COMPLETE");
     });
 
     it("DialogElicitSlot should return an error because dialog is complete", async () => {
-      app.onIntent("YesIntent", {
+      app.onIntent("GreetingIntent", {
         alexaElicitDialog: {
           slotToElicit: "hello_world",
         },
@@ -516,7 +543,7 @@ describe("Alexa directives", () => {
         );
       });
 
-      await alexaSkill.execute(event);
+      await alexaSkill.execute(dialogStateEvent);
     });
   });
 
