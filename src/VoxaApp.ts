@@ -21,7 +21,7 @@
  */
 
 import * as bluebird from "bluebird";
-import * as i18n from "i18next";
+import i18next from "i18next";
 import * as _ from "lodash";
 
 import { Context as AWSLambdaContext } from "aws-lambda";
@@ -52,10 +52,12 @@ import {
 import { IBag, IVoxaEvent, IVoxaIntentEvent } from "./VoxaEvent";
 import { IVoxaReply } from "./VoxaReply";
 
+const i18n: i18next.i18n = require("i18next");
+
 export interface IVoxaAppConfig extends IRendererConfig {
   Model: IModel;
   RenderClass: IRenderer;
-  views: i18n.Resource;
+  views: i18next.Resource;
   variables?: any;
   logOptions?: LambdaLogOptions;
   onUnhandledState?: IUnhandledStateCb;
@@ -88,13 +90,10 @@ export class VoxaApp {
 
   public config: IVoxaAppConfig;
   public renderer: Renderer;
-  public i18nextPromise: PromiseLike<i18n.TranslationFunction>;
-  public i18n: i18n.i18n;
   public states: State[] = [];
   public directiveHandlers: IDirectiveClass[];
 
   constructor(config: any) {
-    this.i18n = i18n.createInstance();
     this.config = config;
     this.eventHandlers = {};
     this.directiveHandlers = [];
@@ -116,8 +115,6 @@ export class VoxaApp {
     );
 
     this.validateConfig();
-
-    this.i18nextPromise = initializeI118n(this.i18n, this.config.views);
 
     this.renderer = new this.config.RenderClass(this.config);
 
@@ -542,13 +539,13 @@ export class VoxaApp {
   }
 
   public async transformRequest(voxaEvent: IVoxaEvent): Promise<void> {
-    await this.i18nextPromise;
+    await initializeI118n(this.config.views);
     const data = voxaEvent.session.attributes.model as IBag;
     const model = await this.config.Model.deserialize(data, voxaEvent);
 
     voxaEvent.model = model;
     voxaEvent.log.debug("Initialized model ", { model: voxaEvent.model });
-    voxaEvent.t = this.i18n.getFixedT(voxaEvent.request.locale);
+    voxaEvent.t = i18n.getFixedT(voxaEvent.request.locale);
     voxaEvent.renderer = this.renderer;
   }
 
@@ -599,18 +596,9 @@ export class VoxaApp {
 }
 
 export function initializeI118n(
-  i18nInstance: i18n.i18n,
-  views: i18n.Resource,
-): bluebird<i18n.TranslationFunction> {
-  type IInitializer = (
-    options: i18n.InitOptions,
-  ) => bluebird<i18n.TranslationFunction>;
-
-  const initialize = bluebird.promisify(i18nInstance.init, {
-    context: i18nInstance,
-  }) as IInitializer;
-
-  return initialize({
+  views: i18next.Resource,
+): Promise<i18next.TFunction> {
+  return i18n.init({
     fallbackLng: "en",
     load: "all",
     nonExplicitWhitelist: true,

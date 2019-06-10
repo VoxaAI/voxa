@@ -181,6 +181,7 @@ describe("DialogflowReply", () => {
       richResponse.add(card);
       reply.payload.google.richResponse = richResponse;
       expect(reply.hasDirectives).to.be.true;
+      expect(reply.hasDirective("BasicCard")).to.be.true;
     });
 
     it("should return true for a reply with an AccountLinkingCard", () => {
@@ -190,6 +191,8 @@ describe("DialogflowReply", () => {
         intent: signIn.intent,
       };
       expect(reply.hasDirectives).to.be.true;
+      expect(reply.hasDirective("BasicCard")).to.be.false;
+      expect(reply.hasDirective(signIn.intent as string)).to.be.true;
     });
   });
 
