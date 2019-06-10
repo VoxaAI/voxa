@@ -33,7 +33,6 @@ import {
   GoogleAssistantEvent,
   GoogleAssistantPlatform,
   Model,
-  PlayAudio,
   Renderer,
   VoxaApp,
 } from "../src";
@@ -159,16 +158,19 @@ describe("Renderer", () => {
       });
 
       it("should return response with directives", async () => {
-        const playAudio = new PlayAudio("url", "123", 0);
-
         skill.onIntent("SomeIntent", () => ({
+          alexaPlayAudio: {
+            token: "123",
+            url: "url",
+          },
           ask: "Ask",
-          directives: [playAudio],
           to: "entry",
         }));
+
         if (isLocalizedRequest(rawEvent.request)) {
           rawEvent.request.locale = locale;
         }
+
         const reply = await skill.execute(rawEvent);
         expect(reply.speech).to.equal(
           `<speak>${translations.question}</speak>`,
