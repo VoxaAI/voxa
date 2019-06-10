@@ -21,7 +21,7 @@
  */
 
 import { expect } from "chai";
-import * as i18n from "i18next";
+import i18next from "i18next";
 import {
   AlexaEvent,
   AlexaPlatform,
@@ -35,6 +35,7 @@ import { AlexaRequestBuilder } from "../tools";
 import { variables } from "../variables";
 import { views } from "../views";
 
+const i18n: i18next.i18n = require("i18next");
 const rb = new AlexaRequestBuilder();
 
 describe("AlexaReply", () => {
@@ -42,8 +43,8 @@ describe("AlexaReply", () => {
   let event: AlexaEvent;
   let renderer: Renderer;
 
-  before(() => {
-    i18n.init({
+  before(async () => {
+    await i18n.init({
       load: "all",
       nonExplicitWhitelist: true,
       resources: views,

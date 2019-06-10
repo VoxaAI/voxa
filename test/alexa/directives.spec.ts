@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import * as i18n from "i18next";
+import i18next from "i18next";
 import * as _ from "lodash";
 import "mocha";
 
@@ -9,19 +9,23 @@ import {
   APLTemplate,
   DisplayTemplate,
   HomeCard,
+  IVoxaIntentEvent,
   VoxaApp,
 } from "../../src/";
 import { AlexaRequestBuilder } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";
 
+const i18n: i18next.i18n = require("i18next");
+
 describe("Alexa directives", () => {
+  let dialogStateEvent: any;
   let event: any;
   let app: VoxaApp;
   let alexaSkill: AlexaPlatform;
 
-  before(() => {
-    i18n.init({
+  before(async () => {
+    await i18n.init({
       load: "all",
       nonExplicitWhitelist: true,
       resources: views,
@@ -32,6 +36,7 @@ describe("Alexa directives", () => {
     const rb = new AlexaRequestBuilder();
     app = new VoxaApp({ views, variables });
     alexaSkill = new AlexaPlatform(app);
+    dialogStateEvent = rb.getIntentRequest("GreetingIntent", { hello_world: "Hello" });
     event = rb.getIntentRequest("AMAZON.YesIntent");
   });
 
@@ -303,21 +308,6 @@ describe("Alexa directives", () => {
     });
   });
 
-  describe("DialogDelegate", () => {
-    it("should render a DialogDelegate directive", async () => {
-      app.onIntent("YesIntent", {
-        alexaDialogDelegate: undefined,
-        to: "die",
-      });
-      const reply = await alexaSkill.execute(event);
-      expect(reply.response.directives).to.deep.equal([
-        {
-          type: "Dialog.Delegate",
-        },
-      ]);
-    });
-  });
-
   describe("HomeCard", () => {
     it("should be usable from the directives", async () => {
       app.onIntent("YesIntent", {
@@ -361,9 +351,7 @@ describe("Alexa directives", () => {
 
       const reply = await alexaSkill.execute(event);
       expect(reply.response.card).to.be.undefined;
-      expect(_.get(reply, "response.outputSpeech.ssml")).to.include(
-        "An unrecoverable error",
-      );
+      expect(reply.speech).to.include("An unrecoverable error");
     });
 
     it("should not allow more than one card", async () => {
@@ -384,7 +372,7 @@ describe("Alexa directives", () => {
         throw new Error("response missing");
       }
 
-      expect(_.get(reply.response, "outputSpeech.ssml")).to.equal(
+      expect(reply.speech).to.equal(
         "<speak>An unrecoverable error occurred.</speak>",
       );
     });
@@ -413,6 +401,318 @@ describe("Alexa directives", () => {
         title: "Title",
         type: "Standard",
       });
+    });
+  });
+
+  describe("DialogDelegate", () => {
+    it("should render a DialogDelegate directive with no slots", async () => {
+      app.onIntent("YesIntent", {
+        alexaDialogDelegate: undefined,
+        to: "die",
+      });
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "Dialog.Delegate",
+        },
+      ]);
+    });
+
+    it("should render a DialogDelegate directive with slot values", async () => {
+      app.onIntent("GreetingIntent", (voxaEvent: IVoxaIntentEvent) => ({
+        alexaDialogDelegate: voxaEvent.intent.params,
+        to: "die",
+      }));
+      const reply = await alexaSkill.execute(dialogStateEvent);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "Dialog.Delegate",
+          updatedIntent: {
+            confirmationStatus: "NONE",
+            name: "GreetingIntent",
+            slots: {
+              hello_world: {
+                confirmationStatus: "NONE",
+                name: "hello_world",
+                value: "Hello",
+              },
+            },
+          },
+        },
+      ]);
+    });
+  });
+
+  describe("DialogElicitSlot", () => {
+    it("should render a DialogElicitSlot directive", async () => {
+      app.onIntent("GreetingIntent", {
+        alexaElicitDialog: {
+          slotToElicit: "hello_world",
+        },
+      });
+      const reply = await alexaSkill.execute(dialogStateEvent);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          slotToElicit: "hello_world",
+          type: "Dialog.ElicitSlot",
+          updatedIntent: {
+            confirmationStatus: "NONE",
+            name: "GreetingIntent",
+            slots: {
+              hello_world: {
+                name: "hello_world",
+                value: "Hello",
+              },
+            },
+          },
+        },
+      ]);
+    });
+
+    it("should render a DialogElicitSlot directive with updated slot value", async () => {
+      app.onIntent("GreetingIntent", {
+        alexaElicitDialog: {
+          slotToElicit: "hello_world",
+          slots: {
+            hello_world: {},
+          },
+        },
+      });
+      const reply = await alexaSkill.execute(dialogStateEvent);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          slotToElicit: "hello_world",
+          type: "Dialog.ElicitSlot",
+          updatedIntent: {
+            confirmationStatus: "NONE",
+            name: "GreetingIntent",
+            slots: {
+              hello_world: {
+                name: "hello_world",
+              },
+            },
+          },
+        },
+      ]);
+    });
+
+    it("DialogElicitSlot no slotToElicit error", async () => {
+      app.onIntent("GreetingIntent", {
+        alexaElicitDialog: {},
+      });
+      app.onError((request: AlexaEvent, error: Error) => {
+        expect(error.message).to.equal(
+          "slotToElicit is required for the Dialog.ElicitSlot directive",
+        );
+      });
+
+      await alexaSkill.execute(dialogStateEvent);
+    });
+
+    it("DialogElicitSlot transition error", async () => {
+      app.onIntent("GreetingIntent", {
+        alexaElicitDialog: {
+          slotToElicit: "hello_world",
+        },
+      });
+      app.onError((request: AlexaEvent, error: Error) => {
+        expect(error.message).to.equal(
+          "You cannot transition to a new intent while using a Dialog.ElicitSlot directive",
+        );
+      });
+
+      await alexaSkill.execute(dialogStateEvent);
+    });
+  });
+
+  describe("DialogElicitSlot After Completion", () => {
+    beforeEach(() => {
+      _.set(dialogStateEvent, "dialogState", "COMPLETE");
+    });
+
+    it("DialogElicitSlot should return an error because dialog is complete", async () => {
+      app.onIntent("GreetingIntent", {
+        alexaElicitDialog: {
+          slotToElicit: "hello_world",
+        },
+      });
+      app.onError((request: AlexaEvent, error: Error) => {
+        expect(error.message).to.equal(
+          "Intent is missing dialogState or has already completed this dialog and cannot elicit any slots",
+        );
+      });
+
+      await alexaSkill.execute(dialogStateEvent);
+    });
+  });
+
+  describe("PlayAudio", () => {
+    it("should render a PlayAudio directive", async () => {
+      app.onIntent("YesIntent", {
+        alexaPlayAudio: {
+          behavior: "REPLACE_ENQUEUED",
+          metadata: {
+            art: {
+              sources: [
+                {
+                  url: "url",
+                },
+              ],
+            },
+            backgroundImage: {
+              sources: [
+                {
+                  url: "url",
+                },
+              ],
+            },
+            subtitle: "subtitle",
+            title: "title",
+          },
+          offsetInMilliseconds: 0,
+          token: "token",
+          url: "url",
+        },
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          audioItem: {
+            metadata: {
+              art: {
+                sources: [
+                  {
+                    url: "url",
+                  },
+                ],
+              },
+              backgroundImage: {
+                sources: [
+                  {
+                    url: "url",
+                  },
+                ],
+              },
+              subtitle: "subtitle",
+              title: "title",
+            },
+            stream: {
+              offsetInMilliseconds: 0,
+              token: "token",
+              url: "url",
+            },
+          },
+          playBehavior: "REPLACE_ENQUEUED",
+          type: "AudioPlayer.Play",
+        },
+      ]);
+    });
+
+    it("should throw an error when trying to add both a video and audio directive", async () => {
+      app.onIntent("YesIntent", () => {
+        const response = {
+          alexaPlayAudio: {
+            token: "token",
+            url: "url",
+          },
+          alexaVideoAppLaunch: {
+            source: "source",
+            subtitle: "subtitle",
+            title: "title",
+          },
+          to: "die",
+        };
+
+        return response;
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.speech).to.include("An unrecoverable error");
+    });
+  });
+
+  describe("VideoApp", () => {
+    it("should render a VideApp.Launch directive", async () => {
+      app.onIntent("YesIntent", {
+        alexaVideoAppLaunch: "Reply.VideoAppLaunch.alexaVideoAppLaunch",
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "VideoApp.Launch",
+          videoItem: {
+            metadata: {
+              subtitle: "Video Subtitle",
+              title: "Video Title",
+            },
+            source: "https://example.com/video.mp4",
+          },
+        },
+      ]);
+    });
+
+    it("should render a VideoApp.Directive when sending a reply response", async () => {
+      app.onIntent("YesIntent", {
+        reply: "Reply.VideoAppLaunch",
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "VideoApp.Launch",
+          videoItem: {
+            metadata: {
+              subtitle: "Video Subtitle",
+              title: "Video Title",
+            },
+            source: "https://example.com/video.mp4",
+          },
+        },
+      ]);
+    });
+
+    it("should support setting the options directly from the controller", async () => {
+      app.onIntent("YesIntent", {
+        alexaVideoAppLaunch: {
+          source: "https://example.com/video.mp4",
+          subtitle: "Video Subtitle",
+          title: "Video Title",
+        },
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "VideoApp.Launch",
+          videoItem: {
+            metadata: {
+              subtitle: "Video Subtitle",
+              title: "Video Title",
+            },
+            source: "https://example.com/video.mp4",
+          },
+        },
+      ]);
+    });
+
+    it("should throw an error when trying to add both a video and audio directive", async () => {
+      app.onIntent("YesIntent", {
+        alexaPlayAudio: {
+          token: "token",
+          url: "url",
+        },
+        reply: ["Reply.VideoAppLaunch"],
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.speech).to.include("An unrecoverable error");
     });
   });
 });

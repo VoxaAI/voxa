@@ -21,8 +21,7 @@
  */
 
 import { expect } from "chai";
-import { AlexaPlatform } from "../../src";
-import { VoxaApp } from "../../src/VoxaApp";
+import { AlexaPlatform, IVoxaReply, VoxaApp, VoxaEvent } from "../../src";
 import { AlexaRequestBuilder } from "../tools";
 import { views } from "../views";
 
@@ -45,7 +44,7 @@ describe("AlexaPlatform", () => {
   });
 
   it("should error if the application has a wrong appId", async () => {
-    const rb = new AlexaRequestBuilder("userId", "applicationId");
+    const rb = new AlexaRequestBuilder();
     const event = rb.getIntentRequest("LaunchIntent");
 
     const voxaApp = new VoxaApp({ views });
@@ -74,7 +73,7 @@ describe("AlexaPlatform", () => {
   });
 
   it("should fail with an OnSessionEndedError", async () => {
-    const rb = new AlexaRequestBuilder("userId", "applicationId");
+    const rb = new AlexaRequestBuilder();
     const sessioneEndedRequest = rb.getSessionEndedRequest("ERROR", {
       message:
         "The target device does not support directives for the AudioPlayer interface",
@@ -94,5 +93,106 @@ describe("AlexaPlatform", () => {
       sessionAttributes: {},
       version: "1.0",
     });
+  });
+
+  it("should throw an error for invalid SSML", async () => {
+    const rb = new AlexaRequestBuilder();
+    const launchRequest = rb.getLaunchRequest();
+    const voxaApp = new VoxaApp({ views });
+    const alexaSkill = new AlexaPlatform(voxaApp, {});
+    alexaSkill.onIntent("LaunchIntent", {
+      flow: "terminate",
+      say: "XML.invalidTag",
+    });
+
+    const reply = await alexaSkill.execute(launchRequest);
+    expect(reply).to.deep.equal({
+      response: {
+        outputSpeech: {
+          ssml: "<speak>An unrecoverable error occurred.</speak>",
+          type: "SSML",
+        },
+        shouldEndSession: true,
+      },
+      sessionAttributes: {},
+      version: "1.0",
+    });
+  });
+
+  it("should not throw a new error when rendering a reply on an error session ended request", async () => {
+    const voxaApp = new VoxaApp({ views });
+    voxaApp.onError(
+      async (event: VoxaEvent, error: Error, reply: IVoxaReply) => {
+        const message = await event.renderer.renderPath("Error", event);
+        reply.clear();
+        reply.addStatement(message);
+
+        return reply;
+      },
+    );
+
+    const alexaSkill = new AlexaPlatform(voxaApp);
+    const rb = new AlexaRequestBuilder();
+    const sessioneEndedRequest = rb.getSessionEndedRequest("ERROR", {
+      message:
+        "The target device does not support directives for the AudioPlayer interface",
+      type: "INVALID_RESPONSE",
+    });
+    const result = await alexaSkill.execute(sessioneEndedRequest);
+
+    expect(result).to.deep.equal({
+      response: {
+        outputSpeech: {
+          ssml: "<speak>There was some error, please try again later</speak>",
+          type: "SSML",
+        },
+        shouldEndSession: false,
+      },
+      sessionAttributes: {},
+      version: "1.0",
+    });
+  });
+
+  it("should support views that are not available in english for a LaunchRequest", async () => {
+    const voxaApp = new VoxaApp({ views });
+    voxaApp.onState("LaunchIntent", { say: "GermanOnly", flow: "terminate" });
+
+    const alexaSkill = new AlexaPlatform(voxaApp);
+    const rb = new AlexaRequestBuilder();
+    rb.locale = "de-DE";
+
+    const launchRequest = rb.getLaunchRequest();
+    const result = await alexaSkill.execute(launchRequest);
+    expect(result.speech).to.equal(
+      "<speak>Dieses view ist nur in Deutsch verfügbar</speak>",
+    );
+  });
+
+  // This test covers the case when having the i18n object as a local variable
+  // of the VoxaApp.ts file. If you try to leave it out as a global variable,
+  // and your voice app has different locales, it could eventually lock the
+  // instance to one locale, and for example, it could return english words to german requests.
+  // The test uses the same VoxaApp instance for both requests.
+  it("should return the view from the right locale, in case 2 requests come from 2 different locales", async () => {
+    const voxaApp = new VoxaApp({ views });
+    voxaApp.onState("LaunchIntent", { ask: "Ask" });
+
+    const alexaSkill = new AlexaPlatform(voxaApp);
+    const rb = new AlexaRequestBuilder();
+
+    const launchRequest = rb.getLaunchRequest();
+    const result = await alexaSkill.execute(launchRequest);
+    expect(result.speech).to.equal(
+      "<speak>What time is it?</speak>",
+    );
+
+    const rbGerman = new AlexaRequestBuilder();
+    rbGerman.locale = "de-DE";
+
+    const germanLaunchRequest = rbGerman.getLaunchRequest();
+    const resultGerman = await alexaSkill.execute(germanLaunchRequest);
+    expect(resultGerman.speech).to.equal(
+      "<speak>wie spät ist es?</speak>",
+    );
   });
 });

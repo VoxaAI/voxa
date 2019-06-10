@@ -22,12 +22,11 @@
 
 import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
-import * as i18n from "i18next";
+import { default as i18n } from "i18next";
 import { LambdaLog, LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
-import * as rp from "request-promise";
 import { Model } from "./Model";
-import { DialogFlowEvent } from "./platforms/dialogflow/DialogFlowEvent";
+import { DialogflowEvent } from "./platforms/dialogflow/DialogflowEvent";
 import { VoxaPlatform } from "./platforms/VoxaPlatform";
 import { Renderer } from "./renderers/Renderer";
 
@@ -52,7 +51,7 @@ export interface IVoxaEvent {
   intent?: IVoxaIntent;
   request: IVoxaRequest;
   model: Model;
-  t: i18n.TranslationFunction;
+  t: i18n.TFunction;
   log: LambdaLog;
   renderer: Renderer;
   user: IVoxaUser;
@@ -68,7 +67,7 @@ export abstract class VoxaEvent implements IVoxaEvent {
   public intent?: IVoxaIntent;
   public request!: IVoxaRequest;
   public model!: Model;
-  public t!: i18n.TranslationFunction;
+  public t!: i18n.TFunction;
   public log!: LambdaLog;
   public renderer!: Renderer;
   public user!: IVoxaUser;
@@ -87,57 +86,7 @@ export abstract class VoxaEvent implements IVoxaEvent {
     this.initLogger(logOptions);
   }
 
-  public async getUserInformation(): Promise<IVoxaUserProfile> {
-    if (this.platform.name === "dialogflow") {
-      return await this.getUserInformationWithGoogle();
-    }
-
-    return await this.getUserInformationWithLWA();
-  }
-
-  public async getUserInformationWithGoogle(): Promise<IVoxaGoogleUserProfile> {
-    const voxaEvent: any = _.cloneDeep(this);
-    const dialogFlowEvent = voxaEvent as DialogFlowEvent;
-    const dialogFlowUser = dialogFlowEvent.google.conv.user;
-
-    if (!dialogFlowUser.profile.token) {
-      throw new Error("conv.user.profile.token is empty");
-    }
-
-    const result: any = await dialogFlowEvent.verifyProfile();
-
-    result.emailVerified = result.email_verified;
-    result.familyName = result.family_name;
-    result.givenName = result.given_name;
-
-    delete result.email_verified;
-    delete result.family_name;
-    delete result.given_name;
-
-    return result as IVoxaGoogleUserProfile;
-  }
-
-  public async getUserInformationWithLWA(): Promise<IVoxaAlexaUserProfile> {
-    if (!this.user.accessToken) {
-      throw new Error("this.user.accessToken is empty");
-    }
-
-    const httpOptions: any = {
-      json: true,
-      method: "GET",
-      uri: `https://api.amazon.com/user/profile?access_token=${this.user.accessToken}`,
-    };
-
-    const result: any = await rp(httpOptions);
-    result.zipCode = result.postal_code;
-    result.userId = result.user_id;
-
-    delete result.postal_code;
-    delete result.user_id;
-
-    return result as IVoxaAlexaUserProfile;
-  }
-
+  public abstract async getUserInformation(): Promise<IVoxaUserProfile>;
   protected abstract initSession(): void;
   protected abstract initUser(): void;
 
@@ -208,21 +157,4 @@ export interface IVoxaSession {
 export interface IVoxaUserProfile {
   email: string;
   name: string;
-}
-
-export interface IVoxaAlexaUserProfile extends IVoxaUserProfile {
-  userId: string;
-  zipCode: string;
-}
-
-export interface IVoxaGoogleUserProfile extends IVoxaUserProfile {
-  aud: string; // Client ID assigned to your Actions project
-  emailVerified: boolean;
-  exp: number; // Unix timestamp of the token's expiration time
-  familyName: string;
-  givenName: string;
-  iat: number; // Unix timestamp of the token's creation time
-  iss: string; // The token's issuer
-  locale: string;
-  sub: string; // The unique ID of the user's Google Account
 }

@@ -24,15 +24,15 @@ export { OnSessionEndedError } from "./OnSessionEndedError";
 export { NotImplementedError } from "./NotImplementedError";
 export { TimeoutError } from "./TimeoutError";
 export { errorHandler } from "./handler";
+export { SSMLError } from "./SSMLError";
 
 function createError(messageTemplate: string, key: string) {
-  return class implements Error {
+  return class extends Error {
     public name: string = key;
-    public message: string;
     [key: string]: any;
 
     constructor(value: string) {
-      this.message = messageTemplate.replace("{" + key + "}", value);
+      super(messageTemplate.replace("{" + key + "}", value));
       this[key] = value;
     }
   };

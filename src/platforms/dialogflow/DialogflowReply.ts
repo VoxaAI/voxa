@@ -26,19 +26,17 @@ import {
   RichResponse,
   SimpleResponse,
 } from "actions-on-google";
-import { DialogflowConversation } from "actions-on-google";
 import * as _ from "lodash";
 import { IBag, IVoxaEvent } from "../../VoxaEvent";
 import { addToSSML, addToText, IVoxaReply } from "../../VoxaReply";
-import { DialogFlowEvent } from "./DialogFlowEvent";
+import { DialogflowEvent } from "./DialogflowEvent";
 
-export interface IDialogFlowPayload {
-  facebook?: {
-    attachment: {
-      payload: any;
-      type: string;
-    };
-  };
+export interface IDialogflowPayload {
+  facebook?: any;
+  google?: any;
+}
+
+export interface IGooglePayload extends IDialogflowPayload {
   google: {
     expectUserResponse: boolean;
     noInputPrompts?: any[];
@@ -53,30 +51,31 @@ export interface IDialogFlowPayload {
   };
 }
 
-export class DialogFlowReply implements IVoxaReply {
+export class DialogflowReply implements IVoxaReply {
   public outputContexts: GoogleCloudDialogflowV2Context[] = [];
+  public fulfillmentMessages?: any[];
   public fulfillmentText: string = "";
   public source: string = "google";
-  public payload: IDialogFlowPayload;
+  public payload: IDialogflowPayload;
 
-  constructor(conv: DialogflowConversation) {
+  constructor() {
     this.payload = {
       google: {
         expectUserResponse: true,
         isSsml: true,
-        userStorage: conv.user.storage,
+        userStorage: {},
       },
     };
   }
 
   public async saveSession(attributes: IBag, event: IVoxaEvent): Promise<void> {
-    const dialogFlowEvent = event as DialogFlowEvent;
+    const dialogflowEvent = event as DialogflowEvent;
     const serializedData = JSON.stringify(attributes);
-    dialogFlowEvent.google.conv.contexts.set("attributes", 10000, {
+    dialogflowEvent.dialogflow.conv.contexts.set("attributes", 10000, {
       attributes: serializedData,
     });
 
-    this.outputContexts = dialogFlowEvent.google.conv.contexts._serialize();
+    this.outputContexts = dialogflowEvent.dialogflow.conv.contexts._serialize();
   }
 
   public get speech(): string {
@@ -85,16 +84,11 @@ export class DialogFlowReply implements IVoxaReply {
       return "";
     }
 
-    const simpleResponseItem = _.find(
-      richResponse.items,
-      (item) => !!item.simpleResponse,
-    );
-
-    if (!simpleResponseItem) {
-      return "";
-    }
-
-    return simpleResponseItem.simpleResponse!.textToSpeech || "";
+    return _(richResponse.items)
+      .filter((item) => !!item.simpleResponse)
+      .map("simpleResponse.textToSpeech")
+      .value()
+      .join("\n");
   }
 
   public get hasMessages(): boolean {
@@ -194,7 +188,7 @@ export class DialogFlowReply implements IVoxaReply {
     const richResponse = this.payload.google.richResponse || new RichResponse();
     this.payload.google.richResponse = richResponse;
 
-    const simpleResponseItem = _.find(
+    const simpleResponseItem = _.findLast(
       richResponse.items,
       (item) => !!item.simpleResponse,
     );

@@ -1,0 +1,21 @@
+{
+  "buttons": [
+    {
+      "payload": "payload",
+      "title": "View More",
+      "type": "postback"
+    },
+    {
+      "payload": "1234567890",
+      "title": "Call John",
+      "type": "phone_number"
+    },
+    {
+      "url": "http://www.twitter.com",
+      "title": "Go to Twitter",
+      "type": "web_url"
+    }
+  ],
+  "template_type": "button",
+  "text": "What do you want to do?"
+}

@@ -28,7 +28,7 @@ try {
 }
 
 const VoxaApp = voxa.VoxaApp;
-const DialogFlowPlatform = voxa.DialogFlowPlatform;
+const GoogleAssistantPlatform = voxa.GoogleAssistantPlatform;
 const AlexaPlatform = voxa.AlexaPlatform;
 
 const views = require("./views.json");
@@ -43,12 +43,6 @@ app.onState("LaunchIntent", {
   text: "launch",
   to: "likesVoxa?",
   flow: "yield"
-});
-
-app.onBeforeReplySent(request => {
-  if (request.platform.name === "dialogflow") {
-    request.google.conv.user.storage = {};
-  }
 });
 
 app.onState(
@@ -71,15 +65,24 @@ app.onState(
   "NoIntent"
 );
 
+app.onIntent("UserIdIntent", voxaEvent => {
+  return {
+    flow: "yield",
+    sayp: voxaEvent.user.userId,
+    textp: voxaEvent.user.userId,
+    to: "userId"
+  };
+});
+
 const alexaSkill = new AlexaPlatform(app);
 
-const dialogFlowAction = new DialogFlowPlatform(app);
+const googleAssistantAction = new GoogleAssistantPlatform(app);
 
 module.exports = {
   alexaSkill,
   alexaLambdaHandler: alexaSkill.lambda(),
   alexaLambdaHTTPHandler: alexaSkill.lambdaHTTP(),
-  dialogFlowAction: dialogFlowAction,
-  dialogFlowActionLambdaHandler: dialogFlowAction.lambda(),
-  dialogFlowActionLambdaHTTPHandler: dialogFlowAction.lambdaHTTP()
+  googleAssistantAction: googleAssistantAction,
+  googleAssistantActionLambdaHandler: googleAssistantAction.lambda(),
+  googleAssistantActionLambdaHTTPHandler: googleAssistantAction.lambdaHTTP()
 };

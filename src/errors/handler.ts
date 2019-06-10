@@ -20,6 +20,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import { FacebookEvent } from "../platforms/dialogflow/facebook/FacebookEvent";
 import { IVoxaEvent } from "../VoxaEvent";
 import { IVoxaReply } from "../VoxaReply";
 
@@ -30,8 +31,10 @@ export function errorHandler(
 ): IVoxaReply {
   voxaEvent.log.error(error);
 
+  const isPlain = voxaEvent instanceof FacebookEvent;
+
   reply.clear();
-  reply.addStatement("An unrecoverable error occurred.");
+  reply.addStatement("An unrecoverable error occurred.", isPlain);
   reply.terminate();
   return reply;
 }

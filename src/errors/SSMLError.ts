@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Rain Agency <contact@rain.agency>
+ * Copyright (c) 2019 Rain Agency <contact@rain.agency>
  * Author: Rain Agency <contact@rain.agency>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -20,15 +20,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export function toSSML(statement?: string): string | undefined {
-  if (!statement) {
-    return undefined;
+export class SSMLError extends Error {
+  constructor( message: string, public ssml: string) {
+    super(message);
   }
-  if (statement.startsWith("<speak>")) {
-    return statement;
-  }
-
-  // Hack. Full xml escaping would be better, but the & is currently the only special character used.
-  statement = statement.replace(/&/g, "&amp;");
-  return `<speak>${statement}</speak>`;
 }

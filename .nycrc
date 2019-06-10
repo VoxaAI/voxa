@@ -1,20 +1,16 @@
 {
-  "check-coverage": false,
-  "per-file": true,
   "include": [
     "src/**/*.ts",
     "src/**/*.js"
-    ],
-    "reporter": [
-      "lcov",
-      "text-summary",
-      "html"
-    ],
-    "extension": [
-      ".ts",
-      ".js"
-    ],
-    "cache": true,
-    "all": true
+  ],
+  "reporter": [
+    "lcov",
+    "text-summary",
+    "html"
+  ],
+  "extension": [
+    ".ts",
+    ".js"
+  ],
+  "all": true
 }
-

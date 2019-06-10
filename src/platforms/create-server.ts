@@ -11,16 +11,28 @@ export function createServer(skill: VoxaPlatform): http.Server {
     const chunks: any[] = [];
     req.on("data", (chunk) => chunks.push(chunk));
     req.on("end", async () => {
-      const data = JSON.parse(Buffer.concat(chunks).toString());
       try {
+        const data = JSON.parse(Buffer.concat(chunks).toString());
         const reply = await skill.execute(data);
-        res.end(JSON.stringify(reply));
+        const json = JSON.stringify(reply);
+
+        res.writeHead(200, {
+          "Content-Length": Buffer.byteLength(json),
+          "Content-Type": "application/json; charset=utf-8",
+        });
+
+        res.end(json);
       } catch (error) {
         console.error(error);
-        res.end(JSON.stringify(error));
+        const json = JSON.stringify(error);
+
+        res.writeHead(500, {
+          "Content-Length": Buffer.byteLength(json),
+          "Content-Type": "application/json; charset=utf-8",
+        });
+
+        res.end(json);
       }
     });
-
-    return res.writeHead(200, { "Content-Type": "application/json" });
   });
 }

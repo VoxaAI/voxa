@@ -164,18 +164,6 @@ You can register many error handlers to be used for the different kind of errors
 
 They're executed sequentially and will stop when the first handler returns a reply.
 
-.. js:method:: VoxaApp.onStateMachineError(callback, [atLast])
-
-  This handler will catch all errors generated when trying to make transitions in the stateMachine, this could include errors in the state machine controllers, , the handlers get ``(voxaEvent, reply, error)`` parameters
-
-  .. code-block:: javascript
-
-    app.onStateMachineError((voxaEvent, reply, error) => {
-      // it gets the current reply, which could be incomplete due to an error.
-      return new Reply(voxaEvent, { tell: 'An error in the controllers code' })
-        .write();
-    });
-
 .. js:method:: VoxaApp.onError(callback, [atLast])
 
   This is the more general handler and will catch all unhandled errors in the framework, it gets ``(voxaEvent, error)`` parameters as arguments

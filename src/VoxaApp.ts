@@ -21,7 +21,7 @@
  */
 
 import * as bluebird from "bluebird";
-import * as i18n from "i18next";
+import i18next from "i18next";
 import * as _ from "lodash";
 
 import { Context as AWSLambdaContext } from "aws-lambda";
@@ -52,10 +52,12 @@ import {
 import { IBag, IVoxaEvent, IVoxaIntentEvent } from "./VoxaEvent";
 import { IVoxaReply } from "./VoxaReply";
 
+const i18n: i18next.i18n = require("i18next");
+
 export interface IVoxaAppConfig extends IRendererConfig {
   Model: IModel;
   RenderClass: IRenderer;
-  views: i18n.Resource;
+  views: i18next.Resource;
   variables?: any;
   logOptions?: LambdaLogOptions;
   onUnhandledState?: IUnhandledStateCb;
@@ -75,21 +77,33 @@ export type IErrorHandler = (
 
 export class VoxaApp {
   [key: string]: any;
-  public eventHandlers: any;
+
+  /*
+   * This way we can simply override the method if we want different request types
+   */
+  get requestTypes(): string[] {
+    // eslint-disable-line class-methods-use-this
+    return ["IntentRequest", "SessionEndedRequest"];
+  }
+  public eventHandlers: any = {};
   public requestHandlers: any;
 
   public config: IVoxaAppConfig;
   public renderer: Renderer;
-  public i18nextPromise: PromiseLike<i18n.TranslationFunction>;
-  public i18n: i18n.i18n;
+  public i18nextPromise: PromiseLike<i18next.TFunction>;
+
+  // WARNING: the i18n variable should remain as a local instance of the VoxaApp.ts
+  // class, so that its internal configuration is initialized with every Voxa's request.
+  // This ensures its configuration is tied to the locale the request is coming with.
+  // For instance, if a skill has en-US and de-DE locales. There could be an issue
+  // with the global instance of i18n to return english values to the German locale.
+  public i18n: i18next.i18n;
   public states: State[] = [];
-  public directiveHandlers: IDirectiveClass[];
+  public directiveHandlers: IDirectiveClass[] = [];
 
   constructor(config: any) {
     this.i18n = i18n.createInstance();
     this.config = config;
-    this.eventHandlers = {};
-    this.directiveHandlers = [];
     this.requestHandlers = {
       SessionEndedRequest: this.handleOnSessionEnded.bind(this),
     };
@@ -110,7 +124,6 @@ export class VoxaApp {
     this.validateConfig();
 
     this.i18nextPromise = initializeI118n(this.i18n, this.config.views);
-
     this.renderer = new this.config.RenderClass(this.config);
 
     // this can be used to plug new information in the request
@@ -137,14 +150,6 @@ export class VoxaApp {
     ) {
       throw new Error("Model should have a serialize method");
     }
-  }
-
-  /*
-   * This way we can simply override the method if we want different request types
-   */
-  get requestTypes(): string[] {
-    // eslint-disable-line class-methods-use-this
-    return ["IntentRequest", "SessionEndedRequest"];
   }
 
   public async handleOnSessionEnded(
@@ -458,44 +463,21 @@ export class VoxaApp {
 
     const directivesKeyOrder = _.map(directiveClasses, "key");
     if (transition.reply) {
-      // special handling for `transition.reply`
-      const reply = await voxaEvent.renderer.renderPath(
-        transition.reply,
+      const replyTransition = await this.getReplyTransitions(
         voxaEvent,
+        transition,
       );
-      const replyKeys = _.keys(reply);
-      const replyTransition = _(replyKeys)
-        .map((key) => {
-          return [key, transition.reply + "." + key];
-        })
-        .fromPairs()
-        .value();
-
       transition = _.merge(transition, replyTransition);
     }
 
     const directives: IDirective[] = _(transition)
       .toPairs()
-      .sortBy((pair) => {
+      .sortBy((pair: any[]) => {
         const [key, value] = pair;
         return _.indexOf(directivesKeyOrder, key);
       })
-      .map(
-        _.spread(
-          (key, value): IDirective[] => {
-            const handlers: IDirectiveClass[] = _.filter(
-              directiveClasses,
-              (classObject: IDirectiveClass) => classObject.key === key,
-            );
-            return _.map(
-              handlers,
-              (Directive: IDirectiveClass) => new Directive(value),
-            ) as IDirective[];
-          },
-        ),
-      )
+      .map(_.spread(instantiateDirectives))
       .flatten()
-
       .concat(transition.directives || [])
       .filter()
       .filter(
@@ -514,6 +496,26 @@ export class VoxaApp {
     }
 
     return transition;
+
+    function instantiateDirectives(key: string, value: any): IDirective[] {
+      let handlers: IDirectiveClass[] = _.filter(
+        directiveClasses,
+        (classObject: IDirectiveClass) => classObject.key === key,
+      );
+
+      if (handlers.length > 1) {
+        handlers = _.filter(
+          handlers,
+          (handler: IDirectiveClass) =>
+            handler.platform === voxaEvent.platform.name,
+        );
+      }
+
+      return _.map(
+        handlers,
+        (Directive: IDirectiveClass) => new Directive(value),
+      ) as IDirective[];
+    }
   }
 
   public async saveSession(
@@ -554,15 +556,60 @@ export class VoxaApp {
     voxaEvent.t = this.i18n.getFixedT(voxaEvent.request.locale);
     voxaEvent.renderer = this.renderer;
   }
+
+  private async getReplyTransitions(
+    voxaEvent: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<ITransition> {
+    if (!transition.reply) {
+      return {};
+    }
+    let finalReply = {};
+
+    let replies = [];
+    if (_.isArray(transition.reply)) {
+      replies = transition.reply;
+    } else {
+      replies = [transition.reply];
+    }
+
+    for (const replyItem of replies) {
+      const reply = await voxaEvent.renderer.renderPath(replyItem, voxaEvent);
+      const replyKeys = _.keys(reply);
+      const replyData = _(replyKeys)
+        .map((key) => {
+          return [key, replyItem + "." + key];
+        })
+        .fromPairs()
+        .value();
+
+      finalReply = _.mergeWith(finalReply, replyData, function customizer(
+        objValue,
+        srcValue,
+      ) {
+        if (!objValue) {
+          return; // use default merge behavior
+        }
+
+        if (_.isArray(objValue)) {
+          return objValue.concat(srcValue);
+        }
+
+        return [objValue, srcValue];
+      });
+    }
+
+    return finalReply;
+  }
 }
 
 export function initializeI118n(
-  i18nInstance: i18n.i18n,
-  views: i18n.Resource,
-): bluebird<i18n.TranslationFunction> {
+  i18nInstance: i18next.i18n,
+  views: i18next.Resource,
+): bluebird<i18next.TFunction> {
   type IInitializer = (
-    options: i18n.InitOptions,
-  ) => bluebird<i18n.TranslationFunction>;
+    options: i18next.InitOptions,
+  ) => bluebird<i18next.TFunction>;
 
   const initialize = bluebird.promisify(i18nInstance.init, {
     context: i18nInstance,

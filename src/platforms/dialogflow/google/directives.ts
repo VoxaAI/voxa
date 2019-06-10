@@ -2,6 +2,7 @@ import {
   BasicCard as ActionsOnGoogleBasicCard,
   BasicCardOptions,
   BrowseCarousel as ActionsOnGoogleBrowseCarousel,
+  BrowseCarouselOptions,
   Carousel as ActionsOnGoogleCarousel,
   CarouselOptions,
   Confirmation as ActionsOnGoogleConfirmation,
@@ -17,6 +18,7 @@ import {
   List as ActionsOnGoogleList,
   ListOptions,
   MediaResponse as ActionsOnGoogleMediaResponse,
+  MediaResponseOptions,
   NewSurface as ActionsOnGoogleNewSurface,
   NewSurfaceOptions,
   Parameters,
@@ -25,24 +27,32 @@ import {
   Place as ActionsOnGooglePlace,
   RegisterUpdate as ActionsOnGoogleRegisterUpdate,
   RegisterUpdateOptions,
+  RichResponse,
   SignIn as ActionsOnGoogleSignIn,
+  SimpleResponse,
   Suggestions as ActionsOnGoogleSuggestions,
   Table as ActionsOnGoogleTable,
+  TableOptions,
   TransactionDecision as ActionsOnGoogleTransactionDecision,
   TransactionRequirements as ActionsOnGoogleTransactionRequirements,
   UpdatePermission as ActionsOnGoogleUpdatePermission,
   UpdatePermissionOptions,
 } from "actions-on-google";
+import * as bluebird from "bluebird";
 import * as _ from "lodash";
-
-import { IDirective, IDirectiveClass } from "../../../directives";
+import {
+  IDirective,
+  IDirectiveClass,
+  sampleOrItem,
+  Say as BaseSay,
+} from "../../../directives";
 import { ITransition } from "../../../StateMachine";
 import { IVoxaEvent } from "../../../VoxaEvent";
 import { IVoxaReply } from "../../../VoxaReply";
-import { DialogFlowEvent } from "../DialogFlowEvent";
-import { DialogFlowReply } from "../DialogFlowReply";
+import { DialogflowEvent } from "../DialogflowEvent";
+import { DialogflowReply } from "../DialogflowReply";
 
-abstract class DialogFlowDirective<IOptions> {
+abstract class DialogflowDirective<IOptions> {
   constructor(public options: IOptions, public requiredCapability?: string) {}
   protected hasRequiredCapability(event: IVoxaEvent): boolean {
     if (!this.requiredCapability) {
@@ -66,8 +76,8 @@ function createSystemIntentDirective<IOptions>(
   key: string,
   requiredCapability?: string,
 ): IDirectiveClass {
-  return class extends DialogFlowDirective<IOptions> implements IDirective {
-    public static platform: string = "dialogflow";
+  return class extends DialogflowDirective<IOptions> implements IDirective {
+    public static platform: string = "google";
     public static key: string = key;
 
     constructor(public options: IOptions) {
@@ -83,7 +93,7 @@ function createSystemIntentDirective<IOptions>(
         return;
       }
 
-      const google = (reply as DialogFlowReply).payload.google;
+      const google = (reply as DialogflowReply).payload.google;
       const question = await this.getQuestion(QuestionClass, event);
 
       google.systemIntent = {
@@ -99,8 +109,8 @@ function createRichResponseDirective<IOptions>(
   key: string,
   requiredCapability?: string,
 ): IDirectiveClass {
-  return class extends DialogFlowDirective<IOptions> implements IDirective {
-    public static platform: string = "dialogflow";
+  return class extends DialogflowDirective<IOptions> implements IDirective {
+    public static platform: string = "google";
     public static key: string = key;
 
     constructor(public options: IOptions) {
@@ -116,7 +126,7 @@ function createRichResponseDirective<IOptions>(
         return;
       }
 
-      const google = (reply as DialogFlowReply).payload.google;
+      const google = (reply as DialogflowReply).payload.google;
       if (!google.richResponse) {
         throw new Error(`A simple response is required before a ${key}`);
       }
@@ -129,48 +139,48 @@ function createRichResponseDirective<IOptions>(
 
 export const LinkOutSuggestion = createRichResponseDirective<
   LinkOutSuggestionOptions
->(ActionsOnGoogleLinkOutSuggestion, "dialogFlowLinkOutSuggestion");
+>(ActionsOnGoogleLinkOutSuggestion, "dialogflowLinkOutSuggestion");
 
 export const NewSurface = createSystemIntentDirective<NewSurfaceOptions>(
   ActionsOnGoogleNewSurface,
-  "dialogFlowNewSurface",
+  "dialogflowNewSurface",
 );
 
 export const List = createSystemIntentDirective<string | ListOptions>(
   ActionsOnGoogleList,
-  "dialogFlowList",
+  "dialogflowList",
   "actions.capability.SCREEN_OUTPUT",
 );
 
 export const Carousel = createSystemIntentDirective<string | CarouselOptions>(
   ActionsOnGoogleCarousel,
-  "dialogFlowCarousel",
+  "dialogflowCarousel",
   "actions.capability.SCREEN_OUTPUT",
 );
 
 export const AccountLinkingCard = createSystemIntentDirective<string>(
   ActionsOnGoogleSignIn,
-  "dialogFlowAccountLinkingCard",
+  "dialogflowAccountLinkingCard",
 );
 
 export const Permission = createSystemIntentDirective<PermissionOptions>(
   ActionsOnGooglePermission,
-  "dialogFlowPermission",
+  "dialogflowPermission",
 );
 
 export const DateTime = createSystemIntentDirective<DateTimeOptions>(
   ActionsOnGoogleDateTime,
-  "dialogFlowDateTime",
+  "dialogflowDateTime",
 );
 
 export const Confirmation = createSystemIntentDirective<string>(
   ActionsOnGoogleConfirmation,
-  "dialogFlowConfirmation",
+  "dialogflowConfirmation",
 );
 
 export const DeepLink = createSystemIntentDirective<DeepLinkOptions>(
   ActionsOnGoogleDeepLink,
-  "dialogFlowDeepLink",
+  "dialogflowDeepLink",
 );
 
 export interface IPlaceOptions {
@@ -192,52 +202,54 @@ export interface IPlaceOptions {
 
 export const Place = createSystemIntentDirective<IPlaceOptions>(
   ActionsOnGooglePlace,
-  "dialogFlowPlace",
+  "dialogflowPlace",
 );
 
 export const TransactionDecision = createSystemIntentDirective<
   GoogleActionsV2TransactionDecisionValueSpec
->(ActionsOnGoogleTransactionDecision, "dialogFlowTransactionDecision");
+>(ActionsOnGoogleTransactionDecision, "dialogflowTransactionDecision");
 
 export const TransactionRequirements = createSystemIntentDirective<
   GoogleActionsV2TransactionRequirementsCheckSpec
->(ActionsOnGoogleTransactionRequirements, "dialogFlowTransactionRequirements");
+>(ActionsOnGoogleTransactionRequirements, "dialogflowTransactionRequirements");
 
 export const RegisterUpdate = createSystemIntentDirective<
   RegisterUpdateOptions
->(ActionsOnGoogleRegisterUpdate, "dialogFlowRegisterUpdate");
+>(ActionsOnGoogleRegisterUpdate, "dialogflowRegisterUpdate");
 
 export const UpdatePermission = createSystemIntentDirective<
   UpdatePermissionOptions
->(ActionsOnGoogleUpdatePermission, "dialogFlowUpdatePermission");
+>(ActionsOnGoogleUpdatePermission, "dialogflowUpdatePermission");
 
 export const BasicCard = createRichResponseDirective<string | BasicCardOptions>(
   ActionsOnGoogleBasicCard,
-  "dialogFlowBasicCard",
+  "dialogflowBasicCard",
   "actions.capability.SCREEN_OUTPUT",
 );
 
-export const MediaResponse = createRichResponseDirective<BasicCardOptions>(
+export const MediaResponse = createRichResponseDirective<MediaResponseOptions>(
   ActionsOnGoogleMediaResponse,
-  "dialogFlowMediaResponse",
+  "dialogflowMediaResponse",
   "actions.capability.AUDIO_OUTPUT",
 );
 
-export const Table = createRichResponseDirective<BasicCardOptions>(
+export const Table = createRichResponseDirective<TableOptions>(
   ActionsOnGoogleTable,
-  "dialogFlowTable",
+  "dialogflowTable",
   "actions.capability.SCREEN_OUTPUT",
 );
 
-export const BrowseCarousel = createRichResponseDirective<BasicCardOptions>(
+export const BrowseCarousel = createRichResponseDirective<
+  BrowseCarouselOptions
+>(
   ActionsOnGoogleBrowseCarousel,
-  "dialogFlowBrowseCarousel",
+  "dialogflowBrowseCarousel",
   "actions.capability.SCREEN_OUTPUT",
 );
 
 export class Suggestions implements IDirective {
-  public static platform: string = "dialogflow";
-  public static key: string = "dialogFlowSuggestions";
+  public static platform: string = "google";
+  public static key: string = "dialogflowSuggestions";
 
   constructor(public suggestions: string | string[]) {}
 
@@ -253,7 +265,7 @@ export class Suggestions implements IDirective {
     }
 
     const suggestions = new ActionsOnGoogleSuggestions(options);
-    const google: any = (reply as DialogFlowReply).payload.google;
+    const google: any = (reply as DialogflowReply).payload.google;
     const richResponse = google.richResponse;
     richResponse.addSuggestion(suggestions);
   }
@@ -266,8 +278,8 @@ export interface IContextConfig {
 }
 
 export class Context implements IDirective {
-  public static platform: string = "dialogflow";
-  public static key: string = "dialogFlowContext";
+  public static platform: string = "google";
+  public static key: string = "dialogflowContext";
 
   constructor(public contextConfig: IContextConfig) {}
 
@@ -276,11 +288,43 @@ export class Context implements IDirective {
     event: IVoxaEvent,
     transition: ITransition,
   ): Promise<void> {
-    const conv: DialogflowConversation = (event as DialogFlowEvent).google.conv;
+    const conv: DialogflowConversation = (event as DialogflowEvent).dialogflow
+      .conv;
     conv.contexts.set(
       this.contextConfig.name,
       this.contextConfig.lifespan,
       this.contextConfig.parameters,
     );
+  }
+}
+
+export class Say extends BaseSay {
+  public static key: string = "say";
+  public static platform: string = "google";
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition: ITransition,
+  ): Promise<void> {
+    const google = (reply as DialogflowReply).payload.google;
+    let richResponse: RichResponse = google.richResponse;
+    if (!richResponse) {
+      richResponse = new RichResponse([]);
+    }
+    google.richResponse = richResponse;
+
+    let viewPaths = this.viewPaths;
+    if (_.isString(viewPaths)) {
+      viewPaths = [viewPaths];
+    }
+
+    await bluebird.mapSeries(viewPaths, async (view: string) => {
+      const statement = await event.renderer.renderPath(view, event);
+      if (transition.dialogflowSplitSimpleResponses) {
+        richResponse.add(new SimpleResponse(""));
+      }
+      reply.addStatement(sampleOrItem(statement, event.platform));
+    });
   }
 }

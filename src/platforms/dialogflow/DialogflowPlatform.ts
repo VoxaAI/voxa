@@ -20,25 +20,29 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { expect } from "chai";
-import * as ssml from "../src/ssml";
+import * as _ from "lodash";
+import { IDirectiveClass } from "../../directives";
+import { ITransition } from "../../StateMachine";
+import { VoxaApp } from "../../VoxaApp";
+import { IVoxaEvent } from "../../VoxaEvent";
+import { IVoxaReply } from "../../VoxaReply";
+import { IVoxaPlatformConfig, VoxaPlatform } from "../VoxaPlatform";
+import { DialogflowEvent } from "./DialogflowEvent";
+import { DialogflowReply } from "./DialogflowReply";
 
-describe("ssml", () => {
-  describe("toSSML", () => {
-    it("should return undefined if empty statement", () => {
-      expect(ssml.toSSML()).to.be.undefined;
-    });
+export class DialogflowPlatform extends VoxaPlatform {
+  public name = "dialogflow";
+  protected EventClass = DialogflowEvent;
 
-    it("should not double wrap ssml with <speak /> tags", () => {
-      expect(ssml.toSSML("<speak>Some Text</speak>")).to.equal(
-        "<speak>Some Text</speak>",
-      );
-    });
+  constructor(app: VoxaApp, config: IVoxaPlatformConfig = {}) {
+    super(app, config);
+  }
 
-    it("should escape &", () => {
-      expect(ssml.toSSML("Some & Some")).to.equal(
-        "<speak>Some &amp; Some</speak>",
-      );
-    });
-  });
-});
+  protected getReply() {
+    return new DialogflowReply();
+  }
+
+  protected getDirectiveHandlers(): IDirectiveClass[] {
+    return [];
+  }
+}

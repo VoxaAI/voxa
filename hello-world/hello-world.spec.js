@@ -27,7 +27,7 @@ const dockerLambda = require("docker-lambda");
 const { getPortPromise } = require("portfinder");
 const { spawn, execSync } = require("child_process");
 
-const NODE_VERSION = process.env.TRAVIS_NODE_VERSION || "8.10";
+const NODE_VERSION = process.env.NODE_VERSION;
 const launchIntent = require("../test/requests/alexa/launchRequest.json");
 const lambdaProxyLaunchIntent = require("../test/requests/dialogflow/lambdaProxyLaunchIntent.json");
 const alexaEvent = require("../test/requests/alexa/launchRequest.json");
@@ -123,7 +123,7 @@ describe("Hello World", () => {
       const lambdaCallbackResult = dockerLambda({
         dockerImage: `lambci/lambda:nodejs${NODE_VERSION}`,
         event: lambdaProxyLaunchIntent,
-        handler: "hello-world.dialogFlowActionLambdaHTTPHandler"
+        handler: "hello-world.googleAssistantActionLambdaHTTPHandler"
       });
 
       expect(lambdaCallbackResult.headers).to.deep.equal({
@@ -147,6 +147,8 @@ describe("Hello World", () => {
         payload: {
           google: {
             expectUserResponse: true,
+            userStorage:
+              '{"data":{"voxa":{"userId":"ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y"}}}',
             isSsml: true,
             richResponse: {
               items: [
@@ -159,8 +161,7 @@ describe("Hello World", () => {
                   }
                 }
               ]
-            },
-            resetUserStorage: true
+            }
           }
         }
       });

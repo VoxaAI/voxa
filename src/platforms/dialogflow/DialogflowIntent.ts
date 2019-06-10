@@ -1,10 +1,8 @@
-import {
-  DialogflowConversation,
-} from "actions-on-google";
+import { DialogflowConversation } from "actions-on-google";
 import * as _ from "lodash";
 import { IVoxaIntent } from "../../VoxaEvent";
 
-export class DialogFlowIntent implements IVoxaIntent {
+export class DialogflowIntent implements IVoxaIntent {
   public name: string;
   public params: any;
   public rawIntent: DialogflowConversation;
@@ -21,7 +19,7 @@ export class DialogFlowIntent implements IVoxaIntent {
     this.params = this.getParams();
   }
 
-  public getParams(): any {
+  private getParams(): any {
     const args = this.rawIntent.arguments.parsed.input;
     const input: any = {};
     if (this.rawIntent.input.type) {

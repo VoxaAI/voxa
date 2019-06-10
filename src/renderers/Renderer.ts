@@ -21,7 +21,7 @@
  */
 
 import * as bluebird from "bluebird";
-import { Resource } from "i18next";
+import i18n from "i18next";
 import * as _ from "lodash";
 import { IVoxaEvent } from "../VoxaEvent";
 
@@ -29,7 +29,7 @@ export const tokenRegx = /{([\s\S]+?)}/g;
 
 export interface IRendererConfig {
   variables?: any;
-  views: Resource;
+  views: i18n.Resource;
 }
 
 export interface IMessage {
@@ -70,11 +70,12 @@ export class Renderer {
     const platform = voxaEvent.platform.name;
 
     let message = voxaEvent.t(view, {
+      defaultValue: view,
       returnObjects: true,
     });
 
-    if (platform && message[platform]) {
-      message = message[platform];
+    if (platform && _.get(message, platform)) {
+      message = _.get(message, platform);
     }
 
     if (_.isString(message) && message === view) {

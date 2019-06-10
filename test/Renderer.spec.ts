@@ -22,16 +22,17 @@
 
 import { RequestEnvelope } from "ask-sdk-model";
 import { expect } from "chai";
-import * as i18n from "i18next";
+import i18next from "i18next";
 import * as _ from "lodash";
 import {
   AlexaEvent,
   AlexaPlatform,
   AlexaReply,
-  DialogFlowEvent,
-  DialogFlowPlatform,
+  DialogflowEvent,
+  DialogflowPlatform,
+  GoogleAssistantEvent,
+  GoogleAssistantPlatform,
   Model,
-  PlayAudio,
   Renderer,
   VoxaApp,
 } from "../src";
@@ -40,6 +41,7 @@ import { AlexaRequestBuilder } from "./tools";
 import { variables } from "./variables";
 import { views } from "./views";
 
+const i18n: i18next.i18n = require("i18next");
 const rb = new AlexaRequestBuilder();
 
 describe("Renderer", () => {
@@ -49,8 +51,8 @@ describe("Renderer", () => {
   let renderer: Renderer;
   let voxaApp: VoxaApp;
 
-  before(() => {
-    i18n.init({
+  before(async () => {
+    await i18n.init({
       load: "all",
       nonExplicitWhitelist: true,
       resources: views,
@@ -156,16 +158,19 @@ describe("Renderer", () => {
       });
 
       it("should return response with directives", async () => {
-        const playAudio = new PlayAudio("url", "123", 0);
-
         skill.onIntent("SomeIntent", () => ({
+          alexaPlayAudio: {
+            token: "123",
+            url: "url",
+          },
           ask: "Ask",
-          directives: [playAudio],
           to: "entry",
         }));
+
         if (isLocalizedRequest(rawEvent.request)) {
           rawEvent.request.locale = locale;
         }
+
         const reply = await skill.execute(rawEvent);
         expect(reply.speech).to.equal(
           `<speak>${translations.question}</speak>`,
@@ -258,17 +263,31 @@ describe("Renderer", () => {
     expect(reply).to.deep.equal({ card: [{ a: 1 }, { b: 2 }, { c: 3 }] });
   });
 
-  it("should use the dialogFlow view if available", async () => {
-    const dialogFlowEvent = new DialogFlowEvent(
+  it("should use the dialogflow view if available", async () => {
+    const dialogflowEvent = new DialogflowEvent(
       require("./requests/dialogflow/launchIntent.json"),
       {},
     );
-    dialogFlowEvent.t = event.t;
-    dialogFlowEvent.platform = new DialogFlowPlatform(voxaApp);
+    dialogflowEvent.t = event.t;
+    dialogflowEvent.platform = new DialogflowPlatform(voxaApp);
     const rendered = await renderer.renderPath(
       "LaunchIntent.OpenResponse",
-      dialogFlowEvent,
+      dialogflowEvent,
     );
-    expect(rendered).to.equal("Hello from DialogFlow");
+    expect(rendered).to.equal("Hello from Dialogflow");
+  });
+
+  it("should use the google view if available", async () => {
+    const dialogflowEvent = new GoogleAssistantEvent(
+      require("./requests/dialogflow/launchIntent.json"),
+      {},
+    );
+    dialogflowEvent.t = event.t;
+    dialogflowEvent.platform = new GoogleAssistantPlatform(voxaApp);
+    const rendered = await renderer.renderPath(
+      "LaunchIntent.OpenResponse",
+      dialogflowEvent,
+    );
+    expect(rendered).to.equal("Hello from Google Assistant");
   });
 });

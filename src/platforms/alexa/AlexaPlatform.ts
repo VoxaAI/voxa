@@ -37,6 +37,7 @@ import {
   APLTemplate,
   ConnectionsSendRequest,
   DialogDelegate,
+  DialogElicitSlot,
   GadgetControllerLightDirective,
   GameEngineStartInputHandler,
   GameEngineStopInputHandler,
@@ -45,6 +46,7 @@ import {
   PlayAudio,
   RenderTemplate,
   StopAudio,
+  VideoAppLaunch,
 } from "./directives";
 
 const AlexaRequests = [
@@ -110,12 +112,14 @@ export class AlexaPlatform extends VoxaPlatform {
       AccountLinkingCard,
       ConnectionsSendRequest,
       DialogDelegate,
+      DialogElicitSlot,
       GadgetControllerLightDirective,
       GameEngineStartInputHandler,
       GameEngineStopInputHandler,
       Hint,
       HomeCard,
       PlayAudio,
+      VideoAppLaunch,
       RenderTemplate,
       APLTemplate,
       APLCommand,
@@ -136,7 +140,7 @@ export class AlexaPlatform extends VoxaPlatform {
     const alexaReply = this.getReply(alexaEvent);
 
     try {
-      this.checkSessionEndedRequest(alexaEvent);
+      this.app.onRequestStarted(this.checkSessionEndedRequest, true, "alexa");
       return this.app.execute(alexaEvent, alexaReply);
     } catch (error) {
       return this.app.handleErrors(alexaEvent, error, alexaReply);

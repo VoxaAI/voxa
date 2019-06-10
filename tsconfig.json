@@ -5,15 +5,17 @@
     "sourceMap": true,
     "strictNullChecks": true,
     "module": "commonjs",
-    "target": "ES6",
+    "preserveConstEnums": true,
+    "target": "ES2017",
     "noImplicitAny": true,
     "allowJs": false,
     "moduleResolution": "node",
     "strict": true,
-    "lib": ["ES2015"]
+    "lib": ["ES2017"]
   },
   "include": [
     "./src/",
     "./test/"
-    ]
+  ],
+  "exclude": ["node_modules"]
 }

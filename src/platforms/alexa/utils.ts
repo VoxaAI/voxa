@@ -12,7 +12,8 @@ export function isLocalizedRequest(request: any): request is LocalizedAlexaReque
       request.type.includes("System.") ||
       request.type === "Display.ElementSelected" ||
       request.type === "SessionEndedRequest" ||
-      request.type === "IntentRequest"
+      request.type === "IntentRequest" ||
+      request.type === "LaunchRequest"
     )
   );
 }
