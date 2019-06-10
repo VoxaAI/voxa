@@ -11,7 +11,9 @@
     "lint": "tslint --project tsconfig.json --config tslint.json ",
     "report": "nyc report --reporter=json && nyc report --reporter html && nyc report --reporter=lcov && nyc report --reporter=cobertura",
     "test": "mocha test/*.spec.* test/**/*.spec.*",
-    "test-ci": "nyc mocha --colors --reporter mocha-jenkins-reporter test test/*.spec.* test/**/*.spec.*"
+    "test-ci": "nyc mocha --colors --reporter mocha-jenkins-reporter test test/*.spec.* test/**/*.spec.*",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -55,7 +57,8 @@
     "request-promise": "^4.2.4",
     "striptags": "^3.1.1",
     "url-join": "^4.0.0",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "snyk": "^1.161.1"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
@@ -85,5 +88,6 @@
   "bugs": {
     "url": "https://github.com/VoxaAI/voxa/issues"
   },
-  "homepage": "https://github.com/VoxaAI/voxa#readme"
+  "homepage": "https://github.com/VoxaAI/voxa#readme",
+  "snyk": true
 }
