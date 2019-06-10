@@ -609,6 +609,28 @@ describe("Alexa directives", () => {
         },
       ]);
     });
+
+    it("should throw an error when trying to add both a video and audio directive", async () => {
+      app.onIntent("YesIntent", () => {
+        const response = {
+          alexaPlayAudio: {
+            token: "token",
+            url: "url",
+          },
+          alexaVideoAppLaunch: {
+            source: "source",
+            subtitle: "subtitle",
+            title: "title",
+          },
+          to: "die",
+        };
+
+        return response;
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.speech).to.include("An unrecoverable error");
+    });
   });
 
   describe("VideoApp", () => {

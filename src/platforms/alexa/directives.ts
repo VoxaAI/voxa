@@ -67,6 +67,17 @@ export abstract class AlexaDirective {
   }
 }
 
+export abstract class MultimediaAlexaDirective extends AlexaDirective {
+  protected validateReply(reply: IVoxaReply) {
+    if (reply.hasDirective("AudioPlayer.Play")) {
+      throw new Error(
+        "Do not include both an AudioPlayer.Play" +
+          " directive and a VideoApp.Launch directive in the same response",
+      );
+    }
+  }
+}
+
 export class HomeCard implements IDirective {
   public static platform: string = "alexa";
   public static key: string = "alexaCard";
@@ -451,7 +462,7 @@ export interface IAlexaPlayAudioDataOptions {
   metadata: interfaces.audioplayer.AudioItemMetadata;
 }
 
-export class PlayAudio extends AlexaDirective implements IDirective {
+export class PlayAudio extends MultimediaAlexaDirective implements IDirective {
   public static key: string = "alexaPlayAudio";
   public static platform: string = "alexa";
 
@@ -484,15 +495,6 @@ export class PlayAudio extends AlexaDirective implements IDirective {
     };
 
     this.addDirective(reply);
-  }
-
-  private validateReply(reply: IVoxaReply) {
-    if (reply.hasDirective("VideoApp.Launch")) {
-      throw new Error(
-        "Do not include both an AudioPlayer.Play" +
-          " directive and a VideoApp.Launch directive in the same response",
-      );
-    }
   }
 }
 
@@ -627,7 +629,7 @@ export interface IAlexaVideoDataOptions {
   subtitle?: string;
 }
 
-export class VideoAppLaunch extends AlexaDirective {
+export class VideoAppLaunch extends MultimediaAlexaDirective {
   public static key: string = "alexaVideoAppLaunch";
   public static platform: string = "alexa";
 
@@ -667,14 +669,5 @@ export class VideoAppLaunch extends AlexaDirective {
     };
 
     this.addDirective(reply);
-  }
-
-  private validateReply(reply: IVoxaReply) {
-    if (reply.hasDirective("AudioPlayer.Play")) {
-      throw new Error(
-        "Do not include both an AudioPlayer.Play" +
-          " directive and a VideoApp.Launch directive in the same response",
-      );
-    }
   }
 }
