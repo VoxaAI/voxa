@@ -85,21 +85,25 @@ export class VoxaApp {
     // eslint-disable-line class-methods-use-this
     return ["IntentRequest", "SessionEndedRequest"];
   }
-  public eventHandlers: any;
+  public eventHandlers: any = {};
   public requestHandlers: any;
 
   public config: IVoxaAppConfig;
   public renderer: Renderer;
   public i18nextPromise: PromiseLike<i18next.TFunction>;
+
+  // WARNING: the i18n variable should remain as a local instance of the VoxaApp.ts
+  // class, so that its internal configuration is initialized with every Voxa's request.
+  // This ensures its configuration is tied to the locale the request is coming with.
+  // For instance, if a skill has en-US and de-DE locales. There could be an issue
+  // with the global instance of i18n to return english values to the German locale.
   public i18n: i18next.i18n;
   public states: State[] = [];
-  public directiveHandlers: IDirectiveClass[];
+  public directiveHandlers: IDirectiveClass[] = [];
 
   constructor(config: any) {
     this.i18n = i18n.createInstance();
     this.config = config;
-    this.eventHandlers = {};
-    this.directiveHandlers = [];
     this.requestHandlers = {
       SessionEndedRequest: this.handleOnSessionEnded.bind(this),
     };
@@ -120,7 +124,6 @@ export class VoxaApp {
     this.validateConfig();
 
     this.i18nextPromise = initializeI118n(this.i18n, this.config.views);
-
     this.renderer = new this.config.RenderClass(this.config);
 
     // this can be used to plug new information in the request
