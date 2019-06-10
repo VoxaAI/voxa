@@ -443,6 +443,14 @@ export class AccountLinkingCard implements IDirective {
   }
 }
 
+export interface IAlexaPlayAudioDataOptions {
+  url: string;
+  token: string;
+  offsetInMilliseconds: number;
+  behavior: interfaces.audioplayer.PlayBehavior;
+  metadata: interfaces.audioplayer.AudioItemMetadata;
+}
+
 export class PlayAudio extends AlexaDirective implements IDirective {
   public static key: string = "alexaPlayAudio";
   public static platform: string = "alexa";
@@ -450,11 +458,7 @@ export class PlayAudio extends AlexaDirective implements IDirective {
   public directive?: interfaces.audioplayer.PlayDirective;
 
   constructor(
-    public url: string,
-    public token: string,
-    public offsetInMilliseconds: number = 0,
-    public behavior: interfaces.audioplayer.PlayBehavior = "REPLACE_ALL",
-    public metadata: interfaces.audioplayer.AudioItemMetadata = {},
+    public data: IAlexaPlayAudioDataOptions,
   ) {
     super();
   }
@@ -468,14 +472,14 @@ export class PlayAudio extends AlexaDirective implements IDirective {
 
     this.directive = {
       audioItem: {
-        metadata: this.metadata,
+        metadata: this.data.metadata || {},
         stream: {
-          offsetInMilliseconds: this.offsetInMilliseconds,
-          token: this.token,
-          url: this.url,
+          offsetInMilliseconds: this.data.offsetInMilliseconds || 0,
+          token: this.data.token,
+          url: this.data.url,
         },
       },
-      playBehavior: this.behavior,
+      playBehavior: this.data.behavior || "REPLACE_ALL",
       type: "AudioPlayer.Play",
     };
 
