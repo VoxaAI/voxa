@@ -44,7 +44,6 @@ import { variables } from "./variables";
 import { views } from "./views";
 
 import { UnknownState } from "../src/errors";
-import { PlayAudio } from "../src/platforms/alexa/directives";
 import { StateMachine } from "../src/StateMachine/StateMachine";
 
 const rb = new AlexaRequestBuilder();
@@ -693,10 +692,13 @@ describe("VoxaApp", () => {
     const alexaEvent = new AlexaEvent(event);
     alexaEvent.platform = platform;
 
-    const directives = [new PlayAudio("url", "123", 0, "REPLACE_ALL")];
-
     voxaApp.onIntent("SomeIntent", () => ({
-      directives,
+      alexaPlayAudio: {
+        behavior: "REPLACE_ALL",
+        offsetInMilliseconds: 0,
+        token: "123",
+        url: "url",
+      },
       tell: "ExitIntent.Farewell",
       to: "entry",
     }));
@@ -729,10 +731,13 @@ describe("VoxaApp", () => {
     const alexaEvent = new AlexaEvent(event);
     alexaEvent.platform = platform;
 
-    const directives = [new PlayAudio("url", "123", 0, "REPLACE_ALL")];
-
     voxaApp.onIntent("SomeIntent", () => ({
-      directives,
+      alexaPlayAudio: {
+        behavior: "REPLACE_ALL",
+        offsetInMilliseconds: 0,
+        token: "123",
+        url: "url",
+      },
       say: "ExitIntent.Farewell",
     }));
 

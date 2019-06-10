@@ -10,7 +10,6 @@ import {
   DisplayTemplate,
   HomeCard,
   IVoxaIntentEvent,
-  PlayAudio,
   VoxaApp,
 } from "../../src/";
 import { AlexaRequestBuilder } from "./../tools";
@@ -547,6 +546,93 @@ describe("Alexa directives", () => {
     });
   });
 
+  describe("PlayAudio", () => {
+    it("should render a PlayAudio directive", async () => {
+      app.onIntent("YesIntent", {
+        alexaPlayAudio: {
+          behavior: "REPLACE_ENQUEUED",
+          metadata: {
+            art: {
+              sources: [
+                {
+                  url: "url",
+                },
+              ],
+            },
+            backgroundImage: {
+              sources: [
+                {
+                  url: "url",
+                },
+              ],
+            },
+            subtitle: "subtitle",
+            title: "title",
+          },
+          offsetInMilliseconds: 0,
+          token: "token",
+          url: "url",
+        },
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          audioItem: {
+            metadata: {
+              art: {
+                sources: [
+                  {
+                    url: "url",
+                  },
+                ],
+              },
+              backgroundImage: {
+                sources: [
+                  {
+                    url: "url",
+                  },
+                ],
+              },
+              subtitle: "subtitle",
+              title: "title",
+            },
+            stream: {
+              offsetInMilliseconds: 0,
+              token: "token",
+              url: "url",
+            },
+          },
+          playBehavior: "REPLACE_ENQUEUED",
+          type: "AudioPlayer.Play",
+        },
+      ]);
+    });
+
+    it("should throw an error when trying to add both a video and audio directive", async () => {
+      app.onIntent("YesIntent", () => {
+        const response = {
+          alexaPlayAudio: {
+            token: "token",
+            url: "url",
+          },
+          alexaVideoAppLaunch: {
+            source: "source",
+            subtitle: "subtitle",
+            title: "title",
+          },
+          to: "die",
+        };
+
+        return response;
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.speech).to.include("An unrecoverable error");
+    });
+  });
+
   describe("VideoApp", () => {
     it("should render a VideApp.Launch directive", async () => {
       app.onIntent("YesIntent", {
@@ -617,7 +703,10 @@ describe("Alexa directives", () => {
 
     it("should throw an error when trying to add both a video and audio directive", async () => {
       app.onIntent("YesIntent", {
-        directives: [new PlayAudio("url", "token")],
+        alexaPlayAudio: {
+          token: "token",
+          url: "url",
+        },
         reply: ["Reply.VideoAppLaunch"],
         to: "die",
       });

@@ -290,11 +290,11 @@ StopAudio
 
 
 Resume an Audio
----------
+---------------
 
 Resuming an audio works using the `PlayAudio` directive, the only thing that need to change is the `offsetInMilliseconds` to, of course, start the audio where it stopped. The `offsetInMilliseconds` comes from the context attribute in the raw event coming from Alexa.
 
-You can also use the `token` to pass important information since the AudioPlayer context is outside of the skill session and since you can't access the session variables. In this example I will pass the url of the audio being reproduced in the Alexa device, but you can pass any variable you need.
+You can also use the `token` to pass important information since the AudioPlayer context is outside of the skill session, therefore you can't access the session variables. In this example, the information of the audio is returned with the `alexaPlayAudio` key from Voxa.
 
 
 .. code-block:: javascript
@@ -305,10 +305,33 @@ You can also use the `token` to pass important information since the AudioPlayer
       const token = JSON.stringify({ url });
       const offsetInMilliseconds = 0;
       const behavior = 'REPLACE_ALL';
-      const playAudio = new PlayAudio(url, token, offsetInMilliseconds, behavior);
+      const metadata = {
+        art: {
+          sources: [
+            {
+              url: "http://example.com/image.png",
+            },
+          ],
+        },
+        backgroundImage: {
+          sources: [
+            {
+              url: "http://example.com/image.png",
+            },
+          ],
+        },
+        subtitle: "Subtitle",
+        title: "Title",
+      };
 
       return {
-        directives: [playAudio],
+        alexaPlayAudio: {
+          behavior,
+          metadata,
+          offsetInMilliseconds,
+          token
+          url,
+        },
       };
     });
 
