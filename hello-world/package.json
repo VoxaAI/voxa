@@ -5,16 +5,16 @@
   "license": "MIT",
   "dependencies": {
     "lodash": "^4.17.11",
-    "source-map-support": "^0.5.9",
+    "source-map-support": "^0.5.12",
     "voxa": "file:.."
   },
   "devDependencies": {
-    "azure-functions-core-tools": "^2.2.70",
+    "azure-functions-core-tools": "^2.7.1158",
     "chai": "^4.2.0",
     "docker-lambda": "^0.15.3",
-    "mocha": "^5.2.0",
-    "portfinder": "^1.0.19",
+    "mocha": "^6.1.4",
+    "portfinder": "^1.0.20",
     "request": "^2.88.0",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.4"
   }
 }

@@ -85,18 +85,25 @@ export class VoxaApp {
     // eslint-disable-line class-methods-use-this
     return ["IntentRequest", "SessionEndedRequest"];
   }
-  public eventHandlers: any;
+  public eventHandlers: any = {};
   public requestHandlers: any;
 
   public config: IVoxaAppConfig;
   public renderer: Renderer;
+  public i18nextPromise: PromiseLike<i18next.TFunction>;
+
+  // WARNING: the i18n variable should remain as a local instance of the VoxaApp.ts
+  // class, so that its internal configuration is initialized with every Voxa's request.
+  // This ensures its configuration is tied to the locale the request is coming with.
+  // For instance, if a skill has en-US and de-DE locales. There could be an issue
+  // with the global instance of i18n to return english values to the German locale.
+  public i18n: i18next.i18n;
   public states: State[] = [];
-  public directiveHandlers: IDirectiveClass[];
+  public directiveHandlers: IDirectiveClass[] = [];
 
   constructor(config: any) {
+    this.i18n = i18n.createInstance();
     this.config = config;
-    this.eventHandlers = {};
-    this.directiveHandlers = [];
     this.requestHandlers = {
       SessionEndedRequest: this.handleOnSessionEnded.bind(this),
     };
@@ -116,6 +123,7 @@ export class VoxaApp {
 
     this.validateConfig();
 
+    this.i18nextPromise = initializeI118n(this.i18n, this.config.views);
     this.renderer = new this.config.RenderClass(this.config);
 
     // this can be used to plug new information in the request
@@ -539,13 +547,13 @@ export class VoxaApp {
   }
 
   public async transformRequest(voxaEvent: IVoxaEvent): Promise<void> {
-    await initializeI118n(this.config.views);
+    await this.i18nextPromise;
     const data = voxaEvent.session.attributes.model as IBag;
     const model = await this.config.Model.deserialize(data, voxaEvent);
 
     voxaEvent.model = model;
     voxaEvent.log.debug("Initialized model ", { model: voxaEvent.model });
-    voxaEvent.t = i18n.getFixedT(voxaEvent.request.locale);
+    voxaEvent.t = this.i18n.getFixedT(voxaEvent.request.locale);
     voxaEvent.renderer = this.renderer;
   }
 
@@ -596,9 +604,18 @@ export class VoxaApp {
 }
 
 export function initializeI118n(
+  i18nInstance: i18next.i18n,
   views: i18next.Resource,
-): Promise<i18next.TFunction> {
-  return i18n.init({
+): bluebird<i18next.TFunction> {
+  type IInitializer = (
+    options: i18next.InitOptions,
+  ) => bluebird<i18next.TFunction>;
+
+  const initialize = bluebird.promisify(i18nInstance.init, {
+    context: i18nInstance,
+  }) as IInitializer;
+
+  return initialize({
     fallbackLng: "en",
     load: "all",
     nonExplicitWhitelist: true,

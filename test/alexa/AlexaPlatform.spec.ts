@@ -167,4 +167,32 @@ describe("AlexaPlatform", () => {
       "<speak>Dieses view ist nur in Deutsch verfügbar</speak>",
     );
   });
+
+  // This test covers the case when having the i18n object as a local variable
+  // of the VoxaApp.ts file. If you try to leave it out as a global variable,
+  // and your voice app has different locales, it could eventually lock the
+  // instance to one locale, and for example, it could return english words to german requests.
+  // The test uses the same VoxaApp instance for both requests.
+  it("should return the view from the right locale, in case 2 requests come from 2 different locales", async () => {
+    const voxaApp = new VoxaApp({ views });
+    voxaApp.onState("LaunchIntent", { ask: "Ask" });
+
+    const alexaSkill = new AlexaPlatform(voxaApp);
+    const rb = new AlexaRequestBuilder();
+
+    const launchRequest = rb.getLaunchRequest();
+    const result = await alexaSkill.execute(launchRequest);
+    expect(result.speech).to.equal(
+      "<speak>What time is it?</speak>",
+    );
+
+    const rbGerman = new AlexaRequestBuilder();
+    rbGerman.locale = "de-DE";
+
+    const germanLaunchRequest = rbGerman.getLaunchRequest();
+    const resultGerman = await alexaSkill.execute(germanLaunchRequest);
+    expect(resultGerman.speech).to.equal(
+      "<speak>wie spät ist es?</speak>",
+    );
+  });
 });
