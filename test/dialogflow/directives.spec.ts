@@ -1,7 +1,7 @@
 import { Button, Image, MediaObject } from "actions-on-google";
 import { DialogflowConversation } from "actions-on-google";
 import { expect } from "chai";
-import * as i18n from "i18next";
+import i18next from "i18next";
 import * as _ from "lodash";
 import "mocha";
 
@@ -28,13 +28,15 @@ import { VoxaApp } from "../../src/VoxaApp";
 import { variables } from "./../variables";
 import { views } from "./../views";
 
+const i18n: i18next.i18n = require("i18next");
+
 describe("Google Assistant Directives", () => {
   let event: any;
   let app: VoxaApp;
   let dialogflowAgent: GoogleAssistantPlatform;
 
-  before(() => {
-    i18n.init({
+  before(async () => {
+    await i18n.init({
       load: "all",
       nonExplicitWhitelist: true,
       resources: views,

@@ -17,6 +17,12 @@
       true,
       true
     ],
+    "no-require-imports": [
+      false
+    ],
+    "no-var-requires": [
+      false
+    ],
     "max-classes-per-file": [
       false
     ],

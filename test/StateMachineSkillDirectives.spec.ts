@@ -29,7 +29,6 @@ import {
   AlexaEvent,
   AlexaPlatform,
   AlexaReply,
-  PlayAudio,
   VoxaApp,
 } from "../src";
 import { AlexaRequestBuilder } from "./tools";
@@ -78,16 +77,15 @@ const states = {
         voxaEvent.rawEvent.context.AudioPlayer.offsetInMilliseconds || 0;
     }
 
-    const directives = [
-      new PlayAudio(
-        TEST_URLS[index],
-        createToken(index, shuffle, loop),
+    return {
+      alexaPlayAudio: {
+        behavior: "REPLACE_ALL",
         offsetInMilliseconds,
-        "REPLACE_ALL",
-      ),
-    ];
-
-    return { ask: "LaunchIntent.OpenResponse", directives };
+        token: createToken(index, shuffle, loop),
+        url: TEST_URLS[index],
+      },
+      ask: "LaunchIntent.OpenResponse",
+    };
   },
 };
 

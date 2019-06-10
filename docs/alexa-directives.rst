@@ -213,26 +213,146 @@ An APL Command is sent with the `alexaAPLCommand` key in your controller. Just l
 PlayAudio
 ---------
 
-`Alexa Documentation <https://developer.amazon.com/docs/custom-skills/audioplayer-interface-reference.html>`_
+`Alexa Documentation <https://developer.amazon.com/docs/custom-skills/audioplayer-interface-reference.html#play>`_
 
 
 .. code-block:: javascript
 
-    const voxa = require('voxa');
-    const { PlayAudio } = voxa.alexa;
+    function register(app) {
+      app.onState('someState', () => {
+        const url = 'http://example.com/example.mp3';
+        const token = '{}';
+        const offsetInMilliseconds = 0;
+        const behavior = 'REPLACE_ALL';
+        const playAudio = new PlayAudio(url, token, offsetInMilliseconds, behavior);
 
-    app.onState('someState', () => {
-      const playAudio = new PlayAudio(
-        'http://example.com/example.mp3',
-        '{}',
-        0,
-        'REPLACE_ALL'
-      );
+        return {
+          directives: [playAudio],
+        };
+      });
+    }
+
+**Add metadata for your audio**
+
+The `PlayAudio` directive has a fifth parameter to set metadata for an audio, just pass it when creating a `PlayAudio` instance following the correct structure required by Amazon (refer to the Alexa documentation link above).
+
+
+.. code-block:: javascript
+
+    function register(app) {
+      app.onState('someState', () => {
+        const url = 'http://example.com/example.mp3';
+        const token = '{}';
+        const offsetInMilliseconds = 0;
+        const behavior = 'REPLACE_ALL';
+        const metadata = {
+          title: 'title of the track to display',
+          subtitle: 'subtitle of the track to display',
+          art: {
+            sources: [
+              {
+                url: 'https://cdn.example.com/url-of-the-album-art-image.png'
+              }
+            ]
+          },
+          backgroundImage: {
+            sources: [
+              {
+                url: 'https://cdn.example.com/url-of-the-background-image.png'
+              }
+            ]
+          }
+        };
+        const playAudio = new PlayAudio(url, token, offsetInMilliseconds, behavior, metadata);
+
+        return {
+          directives: [playAudio],
+        };
+      });
+    }
+
+
+StopAudio
+---------
+
+`Alexa Documentation <https://developer.amazon.com/docs/custom-skills/audioplayer-interface-reference.html#stop>`_
+
+
+.. code-block:: javascript
+
+  function register(app) {
+    app.onState("PauseIntent", {
+      alexaStopAudio: true,
+      reply: "SomeViewWithAPauseText",
+      to: "die"
+    });
+  }
+
+
+Resume an Audio
+---------------
+
+Resuming an audio works using the `PlayAudio` directive, the only thing that need to change is the `offsetInMilliseconds` to, of course, start the audio where it stopped. The `offsetInMilliseconds` comes from the context attribute in the raw event coming from Alexa.
+
+You can also use the `token` to pass important information since the AudioPlayer context is outside of the skill session, therefore you can't access the session variables. In this example, the information of the audio is returned with the `alexaPlayAudio` key from Voxa.
+
+
+.. code-block:: javascript
+
+  function register(app) {
+    app.onState("playSomeAudio", () => {
+      const url = 'http://example.com/example.mp3';
+      const token = JSON.stringify({ url });
+      const offsetInMilliseconds = 0;
+      const behavior = 'REPLACE_ALL';
+      const metadata = {
+        art: {
+          sources: [
+            {
+              url: "http://example.com/image.png",
+            },
+          ],
+        },
+        backgroundImage: {
+          sources: [
+            {
+              url: "http://example.com/image.png",
+            },
+          ],
+        },
+        subtitle: "Subtitle",
+        title: "Title",
+      };
 
       return {
-        directives: [playAudio],
+        alexaPlayAudio: {
+          behavior,
+          metadata,
+          offsetInMilliseconds,
+          token
+          url,
+        },
       };
     });
+
+    app.onIntent("ResumeIntent", (voxaEvent: IVoxaEvent) => {
+      if (voxaEvent.rawEvent.context) {
+        const token = JSON.parse(voxaEvent.rawEvent.context.AudioPlayer.token);
+        const offsetInMilliseconds = voxaEvent.rawEvent.context.AudioPlayer.offsetInMilliseconds;
+        const url = token.url;
+
+        const playAudio = new PlayAudio(url, token, offsetInMilliseconds);
+
+        return {
+          reply: "SomeViewSayingResumingAudio",
+          to: "die",
+          directives: [playAudio]
+        };
+      }
+
+      return { flow: "terminate", reply: "SomeGoodbyeMessage" };
+    });
+  }
 
 
 ElicitSlot Directive

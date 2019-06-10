@@ -22,7 +22,7 @@
 
 import { RequestEnvelope } from "ask-sdk-model";
 import { expect } from "chai";
-import * as i18n from "i18next";
+import i18next from "i18next";
 import * as _ from "lodash";
 import {
   AlexaEvent,
@@ -33,7 +33,6 @@ import {
   GoogleAssistantEvent,
   GoogleAssistantPlatform,
   Model,
-  PlayAudio,
   Renderer,
   VoxaApp,
 } from "../src";
@@ -42,6 +41,7 @@ import { AlexaRequestBuilder } from "./tools";
 import { variables } from "./variables";
 import { views } from "./views";
 
+const i18n: i18next.i18n = require("i18next");
 const rb = new AlexaRequestBuilder();
 
 describe("Renderer", () => {
@@ -51,8 +51,8 @@ describe("Renderer", () => {
   let renderer: Renderer;
   let voxaApp: VoxaApp;
 
-  before(() => {
-    i18n.init({
+  before(async () => {
+    await i18n.init({
       load: "all",
       nonExplicitWhitelist: true,
       resources: views,
@@ -158,16 +158,19 @@ describe("Renderer", () => {
       });
 
       it("should return response with directives", async () => {
-        const playAudio = new PlayAudio("url", "123", 0);
-
         skill.onIntent("SomeIntent", () => ({
+          alexaPlayAudio: {
+            token: "123",
+            url: "url",
+          },
           ask: "Ask",
-          directives: [playAudio],
           to: "entry",
         }));
+
         if (isLocalizedRequest(rawEvent.request)) {
           rawEvent.request.locale = locale;
         }
+
         const reply = await skill.execute(rawEvent);
         expect(reply.speech).to.equal(
           `<speak>${translations.question}</speak>`,

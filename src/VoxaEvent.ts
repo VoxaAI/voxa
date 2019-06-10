@@ -22,7 +22,7 @@
 
 import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
-import * as i18n from "i18next";
+import { default as i18n } from "i18next";
 import { LambdaLog, LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
 import { Model } from "./Model";
@@ -51,7 +51,7 @@ export interface IVoxaEvent {
   intent?: IVoxaIntent;
   request: IVoxaRequest;
   model: Model;
-  t: i18n.TranslationFunction;
+  t: i18n.TFunction;
   log: LambdaLog;
   renderer: Renderer;
   user: IVoxaUser;
@@ -67,7 +67,7 @@ export abstract class VoxaEvent implements IVoxaEvent {
   public intent?: IVoxaIntent;
   public request!: IVoxaRequest;
   public model!: Model;
-  public t!: i18n.TranslationFunction;
+  public t!: i18n.TFunction;
   public log!: LambdaLog;
   public renderer!: Renderer;
   public user!: IVoxaUser;

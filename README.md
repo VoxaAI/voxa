@@ -7,15 +7,15 @@ Voxa
 [![npm](https://img.shields.io/npm/dm/voxa.svg)](https://www.npmjs.com/package/voxa)
 [![Gitter](https://img.shields.io/gitter/room/voxa-rain/voxa.svg)](https://gitter.im/voxa-rain/voxa)
 
-A fsm (state machine) framework for Alexa apps using Node.js
+A fsm (state machine) framework for Alexa skills, Google actions, Facebook Messenger and Telegram bots using Node.js
 
 Summary
 -------
-Voxa is an Alexa skill framework that provides a way to organize a skill into a state machine. Even the most complex voice user interface (VUI) can be represented through the state machine and it provides the flexibility needed to both be rigid when needed in specific states and flexible to jump around when allowing that also makes sense.  
+Voxa is a Node.js MVC framework that provides a way to organize a voice application into a state machine. Even the most complex voice user interface (VUI) can be represented through the state machine and it provides the flexibility needed to both be rigid when needed in specific states and flexible to jump around when allowing that also makes sense.
 
 Why Voxa vs other frameworks
 ----------------------------
-Voxa provides a more robust framework for building Alexa skills.  It provides a design pattern that wasn’t found in other frameworks.   Critical to Voxa was providing a pluggable interface and supporting all of the latest ASK features.  
+Voxa provides a more robust framework for building Alexa skills, Google Actions, and Facebook Messenger and Telegram Bots. It provides a design pattern that is not found in other frameworks. Critical to Voxa is to provide a pluggable interface and support to all of the latest features from the official frameworks of each voice platform, like ASK and actions-on-google.
 
 Features
 --------
@@ -45,24 +45,43 @@ Usage
 ------
 
 ```javascript
-const Voxa = require('voxa');
+const {
+  AlexaPlatform,
+  GoogleAssistantPlatform,
+  FacebookPlatform,
+  VoxaApp,
+} = require('voxa');
 
 // Controllers use views to send responses to the user
 const views = {
-  LaunchIntent: { tell: 'Hello World!' },
-}
+  en: {
+    translation: {
+      LaunchIntent: {
+        tell: 'Hello World!',
+      },
+    },
+  },
+};
 
-// initialize the skill
-const skill = new Voxa({ views })
+const facebookAppParams = {
+  pageAccessToken: 'pageAccessToken',
+};
+
+// initialize the voice apps
+const voxaApp = new VoxaApp({ views });
+const alexa = new AlexaPlatform(voxaApp);
+const google = new GoogleAssistantPlatform(voxaApp);
+const facebook = new FacebookPlatform(voxaApp, facebookAppParams);
 
 // respond to a LaunchIntent
-skill.onIntent('LaunchIntent', (event) => {
+voxaApp.onIntent('LaunchIntent', (event) => {
   return { reply: 'LaunchIntent' };
 });
 
-// lambda handler
-exports.handler = skill.lambda();
-
+// lambda handlers
+exports.alexaHandler = alexa.lambda();
+exports.googleHandler = google.lambda();
+exports.facebookHandler = facebook.lambda();
 ```
 
 Tests
