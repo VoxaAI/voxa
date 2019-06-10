@@ -90,10 +90,13 @@ export class VoxaApp {
 
   public config: IVoxaAppConfig;
   public renderer: Renderer;
+  public i18nextPromise: PromiseLike<i18next.TFunction>;
+  public i18n: i18next.i18n;
   public states: State[] = [];
   public directiveHandlers: IDirectiveClass[];
 
   constructor(config: any) {
+    this.i18n = i18n.createInstance();
     this.config = config;
     this.eventHandlers = {};
     this.directiveHandlers = [];
@@ -115,6 +118,8 @@ export class VoxaApp {
     );
 
     this.validateConfig();
+
+    this.i18nextPromise = initializeI118n(this.i18n, this.config.views);
 
     this.renderer = new this.config.RenderClass(this.config);
 
@@ -539,13 +544,13 @@ export class VoxaApp {
   }
 
   public async transformRequest(voxaEvent: IVoxaEvent): Promise<void> {
-    await initializeI118n(this.config.views);
+    await this.i18nextPromise;
     const data = voxaEvent.session.attributes.model as IBag;
     const model = await this.config.Model.deserialize(data, voxaEvent);
 
     voxaEvent.model = model;
     voxaEvent.log.debug("Initialized model ", { model: voxaEvent.model });
-    voxaEvent.t = i18n.getFixedT(voxaEvent.request.locale);
+    voxaEvent.t = this.i18n.getFixedT(voxaEvent.request.locale);
     voxaEvent.renderer = this.renderer;
   }
 
@@ -596,9 +601,18 @@ export class VoxaApp {
 }
 
 export function initializeI118n(
+  i18nInstance: i18next.i18n,
   views: i18next.Resource,
-): Promise<i18next.TFunction> {
-  return i18n.init({
+): bluebird<i18next.TFunction> {
+  type IInitializer = (
+    options: i18next.InitOptions,
+  ) => bluebird<i18next.TFunction>;
+
+  const initialize = bluebird.promisify(i18nInstance.init, {
+    context: i18nInstance,
+  }) as IInitializer;
+
+  return initialize({
     fallbackLng: "en",
     load: "all",
     nonExplicitWhitelist: true,

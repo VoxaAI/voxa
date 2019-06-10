@@ -74,4 +74,28 @@ describe("createServer", () => {
       version: "1.0",
     });
   });
+
+  it("should return 500 response on POST with undefined body", async () => {
+    server = createServer(adapter);
+    port = await portfinder.getPortPromise();
+    server.listen(port, () => console.log(`Listening on ${port}`));
+
+    const options: rp.OptionsWithUri = {
+      json: true,
+      method: "POST",
+      resolveWithFullResponse: true,
+      uri: `http://localhost:${port}/`,
+    };
+
+    try {
+      await rp(options);
+    } catch (err) {
+      expect(err.name).to.equal("StatusCodeError");
+      expect(err.statusCode).to.equal(500);
+      expect(err.response.statusMessage).to.equal("Internal Server Error");
+      expect(err.response.headers["content-type"]).to.equal(
+         "application/json; charset=utf-8",
+      );
+    }
+  });
 });
