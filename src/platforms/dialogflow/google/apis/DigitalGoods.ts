@@ -68,8 +68,9 @@ export class DigitalGoods extends ApiBase {
    */
   public async getSkus(skus: string[], type: GoogleActionsTransactionsV3SkuIdSkuType) {
     const conversationId = _.get(this.rawEvent, "originalDetectIntentRequest.payload.conversation.conversationId");
+    const androidAppPackageName = _.get(this.transactionOptions, "androidAppPackageName");
 
-    if (!_.get(this.transactionOptions, "androidAppPackageName")) {
+    if (!androidAppPackageName) {
       throw new Error("Android App package name missing");
     }
 
@@ -87,7 +88,7 @@ export class DigitalGoods extends ApiBase {
       },
       json: true, // Automatically parses the JSON string in the response
       method: "POST",
-      uri: `https://actions.googleapis.com/v3/packages/${this.transactionOptions.androidAppPackageName}/skus:batchGet`,
+      uri: `https://actions.googleapis.com/v3/packages/${androidAppPackageName}/skus:batchGet`,
     };
 
     return rp(options);

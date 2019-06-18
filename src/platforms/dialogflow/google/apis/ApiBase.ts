@@ -36,7 +36,7 @@ export class ApiBase {
   constructor(
     event: GoogleCloudDialogflowV2WebhookRequest,
     public log: LambdaLog,
-    public transactionOptions: ITransactionOptions,
+    public transactionOptions?: ITransactionOptions,
   ) {
     this.rawEvent = _.cloneDeep(event);
   }
@@ -45,14 +45,17 @@ export class ApiBase {
    * Gets Google's Credentials: access_token, refresh_token, expiration_date, token_type
    */
   protected async getCredentials(): Promise<any> {
-    if (!this.transactionOptions.keyFile && !this.transactionOptions.key) {
+    const key = _.get(this, "transactionOptions.key");
+    const keyFile = _.get(this, "transactionOptions.keyFile");
+
+    if (!keyFile && !key) {
       throw new Error("keyFile for transactions missing");
     }
 
     try {
       const params = {
-        key: this.transactionOptions.key,
-        keyFile: this.transactionOptions.keyFile,
+        key,
+        keyFile,
         scopes: ["https://www.googleapis.com/auth/actions.purchases.digital"],
       };
 
