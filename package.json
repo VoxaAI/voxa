@@ -10,8 +10,8 @@
     "compile": "tsc",
     "lint": "tslint --project tsconfig.json --config tslint.json ",
     "report": "nyc report --reporter=json && nyc report --reporter html && nyc report --reporter=lcov && nyc report --reporter=cobertura",
-    "test": "mocha test/*.spec.* test/**/*.spec.*",
-    "test-ci": "nyc mocha --colors --reporter mocha-jenkins-reporter test test/*.spec.* test/**/*.spec.*",
+    "test": "mocha test/*.spec.* test/**/*.spec.* test/**/**/*.spec.*",
+    "test-ci": "nyc mocha --colors --reporter mocha-jenkins-reporter test test/*.spec.* test/**/*.spec.* test/**/**/*.spec.*",
     "snyk-protect": "snyk protect",
     "prepublish": "npm run snyk-protect"
   },
@@ -38,7 +38,7 @@
     "@types/i18next": "^12.1.0",
     "@types/lambda-log": "^2.2.0",
     "@types/lodash": "^4.14.134",
-    "@types/node": "^12.0.7",
+    "@types/node": "^12.0.8",
     "@types/request-promise": "^4.1.44",
     "@types/tedious": "^4.0.0",
     "@types/url-join": "^4.0.0",
@@ -50,15 +50,16 @@
     "botbuilder": "^3.16",
     "fast-xml-parser": "^3.12.16",
     "google-auth-library": "^1.6.1",
+    "googleapis": "^40.0.0",
     "i18next": "^17.0.3",
     "lambda-log": "^2.2.0",
     "lodash": "^4.17.11",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
+    "snyk": "^1.179.0",
     "striptags": "^3.1.1",
     "url-join": "^4.0.0",
-    "uuid": "^3.3.2",
-    "snyk": "^1.161.1"
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
@@ -81,7 +82,7 @@
     "tslint": "^5.17.0",
     "tslint-no-unused-expression-chai": "^0.1.4",
     "typedoc": "^0.14.2",
-    "typescript": "^3.5.1",
+    "typescript": "^3.5.2",
     "virtual-alexa": "^0.7.2",
     "virtual-google-assistant": "^0.3.3"
   },

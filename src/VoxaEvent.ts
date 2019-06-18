@@ -58,6 +58,7 @@ export interface IVoxaEvent {
   platform: VoxaPlatform;
   supportedInterfaces: string[];
   executionContext?: AWSLambdaContext | AzureContext;
+  afterPlatformInitialized?(): void;
 }
 
 export abstract class VoxaEvent implements IVoxaEvent {

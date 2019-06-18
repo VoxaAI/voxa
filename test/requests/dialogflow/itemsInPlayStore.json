@@ -1,0 +1,36 @@
+{
+  "skus": [
+    {
+      "title": "Subscription",
+      "description": "Subscription",
+      "subscriptionDetails": {
+        "subscriptionPeriod": "P1M",
+        "freeTrialPeriod": "P5D"
+      },
+      "skuId": {
+        "skuType": "SKU_TYPE_SUBSCRIPTION",
+        "id": "subscription",
+        "packageName": "com.example.subscription"
+      },
+      "formattedPrice": "$0.99",
+      "price": {
+        "currencyCode": "USD",
+        "amountInMicros": "990000"
+      }
+    },
+    {
+      "title": "Entitlement",
+      "description": "Entitlement",
+      "skuId": {
+        "skuType": "SKU_TYPE_IN_APP",
+        "id": "entitlement",
+        "packageName": "com.example.entitlement"
+      },
+      "formattedPrice": "$0.99",
+      "price": {
+        "currencyCode": "USD",
+        "amountInMicros": "990000"
+      }
+    }
+  ]
+}

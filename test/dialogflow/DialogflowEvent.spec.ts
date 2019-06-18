@@ -77,7 +77,7 @@ describe("DialogflowEvent", () => {
 
     it("should return undefined for getUserInformation", () => {
       const event = new DialogflowEvent(launchIntent, {});
-      expect(event.google.conv.user._id).to.equal(
+      expect(event.dialogflow.conv.user._id).to.equal(
         "ABwppHG14A5zlHSo4Q6CMw3IHD6a3UtYXEtEtcrDrQwBOWKO95VRm-rL-DdhbzDeHXUXiwpDcrDAzY19C8Y",
       );
     });

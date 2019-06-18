@@ -29,11 +29,13 @@ import { IVoxaReply } from "../../../VoxaReply";
 import { IVoxaPlatformConfig } from "../../VoxaPlatform";
 import { DialogflowPlatform } from "../DialogflowPlatform";
 import { DialogflowReply } from "../DialogflowReply";
+import { ITransactionOptions } from "./apis/ITransactionOptions";
 import {
   AccountLinkingCard,
   BasicCard,
   BrowseCarousel,
   Carousel,
+  CompletePurchase,
   Confirmation,
   Context,
   DateTime,
@@ -56,6 +58,7 @@ import { GoogleAssistantEvent } from "./GoogleAssistantEvent";
 
 export interface IGoogleAssistantPlatformConfig extends IVoxaPlatformConfig {
   clientId?: string; // id used to verify user's identify from Google Sign-In
+  transactionOptions?: ITransactionOptions; // transaction configuration object for purchases
 }
 
 export class GoogleAssistantPlatform extends DialogflowPlatform {
@@ -93,6 +96,7 @@ export class GoogleAssistantPlatform extends DialogflowPlatform {
       BasicCard,
       BrowseCarousel,
       Carousel,
+      CompletePurchase,
       Confirmation,
       Context,
       DateTime,
