@@ -20,15 +20,34 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import {
+  GoogleCloudDialogflowV2WebhookRequest,
+} from "actions-on-google";
+import { Context as AWSLambdaContext } from "aws-lambda";
+import { Context as AzureContext } from "azure-functions-ts-essentials";
 import { OAuth2Client } from "google-auth-library";
 import { TokenPayload } from "google-auth-library/build/src/auth/loginticket";
+import { LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
 import { v1 } from "uuid";
 
 import { IVoxaUserProfile } from "../../../VoxaEvent";
 import { DialogflowEvent } from "../DialogflowEvent";
+import { DigitalGoods } from "./apis/DigitalGoods";
 
 export class GoogleAssistantEvent extends DialogflowEvent {
+  public google!: {
+    digitalGoods: DigitalGoods;
+  };
+
+  constructor(
+    rawEvent: GoogleCloudDialogflowV2WebhookRequest,
+    logOptions?: LambdaLogOptions,
+    executionContext?: AWSLambdaContext | AzureContext,
+  ) {
+    super(rawEvent, logOptions, executionContext);
+  }
+
   public async verifyProfile(): Promise<TokenPayload | undefined> {
     const client = new OAuth2Client(this.platform.config.clientId);
     const payload:
@@ -60,6 +79,12 @@ export class GoogleAssistantEvent extends DialogflowEvent {
     delete result.given_name;
 
     return result as IVoxaGoogleUserProfile;
+  }
+
+  public afterPlatformInitialized() {
+    this.google = {
+      digitalGoods: new DigitalGoods(this.rawEvent, this.log, this.platform.config.transactionOptions),
+    };
   }
 
   /**

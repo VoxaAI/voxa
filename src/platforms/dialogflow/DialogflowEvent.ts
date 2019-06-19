@@ -26,8 +26,6 @@ import {
 } from "actions-on-google";
 import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
-import { OAuth2Client } from "google-auth-library";
-import { TokenPayload } from "google-auth-library/build/src/auth/loginticket";
 import { LambdaLogOptions } from "lambda-log";
 import * as _ from "lodash";
 import { v1 } from "uuid";
@@ -40,11 +38,6 @@ export interface IDialogflow {
 }
 
 export class DialogflowEvent extends VoxaEvent {
-  // DEPRECATED: INSTEAD USE dialogflow
-  get google() {
-    return this.dialogflow;
-  }
-
   public rawEvent!: GoogleCloudDialogflowV2WebhookRequest;
   public session!: DialogflowSession;
   public dialogflow!: IDialogflow;

@@ -180,6 +180,22 @@ export const views = {
       DialogflowSuggestions: {
         dialogflowSuggestions: ["Suggestion 1", "Suggestion 2"],
       },
+      DigitalGoods: {
+        BuyItem: {
+          googleCompletePurchase: {
+            developerPayload: "developerPayload",
+            skuId: {
+              id: "subscription",
+              packageName: "com.example",
+              skuType: "SKU_TYPE_SUBSCRIPTION",
+            },
+          },
+          say: "Would you like to buy it?",
+        },
+        SelectItem: {
+          say: "What item would you like to buy?",
+        },
+      },
       Error: "There was some error, please try again later",
       ExitIntent: {
         Farewell: "Ok. For more info visit {site} site.",
