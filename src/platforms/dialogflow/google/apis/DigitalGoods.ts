@@ -99,7 +99,7 @@ export class DigitalGoods extends ApiBase {
    */
   public getPurchaseStatus(): GoogleActionsTransactionsV3CompletePurchaseValuePurchaseStatus {
     const googleArguments = _.get(this.rawEvent, "originalDetectIntentRequest.payload.inputs[0].arguments", []);
-    let purchaseStatus: GoogleActionsTransactionsV3CompletePurchaseValuePurchaseStatus = "PURCHASE_STATUS_UNSPECIFIED";
+    let purchaseStatus: GoogleActionsTransactionsV3CompletePurchaseValuePurchaseStatus = PURCHASE_STATUS.UNSPECIFIED;
 
     _.forEach(googleArguments, (argument) => {
       if (argument.name === "COMPLETE_PURCHASE_VALUE") {
@@ -118,7 +118,7 @@ export class DigitalGoods extends ApiBase {
   public isPurchaseStatusAlreadyOwned(): boolean {
     const purchaseStatus = this.getPurchaseStatus();
 
-    return purchaseStatus === "PURCHASE_STATUS_ALREADY_OWNED";
+    return purchaseStatus === PURCHASE_STATUS.ALREADY_OWNED;
   }
 
   /**
@@ -127,7 +127,7 @@ export class DigitalGoods extends ApiBase {
   public isPurchaseStatusChangeRequested(): boolean {
     const purchaseStatus = this.getPurchaseStatus();
 
-    return purchaseStatus === "PURCHASE_STATUS_ITEM_CHANGE_REQUESTED";
+    return purchaseStatus === PURCHASE_STATUS.ITEM_CHANGE_REQUESTED;
   }
 
   /**
@@ -136,7 +136,7 @@ export class DigitalGoods extends ApiBase {
   public isPurchaseStatusError(): boolean {
     const purchaseStatus = this.getPurchaseStatus();
 
-    return purchaseStatus === "PURCHASE_STATUS_ERROR";
+    return purchaseStatus === PURCHASE_STATUS.ERROR;
   }
 
   /**
@@ -145,7 +145,7 @@ export class DigitalGoods extends ApiBase {
   public isPurchaseStatusItemUnavailable(): boolean {
     const purchaseStatus = this.getPurchaseStatus();
 
-    return purchaseStatus === "PURCHASE_STATUS_ITEM_UNAVAILABLE";
+    return purchaseStatus === PURCHASE_STATUS.ITEM_UNAVAILABLE;
   }
 
   /**
@@ -154,7 +154,7 @@ export class DigitalGoods extends ApiBase {
   public isPurchaseStatusOk(): boolean {
     const purchaseStatus = this.getPurchaseStatus();
 
-    return purchaseStatus === "PURCHASE_STATUS_OK";
+    return purchaseStatus === PURCHASE_STATUS.OK;
   }
 
   /**
@@ -163,6 +163,16 @@ export class DigitalGoods extends ApiBase {
   public isPurchaseStatusUserCancelled(): boolean {
     const purchaseStatus = this.getPurchaseStatus();
 
-    return purchaseStatus === "PURCHASE_STATUS_USER_CANCELLED";
+    return purchaseStatus === PURCHASE_STATUS.USER_CANCELLED;
   }
+}
+
+enum PURCHASE_STATUS {
+  ALREADY_OWNED = "PURCHASE_STATUS_ALREADY_OWNED",
+  ERROR = "PURCHASE_STATUS_ERROR",
+  ITEM_CHANGE_REQUESTED = "PURCHASE_STATUS_ITEM_CHANGE_REQUESTED",
+  ITEM_UNAVAILABLE = "PURCHASE_STATUS_ITEM_UNAVAILABLE",
+  OK = "PURCHASE_STATUS_OK",
+  UNSPECIFIED = "PURCHASE_STATUS_UNSPECIFIED",
+  USER_CANCELLED = "PURCHASE_STATUS_USER_CANCELLED",
 }

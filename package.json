@@ -56,7 +56,6 @@
     "lodash": "^4.17.11",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
-    "snyk": "^1.179.0",
     "striptags": "^3.1.1",
     "url-join": "^4.0.0",
     "uuid": "^3.3.2"
@@ -77,6 +76,7 @@
     "portfinder": "^1.0.20",
     "rimraf": "^2.6.3",
     "simple-mock": "^0.8.0",
+    "snyk": "^1.179.0",
     "source-map-support": "^0.5.12",
     "ts-node": "^8.3.0",
     "tslint": "^5.17.0",
