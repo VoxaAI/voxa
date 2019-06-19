@@ -1,0 +1,150 @@
+{
+  "responseId": "f4f5b1d0-fba0-4bb8-831a-a4a43ad0f4a0",
+  "queryResult": {
+    "queryText": "actions_intent_COMPLETE_PURCHASE",
+    "action": "actions_intent_COMPLETE_PURCHASE",
+    "parameters": {},
+    "allRequiredParamsPresent": true,
+    "outputContexts": [
+      {
+        "name": "projects/project/agent/sessions/1528399867833/contexts/actions_intent_complete_purchase",
+        "parameters": {
+          "text": "yes",
+          "COMPLETE_PURCHASE_VALUE": {
+            "purchaseToken": "asdfasdfasdfwer564sa6fa6sdf4as6df4as68f4as6d5f4a6sdf5",
+            "orderId": "GAA.1234-5678-9012-34567",
+            "@type": "type.googleapis.com/google.actions.transactions.v3.CompletePurchaseValue",
+            "purchaseStatus": "PURCHASE_STATUS_OK"
+          }
+        }
+      },
+      {
+        "name": "projects/project/agent/sessions/1528399867833/contexts/actions_capability_screen_output"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528399867833/contexts/google_assistant_input_type_voice"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528399867833/contexts/actions_capability_audio_output"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528399867833/contexts/actions_capability_account_linking"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528399867833/contexts/actions_capability_web_browser"
+      },
+      {
+        "name": "projects/project/agent/sessions/1528399867833/contexts/actions_capability_media_response_audio"
+      }
+    ],
+    "intent": {
+      "name": "projects/project/agent/intents/8cd23da2-0325-5fa5-b1bd-3098d2fde4ff",
+      "displayName": "actions_intent_COMPLETE_PURCHASE"
+    },
+    "intentDetectionConfidence": 1,
+    "languageCode": "en-us"
+  },
+  "originalDetectIntentRequest": {
+    "source": "google",
+    "version": "2",
+    "payload": {
+      "isInSandbox": true,
+      "surface": {
+        "capabilities": [
+          {
+            "name": "actions.capability.MEDIA_RESPONSE_AUDIO"
+          },
+          {
+            "name": "actions.capability.ACCOUNT_LINKING"
+          },
+          {
+            "name": "actions.capability.WEB_BROWSER"
+          },
+          {
+            "name": "actions.capability.SCREEN_OUTPUT"
+          },
+          {
+            "name": "actions.capability.AUDIO_OUTPUT"
+          }
+        ]
+      },
+      "inputs": [
+        {
+          "rawInputs": [
+            {
+              "query": "yes",
+              "inputType": "VOICE"
+            }
+          ],
+          "arguments": [
+            {
+              "extension": {
+                "purchaseToken": "asdfasdfasdfwer564sa6fa6sdf4as6df4as68f4as6d5f4a6sdf5",
+                "orderId": "GAA.1234-5678-9012-34567",
+                "@type": "type.googleapis.com/google.actions.transactions.v3.CompletePurchaseValue",
+                "purchaseStatus": "PURCHASE_STATUS_OK"
+              },
+              "name": "COMPLETE_PURCHASE_VALUE"
+            },
+            {
+              "rawText": "yes",
+              "textValue": "yes",
+              "name": "text"
+            }
+          ],
+          "intent": "actions.intent.COMPLETE_PURCHASE"
+        }
+      ],
+      "user": {
+        "packageEntitlements": [
+          {
+            "entitlements": [
+              {
+                "inAppDetails": {
+                  "inAppPurchaseData": {
+                    "purchaseToken": "asdfasdfasdfwer564sa6fa6sdf4as6df4as68f4as6d5f4a6sdf5",
+                    "productId": "sku",
+                    "orderId": "GAA.1234-5678-9012-34567",
+                    "purchaseTime": 1557799203480,
+                    "packageName": "com.example",
+                    "autoRenewing": true,
+                    "purchaseState": 0
+                  },
+                  "inAppDataSignature": "inAppDataSignature=="
+                },
+                "sku": "sku",
+                "skuType": "SUBSCRIPTION"
+              }
+            ],
+            "packageName": "com.example"
+          }
+        ],
+        "userStorage": "{\"userId\":\"userId\"}",
+        "lastSeen": "2019-05-13T23:32:18Z",
+        "locale": "en-US",
+        "userId": "userId"
+      },
+      "conversation": {
+        "conversationId": "1528399867833",
+        "type": "ACTIVE",
+        "conversationToken": "[\"token\"]"
+      },
+      "availableSurfaces": [
+        {
+          "capabilities": [
+            {
+              "name": "actions.capability.AUDIO_OUTPUT"
+            },
+            {
+              "name": "actions.capability.SCREEN_OUTPUT"
+            },
+            {
+              "name": "actions.capability.WEB_BROWSER"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "session": "projects/project/agent/sessions/1528399867833"
+}

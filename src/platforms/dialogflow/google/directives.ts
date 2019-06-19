@@ -5,12 +5,14 @@ import {
   BrowseCarouselOptions,
   Carousel as ActionsOnGoogleCarousel,
   CarouselOptions,
+  CompletePurchase as ActionsOnGoogleCompletePurchase,
   Confirmation as ActionsOnGoogleConfirmation,
   DateTime as ActionsOnGoogleDateTime,
   DateTimeOptions,
   DeepLink as ActionsOnGoogleDeepLink,
   DeepLinkOptions,
   DialogflowConversation,
+  GoogleActionsTransactionsV3CompletePurchaseValueSpec,
   GoogleActionsV2TransactionDecisionValueSpec,
   GoogleActionsV2TransactionRequirementsCheckSpec,
   LinkOutSuggestion as ActionsOnGoogleLinkOutSuggestion,
@@ -204,6 +206,10 @@ export const Place = createSystemIntentDirective<IPlaceOptions>(
   ActionsOnGooglePlace,
   "dialogflowPlace",
 );
+
+export const CompletePurchase = createSystemIntentDirective<
+  GoogleActionsTransactionsV3CompletePurchaseValueSpec
+>(ActionsOnGoogleCompletePurchase, "googleCompletePurchase");
 
 export const TransactionDecision = createSystemIntentDirective<
   GoogleActionsV2TransactionDecisionValueSpec

@@ -30,10 +30,10 @@ import {
   FacebookPlatform,
   FacebookReply,
   VoxaApp,
-} from "../../src";
-import { PAGE_INBOX_ID } from "../../src/platforms/dialogflow/facebook/FacebookEvent";
-import { variables } from "./../variables";
-import { views } from "./../views";
+} from "../../../src";
+import { PAGE_INBOX_ID } from "../../../src/platforms/dialogflow/facebook/FacebookEvent";
+import { variables } from "./../../variables";
+import { views } from "./../../views";
 
 const recipient = {
   id: "1234567890",
@@ -45,7 +45,7 @@ describe("FacebookUserInformation", () => {
   let facebookBot: FacebookPlatform;
 
   beforeEach(() => {
-    event = _.cloneDeep(require("../requests/dialogflow/facebookLaunchIntent.json"));
+    event = _.cloneDeep(require("../../requests/dialogflow/facebookLaunchIntent.json"));
     const pageAccessToken = "accessToken";
     app = new VoxaApp({ views, variables });
     facebookBot = new FacebookPlatform(app, { pageAccessToken });

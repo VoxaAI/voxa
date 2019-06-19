@@ -16,6 +16,7 @@ export {
   BasicCard,
   BrowseCarousel,
   Carousel,
+  CompletePurchase,
   Confirmation,
   Context,
   DateTime,

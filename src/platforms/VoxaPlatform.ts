@@ -184,6 +184,10 @@ export abstract class VoxaPlatform {
 
     event.platform = this;
 
+    if (event.afterPlatformInitialized) {
+      event.afterPlatformInitialized();
+    }
+
     return event;
   }
 

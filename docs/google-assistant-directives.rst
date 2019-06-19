@@ -360,6 +360,102 @@ Saved locations will only return the address, not the associated mapping (e.g. "
 
 
 
+Digital Goods
+-------------
+
+`Actions on Google Documentation <https://developers.google.com/actions/transactions/digital/dev-guide-digital>`_
+
+You can add dialog to your Action that sells your in-app products in the Google Play store, using the digital purchases API.
+
+You can use the *google.digitalGoods* object to get the subscriptions and InAppEntitlements filtered by the skuIds you pass to the function. Voxa handles all operations in background to get access to your digital goods in the Play Store. To do that, you need to pass to the GoogleAssistantPlatform object, the packageName of your Android application along with the keyFile with the credentials you created in your Google Cloud project.
+
+.. code-block:: javascript
+  const config = {
+    transactionOptions: {
+      androidAppPackageName: "com.example.com",
+      keyFile: "../PATH_TO_YOUR_KEY_FILE",
+    },
+  };
+
+  const app = new VoxaApp({ views, variables });
+  const googleAssistantPlatform = new GoogleAssistantPlatform(app, config);
+
+  app.onIntent("BuyProductIntent", async (voxaEvent) => {
+    const inAppEntitlementSkus = await voxaEvent.google.digitalGoods.getInAppEntitlements(["test"]);
+    const subscriptionSkus = await voxaEvent.google.digitalGoods.getSubscriptions(["test"]);
+
+    voxaEvent.model.inAppEntitlementsSkus = inAppEntitlementSkus.skus[1];
+    voxaEvent.model.subscriptionSkus = subscriptionSkus.skus[0];
+
+    return {
+      flow: "yield",
+      say: "DigitalGoods.SelectItem.say",
+      to: "entry",
+    };
+  });
+
+  app.onState('someState', () => {
+    return {
+      googleCompletePurchase: {
+        skuId: {
+          id: "subscription",
+          packageName: "com.example",
+          skuType: "SKU_TYPE_SUBSCRIPTION",
+        },
+      },
+    };
+  });
+
+  app.onIntent("actions_intent_COMPLETE_PURCHASE", (voxaEvent) => {
+    if (voxaEvent.google.digitalGoods.isPurchaseStatusOk()) {
+      return {
+        reply: "DigitalGoods.Success",
+        to: "die",
+      };
+    }
+
+    if (voxaEvent.google.digitalGoods.isPurchaseStatusAlreadyOwned()) {
+      return {
+        reply: "DigitalGoods.AlreadyOwned",
+        to: "die",
+      };
+    }
+
+    if (voxaEvent.google.digitalGoods.isPurchaseStatusItemUnavailable()) {
+      return {
+        reply: "DigitalGoods.ItemUnavailable",
+        to: "die",
+      };
+    }
+
+    if (voxaEvent.google.digitalGoods.isPurchaseStatusChangeRequested()) {
+      return {
+        reply: "DigitalGoods.ChangeRequested",
+        to: "die",
+      };
+    }
+
+    if (voxaEvent.google.digitalGoods.isPurchaseStatusUserCancelled()) {
+      return {
+        reply: "DigitalGoods.UserCancelled",
+        to: "die",
+      };
+    }
+
+    if (voxaEvent.google.digitalGoods.isPurchaseStatusError()) {
+      return {
+        reply: "DigitalGoods.Error",
+        to: "die",
+      };
+    }
+
+    return {
+      reply: "DigitalGoods.NotSpecified",
+      to: "die",
+    };
+  });
+
+
 TransactionDecision
 --------------------
 
