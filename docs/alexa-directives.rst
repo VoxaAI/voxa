@@ -79,7 +79,7 @@ Voxa provides a `DisplayTemplate` builder that can be used with the `alexaRender
 .. code-block:: javascript
 
     const voxa = require('voxa');
-    const { DisplayTemplate } = voxa.alexa;
+    const { DisplayTemplate } = voxa;
 
     app.onState('someState', () => {
       const template = new DisplayTemplate("BodyTemplate1")
