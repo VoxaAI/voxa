@@ -457,9 +457,9 @@ export class AccountLinkingCard implements IDirective {
 export interface IAlexaPlayAudioDataOptions {
   url: string;
   token: string;
-  offsetInMilliseconds: number;
-  behavior: interfaces.audioplayer.PlayBehavior;
-  metadata: interfaces.audioplayer.AudioItemMetadata;
+  offsetInMilliseconds?: number;
+  behavior?: interfaces.audioplayer.PlayBehavior;
+  metadata?: interfaces.audioplayer.AudioItemMetadata;
 }
 
 export class PlayAudio extends MultimediaAlexaDirective implements IDirective {
