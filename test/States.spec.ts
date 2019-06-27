@@ -22,7 +22,7 @@
 
 import { expect } from "chai";
 import * as _ from "lodash";
-import { AlexaPlatform, IVoxaEvent, VoxaApp } from "../src";
+import { AlexaPlatform, IVoxaEvent, IVoxaIntentEvent, VoxaApp } from "../src";
 import { AlexaRequestBuilder } from "./tools";
 import { variables } from "./variables";
 import { views } from "./views";
@@ -44,24 +44,25 @@ describe("States", () => {
 
     voxaApp.onState(
       "helpSettings",
+      (voxaEvent: IVoxaIntentEvent) => {
+        if (voxaEvent.intent.name === "AnotherHelpSettingsIntent") {
+          return {
+            flow: "yield",
+            sayp: "user wants help",
+            to: "entry",
+          };
+        }
+      },
+    );
+
+    voxaApp.onState(
+      "helpSettings",
       {
         flow: "yield",
         sayp: "question",
         to: "entry",
       },
-      "YesIntent",
-    );
-
-    voxaApp.onState(
-      "helpSettings",
-      (voxaEvent: IVoxaEvent) => {
-        return {
-          flow: "yield",
-          sayp: "question",
-          to: "entry",
-        };
-      },
-      "NoIntent",
+      "HelpSettingsIntent",
     );
 
     voxaApp.onState("undefinedState", () => undefined);
@@ -105,6 +106,32 @@ describe("States", () => {
     expect(reply.response.shouldEndSession).to.be.true;
     expect(reply.response.outputSpeech.ssml).to.equal(
       "<speak>unhandled</speak>",
+    );
+  });
+
+  it("should transition to the intent handler with the intent array filter", async () => {
+    const helpRequest = rb.getIntentRequest("HelpSettingsIntent");
+    _.set(helpRequest, "session.new", false);
+    _.set(helpRequest, "session.attributes", {
+      model: {},
+      state: "helpSettings",
+    });
+    const reply = await alexaSkill.execute(helpRequest);
+    expect(reply.response.outputSpeech.ssml).to.equal(
+      "<speak>question</speak>",
+    );
+  });
+
+  it("should transition to the intent handler without an intent array filter", async () => {
+    const helpRequest = rb.getIntentRequest("AnotherHelpSettingsIntent");
+    _.set(helpRequest, "session.new", false);
+    _.set(helpRequest, "session.attributes", {
+      model: {},
+      state: "helpSettings",
+    });
+    const reply = await alexaSkill.execute(helpRequest);
+    expect(reply.response.outputSpeech.ssml).to.equal(
+      "<speak>user wants help</speak>",
     );
   });
 
