@@ -254,8 +254,8 @@ export class StateMachine {
       return states[0];
     }
 
-    // If the code reaches this points that means the `states` array contains
-    // one state without an intents array filter and
+    // If the code reaches this points that means the `states` array may contains
+    // one state without an intents array filter and/or
     // one or more states with an intents array that contains the intent name.
     // The state with an intents array is more important than the one with no intents array,
     // so let's return the first state that contains the intent name in its intents array.
