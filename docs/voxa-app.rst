@@ -63,27 +63,29 @@ Voxa Application
 
   .. code-block:: javascript
 
-    voxaApp.onState('MyState',
-      {
-        flow: 'yield'
-        reply: 'OpenResponse',
-        to: 'nextState'
-      },
-      "YesIntent"
-    );
+    voxaApp.onState("agreed?", {
+      to: "PurchaseAccepted"
+    }, "YesIntent");
 
-    voxaApp.onState('MyState',
-      {
-        flow: 'yield'
-        reply: 'OpenResponse',
-        to: 'nextState'
-      },
-      ["StopIntent", "CancelIntent"]
-    );
+    voxaApp.onState("agreed?", {
+      to: "TransactionCancelled"
+    }, ["NoIntent", "CancelIntent"]);
+
+    voxaApp.onState("agreed?", {
+      to: "agreed?",
+      reply: "Help.ArticleExplanation",
+      flow: "yield"
+    }, "HelpIntent");
+
+    voxaApp.onState("agreed?", {
+      to: "agreed?",
+      reply: "UnknownInput",
+      flow: "yield"
+    });
 
   **The order on how you structure your states matter in Voxa**
 
-  In theory you can set two states with the same name, so how do you know which code will be executed? The first one that Voxa finds. Take this example:
+  You can set multiple :ref:`controllers <controllers>` for a single state, so how do you know which code will be executed? The first one that Voxa finds. Take this example:
 
   .. code-block:: javascript
 
@@ -98,20 +100,25 @@ Voxa Application
 
   If the state machine goes to the `ProcessUserRequest`, the code that will run always will be the first one, so the user will always hear the `ThankYouResponse`.
 
-  The only scenario where this is overrided is when you have two states with the same name and one of them has one or more intents defined to handle. If the user triggers the intent inside the defined intents, Voxa will give priority to the state with intents. For example, take this code:
+  The only scenario where this is overrided is when you have two controllers for the same state, and one of them has one or more intents defined to handle. If the user triggers the intent that's inside the defined intents Voxa will give priority to the state with intents. For example, take this code:
 
   .. code-block:: javascript
 
-    voxaApp.onState('ProcessUserRequest', (voxaEvent) => {
-      // Some code
-      return { tell: 'ThankYouResponse', to: 'die' };
-    });
-    voxaApp.onState('ProcessUserRequest', (voxaEvent) => {
-      // Some other code
-      return { tell: 'GoodbyeResponse', to: 'die' };
+    voxaApp.onState("agreed?", {
+      to: "PurchaseAccepted"
     }, "YesIntent");
 
-  If the user triggers a `YesIntent`, and the state machine goes to the `ProcessUserRequest` state, the user will listen the `GoodbyeResponse`, it doesn't matter if the code is above or below the other state.
+    voxaApp.onState("agreed?", {
+      to: "agreed?",
+      reply: "UnknownInput",
+      flow: "yield"
+    });
+
+    voxaApp.onState("agreed?", {
+      to: "TransactionCancelled"
+    }, ["NoIntent", "CancelIntent"]);
+
+  If the user triggers the `NoIntent`, and the state machine goes to the `agreed?` state, the user will listen the `TransactionCancelled` response, it doesn't matter if the controller is placed above or below a controller without defined intents, the priority will go to the controller with the defined intent.
 
 .. js:method:: VoxaApp.onIntent(intentName, handler)
 
