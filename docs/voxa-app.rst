@@ -47,7 +47,7 @@ Voxa Application
       return { tell: 'LaunchIntent.OpenResponse', to: 'die' };
     });
 
-  Also you can use a shorthand version to define a state. This is very useful when having a state that only returns a :ref:`transition <transition>`
+  Also you can use a shorthand version to define a controller. This is very useful when having a controller that only returns a :ref:`transition <transition>`
 
   .. code-block:: javascript
 
@@ -59,7 +59,7 @@ Voxa Application
       }
     );
 
-  You can also set the intent that the state will handle. If set, any other triggered intent will not enter into the state.
+  You can also set the intent that the controller will handle. If set, any other triggered intent will not enter into the controller.
 
   .. code-block:: javascript
 
@@ -83,7 +83,7 @@ Voxa Application
       flow: "yield"
     });
 
-  **The order on how you structure your states matter in Voxa**
+  **The order on how you declare your controllers matter in Voxa**
 
   You can set multiple :ref:`controllers <controllers>` for a single state, so how do you know which code will be executed? The first one that Voxa finds. Take this example:
 
@@ -100,7 +100,7 @@ Voxa Application
 
   If the state machine goes to the `ProcessUserRequest`, the code that will run always will be the first one, so the user will always hear the `ThankYouResponse`.
 
-  The only scenario where this is overrided is when you have two controllers for the same state, and one of them has one or more intents defined to handle. If the user triggers the intent that's inside the defined intents Voxa will give priority to the state with intents. For example, take this code:
+  The only scenario where this is overrided is when you have more than one for the same state, and one of them has one or more intents defined. If the user triggers the intent that's inside the list of intents of one controller Voxa will give it priority. For example, take this code:
 
   .. code-block:: javascript
 

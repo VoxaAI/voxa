@@ -254,11 +254,11 @@ export class StateMachine {
       return states[0];
     }
 
-    // If the code reaches this points that means the `states` array may contains
+    // If the code reaches this points that means the `states` array may contain
     // one state without an intents array filter and/or
-    // one or more states with an intents array that contains the intent name.
-    // The state with an intents array is more important than the one with no intents array,
-    // so let's return the first state that contains the intent name in its intents array.
+    // one or more controllers with an intents array that contains the intent name.
+    // The controller with an intents array is given more priority than the one with no intents array,
+    // so let's return the first controller that contains the intent name in its intents array.
 
     return (
       states.find(
