@@ -33,6 +33,7 @@ Voxa Application
 
   :param string stateName: The name of the state
   :param function/object handler: The controller to handle the state
+  :param string/array intent: The intents that this state will handle
   :returns: An object or a promise that resolves to an object that specifies a transition to another state and/or a view to render
 
   .. code-block:: javascript
@@ -45,6 +46,72 @@ Voxa Application
     app.onState('launch', (voxaEvent) => {
       return { tell: 'LaunchIntent.OpenResponse', to: 'die' };
     });
+
+  Also you can use a shorthand version to define a state. This is very useful when having a state that only returns a :ref:`transition <transition>`
+
+  .. code-block:: javascript
+
+    voxaApp.onState('launch',
+      {
+        flow: 'yield'
+        reply: 'LaunchIntent.OpenResponse',
+        to: 'nextState'
+      }
+    );
+
+  You can also set the intent that the state will handle. If set, any other triggered intent will not enter into the state.
+
+  .. code-block:: javascript
+
+    voxaApp.onState('MyState',
+      {
+        flow: 'yield'
+        reply: 'OpenResponse',
+        to: 'nextState'
+      },
+      "YesIntent"
+    );
+
+    voxaApp.onState('MyState',
+      {
+        flow: 'yield'
+        reply: 'OpenResponse',
+        to: 'nextState'
+      },
+      ["StopIntent", "CancelIntent"]
+    );
+
+  **The order on how you structure your states matter in Voxa**
+
+  In theory you can set two states with the same name, so how do you know which code will be executed? The first one that Voxa finds. Take this example:
+
+  .. code-block:: javascript
+
+    voxaApp.onState('ProcessUserRequest', (voxaEvent) => {
+      // Some code
+      return { tell: 'ThankYouResponse', to: 'die' };
+    });
+    voxaApp.onState('ProcessUserRequest', (voxaEvent) => {
+      // Some other code
+      return { tell: 'GoodbyeResponse', to: 'die' };
+    });
+
+  If the state machine goes to the `ProcessUserRequest`, the code that will run always will be the first one, so the user will always hear the `ThankYouResponse`.
+
+  The only scenario where this is overrided is when you have two states with the same name and one of them has one or more intents defined to handle. If the user triggers the intent inside the defined intents, Voxa will give priority to the state with intents. For example, take this code:
+
+  .. code-block:: javascript
+
+    voxaApp.onState('ProcessUserRequest', (voxaEvent) => {
+      // Some code
+      return { tell: 'ThankYouResponse', to: 'die' };
+    });
+    voxaApp.onState('ProcessUserRequest', (voxaEvent) => {
+      // Some other code
+      return { tell: 'GoodbyeResponse', to: 'die' };
+    }, "YesIntent");
+
+  If the user triggers a `YesIntent`, and the state machine goes to the `ProcessUserRequest` state, the user will listen the `GoodbyeResponse`, it doesn't matter if the code is above or below the other state.
 
 .. js:method:: VoxaApp.onIntent(intentName, handler)
 
