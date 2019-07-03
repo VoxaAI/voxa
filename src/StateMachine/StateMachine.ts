@@ -250,6 +250,20 @@ export class StateMachine {
       throw new UnknownState(currentStateName);
     }
 
-    return states[0];
+    if (states.length === 1) {
+      return states[0];
+    }
+
+    // If the code reaches this point, that means the `states` array may contain
+    // one state without an intents array filter and/or
+    // one or more controllers with an intents array that contains the intent name.
+    // The controller with an intents array is given more priority than the one with no intents array,
+    // so the first controller that contains the intent name in its intents array is returned.
+
+    return (
+      states.find(
+        (s: State) => s.intents.length && s.intents.includes(intentName),
+      ) || states[0] // If no state with name is found, the first state is returned by default as an State object is always needed
+    );
   }
 }
