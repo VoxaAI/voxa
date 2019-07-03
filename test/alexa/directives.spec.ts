@@ -610,6 +610,32 @@ describe("Alexa directives", () => {
       ]);
     });
 
+    it("should render a PlayAudio directive with just the token and url", async () => {
+      app.onIntent("YesIntent", {
+        alexaPlayAudio: {
+          token: "token",
+          url: "url",
+        },
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          audioItem: {
+            metadata: {},
+            stream: {
+              offsetInMilliseconds: 0,
+              token: "token",
+              url: "url",
+            },
+          },
+          playBehavior: "REPLACE_ALL",
+          type: "AudioPlayer.Play",
+        },
+      ]);
+    });
+
     it("should throw an error when trying to add both a video and audio directive", async () => {
       app.onIntent("YesIntent", () => {
         const response = {
