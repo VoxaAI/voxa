@@ -98,9 +98,9 @@ Voxa Application
       return { tell: 'GoodbyeResponse', to: 'die' };
     });
 
-  If the state machine goes to the `ProcessUserRequest`, the code that will run always will be the first one, so the user will always hear the `ThankYouResponse`.
+  If the state machine goes to the `ProcessUserRequest`, the code running will always be the first one, so the user will always hear the `ThankYouResponse`.
 
-  The only scenario where this is overrided is when you have more than one for the same state, and one of them has one or more intents defined. If the user triggers the intent that's inside the list of intents of one controller Voxa will give it priority. For example, take this code:
+  The only scenario where this is overwritten is when you have more than one handler for the same state, and one of them has one or more intents defined. If the user triggers the intent that's inside the list of one-controller intents, Voxa will give it priority. For example, take this code:
 
   .. code-block:: javascript
 
@@ -118,7 +118,7 @@ Voxa Application
       to: "TransactionCancelled"
     }, ["NoIntent", "CancelIntent"]);
 
-  If the user triggers the `NoIntent`, and the state machine goes to the `agreed?` state, the user will listen the `TransactionCancelled` response, it doesn't matter if the controller is placed above or below a controller without defined intents, the priority will go to the controller with the defined intent.
+  If the user triggers the `NoIntent`, and the state machine goes to the `agreed?` state, the user will listen to the `TransactionCancelled` response, it doesn't matter if the controller is placed above or below a controller without defined intents, the priority will go to the controller with the defined intent.
 
 .. js:method:: VoxaApp.onIntent(intentName, handler)
 
