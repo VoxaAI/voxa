@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.13.3
+version: v1.13.5
 ignore: {}
 # patches apply the minimum changes required to fix a vulnerability
 patch:
@@ -22,3 +22,10 @@ patch:
         patched: '2019-05-06T08:44:01.173Z'
     - actions-on-google > googleapis > google-auth-library > gtoken > axios:
         patched: '2019-05-06T08:44:01.173Z'
+  SNYK-JS-LODASH-450202:
+    - lodash:
+        patched: '2019-07-04T08:45:36.574Z'
+    - fast-xml-parser > lodash:
+        patched: '2019-07-04T08:45:36.574Z'
+    - request-promise > request-promise-core > lodash:
+        patched: '2019-07-04T08:45:36.574Z'
