@@ -39,8 +39,8 @@ export class SigninCard implements IDirective {
 
   public async writeToReply(
     reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
+    event?: IVoxaEvent,
+    transition?: ITransition,
   ) {
     const card = new SigninCardType();
     card.button(this.signInOptions.buttonTitle, this.signInOptions.url);
@@ -61,7 +61,7 @@ export class HeroCard extends RenderDirective<string | HeroCardType>
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition,
+    transition?: ITransition,
   ) {
     const card = await this.renderOptions(event);
     const attachments = (reply as BotFrameworkReply).attachments || [];
@@ -80,7 +80,7 @@ export class SuggestedActions
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition,
+    transition?: ITransition,
   ) {
     const suggestedActionsType = await this.renderOptions(event);
     const suggestedActions: ISuggestedActions = suggestedActionsType.toSuggestedActions
@@ -134,8 +134,8 @@ function createMessageDirective<IOptions>(
     constructor(public options: IOptions) {}
     public async writeToReply(
       reply: IVoxaReply,
-      event: IVoxaEvent,
-      transition: ITransition,
+      event?: IVoxaEvent,
+      transition?: ITransition,
     ) {
       (reply as any)[messageKey] = this.options;
     }

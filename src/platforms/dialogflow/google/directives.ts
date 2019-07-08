@@ -89,7 +89,7 @@ function createSystemIntentDirective<IOptions>(
     public async writeToReply(
       reply: IVoxaReply,
       event: IVoxaEvent,
-      transition: ITransition,
+      transition?: ITransition,
     ): Promise<void> {
       if (!this.hasRequiredCapability(event)) {
         return;
@@ -122,7 +122,7 @@ function createRichResponseDirective<IOptions>(
     public async writeToReply(
       reply: IVoxaReply,
       event: IVoxaEvent,
-      transition: ITransition,
+      transition?: ITransition,
     ): Promise<void> {
       if (!this.hasRequiredCapability(event)) {
         return;
@@ -262,7 +262,7 @@ export class Suggestions implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition,
+    transition?: ITransition,
   ): Promise<void> {
     let options = this.suggestions;
 
@@ -292,7 +292,7 @@ export class Context implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition,
+    transition?: ITransition,
   ): Promise<void> {
     const conv: DialogflowConversation = (event as DialogflowEvent).dialogflow
       .conv;
