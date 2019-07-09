@@ -269,15 +269,16 @@ Handle events from the `AudioPlayer interface <https://developer.amazon.com/publ
   .. code-block:: javascript
 
     app['onAudioPlayer.PlaybackNearlyFinished']((voxaEvent, reply) => {
-      const directives = {
-        type: 'AudioPlayer.Play',
-        playBehavior: 'REPLACE_ENQUEUED',
-        token: "",
-        url: 'https://www.dl-sounds.com/wp-content/uploads/edd/2016/09/Classical-Bed3-preview.mp3',
+      const playAudio = new PlayAudio({
+        behavior: "REPLACE_ALL",
         offsetInMilliseconds: 0,
-      };
+        token: "",
+        url: 'https://www.dl-sounds.com/wp-content/uploads/edd/2016/09/Classical-Bed3-preview.mp3'
+      });
 
-      return reply.append({ directives });
+      playAudio.writeToReply(reply);
+
+      return reply;
     });
 
 
