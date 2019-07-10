@@ -23,7 +23,7 @@ function createQuickReplyDirective(
     public async writeToReply(
       reply: IVoxaReply,
       event: IVoxaEvent,
-      transition: ITransition,
+      transition?: ITransition,
     ): Promise<void> {
       const dialogflowReply = reply as FacebookReply;
       const quickReplies: any[] = [];
@@ -84,7 +84,7 @@ function createGenericTemplateDirective(
     public async writeToReply(
       reply: IVoxaReply,
       event: IVoxaEvent,
-      transition: ITransition,
+      transition?: ITransition,
     ): Promise<void> {
       const dialogflowReply = (reply as FacebookReply);
       let configElements: IFacebookElementTemplate[]|undefined;
@@ -191,7 +191,7 @@ export class FacebookAccountLink implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition,
+    transition?: ITransition,
   ): Promise<void> {
     const dialogflowReply = reply as FacebookReply;
 
@@ -243,7 +243,7 @@ export class FacebookAccountUnlink implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition,
+    transition?: ITransition,
   ): Promise<void> {
     const dialogflowReply = reply as FacebookReply;
 
@@ -280,7 +280,7 @@ export class FacebookSuggestionChips implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition,
+    transition?: ITransition,
   ): Promise<void> {
     const suggestionChips: any[] = await this.getSuggestionChips(event);
     const dialogflowReply = reply as FacebookReply;
