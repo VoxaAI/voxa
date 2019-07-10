@@ -155,3 +155,37 @@ Usage
     const app = new VoxaApp({ Model, variables, views });
 
     plugins.autoLoad(app, { adapter });
+
+
+
+
+S3Persistance plugin
+--------------------
+
+It stores the user's session attributes in a file in an S3 bucket.
+
+Params
+******
+
+.. js:function:: s3Persistance(app, [config])
+
+  S3Persistance plugin uses ``app.onRequestStarted`` to load data every time the user sends a request to the skill
+  S3Persistance plugin uses ``app.onBeforeReplySent`` to store the user's session data before sending a response back to the skill
+
+  :param VoxaApp app: The stateMachineSkill.
+  :param config: An object with a ``bucketName`` key for the S3 bucket to store the info. A ``pathPrefix`` key in case you want to store this info in a folder. An ``aws`` key if you want to initialize the S3 object with specific values, and an ``s3Client`` key, in case you want to provide an S3 object already initialized.
+
+
+Usage
+******
+
+.. code-block:: javascript
+
+    const app = new VoxaApp({ Model, variables, views });
+
+    const s3PersistanceConfig = {
+      bucketName: 'MY_S3_BUCKET',
+      pathPrefix: 'userSessions',
+    };
+
+    plugins.s3Persistance(app, s3PersistanceConfig);

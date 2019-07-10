@@ -134,10 +134,16 @@ export {
 } from "./errors";
 export { Model } from "./Model";
 
-import { autoLoad, replaceIntent, stateFlow } from "./plugins";
+import {
+  autoLoad,
+  replaceIntent,
+  s3Persistance,
+  stateFlow,
+} from "./plugins";
 
 export const plugins = {
   autoLoad,
   replaceIntent,
+  s3Persistance,
   stateFlow,
 };
