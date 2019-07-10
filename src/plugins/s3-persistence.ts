@@ -42,61 +42,62 @@ export function s3Persistence(voxaApp: VoxaApp, config: any) {
   defaultConfig.s3Client = config.s3Client || new S3(config.aws);
   defaultConfig.pathPrefix = config.pathPrefix || "";
 
-  voxaApp.onRequestStarted(
-    async (voxaEvent: IVoxaEvent): Promise<IVoxaEvent> => {
-      try {
-        const objectId = path.join(defaultConfig.pathPrefix, voxaEvent.user.userId);
-        const getParams: S3.GetObjectRequest = {
-          Bucket: defaultConfig.bucketName,
-          Key: objectId,
-        };
+  voxaApp.onRequestStarted(onRequestStarted);
+  voxaApp.onBeforeReplySent(onBeforeReplySent);
+}
 
-        let result: S3.GetObjectOutput;
-
-        try {
-          result = await defaultConfig.s3Client
-            .getObject(getParams)
-            .promise();
-        } catch (error) {
-          if (error.code !== "NoSuchKey") {
-            voxaEvent.log.error(error);
-            throw error;
-          }
-
-          result = {};
-        }
-
-        const body = result.Body ? result.Body.toString() : "{}";
-        const data = JSON.parse(body);
-
-        voxaEvent.log.debug("Data fetched:", { data });
-        voxaEvent.model.user = data;
-        return voxaEvent;
-      } catch (error) {
-        voxaEvent.log.error(error);
-        throw error;
-      }
-    },
-  );
-
-  voxaApp.onBeforeReplySent(async (voxaEvent: IVoxaEvent, reply: IVoxaReply) => {
+async function onRequestStarted(voxaEvent: IVoxaEvent): Promise<IVoxaEvent> {
+  try {
     const objectId = path.join(defaultConfig.pathPrefix, voxaEvent.user.userId);
-
-    const putParams: S3.PutObjectRequest = {
-      Body: JSON.stringify(voxaEvent.model.user),
+    const getParams: S3.GetObjectRequest = {
       Bucket: defaultConfig.bucketName,
       Key: objectId,
     };
 
+    let result: S3.GetObjectOutput;
+
     try {
-      await defaultConfig.s3Client
-        .putObject(putParams)
+      result = await defaultConfig.s3Client
+        .getObject(getParams)
         .promise();
     } catch (error) {
-      voxaEvent.log.error(error);
-      throw error;
+      if (error.code !== "NoSuchKey") {
+        voxaEvent.log.error(error);
+        throw error;
+      }
+
+      result = {};
     }
 
-    return reply;
-  });
+    const body = result.Body ? result.Body.toString() : "{}";
+    const data = JSON.parse(body);
+
+    voxaEvent.log.debug("Data fetched:", { data });
+    voxaEvent.model.user = data;
+    return voxaEvent;
+  } catch (error) {
+    voxaEvent.log.error(error);
+    throw error;
+  }
+}
+
+async function onBeforeReplySent(voxaEvent: IVoxaEvent, reply: IVoxaReply) {
+  const objectId = path.join(defaultConfig.pathPrefix, voxaEvent.user.userId);
+
+  const putParams: S3.PutObjectRequest = {
+    Body: JSON.stringify(voxaEvent.model.user),
+    Bucket: defaultConfig.bucketName,
+    Key: objectId,
+  };
+
+  try {
+    await defaultConfig.s3Client
+      .putObject(putParams)
+      .promise();
+  } catch (error) {
+    voxaEvent.log.error(error);
+    throw error;
+  }
+
+  return reply;
 }
