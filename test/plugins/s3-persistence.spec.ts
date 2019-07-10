@@ -33,9 +33,9 @@ import { views } from "../views";
 
 const rb = new AlexaRequestBuilder("user-xyz");
 
-describe("S3Persistance plugin", () => {
+describe("S3Persistence plugin", () => {
   let alexaEvent: RequestEnvelope;
-  let s3PersistanceConfig = {};
+  let s3PersistenceConfig = {};
 
   beforeEach(() => {
     alexaEvent = rb.getIntentRequest("LaunchIntent");
@@ -52,7 +52,7 @@ describe("S3Persistance plugin", () => {
       },
     });
 
-    s3PersistanceConfig = {
+    s3PersistenceConfig = {
       bucketName: "bucketName",
     };
   });
@@ -63,7 +63,7 @@ describe("S3Persistance plugin", () => {
 
   it("should get data from adapter", async () => {
     const skill = new VoxaApp({ variables, views });
-    plugins.s3Persistance(skill, s3PersistanceConfig);
+    plugins.s3Persistence(skill, s3PersistenceConfig);
 
     const spy = simple.spy((voxaEvent: VoxaEvent) => {
       voxaEvent.model.user.openingCount = 1;
@@ -89,7 +89,7 @@ describe("S3Persistance plugin", () => {
 
   it("should throw error on getting data from adapter", async () => {
     const skill = new VoxaApp({ variables, views });
-    plugins.s3Persistance(skill, s3PersistanceConfig);
+    plugins.s3Persistence(skill, s3PersistenceConfig);
 
     const spy = simple.spy(() => ({ ask: "LaunchIntent.OpenResponse" }));
     skill.onIntent("LaunchIntent", spy);
@@ -109,7 +109,7 @@ describe("S3Persistance plugin", () => {
   it("should throw an error when no bucketName is set up in the config object", () => {
     const skill = new VoxaApp({ variables, views });
     const fn = () => {
-      plugins.s3Persistance(skill, { bucketName: undefined });
+      plugins.s3Persistence(skill, { bucketName: undefined });
     };
 
     expect(fn).to.throw("Missing bucketName");

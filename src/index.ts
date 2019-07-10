@@ -137,13 +137,13 @@ export { Model } from "./Model";
 import {
   autoLoad,
   replaceIntent,
-  s3Persistance,
+  s3Persistence,
   stateFlow,
 } from "./plugins";
 
 export const plugins = {
   autoLoad,
   replaceIntent,
-  s3Persistance,
+  s3Persistence,
   stateFlow,
 };

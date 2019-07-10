@@ -29,7 +29,7 @@ import { IVoxaReply } from "../VoxaReply";
 
 let defaultConfig: any = {};
 
-export function s3Persistance(voxaApp: VoxaApp, config: any) {
+export function s3Persistence(voxaApp: VoxaApp, config: any) {
   const bucketName = config.bucketName || process.env.S3_PERSISTENCE_BUCKET;
 
   if (!bucketName) {

@@ -1,4 +1,4 @@
 export { register as replaceIntent } from "./replace-intent";
 export { register as stateFlow } from "./state-flow";
-export { s3Persistance } from "./s3-persistance";
+export { s3Persistence } from "./s3-persistence";
 export { autoLoad  } from "./auto-load";
