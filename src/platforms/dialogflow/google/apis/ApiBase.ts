@@ -53,13 +53,26 @@ export class ApiBase {
     }
 
     try {
-      const params = {
-        key,
-        keyFile,
-        scopes: ["https://www.googleapis.com/auth/actions.purchases.digital"],
-      };
+      const scopes = ["https://www.googleapis.com/auth/actions.purchases.digital"];
+      let client;
 
-      const client = new googleapis.auth.JWT(params);
+      if (key) {
+        client = new googleapis.auth.JWT(
+          key.client_email,
+          undefined,
+          key.private_key,
+          scopes,
+          undefined,
+        );
+      } else {
+        const params = {
+          keyFile,
+          scopes,
+        };
+
+        client = new googleapis.auth.JWT(params);
+      }
+
       const result = await client.authorize();
 
       return result;
