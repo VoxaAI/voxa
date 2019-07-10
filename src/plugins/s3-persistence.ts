@@ -53,20 +53,15 @@ async function onRequestStarted(voxaEvent: IVoxaEvent): Promise<IVoxaEvent> {
       Bucket: defaultConfig.bucketName,
       Key: objectId,
     };
-
-    let result: S3.GetObjectOutput;
+    let result: S3.GetObjectOutput = {};
 
     try {
-      result = await defaultConfig.s3Client
-        .getObject(getParams)
-        .promise();
+      result = await defaultConfig.s3Client.getObject(getParams).promise();
     } catch (error) {
       if (error.code !== "NoSuchKey") {
         voxaEvent.log.error(error);
         throw error;
       }
-
-      result = {};
     }
 
     const body = result.Body ? result.Body.toString() : "{}";
