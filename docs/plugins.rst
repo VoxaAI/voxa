@@ -162,7 +162,9 @@ Usage
 S3Persistence plugin
 --------------------
 
-It stores the user's session attributes in a file in an S3 bucket.
+It stores the user's session attributes in a file in an S3 bucket. You can use this plugin when you host your Node.js code with the Alexa-Hosted skills feature. For more details about how this work, check the `official documentation <https://developer.amazon.com/docs/hosted-skills/build-a-skill-end-to-end-using-an-alexa-hosted-skill.html#persistence>`_.
+
+If you host your code in your own AWS account and plan to use S3 as an storage alternative, keep in mind that you cannot do any Scan or Query operations from S3 and the time to storage and get info is a little longer than DynamoDB.
 
 Params
 ******
