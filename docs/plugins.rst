@@ -155,3 +155,39 @@ Usage
     const app = new VoxaApp({ Model, variables, views });
 
     plugins.autoLoad(app, { adapter });
+
+
+
+
+S3Persistence plugin
+--------------------
+
+It stores the user's session attributes in a file in an S3 bucket. You can use this plugin when you host your Node.js code with the Alexa-Hosted skills feature. For more details about how this work, check the `official documentation <https://developer.amazon.com/docs/hosted-skills/build-a-skill-end-to-end-using-an-alexa-hosted-skill.html#persistence>`_.
+
+If you host your code in your own AWS account and plan to use S3 as an storage alternative, keep in mind that you cannot do any Scan or Query operations from S3 and the time to storage and get info is a little longer than DynamoDB.
+
+Params
+******
+
+.. js:function:: s3Persistence(app, [config])
+
+  S3Persistence plugin uses ``app.onRequestStarted`` to load data every time the user sends a request to the skill
+  S3Persistence plugin uses ``app.onBeforeReplySent`` to store the user's session data before sending a response back to the skill
+
+  :param VoxaApp app: The stateMachineSkill.
+  :param config: An object with a ``bucketName`` key for the S3 bucket to store the info. A ``pathPrefix`` key in case you want to store this info in a folder. An ``aws`` key if you want to initialize the S3 object with specific values, and an ``s3Client`` key, in case you want to provide an S3 object already initialized.
+
+
+Usage
+******
+
+.. code-block:: javascript
+
+    const app = new VoxaApp({ Model, variables, views });
+
+    const s3PersistenceConfig = {
+      bucketName: 'MY_S3_BUCKET',
+      pathPrefix: 'userSessions',
+    };
+
+    plugins.s3Persistence(app, s3PersistenceConfig);

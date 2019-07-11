@@ -45,21 +45,8 @@ export class ApiBase {
    * Gets Google's Credentials: access_token, refresh_token, expiration_date, token_type
    */
   protected async getCredentials(): Promise<any> {
-    const key = _.get(this, "transactionOptions.key");
-    const keyFile = _.get(this, "transactionOptions.keyFile");
-
-    if (!keyFile && !key) {
-      throw new Error("keyFile for transactions missing");
-    }
-
     try {
-      const params = {
-        key,
-        keyFile,
-        scopes: ["https://www.googleapis.com/auth/actions.purchases.digital"],
-      };
-
-      const client = new googleapis.auth.JWT(params);
+      const client = this.getClient();
       const result = await client.authorize();
 
       return result;
@@ -71,5 +58,32 @@ export class ApiBase {
 
       throw error;
     }
+  }
+
+  private getClient() {
+    const key = _.get(this, "transactionOptions.key");
+    const keyFile = _.get(this, "transactionOptions.keyFile");
+    const scopes = ["https://www.googleapis.com/auth/actions.purchases.digital"];
+
+    if (!keyFile && !key) {
+      throw new Error("keyFile for transactions missing");
+    }
+
+    if (key) {
+      return new googleapis.auth.JWT(
+        key.client_email,
+        undefined,
+        key.private_key,
+        scopes,
+        undefined,
+      );
+    }
+
+    const params = {
+      keyFile,
+      scopes,
+    };
+
+    return new googleapis.auth.JWT(params);
   }
 }
