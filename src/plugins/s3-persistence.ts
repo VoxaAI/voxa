@@ -35,7 +35,7 @@ export interface IS3Persistence {
 }
 
 let defaultConfig: IS3Persistence = {
-  bucketName: '',
+  bucketName: "",
 };
 
 export function s3Persistence(voxaApp: VoxaApp, config: IS3Persistence) {

@@ -36,7 +36,7 @@ const rb = new AlexaRequestBuilder("user-xyz");
 describe("S3Persistence plugin", () => {
   let alexaEvent: RequestEnvelope;
   let s3PersistenceConfig: IS3Persistence = {
-    bucketName: '',
+    bucketName: "",
   };
 
   beforeEach(() => {
