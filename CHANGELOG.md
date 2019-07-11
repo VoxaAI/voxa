@@ -1,5 +1,17 @@
 # VOXA Changelog
 
+## 3.3.0 (2019-07-11)
+
+#### New Feature
+* Adds S3Persistence plugin
+
+#### Enhancement
+* Set not required play audio params in the interface
+* Prioritize controllers with an intents array for the same state
+* Set unused params as optionals in directives method
+
+
+
 ## 3.2.1 (2019-06-20)
 
 #### Enhancement

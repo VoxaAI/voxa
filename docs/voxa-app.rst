@@ -33,6 +33,7 @@ Voxa Application
 
   :param string stateName: The name of the state
   :param function/object handler: The controller to handle the state
+  :param string/array intent: The intents that this state will handle
   :returns: An object or a promise that resolves to an object that specifies a transition to another state and/or a view to render
 
   .. code-block:: javascript
@@ -45,6 +46,79 @@ Voxa Application
     app.onState('launch', (voxaEvent) => {
       return { tell: 'LaunchIntent.OpenResponse', to: 'die' };
     });
+
+  Also you can use a shorthand version to define a controller. This is very useful when having a controller that only returns a :ref:`transition <transition>`
+
+  .. code-block:: javascript
+
+    voxaApp.onState('launch',
+      {
+        flow: 'yield'
+        reply: 'LaunchIntent.OpenResponse',
+        to: 'nextState'
+      }
+    );
+
+  You can also set the intent that the controller will handle. If set, any other triggered intent will not enter into the controller.
+
+  .. code-block:: javascript
+
+    voxaApp.onState("agreed?", {
+      to: "PurchaseAccepted"
+    }, "YesIntent");
+
+    voxaApp.onState("agreed?", {
+      to: "TransactionCancelled"
+    }, ["NoIntent", "CancelIntent"]);
+
+    voxaApp.onState("agreed?", {
+      to: "agreed?",
+      reply: "Help.ArticleExplanation",
+      flow: "yield"
+    }, "HelpIntent");
+
+    voxaApp.onState("agreed?", {
+      to: "agreed?",
+      reply: "UnknownInput",
+      flow: "yield"
+    });
+
+  **The order on how you declare your controllers matter in Voxa**
+
+  You can set multiple :ref:`controllers <controllers>` for a single state, so how do you know which code will be executed? The first one that Voxa finds. Take this example:
+
+  .. code-block:: javascript
+
+    voxaApp.onState('ProcessUserRequest', (voxaEvent) => {
+      // Some code
+      return { tell: 'ThankYouResponse', to: 'die' };
+    });
+    voxaApp.onState('ProcessUserRequest', (voxaEvent) => {
+      // Some other code
+      return { tell: 'GoodbyeResponse', to: 'die' };
+    });
+
+  If the state machine goes to the `ProcessUserRequest`, the code running will always be the first one, so the user will always hear the `ThankYouResponse`.
+
+  The only scenario where this is overwritten is when you have more than one handler for the same state, and one of them has one or more intents defined. If the user triggers the intent that's inside the list of one-controller intents, Voxa will give it priority. For example, take this code:
+
+  .. code-block:: javascript
+
+    voxaApp.onState("agreed?", {
+      to: "PurchaseAccepted"
+    }, "YesIntent");
+
+    voxaApp.onState("agreed?", {
+      to: "agreed?",
+      reply: "UnknownInput",
+      flow: "yield"
+    });
+
+    voxaApp.onState("agreed?", {
+      to: "TransactionCancelled"
+    }, ["NoIntent", "CancelIntent"]);
+
+  If the user triggers the `NoIntent`, and the state machine goes to the `agreed?` state, the user will listen to the `TransactionCancelled` response, it doesn't matter if the controller is placed above or below a controller without defined intents, the priority will go to the controller with the defined intent.
 
 .. js:method:: VoxaApp.onIntent(intentName, handler)
 
@@ -195,15 +269,16 @@ Handle events from the `AudioPlayer interface <https://developer.amazon.com/publ
   .. code-block:: javascript
 
     app['onAudioPlayer.PlaybackNearlyFinished']((voxaEvent, reply) => {
-      const directives = {
-        type: 'AudioPlayer.Play',
-        playBehavior: 'REPLACE_ENQUEUED',
-        token: "",
-        url: 'https://www.dl-sounds.com/wp-content/uploads/edd/2016/09/Classical-Bed3-preview.mp3',
+      const playAudio = new PlayAudio({
+        behavior: "REPLACE_ALL",
         offsetInMilliseconds: 0,
-      };
+        token: "",
+        url: 'https://www.dl-sounds.com/wp-content/uploads/edd/2016/09/Classical-Bed3-preview.mp3'
+      });
 
-      return reply.append({ directives });
+      playAudio.writeToReply(reply);
+
+      return reply;
     });
 
 

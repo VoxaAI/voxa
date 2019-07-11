@@ -87,7 +87,7 @@ export class HomeCard implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition,
+    transition?: ITransition,
   ): Promise<void> {
     if (reply.hasDirective("card")) {
       throw new Error("At most one card can be specified in a response");
@@ -118,7 +118,7 @@ export class Hint implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition,
+    transition?: ITransition,
   ): Promise<void> {
     if (reply.hasDirective("Hint")) {
       throw new Error(
@@ -156,7 +156,7 @@ export class DialogDelegate extends AlexaDirective implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition,
+    transition?: ITransition,
   ): Promise<void> {
     this.buildDirective(event);
     this.buildSlots(event);
@@ -318,7 +318,7 @@ export class RenderTemplate extends AlexaDirective implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition,
+    transition?: ITransition,
   ): Promise<void> {
     this.validateReply(reply);
 
@@ -364,7 +364,7 @@ export class APLTemplate extends AlexaDirective implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition,
+    transition?: ITransition,
   ): Promise<void> {
     this.validateReply(reply);
 
@@ -412,7 +412,7 @@ export class APLCommand extends AlexaDirective implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition,
+    transition?: ITransition,
   ): Promise<void> {
     this.validateReply(reply);
 
@@ -442,8 +442,8 @@ export class AccountLinkingCard implements IDirective {
 
   public async writeToReply(
     reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
+    event?: IVoxaEvent,
+    transition?: ITransition,
   ): Promise<void> {
     if (reply.hasDirective("card")) {
       throw new Error("At most one card can be specified in a response");
@@ -457,9 +457,9 @@ export class AccountLinkingCard implements IDirective {
 export interface IAlexaPlayAudioDataOptions {
   url: string;
   token: string;
-  offsetInMilliseconds: number;
-  behavior: interfaces.audioplayer.PlayBehavior;
-  metadata: interfaces.audioplayer.AudioItemMetadata;
+  offsetInMilliseconds?: number;
+  behavior?: interfaces.audioplayer.PlayBehavior;
+  metadata?: interfaces.audioplayer.AudioItemMetadata;
 }
 
 export class PlayAudio extends MultimediaAlexaDirective implements IDirective {
@@ -476,8 +476,8 @@ export class PlayAudio extends MultimediaAlexaDirective implements IDirective {
 
   public async writeToReply(
     reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
+    event?: IVoxaEvent,
+    transition?: ITransition,
   ): Promise<void> {
     this.validateReply(reply);
 
@@ -508,8 +508,8 @@ export class StopAudio extends AlexaDirective implements IDirective {
 
   public async writeToReply(
     reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
+    event?: IVoxaEvent,
+    transition?: ITransition,
   ): Promise<void> {
     this.addDirective(reply);
   }
@@ -530,8 +530,8 @@ export class GadgetControllerLightDirective extends AlexaDirective
 
   public async writeToReply(
     reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
+    event?: IVoxaEvent,
+    transition?: ITransition,
   ): Promise<void> {
     this.addDirective(reply);
   }
@@ -550,8 +550,8 @@ export class GameEngineStartInputHandler extends AlexaDirective
 
   public async writeToReply(
     reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
+    event?: IVoxaEvent,
+    transition?: ITransition,
   ): Promise<void> {
     this.addDirective(reply);
 
@@ -571,8 +571,8 @@ export class GameEngineStopInputHandler extends AlexaDirective
 
   public async writeToReply(
     reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
+    event?: IVoxaEvent,
+    transition?: ITransition,
   ): Promise<void> {
     this.directive = {
       originatingRequestId: this.originatingRequestId,
@@ -607,8 +607,8 @@ export class ConnectionsSendRequest extends AlexaDirective
 
   public async writeToReply(
     reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition: ITransition,
+    event?: IVoxaEvent,
+    transition?: ITransition,
   ): Promise<void> {
     if (this.name) {
       this.directive = {
@@ -642,7 +642,7 @@ export class VideoAppLaunch extends MultimediaAlexaDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition,
+    transition?: ITransition,
   ): Promise<void> {
     this.validateReply(reply);
 
