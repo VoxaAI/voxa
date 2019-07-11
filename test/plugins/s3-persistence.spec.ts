@@ -26,7 +26,7 @@ import { RequestEnvelope } from "ask-sdk-model";
 import { S3 } from "aws-sdk";
 import { expect } from "chai";
 import * as simple from "simple-mock";
-import { AlexaPlatform, plugins, VoxaApp, VoxaEvent } from "../../src";
+import { AlexaPlatform, IS3Persistence, plugins, VoxaApp, VoxaEvent } from "../../src";
 import { AlexaRequestBuilder } from "../tools";
 import { variables } from "../variables";
 import { views } from "../views";
@@ -35,7 +35,9 @@ const rb = new AlexaRequestBuilder("user-xyz");
 
 describe("S3Persistence plugin", () => {
   let alexaEvent: RequestEnvelope;
-  let s3PersistenceConfig = {};
+  let s3PersistenceConfig: IS3Persistence = {
+    bucketName: '',
+  };
 
   beforeEach(() => {
     alexaEvent = rb.getIntentRequest("LaunchIntent");

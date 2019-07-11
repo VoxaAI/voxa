@@ -141,6 +141,8 @@ import {
   stateFlow,
 } from "./plugins";
 
+export { IS3Persistence } from "./plugins";
+
 export const plugins = {
   autoLoad,
   replaceIntent,

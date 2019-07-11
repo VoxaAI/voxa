@@ -20,16 +20,25 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { S3 } from "aws-sdk";
+import * as AWS from "aws-sdk";
 import * as _ from "lodash";
 import * as path from "path";
 import { VoxaApp } from "../VoxaApp";
 import { IVoxaEvent } from "../VoxaEvent";
 import { IVoxaReply } from "../VoxaReply";
 
-let defaultConfig: any = {};
+export interface IS3Persistence {
+  aws?: AWS.S3.ClientConfiguration;
+  bucketName?: string;
+  pathPrefix?: string;
+  s3Client?: AWS.S3;
+}
 
-export function s3Persistence(voxaApp: VoxaApp, config: any) {
+let defaultConfig: IS3Persistence = {
+  bucketName: '',
+};
+
+export function s3Persistence(voxaApp: VoxaApp, config: IS3Persistence) {
   const bucketName = config.bucketName || process.env.S3_PERSISTENCE_BUCKET;
 
   if (!bucketName) {
@@ -39,7 +48,7 @@ export function s3Persistence(voxaApp: VoxaApp, config: any) {
   defaultConfig = _.merge(defaultConfig, config);
 
   defaultConfig.bucketName = bucketName;
-  defaultConfig.s3Client = config.s3Client || new S3(config.aws);
+  defaultConfig.s3Client = config.s3Client || new AWS.S3(config.aws);
   defaultConfig.pathPrefix = config.pathPrefix || "";
 
   voxaApp.onRequestStarted(onRequestStarted);
@@ -48,18 +57,17 @@ export function s3Persistence(voxaApp: VoxaApp, config: any) {
 
 async function onRequestStarted(voxaEvent: IVoxaEvent): Promise<IVoxaEvent> {
   try {
-    const objectId = path.join(defaultConfig.pathPrefix, voxaEvent.user.userId);
-    const getParams: S3.GetObjectRequest = {
-      Bucket: defaultConfig.bucketName,
+    const objectId = path.join(defaultConfig.pathPrefix as string, voxaEvent.user.userId);
+    const getParams: AWS.S3.GetObjectRequest = {
+      Bucket: defaultConfig.bucketName as string,
       Key: objectId,
     };
-    let result: S3.GetObjectOutput = {};
+    let result: AWS.S3.GetObjectOutput = {};
 
     try {
-      result = await defaultConfig.s3Client.getObject(getParams).promise();
+      result = await (defaultConfig.s3Client as AWS.S3).getObject(getParams).promise();
     } catch (error) {
       if (error.code !== "NoSuchKey") {
-        voxaEvent.log.error(error);
         throw error;
       }
     }
@@ -71,26 +79,24 @@ async function onRequestStarted(voxaEvent: IVoxaEvent): Promise<IVoxaEvent> {
     voxaEvent.model.user = data;
     return voxaEvent;
   } catch (error) {
-    voxaEvent.log.error(error);
     throw error;
   }
 }
 
 async function onBeforeReplySent(voxaEvent: IVoxaEvent, reply: IVoxaReply) {
-  const objectId = path.join(defaultConfig.pathPrefix, voxaEvent.user.userId);
+  const objectId = path.join(defaultConfig.pathPrefix as string, voxaEvent.user.userId);
 
-  const putParams: S3.PutObjectRequest = {
+  const putParams: AWS.S3.PutObjectRequest = {
     Body: JSON.stringify(voxaEvent.model.user),
-    Bucket: defaultConfig.bucketName,
+    Bucket: defaultConfig.bucketName as string,
     Key: objectId,
   };
 
   try {
-    await defaultConfig.s3Client
+    await (defaultConfig.s3Client as AWS.S3)
       .putObject(putParams)
       .promise();
   } catch (error) {
-    voxaEvent.log.error(error);
     throw error;
   }
 
