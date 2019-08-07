@@ -58,6 +58,13 @@ const config: IGoogleAssistantPlatformConfig = {
   }
 };
 
+const configKeyFile: IGoogleAssistantPlatformConfig = {
+  transactionOptions: {
+    androidAppPackageName: "com.example.com",
+    keyFile: "./keyFile.json"
+  }
+};
+
 describe("DigitalGoods", () => {
   let googleAssistantPlatform: GoogleAssistantPlatform;
   let voxaApp: VoxaApp;
@@ -154,7 +161,14 @@ describe("DigitalGoods", () => {
       }
     );
 
-    const reply = await googleAssistantPlatform.execute(buyProductIntent);
+    const googleAssistantPlatformWithKeyFile = new GoogleAssistantPlatform(
+      voxaApp,
+      configKeyFile
+    );
+
+    const reply = await googleAssistantPlatformWithKeyFile.execute(
+      buyProductIntent
+    );
     const attributes = JSON.parse(
       reply.outputContexts[0].parameters.attributes
     );
