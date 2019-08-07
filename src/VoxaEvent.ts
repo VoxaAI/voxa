@@ -42,7 +42,7 @@ export interface IVoxaRequest {
 export type IVoxaEventClass = new (
   rawEvent: any,
   logOptions: LambdaLogOptions,
-  context: any
+  context: any,
 ) => IVoxaEvent;
 
 export interface IVoxaIntentEvent extends IVoxaEvent {
@@ -83,7 +83,7 @@ export abstract class VoxaEvent implements IVoxaEvent {
   constructor(
     rawEvent: any,
     logOptions: LambdaLogOptions = {},
-    public executionContext?: AWSLambdaContext | AzureContext
+    public executionContext?: AWSLambdaContext | AzureContext,
   ) {
     this.rawEvent = _.cloneDeep(rawEvent);
     this.initSession();
@@ -116,7 +116,7 @@ export abstract class VoxaEvent implements IVoxaEvent {
 
     this.intent = {
       name: intentName,
-      params: {}
+      params: {},
     };
 
     this.request.type = "IntentRequest";

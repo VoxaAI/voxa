@@ -34,7 +34,7 @@ import {
   GoogleAssistantPlatform,
   Model,
   Renderer,
-  VoxaApp
+  VoxaApp,
 } from "../src";
 import { isLocalizedRequest } from "../src/platforms/alexa/utils";
 import { AlexaRequestBuilder } from "./tools";
@@ -55,7 +55,7 @@ describe("Renderer", () => {
     await i18n.init({
       load: "all",
       nonExplicitWhitelist: true,
-      resources: views
+      resources: views,
     });
   });
 
@@ -73,7 +73,7 @@ describe("Renderer", () => {
       endState: { ask: "ExitIntent.Farewell", to: "die" },
       initState: { to: "endState" },
       secondState: { to: "initState" },
-      thirdState: () => Promise.resolve({ to: "endState" })
+      thirdState: () => Promise.resolve({ to: "endState" }),
     };
   });
 
@@ -82,14 +82,14 @@ describe("Renderer", () => {
       number: "ein",
       question: "wie spät ist es?",
       say: "sagen\nwie spät ist es?",
-      site: "Ok für weitere Infos besuchen example.com Website"
+      site: "Ok für weitere Infos besuchen example.com Website",
     },
     "en-US": {
       number: "one",
       question: "What time is it?",
       say: "say\nWhat time is it?",
-      site: "Ok. For more info visit example.com site."
-    }
+      site: "Ok. For more info visit example.com site.",
+    },
   };
 
   it("should launch an exception if no views are provided", () => {
@@ -105,7 +105,7 @@ describe("Renderer", () => {
     const reply = await skill.execute(event, new AlexaReply());
     // expect(reply.error.message).to.equal(`View Number.One for ${localeMissing} locale is missing`);
     expect(reply.speech).to.equal(
-      "<speak>An unrecoverable error occurred.</speak>"
+      "<speak>An unrecoverable error occurred.</speak>",
     );
   });
 
@@ -121,7 +121,7 @@ describe("Renderer", () => {
 
       it(`should return the correct translation for ${locale}`, async () => {
         _.map(statesDefinition, (state, name: string) =>
-          skill.onState(name, state)
+          skill.onState(name, state),
         );
         if (isLocalizedRequest(rawEvent.request)) {
           rawEvent.request.locale = locale;
@@ -135,14 +135,14 @@ describe("Renderer", () => {
         skill.onIntent("SomeIntent", () => ({
           ask: "Ask",
           say: "Say",
-          to: "entry"
+          to: "entry",
         }));
         if (isLocalizedRequest(rawEvent.request)) {
           rawEvent.request.locale = locale;
         }
         const reply = await skill.execute(rawEvent);
         expect(reply.speech).to.deep.equal(
-          `<speak>${translations.say}</speak>`
+          `<speak>${translations.say}</speak>`,
         );
         expect(reply.response.directives).to.be.undefined;
       });
@@ -161,10 +161,10 @@ describe("Renderer", () => {
         skill.onIntent("SomeIntent", () => ({
           alexaPlayAudio: {
             token: "123",
-            url: "url"
+            url: "url",
           },
           ask: "Ask",
-          to: "entry"
+          to: "entry",
         }));
 
         if (isLocalizedRequest(rawEvent.request)) {
@@ -173,7 +173,7 @@ describe("Renderer", () => {
 
         const reply = await skill.execute(rawEvent);
         expect(reply.speech).to.equal(
-          `<speak>${translations.question}</speak>`
+          `<speak>${translations.question}</speak>`,
         );
         expect(reply.response.directives).to.be.ok;
       });
@@ -184,7 +184,7 @@ describe("Renderer", () => {
     const rendered = await renderer.renderPath("Ask", event);
     expect(rendered).to.deep.equal({
       ask: "What time is it?",
-      reprompt: "What time is it?"
+      reprompt: "What time is it?",
     });
   });
 
@@ -195,25 +195,25 @@ describe("Renderer", () => {
     expect(rendered).to.deep.equal({ say: "1" });
   });
 
-  it("should fail for missing variables", done => {
+  it("should fail for missing variables", (done) => {
     renderer
       .renderMessage({ say: "{missing}" }, event)
       .then(() => done("Should have failed"))
-      .catch(error => {
+      .catch((error) => {
         expect(error.message).to.equal("No such variable in views, missing");
         done();
       });
   });
 
-  it("should throw an exception if path doesn't exists", done => {
+  it("should throw an exception if path doesn't exists", (done) => {
     renderer.renderPath("Missing.Path", event).then(
       () => done("Should have thrown"),
-      error => {
+      (error) => {
         expect(error.message).to.equal(
-          "View Missing.Path for en-US locale is missing"
+          "View Missing.Path for en-US locale is missing",
         );
         done();
-      }
+      },
     );
   });
 
@@ -222,20 +222,20 @@ describe("Renderer", () => {
     event.model.count = 1;
     const rendered = await renderer.renderMessage(
       { card: "{exitCard}", number: 1 },
-      event
+      event,
     );
 
     expect(rendered).to.deep.equal({
       card: {
         image: {
           largeImageUrl: "largeImage.jpg",
-          smallImageUrl: "smallImage.jpg"
+          smallImageUrl: "smallImage.jpg",
         },
         text: "text",
         title: "title",
-        type: "Standard"
+        type: "Standard",
       },
-      number: 1
+      number: 1,
     });
   });
 
@@ -244,17 +244,17 @@ describe("Renderer", () => {
     event.model.count = 1;
     const rendered = await renderer.renderMessage(
       {
-        card: { title: "{count}", text: "{count}", array: [{ a: "{count}" }] }
+        card: { title: "{count}", text: "{count}", array: [{ a: "{count}" }] },
       },
-      event
+      event,
     );
 
     expect(rendered).to.deep.equal({
       card: {
         array: [{ a: "1" }],
         text: "1",
-        title: "1"
-      }
+        title: "1",
+      },
     });
   });
 
@@ -266,13 +266,13 @@ describe("Renderer", () => {
   it("should use the dialogflow view if available", async () => {
     const dialogflowEvent = new DialogflowEvent(
       require("./requests/dialogflow/launchIntent.json"),
-      {}
+      {},
     );
     dialogflowEvent.t = event.t;
     dialogflowEvent.platform = new DialogflowPlatform(voxaApp);
     const rendered = await renderer.renderPath(
       "LaunchIntent.OpenResponse",
-      dialogflowEvent
+      dialogflowEvent,
     );
     expect(rendered).to.equal("Hello from Dialogflow");
   });
@@ -280,13 +280,13 @@ describe("Renderer", () => {
   it("should use the google view if available", async () => {
     const dialogflowEvent = new GoogleAssistantEvent(
       require("./requests/dialogflow/launchIntent.json"),
-      {}
+      {},
     );
     dialogflowEvent.t = event.t;
     dialogflowEvent.platform = new GoogleAssistantPlatform(voxaApp);
     const rendered = await renderer.renderPath(
       "LaunchIntent.OpenResponse",
-      dialogflowEvent
+      dialogflowEvent,
     );
     expect(rendered).to.equal("Hello from Google Assistant");
   });

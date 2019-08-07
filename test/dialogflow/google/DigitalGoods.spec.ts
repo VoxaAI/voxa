@@ -33,7 +33,7 @@ import {
   DialogflowReply,
   GoogleAssistantEvent,
   GoogleAssistantPlatform,
-  MediaResponse
+  MediaResponse,
 } from "../../../src/platforms/dialogflow";
 import { IGoogleAssistantPlatformConfig } from "../../../src/platforms/dialogflow/google/GoogleAssistantPlatform";
 import { VoxaApp } from "../../../src/VoxaApp";
@@ -54,15 +54,15 @@ const itemsInPlayStore = require("../../requests/dialogflow/itemsInPlayStore.jso
 const config: IGoogleAssistantPlatformConfig = {
   transactionOptions: {
     androidAppPackageName: "com.example.com",
-    key: {}
-  }
+    key: {},
+  },
 };
 
 const configKeyFile: IGoogleAssistantPlatformConfig = {
   transactionOptions: {
     androidAppPackageName: "com.example.com",
-    keyFile: "./keyFile.json"
-  }
+    keyFile: "./keyFile.json",
+  },
 };
 
 describe("DigitalGoods", () => {
@@ -98,7 +98,7 @@ describe("DigitalGoods", () => {
           .be.false;
 
         return { to: "die" };
-      }
+      },
     );
 
     await googleAssistantPlatform.execute(purchasStatusIntent);
@@ -107,28 +107,28 @@ describe("DigitalGoods", () => {
   it("should find 1 subscription and 1 entitlement", async () => {
     const reqheaders: nock.Options = {
       reqheaders: {
-        accept: "application/json",
-        authorization: "Bearer access_token",
+        "accept": "application/json",
+        "authorization": "Bearer access_token",
         "content-type": "application/json",
-        host: "actions.googleapis.com"
-      }
+        "host": "actions.googleapis.com",
+      },
     };
 
     const bodySubscription = {
       conversationId: "1528150043739",
       ids: ["test"],
-      skuType: "SKU_TYPE_SUBSCRIPTION"
+      skuType: "SKU_TYPE_SUBSCRIPTION",
     };
 
     const bodyInAppEntitlements = {
       conversationId: "1528150043739",
       ids: ["test"],
-      skuType: "SKU_TYPE_IN_APP"
+      skuType: "SKU_TYPE_IN_APP",
     };
 
     const path = `/v3/packages/${_.get(
       config.transactionOptions,
-      "androidAppPackageName"
+      "androidAppPackageName",
     )}/skus:batchGet`;
 
     nock("https://actions.googleapis.com", reqheaders)
@@ -144,10 +144,10 @@ describe("DigitalGoods", () => {
       "BuyProductIntent",
       async (voxaEvent: GoogleAssistantEvent) => {
         const inAppEntitlementSkus = await voxaEvent.google.digitalGoods.getInAppEntitlements(
-          ["test"]
+          ["test"],
         );
         const subscriptionSkus = await voxaEvent.google.digitalGoods.getSubscriptions(
-          ["test"]
+          ["test"],
         );
 
         voxaEvent.model.inAppEntitlementsSkus = inAppEntitlementSkus.skus[1];
@@ -156,28 +156,28 @@ describe("DigitalGoods", () => {
         return {
           flow: "yield",
           say: "DigitalGoods.SelectItem.say",
-          to: "entry"
+          to: "entry",
         };
-      }
+      },
     );
 
     const googleAssistantPlatformWithKeyFile = new GoogleAssistantPlatform(
       voxaApp,
-      configKeyFile
+      configKeyFile,
     );
 
     const reply = await googleAssistantPlatformWithKeyFile.execute(
-      buyProductIntent
+      buyProductIntent,
     );
     const attributes = JSON.parse(
-      reply.outputContexts[0].parameters.attributes
+      reply.outputContexts[0].parameters.attributes,
     );
 
     expect(attributes.model.inAppEntitlementsSkus).to.deep.equal(
-      inAppEntitlementFromPlayStore
+      inAppEntitlementFromPlayStore,
     );
     expect(attributes.model.subscriptionSkus).to.deep.equal(
-      subscriptionFromPlayStore
+      subscriptionFromPlayStore,
     );
     expect(reply.payload.google.expectUserResponse).to.be.true;
   });
@@ -192,7 +192,7 @@ describe("DigitalGoods", () => {
     const errorVoxaApp = new VoxaApp({ views, variables });
     const errorGoogleAssistantPlatform = new GoogleAssistantPlatform(
       errorVoxaApp,
-      config
+      config,
     );
 
     errorVoxaApp.onIntent(
@@ -200,16 +200,16 @@ describe("DigitalGoods", () => {
       async (voxaEvent: GoogleAssistantEvent) => {
         const subscriptionSkus = await voxaEvent.google.digitalGoods.getSkus(
           ["test"],
-          "SKU_TYPE_SUBSCRIPTION"
+          "SKU_TYPE_SUBSCRIPTION",
         );
         voxaEvent.model.subscriptionSkus = subscriptionSkus;
 
         return {
           flow: "yield",
           say: "DigitalGoods.SelectItem.say",
-          to: "entry"
+          to: "entry",
         };
-      }
+      },
     );
 
     errorVoxaApp.onError(
@@ -217,7 +217,7 @@ describe("DigitalGoods", () => {
         expect(error.message).to.equal("Authentication Error");
 
         return reply;
-      }
+      },
     );
 
     await errorGoogleAssistantPlatform.execute(buyProductIntent);
@@ -226,23 +226,23 @@ describe("DigitalGoods", () => {
   it("should throw an error when trying to call Google Play Store API", async () => {
     const reqheaders: nock.Options = {
       reqheaders: {
-        accept: "application/json",
-        authorization: "Bearer access_token",
+        "accept": "application/json",
+        "authorization": "Bearer access_token",
         "content-length": "83",
         "content-type": "application/json",
-        host: "actions.googleapis.com"
-      }
+        "host": "actions.googleapis.com",
+      },
     };
 
     const body = {
       conversationId: "1528150043739",
       ids: ["test"],
-      skuType: "SKU_TYPE_SUBSCRIPTION"
+      skuType: "SKU_TYPE_SUBSCRIPTION",
     };
 
     const path = `/v3/packages/${_.get(
       config.transactionOptions,
-      "androidAppPackageName"
+      "androidAppPackageName",
     )}/skus:batchGet`;
 
     nock("https://actions.googleapis.com", reqheaders)
@@ -254,16 +254,16 @@ describe("DigitalGoods", () => {
       async (voxaEvent: GoogleAssistantEvent) => {
         const subscriptionSkus = await voxaEvent.google.digitalGoods.getSkus(
           ["test"],
-          "SKU_TYPE_SUBSCRIPTION"
+          "SKU_TYPE_SUBSCRIPTION",
         );
         voxaEvent.model.subscriptionSkus = subscriptionSkus;
 
         return {
           flow: "yield",
           say: "DigitalGoods.SelectItem.say",
-          to: "entry"
+          to: "entry",
         };
-      }
+      },
     );
 
     voxaApp.onError(
@@ -271,7 +271,7 @@ describe("DigitalGoods", () => {
         expect(error.message).to.equal("Error: Random Error");
 
         return reply;
-      }
+      },
     );
 
     await googleAssistantPlatform.execute(buyProductIntent);
@@ -285,15 +285,15 @@ describe("DigitalGoods", () => {
       async (voxaEvent: GoogleAssistantEvent) => {
         const subscriptionSkus = await voxaEvent.google.digitalGoods.getSkus(
           ["test"],
-          "SKU_TYPE_SUBSCRIPTION"
+          "SKU_TYPE_SUBSCRIPTION",
         );
         voxaEvent.model.subscriptionSkus = subscriptionSkus;
 
         return {
           reply: "DigitalGoods.SelectItem",
-          to: "entry"
+          to: "entry",
         };
-      }
+      },
     );
 
     voxaApp.onError(
@@ -301,7 +301,7 @@ describe("DigitalGoods", () => {
         expect(error.message).to.equal("Android App package name missing");
 
         return reply;
-      }
+      },
     );
 
     await errorGoogleAssistantPlatform.execute(buyProductIntent);
@@ -313,7 +313,7 @@ describe("DigitalGoods", () => {
 
     const errorGoogleAssistantPlatform = new GoogleAssistantPlatform(
       voxaApp,
-      configError
+      configError,
     );
 
     voxaApp.onIntent(
@@ -321,15 +321,15 @@ describe("DigitalGoods", () => {
       async (voxaEvent: GoogleAssistantEvent) => {
         const subscriptionSkus = await voxaEvent.google.digitalGoods.getSkus(
           ["test"],
-          "SKU_TYPE_SUBSCRIPTION"
+          "SKU_TYPE_SUBSCRIPTION",
         );
         voxaEvent.model.subscriptionSkus = subscriptionSkus;
 
         return {
           reply: "DigitalGoods.SelectItem",
-          to: "entry"
+          to: "entry",
         };
-      }
+      },
     );
 
     voxaApp.onError(
@@ -337,7 +337,7 @@ describe("DigitalGoods", () => {
         expect(error.message).to.equal("keyFile for transactions missing");
 
         return reply;
-      }
+      },
     );
 
     await errorGoogleAssistantPlatform.execute(buyProductIntent);
@@ -346,6 +346,6 @@ describe("DigitalGoods", () => {
 
 function mockRequests() {
   simple.mock(googleapis.auth.JWT.prototype, "authorize").resolveWith({
-    access_token: "access_token"
+    access_token: "access_token",
   });
 }

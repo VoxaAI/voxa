@@ -29,7 +29,7 @@ import {
   Hint,
   Renderer,
   Tell,
-  VoxaApp
+  VoxaApp,
 } from "../../src";
 import { AlexaRequestBuilder } from "../tools";
 import { variables } from "../variables";
@@ -47,7 +47,7 @@ describe("AlexaReply", () => {
     await i18n.init({
       load: "all",
       nonExplicitWhitelist: true,
-      resources: views
+      resources: views,
     });
   });
 
@@ -71,18 +71,18 @@ describe("AlexaReply", () => {
         // card: undefined,
         outputSpeech: {
           ssml: "<speak>ask</speak>",
-          type: "SSML"
+          type: "SSML",
         },
         reprompt: {
           outputSpeech: {
             ssml: "<speak>reprompt</speak>",
-            type: "SSML"
-          }
+            type: "SSML",
+          },
         },
-        shouldEndSession: false
+        shouldEndSession: false,
       },
       sessionAttributes: {},
-      version: "1.0"
+      version: "1.0",
     });
   });
 
@@ -92,12 +92,12 @@ describe("AlexaReply", () => {
       response: {
         outputSpeech: {
           ssml: "<speak>ask</speak>",
-          type: "SSML"
+          type: "SSML",
         },
-        shouldEndSession: false
+        shouldEndSession: false,
       },
       sessionAttributes: {},
-      version: "1.0"
+      version: "1.0",
     });
   });
 
@@ -108,12 +108,12 @@ describe("AlexaReply", () => {
       response: {
         outputSpeech: {
           ssml: "<speak>tell</speak>",
-          type: "SSML"
+          type: "SSML",
         },
-        shouldEndSession: true
+        shouldEndSession: true,
       },
       sessionAttributes: {},
-      version: "1.0"
+      version: "1.0",
     });
   });
 
@@ -162,13 +162,13 @@ describe("AlexaReply", () => {
           slots: {
             slot1: {
               canFulfill: "YES",
-              canUnderstand: "YES"
-            }
-          }
-        }
+              canUnderstand: "YES",
+            },
+          },
+        },
       },
       sessionAttributes: {},
-      version: "1.0"
+      version: "1.0",
     });
   });
 
@@ -182,16 +182,16 @@ describe("AlexaReply", () => {
       response: {
         outputSpeech: {
           ssml: "<speak>tell</speak>",
-          type: "SSML"
+          type: "SSML",
         },
-        shouldEndSession: true
+        shouldEndSession: true,
       },
       sessionAttributes: {
         model: {
-          name: "name"
-        }
+          name: "name",
+        },
       },
-      version: "1.0"
+      version: "1.0",
     });
   });
 
@@ -205,19 +205,19 @@ describe("AlexaReply", () => {
           {
             hint: {
               text: "string",
-              type: "PlainText"
+              type: "PlainText",
             },
-            type: "Hint"
-          }
+            type: "Hint",
+          },
         ],
         outputSpeech: {
           ssml: "<speak>Ok. For more info visit example.com site.</speak>",
-          type: "SSML"
+          type: "SSML",
         },
-        shouldEndSession: true
+        shouldEndSession: true,
       },
       sessionAttributes: {},
-      version: "1.0"
+      version: "1.0",
     });
   });
 });

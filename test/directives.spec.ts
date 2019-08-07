@@ -33,7 +33,7 @@ import {
   Reprompt,
   Say,
   Tell,
-  VoxaApp
+  VoxaApp,
 } from "../src";
 import { AlexaRequestBuilder } from "./tools";
 import { variables } from "./variables";
@@ -50,13 +50,13 @@ describe("directives", () => {
     await i18n.init({
       load: "all",
       nonExplicitWhitelist: true,
-      resources: views
+      resources: views,
     });
   });
 
   beforeEach(() => {
     voxaApp = new VoxaApp({
-      views: {}
+      views: {},
     });
     const rb = new AlexaRequestBuilder();
     const renderer = new Renderer({ views, variables });
@@ -79,7 +79,7 @@ describe("directives", () => {
       expect([
         "<speak>tell1</speak>",
         "<speak>tell2</speak>",
-        "<speak>tell3</speak>"
+        "<speak>tell3</speak>",
       ]).to.include(response.speech);
       expect(response.hasTerminated).to.be.true;
     });
@@ -102,13 +102,13 @@ describe("directives", () => {
       expect([
         "<speak>ask1</speak>",
         "<speak>ask2</speak>",
-        "<speak>ask3</speak>"
+        "<speak>ask3</speak>",
       ]).to.include(response.speech);
 
       expect([
         "<speak>reprompt1</speak>",
         "<speak>reprompt2</speak>",
-        "<speak>reprompt3</speak>"
+        "<speak>reprompt3</speak>",
       ]).to.include(response.reprompt);
     });
 
@@ -134,7 +134,7 @@ describe("directives", () => {
       expect([
         "<speak>say1</speak>",
         "<speak>say2</speak>",
-        "<speak>say3</speak>"
+        "<speak>say3</speak>",
       ]).to.include(response.speech);
     });
   });
@@ -149,7 +149,7 @@ describe("directives", () => {
       expect([
         "<speak>reprompt1</speak>",
         "<speak>reprompt2</speak>",
-        "<speak>reprompt3</speak>"
+        "<speak>reprompt3</speak>",
       ]).to.include(response.reprompt);
     });
   });
