@@ -28,10 +28,10 @@ import {
   HeroCard,
   IMessage,
   MemoryBotStorage,
-  SuggestedActions,
+  SuggestedActions
 } from "botbuilder";
 import { expect } from "chai";
-import i18next from "i18next";
+import * as i18next from "i18next";
 import * as _ from "lodash";
 import * as nock from "nock";
 import * as simple from "simple-mock";
@@ -52,7 +52,7 @@ describe("BotFramework directives", () => {
     await i18n.init({
       load: "all",
       nonExplicitWhitelist: true,
-      resources: views,
+      resources: views
     });
   });
 
@@ -71,10 +71,10 @@ describe("BotFramework directives", () => {
     botFrameworkSkill = new BotFrameworkPlatform(app, {
       defaultLocale: "en",
       recognize,
-      storage,
+      storage
     });
     event = _.cloneDeep(
-      require("../requests/botframework/microsoft.launch.json"),
+      require("../requests/botframework/microsoft.launch.json")
     );
     simple.mock(storage, "getData").callbackWith(null, {});
     simple.mock(storage, "saveData").callbackWith(null, {});
@@ -87,7 +87,7 @@ describe("BotFramework directives", () => {
     nock("https://cortanabfchanneleastus.azurewebsites.net")
       .persist()
       .post(
-        "/v3/conversations/38c26473-842e-4dd0-8f40-dc656ab4f2f4/activities/4Cq2PVQFeti",
+        "/v3/conversations/38c26473-842e-4dd0-8f40-dc656ab4f2f4/activities/4Cq2PVQFeti"
       )
       .reply(200);
   });
@@ -96,7 +96,7 @@ describe("BotFramework directives", () => {
     it("should render an AudioCard with a view", async () => {
       app.onIntent("LaunchIntent", {
         botframeworkAudioCard: "BotFrameworkAudioCard",
-        to: "die",
+        to: "die"
       });
 
       await botFrameworkSkill.execute(event);
@@ -111,30 +111,30 @@ describe("BotFramework directives", () => {
               media: [
                 {
                   profile: "",
-                  url: "http://example.com",
-                },
-              ],
+                  url: "http://example.com"
+                }
+              ]
             },
-            contentType: "application/vnd.microsoft.card.audio",
-          },
+            contentType: "application/vnd.microsoft.card.audio"
+          }
         ],
         channelId: "cortana",
         conversation: {
-          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4",
+          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4"
         },
         from: {
-          id: "tide",
+          id: "tide"
         },
         inputHint: "acceptingInput",
         locale: "en-US",
         recipient: {
-          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722",
+          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722"
         },
         replyToId: "4Cq2PVQFeti",
         speak: "",
         text: "",
         textFormat: "plain",
-        type: "message",
+        type: "message"
       });
     });
   });
@@ -144,7 +144,7 @@ describe("BotFramework directives", () => {
       app.onIntent("LaunchIntent", {
         sayp: "Some Text",
         textp: "Some Text",
-        to: "die",
+        to: "die"
       });
 
       await botFrameworkSkill.execute(event);
@@ -155,21 +155,21 @@ describe("BotFramework directives", () => {
       expect(_.omit(reply, "timestamp", "id")).to.deep.equal({
         channelId: "cortana",
         conversation: {
-          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4",
+          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4"
         },
         from: {
-          id: "tide",
+          id: "tide"
         },
         inputHint: "acceptingInput",
         locale: "en-US",
         recipient: {
-          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722",
+          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722"
         },
         replyToId: "4Cq2PVQFeti",
         speak: "<speak>Some Text</speak>",
         text: "Some Text",
         textFormat: "plain",
-        type: "message",
+        type: "message"
       });
     });
   });
@@ -178,7 +178,7 @@ describe("BotFramework directives", () => {
     it("should add plain text to the message", async () => {
       app.onIntent("LaunchIntent", {
         text: "Say",
-        to: "die",
+        to: "die"
       });
 
       await botFrameworkSkill.execute(event);
@@ -189,21 +189,21 @@ describe("BotFramework directives", () => {
       expect(_.omit(reply, "timestamp", "id")).to.deep.equal({
         channelId: "cortana",
         conversation: {
-          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4",
+          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4"
         },
         from: {
-          id: "tide",
+          id: "tide"
         },
         inputHint: "acceptingInput",
         locale: "en-US",
         recipient: {
-          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722",
+          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722"
         },
         replyToId: "4Cq2PVQFeti",
         speak: "",
         text: "say",
         textFormat: "plain",
-        type: "message",
+        type: "message"
       });
     });
   });
@@ -217,7 +217,7 @@ describe("BotFramework directives", () => {
       app.onIntent("LaunchIntent", {
         botframeworkAttachmentLayout: AttachmentLayout.carousel,
         botframeworkAttachments: cards,
-        to: "die",
+        to: "die"
       });
 
       await botFrameworkSkill.execute(event);
@@ -230,40 +230,40 @@ describe("BotFramework directives", () => {
         attachments: [
           {
             content: {
-              title: "Event 1",
+              title: "Event 1"
             },
-            contentType: "application/vnd.microsoft.card.hero",
+            contentType: "application/vnd.microsoft.card.hero"
           },
           {
             content: {
-              title: "Event 2",
+              title: "Event 2"
             },
-            contentType: "application/vnd.microsoft.card.hero",
+            contentType: "application/vnd.microsoft.card.hero"
           },
           {
             content: {
-              title: "Event 3",
+              title: "Event 3"
             },
-            contentType: "application/vnd.microsoft.card.hero",
-          },
+            contentType: "application/vnd.microsoft.card.hero"
+          }
         ],
         channelId: "cortana",
         conversation: {
-          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4",
+          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4"
         },
         from: {
-          id: "tide",
+          id: "tide"
         },
         inputHint: "acceptingInput",
         locale: "en-US",
         recipient: {
-          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722",
+          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722"
         },
         replyToId: "4Cq2PVQFeti",
         speak: "",
         text: "",
         textFormat: "plain",
-        type: "message",
+        type: "message"
       });
     });
   });
@@ -277,7 +277,7 @@ describe("BotFramework directives", () => {
 
       app.onIntent("LaunchIntent", {
         botframeworkHeroCard: card,
-        to: "die",
+        to: "die"
       });
 
       await botFrameworkSkill.execute(event);
@@ -291,28 +291,28 @@ describe("BotFramework directives", () => {
             content: {
               subtitle: "Card Subtitle",
               text: "Some Text",
-              title: "Card Title",
+              title: "Card Title"
             },
-            contentType: "application/vnd.microsoft.card.hero",
-          },
+            contentType: "application/vnd.microsoft.card.hero"
+          }
         ],
         channelId: "cortana",
         conversation: {
-          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4",
+          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4"
         },
         from: {
-          id: "tide",
+          id: "tide"
         },
         inputHint: "acceptingInput",
         locale: "en-US",
         recipient: {
-          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722",
+          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722"
         },
         replyToId: "4Cq2PVQFeti",
         speak: "",
         text: "",
         textFormat: "plain",
-        type: "message",
+        type: "message"
       });
     });
   });
@@ -323,9 +323,9 @@ describe("BotFramework directives", () => {
         botframeworkSigninCard: {
           buttonTitle: "Sign In",
           cardText: "Sign In Card",
-          url: "https://example.com",
+          url: "https://example.com"
         },
-        to: "die",
+        to: "die"
       });
 
       await botFrameworkSkill.execute(event);
@@ -341,31 +341,31 @@ describe("BotFramework directives", () => {
                 {
                   title: "Sign In",
                   type: "signin",
-                  value: "https://example.com",
-                },
+                  value: "https://example.com"
+                }
               ],
-              text: "Sign In Card",
+              text: "Sign In Card"
             },
-            contentType: "application/vnd.microsoft.card.signin",
-          },
+            contentType: "application/vnd.microsoft.card.signin"
+          }
         ],
         channelId: "cortana",
         conversation: {
-          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4",
+          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4"
         },
         from: {
-          id: "tide",
+          id: "tide"
         },
         inputHint: "acceptingInput",
         locale: "en-US",
         recipient: {
-          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722",
+          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722"
         },
         replyToId: "4Cq2PVQFeti",
         speak: "",
         text: "",
         textFormat: "plain",
-        type: "message",
+        type: "message"
       });
     });
   });
@@ -374,12 +374,12 @@ describe("BotFramework directives", () => {
       const suggestedActions = new SuggestedActions().addAction({
         title: "Green",
         type: "imBack",
-        value: "productId=1&color=green",
+        value: "productId=1&color=green"
       });
 
       app.onIntent("LaunchIntent", {
         botframeworkSuggestedActions: suggestedActions,
-        to: "die",
+        to: "die"
       });
 
       await botFrameworkSkill.execute(event);
@@ -390,15 +390,15 @@ describe("BotFramework directives", () => {
       expect(_.omit(reply, "timestamp", "id")).to.deep.equal({
         channelId: "cortana",
         conversation: {
-          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4",
+          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4"
         },
         from: {
-          id: "tide",
+          id: "tide"
         },
         inputHint: "acceptingInput",
         locale: "en-US",
         recipient: {
-          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722",
+          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722"
         },
         replyToId: "4Cq2PVQFeti",
         speak: "",
@@ -407,13 +407,13 @@ describe("BotFramework directives", () => {
             {
               title: "Green",
               type: "imBack",
-              value: "productId=1&color=green",
-            },
-          ],
+              value: "productId=1&color=green"
+            }
+          ]
         },
         text: "",
         textFormat: "plain",
-        type: "message",
+        type: "message"
       });
     });
   });
@@ -423,13 +423,13 @@ describe("BotFramework directives", () => {
       audioCard.media([
         {
           profile: "audio.mp3",
-          url: "http://example.com/audio.mp3",
-        },
+          url: "http://example.com/audio.mp3"
+        }
       ]);
 
       app.onIntent("LaunchIntent", {
         botframeworkAudioCard: audioCard,
-        to: "die",
+        to: "die"
       });
 
       await botFrameworkSkill.execute(event);
@@ -444,31 +444,31 @@ describe("BotFramework directives", () => {
               media: [
                 {
                   profile: "audio.mp3",
-                  url: "http://example.com/audio.mp3",
-                },
+                  url: "http://example.com/audio.mp3"
+                }
               ],
-              title: "Sample audio card",
+              title: "Sample audio card"
             },
-            contentType: "application/vnd.microsoft.card.audio",
-          },
+            contentType: "application/vnd.microsoft.card.audio"
+          }
         ],
         channelId: "cortana",
         conversation: {
-          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4",
+          id: "38c26473-842e-4dd0-8f40-dc656ab4f2f4"
         },
         from: {
-          id: "tide",
+          id: "tide"
         },
         inputHint: "acceptingInput",
         locale: "en-US",
         recipient: {
-          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722",
+          id: "B4418B6C4DFC584B9163EC6491BE1FDFC5F33F85E0B753A13D855AA309B6E722"
         },
         replyToId: "4Cq2PVQFeti",
         speak: "",
         text: "",
         textFormat: "plain",
-        type: "message",
+        type: "message"
       });
     });
   });
