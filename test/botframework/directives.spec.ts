@@ -31,7 +31,7 @@ import {
   SuggestedActions,
 } from "botbuilder";
 import { expect } from "chai";
-import i18next from "i18next";
+import * as i18next from "i18next";
 import * as _ from "lodash";
 import * as nock from "nock";
 import * as simple from "simple-mock";

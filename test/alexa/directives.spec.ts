@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import i18next from "i18next";
+import * as i18next from "i18next";
 import * as _ from "lodash";
 import "mocha";
 
@@ -36,7 +36,9 @@ describe("Alexa directives", () => {
     const rb = new AlexaRequestBuilder();
     app = new VoxaApp({ views, variables });
     alexaSkill = new AlexaPlatform(app);
-    dialogStateEvent = rb.getIntentRequest("GreetingIntent", { hello_world: "Hello" });
+    dialogStateEvent = rb.getIntentRequest("GreetingIntent", {
+      hello_world: "Hello",
+    });
     event = rb.getIntentRequest("AMAZON.YesIntent");
   });
 
