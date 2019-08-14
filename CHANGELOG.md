@@ -1,5 +1,11 @@
 # VOXA Changelog
 
+## 3.3.1-alpha2 (2019-08-13)
+
+#### Enhancement
+* Add Browse Carousel directive usage to docs
+* Updates i18next imports 
+
 ## 3.3.0 (2019-07-11)
 
 #### New Feature
