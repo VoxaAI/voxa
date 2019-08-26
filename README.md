@@ -1,8 +1,8 @@
 Voxa
 ====================
 
-[![Build Status](https://travis-ci.org/mediarain/voxa.svg?branch=master)](https://travis-ci.org/mediarain/voxa)
-[![Coverage Status](https://coveralls.io/repos/github/mediarain/voxa/badge.svg?branch=master)](https://coveralls.io/github/mediarain/voxa?branch=master)
+[![Build Status](https://travis-ci.org/VoxaAI/voxa.svg?branch=master)](https://travis-ci.org/VoxaAI/voxa)
+[![Coverage Status](https://coveralls.io/repos/github/VoxaAI/voxa/badge.svg?branch=master)](https://coveralls.io/github/VoxaAI/voxa?branch=master)
 [![Documentation](https://readthedocs.org/projects/voxa/badge/)](http://voxa.readthedocs.io/en/latest/)
 [![npm](https://img.shields.io/npm/dm/voxa.svg)](https://www.npmjs.com/package/voxa)
 [![Gitter](https://img.shields.io/gitter/room/voxa-rain/voxa.svg)](https://gitter.im/voxa-rain/voxa)
