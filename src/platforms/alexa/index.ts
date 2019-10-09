@@ -11,6 +11,7 @@ export {
   ConnectionsSendRequest,
   DialogDelegate,
   DialogElicitSlot,
+  DynamicEntitiesDirective,
   IElicitDialogOptions,
   GadgetControllerLightDirective,
   GameEngineStartInputHandler,

@@ -671,3 +671,35 @@ export class VideoAppLaunch extends MultimediaAlexaDirective {
     this.addDirective(reply);
   }
 }
+
+export class DynamicEntitiesDirective extends AlexaDirective implements IDirective {
+  public static key: string = "alexaDynamicEntities";
+  public static platform: string = "alexa";
+
+  public viewPath?: string;
+
+  constructor(viewPath: string) {
+    super();
+    this.viewPath = viewPath;
+  }
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition?: ITransition
+  ): Promise<void> {
+    let types = [];
+
+    if (this.viewPath) {
+      types = await event.renderer.renderPath(this.viewPath, event);
+    }
+
+    this.directive = {
+      type: "Dialog.UpdateDynamicEntities",
+      types,
+      updateBehavior: "REPLACE"
+    };
+
+    this.addDirective(reply);
+  }
+}
