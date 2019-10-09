@@ -763,13 +763,13 @@ describe("Alexa directives", () => {
                   id: "nathan",
                   name: {
                     synonyms: ["nate"],
-                    value: "nathan"
-                  }
-                }
-              ]
-            }
+                    value: "nathan",
+                  },
+                },
+              ],
+            },
           ],
-          updateBehavior: "REPLACE"
+          updateBehavior: "REPLACE",
         },
       ]);
     });

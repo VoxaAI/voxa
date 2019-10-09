@@ -41,20 +41,6 @@ export const views = {
         token: "SkillTemplateToken",
         type: "Alexa.Presentation.APL.RenderDocument",
       },
-      MyDynamicEntity: [
-        {
-          name: "LIST_OF_AVAILABLE_NAMES",
-          values: [
-            {
-              id: "nathan",
-              name: {
-                synonyms: ["nate"],
-                value: "nathan"
-              }
-            }
-          ]
-        }
-      ],
       Ask: "wie spät ist es?",
       ExitIntent: {
         Farewell: "Ok für weitere Infos besuchen {site} Website",
@@ -96,20 +82,6 @@ export const views = {
         token: "SkillTemplateToken",
         type: "Alexa.Presentation.APL.RenderDocument",
       },
-      MyDynamicEntity: [
-        {
-          name: "LIST_OF_AVAILABLE_NAMES",
-          values: [
-            {
-              id: "nathan",
-              name: {
-                synonyms: ["nate"],
-                value: "nathan"
-              }
-            }
-          ]
-        }
-      ],
       AccountLinking: "Please Log in",
       Ask: {
         ask: "What time is it?",
@@ -324,6 +296,20 @@ export const views = {
         ProductModified: "Product has been successfully modified",
         WithItems: "Lists with items are: {listsWithItems}",
       },
+      MyDynamicEntity: [
+        {
+          name: "LIST_OF_AVAILABLE_NAMES",
+          values: [
+            {
+              id: "nathan",
+              name: {
+                synonyms: ["nate"],
+                value: "nathan",
+              },
+            },
+          ],
+        },
+      ],
       Number: {
         One: "{numberOne}",
       },

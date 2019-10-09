@@ -686,7 +686,7 @@ export class DynamicEntitiesDirective extends AlexaDirective implements IDirecti
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     let types = [];
 
@@ -697,7 +697,7 @@ export class DynamicEntitiesDirective extends AlexaDirective implements IDirecti
     this.directive = {
       type: "Dialog.UpdateDynamicEntities",
       types,
-      updateBehavior: "REPLACE"
+      updateBehavior: "REPLACE",
     };
 
     this.addDirective(reply);
