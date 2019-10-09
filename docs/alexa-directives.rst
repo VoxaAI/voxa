@@ -421,3 +421,50 @@ The only required parameter is the ``slotToElicit``, but you can also pass in th
         to: "someOtherThing",
       };
     });
+
+Dynamic Entities
+------------------------------------------
+
+`Alexa Documentation <https://developer.amazon.com/docs/custom-skills/use-dynamic-entities-for-customized-interactions.html>`_
+
+Dynamic entities are sent with the `alexaDynamicEntities` key in your controller. You need to pass a view name with the types array.
+
+.. code-block:: javascript
+
+  // variables.js
+
+    exports.dynamicNames = (voxaEvent) => {
+      return [
+        {
+          name: "LIST_OF_AVAILABLE_NAMES",
+          values: [
+            {
+              id: "nathan",
+              name: {
+                synonyms: ["nate"],
+                value: "nathan"
+              }
+            }
+          ]
+        }
+      ];
+    });
+
+  // views.js
+
+    const views = {
+      "en-US": {
+        translation: {
+          MyAvailableNames: "{dynamicNames}"
+        },
+      };
+    };
+
+  // state.js
+
+    app.onState('someState', () => {
+      return {
+        alexaDynamicEntities: "MyAvailableNames",
+      };
+    });
+
