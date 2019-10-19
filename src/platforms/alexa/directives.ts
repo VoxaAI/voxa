@@ -23,11 +23,11 @@
 import {
   dialog,
   Directive,
+  er,
   interfaces,
   Response,
   Slot,
   ui,
-  er,
 } from "ask-sdk-model";
 import * as _ from "lodash";
 import { IDirective } from "../../directives";
