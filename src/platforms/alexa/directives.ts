@@ -27,6 +27,7 @@ import {
   Response,
   Slot,
   ui,
+  er,
 } from "ask-sdk-model";
 import * as _ from "lodash";
 import { IDirective } from "../../directives";
@@ -677,10 +678,18 @@ export class DynamicEntitiesDirective extends AlexaDirective implements IDirecti
   public static platform: string = "alexa";
 
   public viewPath?: string;
+  public types?: er.dynamic.EntityListItem[];
+  public directive?: dialog.DynamicEntitiesDirective;
 
-  constructor(viewPath: string) {
+  constructor(viewPath: string | dialog.DynamicEntitiesDirective | er.dynamic.EntityListItem[]) {
     super();
-    this.viewPath = viewPath;
+    if (_.isString(viewPath)) {
+      this.viewPath = viewPath;
+    } else if (_.isArray(viewPath)) {
+      this.types = viewPath;
+    } else {
+      this.directive = viewPath;
+    }
   }
 
   public async writeToReply(
@@ -692,13 +701,21 @@ export class DynamicEntitiesDirective extends AlexaDirective implements IDirecti
 
     if (this.viewPath) {
       types = await event.renderer.renderPath(this.viewPath, event);
+
+      this.directive = {
+        type: "Dialog.UpdateDynamicEntities",
+        types,
+        updateBehavior: "REPLACE",
+      };
     }
 
-    this.directive = {
-      type: "Dialog.UpdateDynamicEntities",
-      types,
-      updateBehavior: "REPLACE",
-    };
+    if (this.types) {
+      this.directive = {
+        type: "Dialog.UpdateDynamicEntities",
+        types: this.types,
+        updateBehavior: "REPLACE",
+      };
+    }
 
     this.addDirective(reply);
   }

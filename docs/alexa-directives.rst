@@ -468,3 +468,49 @@ Dynamic entities are sent with the `alexaDynamicEntities` key in your controller
       };
     });
 
+    // Or you can pass the types directly...
+
+    app.onState('someState', () => {
+      return {
+        alexaDynamicEntities: [
+          {
+            name: "LIST_OF_AVAILABLE_NAMES",
+            values: [
+              {
+                id: "nathan",
+                name: {
+                  synonyms: ["nate"],
+                  value: "nathan"
+                }
+              }
+            ]
+          }
+        ],
+      };
+    });
+
+    // Or you can pass the whole directive directly...
+
+    app.onState('someState', () => {
+      return {
+        alexaDynamicEntities: {
+          type: "Dialog.UpdateDynamicEntities",
+          updateBehavior: "REPLACE",
+          types: [
+            {
+              name: "LIST_OF_AVAILABLE_NAMES",
+              values: [
+                {
+                  id: "nathan",
+                  name: {
+                    synonyms: ["nate"],
+                    value: "nathan"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+      };
+    });
+
