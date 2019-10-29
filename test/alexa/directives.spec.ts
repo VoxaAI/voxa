@@ -743,4 +743,123 @@ describe("Alexa directives", () => {
       expect(reply.speech).to.include("An unrecoverable error");
     });
   });
+
+  describe("Dynamic Entities", () => {
+    it("should render a Dialog.UpdateDynamicEntities directive with the view path", async () => {
+      app.onIntent("YesIntent", {
+        alexaDynamicEntities: "MyDynamicEntity",
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "Dialog.UpdateDynamicEntities",
+          types: [
+            {
+              name: "LIST_OF_AVAILABLE_NAMES",
+              values: [
+                {
+                  id: "nathan",
+                  name: {
+                    synonyms: ["nate"],
+                    value: "nathan",
+                  },
+                },
+              ],
+            },
+          ],
+          updateBehavior: "REPLACE",
+        },
+      ]);
+    });
+
+    it("should render a Dialog.UpdateDynamicEntities directive with the types array", async () => {
+      app.onIntent("YesIntent", {
+        alexaDynamicEntities: [
+          {
+            name: "LIST_OF_AVAILABLE_NAMES",
+            values: [
+              {
+                id: "nathan",
+                name: {
+                  synonyms: ["nate"],
+                  value: "nathan",
+                },
+              },
+            ],
+          },
+        ],
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "Dialog.UpdateDynamicEntities",
+          types: [
+            {
+              name: "LIST_OF_AVAILABLE_NAMES",
+              values: [
+                {
+                  id: "nathan",
+                  name: {
+                    synonyms: ["nate"],
+                    value: "nathan",
+                  },
+                },
+              ],
+            },
+          ],
+          updateBehavior: "REPLACE",
+        },
+      ]);
+    });
+
+    it("should render a Dialog.UpdateDynamicEntities directive with the whole directive", async () => {
+      app.onIntent("YesIntent", {
+        alexaDynamicEntities: {
+          type: "Dialog.UpdateDynamicEntities",
+          types: [
+            {
+              name: "LIST_OF_AVAILABLE_NAMES",
+              values: [
+                {
+                  id: "nathan",
+                  name: {
+                    synonyms: ["nate"],
+                    value: "nathan",
+                  },
+                },
+              ],
+            },
+          ],
+          updateBehavior: "REPLACE",
+        },
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "Dialog.UpdateDynamicEntities",
+          types: [
+            {
+              name: "LIST_OF_AVAILABLE_NAMES",
+              values: [
+                {
+                  id: "nathan",
+                  name: {
+                    synonyms: ["nate"],
+                    value: "nathan",
+                  },
+                },
+              ],
+            },
+          ],
+          updateBehavior: "REPLACE",
+        },
+      ]);
+    });
+  });
 });
