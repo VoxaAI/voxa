@@ -101,6 +101,8 @@ export class AlexaPlatform extends VoxaPlatform {
           _.each(event.intent.params, (value, slotName) => {
             reply.fulfillSlot(slotName, "YES", "YES");
           });
+        } else {
+          reply.fulfillIntent("NO");
         }
 
         return reply;
