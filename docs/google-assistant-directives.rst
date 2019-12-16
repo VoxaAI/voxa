@@ -129,6 +129,43 @@ The carousel scrolls horizontally and allows for selecting one item. Compared to
     }
   });
 
+Browse Carousel
+----------
+
+`Actions on Google Documentation <https://developers.google.com/actions/assistant/responses#browsing_carousel>`_
+
+A browsing carousel is a rich response that allows users to scroll vertically and select a tile in a collection. Browsing carousels are designed specifically for web content by opening the selected tile in a web browser.
+
+
+.. code-block:: javascript
+
+  app.onState('someState', () => {
+    return {
+      dialogflowBrowseCarousel: {
+        items: [
+          {
+            title: 'Title of the item',
+            description: 'This is a description of an item.',
+            footer: 'Footer of the item'
+            openUrlAction: {
+              url: 'https://example.com/page',
+              urlTypeHint: 'DEFAULT' // Optional
+            }
+          },
+          {
+            title: 'Title of the item',
+            description: 'This is a description of an item.',
+            footer: 'Footer of the item'
+            openUrlAction: {
+              url: 'https://example.com/page',
+              urlTypeHint: 'DEFAULT' // Optional
+            }
+          },
+        ],
+      }
+    }
+  });
+
 Suggestions
 ------------
 

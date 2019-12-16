@@ -38,6 +38,7 @@ import {
   ConnectionsSendRequest,
   DialogDelegate,
   DialogElicitSlot,
+  DynamicEntitiesDirective,
   GadgetControllerLightDirective,
   GameEngineStartInputHandler,
   GameEngineStopInputHandler,
@@ -100,6 +101,8 @@ export class AlexaPlatform extends VoxaPlatform {
           _.each(event.intent.params, (value, slotName) => {
             reply.fulfillSlot(slotName, "YES", "YES");
           });
+        } else {
+          reply.fulfillIntent("NO");
         }
 
         return reply;
@@ -113,6 +116,7 @@ export class AlexaPlatform extends VoxaPlatform {
       ConnectionsSendRequest,
       DialogDelegate,
       DialogElicitSlot,
+      DynamicEntitiesDirective,
       GadgetControllerLightDirective,
       GameEngineStartInputHandler,
       GameEngineStopInputHandler,

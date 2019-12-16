@@ -41,11 +41,12 @@ Usage
 
 .. code-block:: javascript
 
-  const alexa = require('alexa-statemachine');
-  alexa.plugins.stateFlow.register(app)
+  const { plugins, VoxaApp } = require('voxa');
+  const voxaApp = new VoxaApp();
+  plugins.stateFlow(voxaApp);
 
-  app.onBeforeReplySent((voxaEvent) => {
-    console.log(voxaEvent.flow.join(' > ')); // entry > firstState > secondState > die
+  voxaApp.onBeforeReplySent((voxaEvent) => {
+    console.log(voxaEvent.session.outputAttributes.flow.join(' > ')); // entry > firstState > secondState > die
   });
 
 

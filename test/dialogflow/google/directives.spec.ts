@@ -6,7 +6,7 @@ import {
 } from "actions-on-google";
 import { DialogflowConversation } from "actions-on-google";
 import { expect } from "chai";
-import i18next from "i18next";
+import * as i18next from "i18next";
 import * as _ from "lodash";
 import "mocha";
 

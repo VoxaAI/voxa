@@ -23,6 +23,7 @@
 import {
   dialog,
   Directive,
+  er,
   interfaces,
   Response,
   Slot,
@@ -667,6 +668,54 @@ export class VideoAppLaunch extends MultimediaAlexaDirective {
         source: options.source,
       },
     };
+
+    this.addDirective(reply);
+  }
+}
+
+export class DynamicEntitiesDirective extends AlexaDirective implements IDirective {
+  public static key: string = "alexaDynamicEntities";
+  public static platform: string = "alexa";
+
+  public viewPath?: string;
+  public types?: er.dynamic.EntityListItem[];
+  public directive?: dialog.DynamicEntitiesDirective;
+
+  constructor(viewPath: string | dialog.DynamicEntitiesDirective | er.dynamic.EntityListItem[]) {
+    super();
+    if (_.isString(viewPath)) {
+      this.viewPath = viewPath;
+    } else if (_.isArray(viewPath)) {
+      this.types = viewPath;
+    } else {
+      this.directive = viewPath;
+    }
+  }
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition?: ITransition,
+  ): Promise<void> {
+    let types = [];
+
+    if (this.viewPath) {
+      types = await event.renderer.renderPath(this.viewPath, event);
+
+      this.directive = {
+        type: "Dialog.UpdateDynamicEntities",
+        types,
+        updateBehavior: "REPLACE",
+      };
+    }
+
+    if (this.types) {
+      this.directive = {
+        type: "Dialog.UpdateDynamicEntities",
+        types: this.types,
+        updateBehavior: "REPLACE",
+      };
+    }
 
     this.addDirective(reply);
   }

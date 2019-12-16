@@ -21,7 +21,7 @@
  */
 
 import * as bluebird from "bluebird";
-import i18n from "i18next";
+import * as i18n from "i18next";
 import * as _ from "lodash";
 import { IVoxaEvent } from "../VoxaEvent";
 

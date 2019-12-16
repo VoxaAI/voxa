@@ -21,7 +21,7 @@
  */
 
 import * as bluebird from "bluebird";
-import i18next from "i18next";
+import * as i18next from "i18next";
 import * as _ from "lodash";
 
 import { Context as AWSLambdaContext } from "aws-lambda";
@@ -480,15 +480,13 @@ export class VoxaApp {
       .flatten()
       .concat(transition.directives || [])
       .filter()
-      .filter(
-        (directive: IDirective): boolean => {
-          const constructor: any = directive.constructor;
-          return _.includes(
-            ["core", voxaEvent.platform.name],
-            constructor.platform,
-          );
-        },
-      )
+      .filter((directive: IDirective): boolean => {
+        const constructor: any = directive.constructor;
+        return _.includes(
+          ["core", voxaEvent.platform.name],
+          constructor.platform,
+        );
+      })
       .value();
 
     for (const handler of directives) {

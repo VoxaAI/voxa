@@ -296,6 +296,20 @@ export const views = {
         ProductModified: "Product has been successfully modified",
         WithItems: "Lists with items are: {listsWithItems}",
       },
+      MyDynamicEntity: [
+        {
+          name: "LIST_OF_AVAILABLE_NAMES",
+          values: [
+            {
+              id: "nathan",
+              name: {
+                synonyms: ["nate"],
+                value: "nathan",
+              },
+            },
+          ],
+        },
+      ],
       Number: {
         One: "{numberOne}",
       },

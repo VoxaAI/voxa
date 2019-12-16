@@ -24,7 +24,7 @@ import { Button, Image, MediaObject } from "actions-on-google";
 import { DialogflowConversation } from "actions-on-google";
 import { expect } from "chai";
 import { google as googleapis } from "googleapis";
-import i18next from "i18next";
+import * as i18next from "i18next";
 import * as _ from "lodash";
 import * as nock from "nock";
 import * as simple from "simple-mock";
@@ -82,16 +82,24 @@ describe("DigitalGoods", () => {
   });
 
   it("should match the right purchase status values", async () => {
-    voxaApp.onIntent("actions_intent_COMPLETE_PURCHASE", (voxaEvent: GoogleAssistantEvent) => {
-      expect(voxaEvent.google.digitalGoods.isPurchaseStatusOk()).to.be.true;
-      expect(voxaEvent.google.digitalGoods.isPurchaseStatusAlreadyOwned()).to.be.false;
-      expect(voxaEvent.google.digitalGoods.isPurchaseStatusChangeRequested()).to.be.false;
-      expect(voxaEvent.google.digitalGoods.isPurchaseStatusError()).to.be.false;
-      expect(voxaEvent.google.digitalGoods.isPurchaseStatusItemUnavailable()).to.be.false;
-      expect(voxaEvent.google.digitalGoods.isPurchaseStatusUserCancelled()).to.be.false;
+    voxaApp.onIntent(
+      "actions_intent_COMPLETE_PURCHASE",
+      (voxaEvent: GoogleAssistantEvent) => {
+        expect(voxaEvent.google.digitalGoods.isPurchaseStatusOk()).to.be.true;
+        expect(voxaEvent.google.digitalGoods.isPurchaseStatusAlreadyOwned()).to
+          .be.false;
+        expect(voxaEvent.google.digitalGoods.isPurchaseStatusChangeRequested())
+          .to.be.false;
+        expect(voxaEvent.google.digitalGoods.isPurchaseStatusError()).to.be
+          .false;
+        expect(voxaEvent.google.digitalGoods.isPurchaseStatusItemUnavailable())
+          .to.be.false;
+        expect(voxaEvent.google.digitalGoods.isPurchaseStatusUserCancelled()).to
+          .be.false;
 
-      return { to: "die" };
-    });
+        return { to: "die" };
+      },
+    );
 
     await googleAssistantPlatform.execute(purchasStatusIntent);
   });
@@ -118,7 +126,10 @@ describe("DigitalGoods", () => {
       skuType: "SKU_TYPE_IN_APP",
     };
 
-    const path = `/v3/packages/${_.get(config.transactionOptions, "androidAppPackageName")}/skus:batchGet`;
+    const path = `/v3/packages/${_.get(
+      config.transactionOptions,
+      "androidAppPackageName",
+    )}/skus:batchGet`;
 
     nock("https://actions.googleapis.com", reqheaders)
       .post(path, bodySubscription)
@@ -129,49 +140,77 @@ describe("DigitalGoods", () => {
     const subscriptionFromPlayStore = _.head(itemsInPlayStore.skus);
     const inAppEntitlementFromPlayStore = _.nth(itemsInPlayStore.skus, 1);
 
-    voxaApp.onIntent("BuyProductIntent", async (voxaEvent: GoogleAssistantEvent) => {
-      const inAppEntitlementSkus = await voxaEvent.google.digitalGoods.getInAppEntitlements(["test"]);
-      const subscriptionSkus = await voxaEvent.google.digitalGoods.getSubscriptions(["test"]);
+    voxaApp.onIntent(
+      "BuyProductIntent",
+      async (voxaEvent: GoogleAssistantEvent) => {
+        const inAppEntitlementSkus = await voxaEvent.google.digitalGoods.getInAppEntitlements(
+          ["test"],
+        );
+        const subscriptionSkus = await voxaEvent.google.digitalGoods.getSubscriptions(
+          ["test"],
+        );
 
-      voxaEvent.model.inAppEntitlementsSkus = inAppEntitlementSkus.skus[1];
-      voxaEvent.model.subscriptionSkus = subscriptionSkus.skus[0];
+        voxaEvent.model.inAppEntitlementsSkus = inAppEntitlementSkus.skus[1];
+        voxaEvent.model.subscriptionSkus = subscriptionSkus.skus[0];
 
-      return {
-        flow: "yield",
-        say: "DigitalGoods.SelectItem.say",
-        to: "entry",
-      };
-    });
+        return {
+          flow: "yield",
+          say: "DigitalGoods.SelectItem.say",
+          to: "entry",
+        };
+      },
+    );
 
-    const googleAssistantPlatformWithKeyFile = new GoogleAssistantPlatform(voxaApp, configKeyFile);
+    const googleAssistantPlatformWithKeyFile = new GoogleAssistantPlatform(
+      voxaApp,
+      configKeyFile,
+    );
 
-    const reply = await googleAssistantPlatformWithKeyFile.execute(buyProductIntent);
-    const attributes = JSON.parse(reply.outputContexts[0].parameters.attributes);
+    const reply = await googleAssistantPlatformWithKeyFile.execute(
+      buyProductIntent,
+    );
+    const attributes = JSON.parse(
+      reply.outputContexts[0].parameters.attributes,
+    );
 
-    expect(attributes.model.inAppEntitlementsSkus).to.deep.equal(inAppEntitlementFromPlayStore);
-    expect(attributes.model.subscriptionSkus).to.deep.equal(subscriptionFromPlayStore);
+    expect(attributes.model.inAppEntitlementsSkus).to.deep.equal(
+      inAppEntitlementFromPlayStore,
+    );
+    expect(attributes.model.subscriptionSkus).to.deep.equal(
+      subscriptionFromPlayStore,
+    );
     expect(reply.payload.google.expectUserResponse).to.be.true;
   });
 
   it("should throw an error when trying to get credentials", async () => {
     simple.restore();
 
-    simple.mock(googleapis.auth.JWT.prototype, "authorize")
+    simple
+      .mock(googleapis.auth.JWT.prototype, "authorize")
       .rejectWith(new Error("Authentication Error"));
 
     const errorVoxaApp = new VoxaApp({ views, variables });
-    const errorGoogleAssistantPlatform = new GoogleAssistantPlatform(errorVoxaApp, config);
+    const errorGoogleAssistantPlatform = new GoogleAssistantPlatform(
+      errorVoxaApp,
+      config,
+    );
 
-    errorVoxaApp.onIntent("BuyProductIntent", async (voxaEvent: GoogleAssistantEvent) => {
-      const subscriptionSkus = await voxaEvent.google.digitalGoods.getSkus(["test"], "SKU_TYPE_SUBSCRIPTION");
-      voxaEvent.model.subscriptionSkus = subscriptionSkus;
+    errorVoxaApp.onIntent(
+      "BuyProductIntent",
+      async (voxaEvent: GoogleAssistantEvent) => {
+        const subscriptionSkus = await voxaEvent.google.digitalGoods.getSkus(
+          ["test"],
+          "SKU_TYPE_SUBSCRIPTION",
+        );
+        voxaEvent.model.subscriptionSkus = subscriptionSkus;
 
-      return {
-        flow: "yield",
-        say: "DigitalGoods.SelectItem.say",
-        to: "entry",
-      };
-    });
+        return {
+          flow: "yield",
+          say: "DigitalGoods.SelectItem.say",
+          to: "entry",
+        };
+      },
+    );
 
     errorVoxaApp.onError(
       async (event: VoxaEvent, error: Error, reply: IVoxaReply) => {
@@ -201,22 +240,31 @@ describe("DigitalGoods", () => {
       skuType: "SKU_TYPE_SUBSCRIPTION",
     };
 
-    const path = `/v3/packages/${_.get(config.transactionOptions, "androidAppPackageName")}/skus:batchGet`;
+    const path = `/v3/packages/${_.get(
+      config.transactionOptions,
+      "androidAppPackageName",
+    )}/skus:batchGet`;
 
     nock("https://actions.googleapis.com", reqheaders)
       .post(path, body)
       .replyWithError("Random Error");
 
-    voxaApp.onIntent("BuyProductIntent", async (voxaEvent: GoogleAssistantEvent) => {
-      const subscriptionSkus = await voxaEvent.google.digitalGoods.getSkus(["test"], "SKU_TYPE_SUBSCRIPTION");
-      voxaEvent.model.subscriptionSkus = subscriptionSkus;
+    voxaApp.onIntent(
+      "BuyProductIntent",
+      async (voxaEvent: GoogleAssistantEvent) => {
+        const subscriptionSkus = await voxaEvent.google.digitalGoods.getSkus(
+          ["test"],
+          "SKU_TYPE_SUBSCRIPTION",
+        );
+        voxaEvent.model.subscriptionSkus = subscriptionSkus;
 
-      return {
-        flow: "yield",
-        say: "DigitalGoods.SelectItem.say",
-        to: "entry",
-      };
-    });
+        return {
+          flow: "yield",
+          say: "DigitalGoods.SelectItem.say",
+          to: "entry",
+        };
+      },
+    );
 
     voxaApp.onError(
       async (event: VoxaEvent, error: Error, reply: IVoxaReply) => {
@@ -232,15 +280,21 @@ describe("DigitalGoods", () => {
   it("should throw an error when transaction options object is missing", async () => {
     const errorGoogleAssistantPlatform = new GoogleAssistantPlatform(voxaApp);
 
-    voxaApp.onIntent("BuyProductIntent", async (voxaEvent: GoogleAssistantEvent) => {
-      const subscriptionSkus = await voxaEvent.google.digitalGoods.getSkus(["test"], "SKU_TYPE_SUBSCRIPTION");
-      voxaEvent.model.subscriptionSkus = subscriptionSkus;
+    voxaApp.onIntent(
+      "BuyProductIntent",
+      async (voxaEvent: GoogleAssistantEvent) => {
+        const subscriptionSkus = await voxaEvent.google.digitalGoods.getSkus(
+          ["test"],
+          "SKU_TYPE_SUBSCRIPTION",
+        );
+        voxaEvent.model.subscriptionSkus = subscriptionSkus;
 
-      return {
-        reply: "DigitalGoods.SelectItem",
-        to: "entry",
-      };
-    });
+        return {
+          reply: "DigitalGoods.SelectItem",
+          to: "entry",
+        };
+      },
+    );
 
     voxaApp.onError(
       async (event: VoxaEvent, error: Error, reply: IVoxaReply) => {
@@ -257,17 +311,26 @@ describe("DigitalGoods", () => {
     const configError = _.cloneDeep(config);
     _.unset(configError, "transactionOptions.key");
 
-    const errorGoogleAssistantPlatform = new GoogleAssistantPlatform(voxaApp, configError);
+    const errorGoogleAssistantPlatform = new GoogleAssistantPlatform(
+      voxaApp,
+      configError,
+    );
 
-    voxaApp.onIntent("BuyProductIntent", async (voxaEvent: GoogleAssistantEvent) => {
-      const subscriptionSkus = await voxaEvent.google.digitalGoods.getSkus(["test"], "SKU_TYPE_SUBSCRIPTION");
-      voxaEvent.model.subscriptionSkus = subscriptionSkus;
+    voxaApp.onIntent(
+      "BuyProductIntent",
+      async (voxaEvent: GoogleAssistantEvent) => {
+        const subscriptionSkus = await voxaEvent.google.digitalGoods.getSkus(
+          ["test"],
+          "SKU_TYPE_SUBSCRIPTION",
+        );
+        voxaEvent.model.subscriptionSkus = subscriptionSkus;
 
-      return {
-        reply: "DigitalGoods.SelectItem",
-        to: "entry",
-      };
-    });
+        return {
+          reply: "DigitalGoods.SelectItem",
+          to: "entry",
+        };
+      },
+    );
 
     voxaApp.onError(
       async (event: VoxaEvent, error: Error, reply: IVoxaReply) => {
