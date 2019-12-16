@@ -18,6 +18,8 @@ if [[ $NODE_VERSION == '10' ]]; then
 	LAMBDA_VERSION='10.x'
 elif [[ $NODE_VERSION == '12' ]]; then
 	LAMBDA_VERSION='12.x'
+elif [[ $NODE_VERSION == '8.10' ]]; then
+	LAMBDA_VERSION='8.10'
 elif [[ $NODE_VERSION == '8' ]]; then
 	LAMBDA_VERSION='8.10'
 fi
