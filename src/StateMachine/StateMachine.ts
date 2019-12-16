@@ -31,18 +31,18 @@ import { ITransition, SystemTransition } from "./transitions";
 export type IStateMachineCb = (
   event: IVoxaIntentEvent,
   reply: IVoxaReply,
-  transition: ITransition
+  transition: ITransition,
 ) => Promise<ITransition>;
 
 export type IUnhandledStateCb = (
   event: IVoxaIntentEvent,
-  stateName: string
+  stateName: string,
 ) => Promise<ITransition>;
 
 export type IOnBeforeStateChangedCB = (
   event: IVoxaIntentEvent,
   reply: IVoxaReply,
-  state: State
+  state: State,
 ) => Promise<void>;
 
 export interface IStateMachineConfig {
@@ -71,7 +71,7 @@ export class StateMachine {
     fromState: string,
     voxaEvent: IVoxaIntentEvent,
     reply: IVoxaReply,
-    recursions: number = 0
+    recursions: number = 0,
   ): Promise<SystemTransition> {
     if (recursions > 10) {
       throw new Error("State Machine Recursion Error");
@@ -81,19 +81,19 @@ export class StateMachine {
       fromState,
       voxaEvent,
       reply,
-      recursions
+      recursions,
     );
 
     let sysTransition = await this.checkOnUnhandledState(
       voxaEvent,
       reply,
-      transition
+      transition,
     );
 
     sysTransition = await this.onAfterStateChanged(
       voxaEvent,
       reply,
-      sysTransition
+      sysTransition,
     );
 
     if (sysTransition.shouldTerminate) {
@@ -105,7 +105,7 @@ export class StateMachine {
         sysTransition.to,
         voxaEvent,
         reply,
-        recursions + 1
+        recursions + 1,
       );
     }
 
@@ -116,20 +116,20 @@ export class StateMachine {
     fromState: string,
     voxaEvent: IVoxaIntentEvent,
     reply: IVoxaReply,
-    recursions: number
+    recursions: number,
   ): Promise<ITransition> {
     try {
       if (fromState === "entry") {
         this.currentState = this.getCurrentState(
           voxaEvent.intent.name,
           voxaEvent.intent.name,
-          voxaEvent.platform.name
+          voxaEvent.platform.name,
         );
       } else {
         this.currentState = this.getCurrentState(
           fromState,
           voxaEvent.intent.name,
-          voxaEvent.platform.name
+          voxaEvent.platform.name,
         );
       }
     } catch (error) {
@@ -158,7 +158,7 @@ export class StateMachine {
     let transition: ITransition = await this.currentState.handle(voxaEvent);
 
     voxaEvent.log.debug(`${this.currentState.name} transition resulted in`, {
-      transition
+      transition,
     });
 
     try {
@@ -166,7 +166,7 @@ export class StateMachine {
         this.currentState = this.getCurrentState(
           voxaEvent.intent.name,
           voxaEvent.intent.name,
-          voxaEvent.platform.name
+          voxaEvent.platform.name,
         );
 
         transition = await this.currentState.handle(voxaEvent);
@@ -185,10 +185,10 @@ export class StateMachine {
   private async onAfterStateChanged(
     voxaEvent: IVoxaIntentEvent,
     reply: IVoxaReply,
-    transition: SystemTransition
+    transition: SystemTransition,
   ): Promise<SystemTransition> {
     voxaEvent.log.debug("Running onAfterStateChangeCallbacks");
-    await bluebird.mapSeries(this.onAfterStateChangeCallbacks, fn => {
+    await bluebird.mapSeries(this.onAfterStateChangeCallbacks, (fn) => {
       return fn(voxaEvent, reply, transition);
     });
 
@@ -199,7 +199,7 @@ export class StateMachine {
   private async checkOnUnhandledState(
     voxaEvent: IVoxaIntentEvent,
     reply: IVoxaReply,
-    transition: ITransition
+    transition: ITransition,
   ): Promise<SystemTransition> {
     if (!_.isEmpty(transition) || transition) {
       return new SystemTransition(transition);
@@ -211,7 +211,7 @@ export class StateMachine {
 
     const tr = await this.onUnhandledStateCallback(
       voxaEvent,
-      this.currentState.name
+      this.currentState.name,
     );
 
     return new SystemTransition(tr);
@@ -219,7 +219,7 @@ export class StateMachine {
 
   private async runOnBeforeStateChanged(
     voxaEvent: IVoxaIntentEvent,
-    reply: IVoxaReply
+    reply: IVoxaReply,
   ) {
     const onBeforeState = this.onBeforeStateChangedCallbacks;
     voxaEvent.log.debug("Running onBeforeStateChanged");
@@ -232,7 +232,7 @@ export class StateMachine {
   private getCurrentState(
     currentStateName: string,
     intentName: string,
-    platform: string
+    platform: string,
   ): State {
     const states: State[] = _(this.states)
       .filter({ name: currentStateName })
@@ -262,7 +262,7 @@ export class StateMachine {
 
     return (
       states.find(
-        (s: State) => !!s.intents.length && s.intents.includes(intentName)
+        (s: State) => !!s.intents.length && s.intents.includes(intentName),
       ) || states[0] // If no state with name is found, the first state is returned by default as an State object is always needed
     );
   }
