@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.13.3
+version: v1.14.0
 ignore: {}
 # patches apply the minimum changes required to fix a vulnerability
 patch:
@@ -22,3 +22,20 @@ patch:
         patched: '2019-05-06T08:44:01.173Z'
     - actions-on-google > googleapis > google-auth-library > gtoken > axios:
         patched: '2019-05-06T08:44:01.173Z'
+  SNYK-JS-HTTPSPROXYAGENT-469131:
+    - actions-on-google > googleapis > google-auth-library > https-proxy-agent:
+        patched: '2019-12-16T13:19:29.577Z'
+    - actions-on-google > googleapis > googleapis-common > google-auth-library > https-proxy-agent:
+        patched: '2019-12-16T13:19:29.577Z'
+    - actions-on-google > googleapis > google-auth-library > gaxios > https-proxy-agent:
+        patched: '2019-12-16T13:19:29.577Z'
+    - actions-on-google > googleapis > googleapis-common > gaxios > https-proxy-agent:
+        patched: '2019-12-16T13:19:29.577Z'
+    - actions-on-google > googleapis > google-auth-library > gcp-metadata > gaxios > https-proxy-agent:
+        patched: '2019-12-16T13:19:29.577Z'
+    - actions-on-google > googleapis > googleapis-common > google-auth-library > gaxios > https-proxy-agent:
+        patched: '2019-12-16T13:19:29.577Z'
+    - actions-on-google > googleapis > googleapis-common > google-auth-library > gtoken > gaxios > https-proxy-agent:
+        patched: '2019-12-16T13:19:29.577Z'
+    - actions-on-google > googleapis > googleapis-common > google-auth-library > gcp-metadata > gaxios > https-proxy-agent:
+        patched: '2019-12-16T13:19:29.577Z'
