@@ -8,20 +8,35 @@ yarn run lint
 npx nyc check-coverage
 
 npx typedoc --out typedoc --name Voxa --readme ./README.md --target ES2017 --ignoreCompilerErrors ./src
-export NODE_VERSION=${TRAVIS_NODE_VERSION:-}
+
+NODE_VERSION=${TRAVIS_NODE_VERSION:-}
 if [ -z "${NODE_VERSION}" ]; then
-  export NODE_VERSION=$(node --version | cut -d 'v' -f2 | cut -d'.' -f1,2)
+	NODE_VERSION=$(node --version | cut -d 'v' -f2 | cut -d'.' -f1)
 fi
 
-docker pull "lambci/lambda:nodejs$NODE_VERSION"
+if [[ $NODE_VERSION == '10' ]]; then
+	LAMBDA_VERSION='10.x'
+elif [[ $NODE_VERSION == '12' ]]; then
+	LAMBDA_VERSION='12.x'
+elif [[ $NODE_VERSION == '8' ]]; then
+	LAMBDA_VERSION='8.10'
+fi
+
+export NODE_VERSION
+export LAMBDA_VERSION
+
+echo "NODE_VERSION: $NODE_VERSION"
+echo "LAMBDA_VERSION: $LAMBDA_VERSION"
+
+docker pull "lambci/lambda:nodejs$LAMBDA_VERSION"
 
 (
-  cd hello-world
-  rm -rf node_modules
-  yarn
-  yarn mocha hello-world.spec.js
+	cd hello-world
+	rm -rf node_modules
+	yarn
+	yarn mocha hello-world.spec.js
 )
 
 if [ "${CI:-}" = "true" ]; then
-  cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+	cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 fi

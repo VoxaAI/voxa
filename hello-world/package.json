@@ -9,7 +9,7 @@
     "voxa": "file:.."
   },
   "devDependencies": {
-    "azure-functions-core-tools": "^2.7.1158",
+    "azure-functions-core-tools": "2.7.1948",
     "chai": "^4.2.0",
     "docker-lambda": "^0.15.3",
     "mocha": "^6.1.4",
