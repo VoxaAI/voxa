@@ -538,9 +538,9 @@ asap@~2.0.3:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
 
-ask-sdk-model@^1.18.0:
-  version "1.18.0"
-  resolved "https://registry.yarnpkg.com/ask-sdk-model/-/ask-sdk-model-1.18.0.tgz#8913ac820c9a2415a39622d92c0f7d8d07f7cff5"
+ask-sdk-model@^1.25.1:
+  version "1.25.1"
+  resolved "https://registry.yarnpkg.com/ask-sdk-model/-/ask-sdk-model-1.25.1.tgz#691694ec2e90ec255aa3eb910be2e49bef8ae9f2"
 
 asn1@~0.2.3:
   version "0.2.4"
