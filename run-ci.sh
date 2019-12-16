@@ -14,14 +14,11 @@ if [ -z "${NODE_VERSION}" ]; then
 	NODE_VERSION=$(node --version | cut -d 'v' -f2 | cut -d'.' -f1)
 fi
 
+LAMBDA_VERSION="$NODE_VERSION"
 if [[ $NODE_VERSION == '10' ]]; then
 	LAMBDA_VERSION='10.x'
 elif [[ $NODE_VERSION == '12' ]]; then
 	LAMBDA_VERSION='12.x'
-elif [[ $NODE_VERSION == '8.10' ]]; then
-	LAMBDA_VERSION='8.10'
-elif [[ $NODE_VERSION == '8' ]]; then
-	LAMBDA_VERSION='8.10'
 fi
 
 export NODE_VERSION
