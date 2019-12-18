@@ -486,7 +486,7 @@ export class APLTTemplate extends AlexaDirective implements IDirective {
 }
 
 export class APLTCommand extends AlexaDirective implements IDirective {
-  public static key: string = "alexaAPLCommand";
+  public static key: string = "alexaAPLTCommand";
   public static platform: string = "alexa";
 
   public viewPath?: string;

@@ -150,6 +150,44 @@ describe("Alexa directives", () => {
         }
       ]);
     });
+
+    it("should be the only directive if APLT is not supported", async () => {
+      app.onIntent("YesIntent", {
+        alexaAPLTTemplate: "APLTTemplate",
+        alexaRenderTemplate: "RenderTemplate",
+        to: "die"
+      });
+
+      event.context.System.device.supportedInterfaces = { Display: {} };
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.not.be.undefined;
+      expect(reply.response.directives).to.deep.equal([
+        {
+          template: {
+            backButton: "VISIBLE",
+            backgroundImage: "Image",
+            textContent: {
+              primaryText: {
+                text: "string",
+                type: "string"
+              },
+              secondaryText: {
+                text: "string",
+                type: "string"
+              },
+              tertiaryText: {
+                text: "string",
+                type: "string"
+              }
+            },
+            title: "string",
+            token: "string",
+            type: "BodyTemplate1"
+          },
+          type: "Display.RenderTemplate"
+        }
+      ]);
+    });
   });
 
   describe("APLRenderTemplate", () => {
@@ -245,6 +283,7 @@ describe("Alexa directives", () => {
       });
 
       const reply = await alexaSkill.execute(event);
+      console.log("APLCommand reply: ", JSON.stringify(reply));
       expect(reply.response.directives).to.not.be.undefined;
       expect(reply.response.directives).to.deep.equal([
         {
@@ -258,6 +297,121 @@ describe("Alexa directives", () => {
           ],
           token: "SkillTemplateToken",
           type: "Alexa.Presentation.APL.ExecuteCommands"
+        }
+      ]);
+    });
+  });
+
+  describe("APLTRenderTemplate", () => {
+    it("should only add the template if request supports it", async () => {
+      app.onIntent("YesIntent", {
+        alexaAPLTTemplate: "APLTTemplate",
+        to: "die"
+      });
+
+      event.context.System.device.supportedInterfaces = {};
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.be.undefined;
+    });
+
+    it("should add to the directives", async () => {
+      app.onIntent("YesIntent", {
+        alexaAPLTTemplate: "APLTTemplate",
+        to: "die"
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.not.be.undefined;
+      expect(reply.response.directives).to.deep.equal([
+        {
+          datasources: {},
+          document: {},
+          token: "SkillTemplateToken",
+          type: "Alexa.Presentation.APLT.RenderDocument"
+        }
+      ]);
+    });
+
+    it("should be in the directives array after the RenderTemplate", async () => {
+      app.onIntent("YesIntent", {
+        alexaAPLTTemplate: "APLTTemplate",
+        alexaRenderTemplate: "RenderTemplate",
+        to: "die"
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.not.be.undefined;
+      expect(reply.response.directives).to.deep.equal([
+        {
+          template: {
+            backButton: "VISIBLE",
+            backgroundImage: "Image",
+            textContent: {
+              primaryText: {
+                text: "string",
+                type: "string"
+              },
+              secondaryText: {
+                text: "string",
+                type: "string"
+              },
+              tertiaryText: {
+                text: "string",
+                type: "string"
+              }
+            },
+            title: "string",
+            token: "string",
+            type: "BodyTemplate1"
+          },
+          type: "Display.RenderTemplate"
+        },
+        {
+          datasources: {},
+          document: {},
+          token: "SkillTemplateToken",
+          type: "Alexa.Presentation.APLT.RenderDocument"
+        }
+      ]);
+    });
+  });
+
+  describe("APLTCommand", () => {
+    it("should only add the command if request supports it", async () => {
+      app.onIntent("YesIntent", {
+        alexaAPLTCommand: "APLTCommand",
+        to: "die"
+      });
+
+      event.context.System.device.supportedInterfaces = {};
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.be.undefined;
+    });
+
+    it("should add to the directives", async () => {
+      app.onIntent("YesIntent", {
+        alexaAPLTCommand: "APLTCommand",
+        to: "die"
+      });
+
+      const reply = await alexaSkill.execute(event);
+      console.log("APLTCommand reply: ", JSON.stringify(reply));
+      expect(reply.response.directives).to.not.be.undefined;
+      expect(reply.response.directives).to.deep.equal([
+        {
+          commands: [
+            {
+              type: "SetValue",
+              description:
+                "Changes the text property value on the 'myTextId' component.",
+              componentId: "myTextId",
+              property: "text",
+              value: "New text value!",
+              delay: 3000
+            }
+          ],
+          token: "SkillTemplateToken",
+          type: "Alexa.Presentation.APLT.ExecuteCommands"
         }
       ]);
     });

@@ -7,7 +7,7 @@ import {
   AlexaPlatform,
   IVoxaIntentEvent,
   VoxaApp,
-  VoxaEvent,
+  VoxaEvent
 } from "../../src/";
 import { AlexaRequestBuilder } from "../tools";
 import { variables } from "../variables";
@@ -23,7 +23,7 @@ describe("AlexaEvent", () => {
 
   it("should format intent slots", () => {
     const rawEvent = rb.getIntentRequest("SomeIntent", {
-      Dish: "Fried Chicken",
+      Dish: "Fried Chicken"
     });
     const alexaEvent = new AlexaEvent(rawEvent) as IVoxaIntentEvent;
     expect(alexaEvent.intent.params).to.deep.equal({ Dish: "Fried Chicken" });
@@ -41,7 +41,7 @@ describe("AlexaEvent", () => {
 
     const alexaEvent = new AlexaEvent(rawEvent);
     expect(alexaEvent.user.userId).to.equal(
-      _.get(rawEvent, "context.System.user.userId"),
+      _.get(rawEvent, "context.System.user.userId")
     );
   });
 
@@ -52,7 +52,7 @@ describe("AlexaEvent", () => {
 
     const alexaEvent = new AlexaEvent(rawEvent);
     expect(alexaEvent.user.userId).to.equal(
-      _.get(rawEvent, "session.user.userId"),
+      _.get(rawEvent, "session.user.userId")
     );
   });
 
@@ -67,15 +67,16 @@ describe("AlexaEvent", () => {
     const alexaEvent = new AlexaEvent(rawEvent);
     expect(alexaEvent.supportedInterfaces).to.deep.equal([
       "Alexa.Presentation.APL",
+      "Alexa.Presentation.APLT",
       "AudioPlayer",
       "Display",
-      "VideoApp",
+      "VideoApp"
     ]);
   });
 
   it("should add DisplayElementSelected intent params", () => {
     const rawEvent = rb.getDisplayElementSelectedRequest(
-      "SleepSingleIntent@2018-09-13T00:40:16.047Z",
+      "SleepSingleIntent@2018-09-13T00:40:16.047Z"
     );
     const alexaEvent = new AlexaEvent(rawEvent) as IVoxaIntentEvent;
     expect(alexaEvent.intent.params).to.be.ok;
@@ -83,6 +84,12 @@ describe("AlexaEvent", () => {
 
   it("should add AlexaPresentationAPLUserEvent intent params", () => {
     const rawEvent = rb.getAlexaPresentationAPLUserEvent();
+    const alexaEvent = new AlexaEvent(rawEvent) as IVoxaIntentEvent;
+    expect(alexaEvent.intent.params).to.be.ok;
+  });
+
+  it("should add AlexaPresentationAPLTUserEvent intent params", () => {
+    const rawEvent = rb.getAlexaPresentationAPLTUserEvent();
     const alexaEvent = new AlexaEvent(rawEvent) as IVoxaIntentEvent;
     expect(alexaEvent.intent.params).to.be.ok;
   });
@@ -107,7 +114,7 @@ describe("LoginWithAmazon", () => {
       email: "johndoe@example.com",
       name: "John Doe",
       userId: "amzn1.account.K2LI23KL2LK2",
-      zipCode: "12345",
+      zipCode: "12345"
     };
 
     nock("https://api.amazon.com")
@@ -116,7 +123,7 @@ describe("LoginWithAmazon", () => {
         email: "johndoe@example.com",
         name: "John Doe",
         postal_code: "12345",
-        user_id: "amzn1.account.K2LI23KL2LK2",
+        user_id: "amzn1.account.K2LI23KL2LK2"
       });
 
     const rawEvent = rb.getLaunchRequest();

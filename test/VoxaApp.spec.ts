@@ -81,7 +81,7 @@ describe("VoxaApp", () => {
     expect(APLTemplateIndex).to.be.lessThan(APLCommandIndex);
   });
 
-  it("should have the APLT Template directive before the APL Command directive in the Alexa Platform", () => {
+  it("should have the APLT Template directive before the APLT Command directive in the Alexa Platform", () => {
     // The APLT Template should always be before the APLT Command in the directives array in order to work.
     // Don't ask why, that's how Amazon likes it.
     const voxaApp = new VoxaApp({ variables, views });
