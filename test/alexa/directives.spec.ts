@@ -283,7 +283,6 @@ describe("Alexa directives", () => {
       });
 
       const reply = await alexaSkill.execute(event);
-      console.log("APLCommand reply: ", JSON.stringify(reply));
       expect(reply.response.directives).to.not.be.undefined;
       expect(reply.response.directives).to.deep.equal([
         {
@@ -397,7 +396,6 @@ describe("Alexa directives", () => {
       });
 
       const reply = await alexaSkill.execute(event);
-      console.log("APLTCommand reply: ", JSON.stringify(reply));
       expect(reply.response.directives).to.not.be.undefined;
       expect(reply.response.directives).to.deep.equal([
         {
