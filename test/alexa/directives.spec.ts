@@ -326,6 +326,7 @@ describe("Alexa directives", () => {
         {
           datasources: {},
           document: {},
+          targetProfile: "FOUR_CHARACTER_CLOCK",
           token: "SkillTemplateToken",
           type: "Alexa.Presentation.APLT.RenderDocument"
         }
@@ -369,6 +370,7 @@ describe("Alexa directives", () => {
         {
           datasources: {},
           document: {},
+          targetProfile: "FOUR_CHARACTER_CLOCK",
           token: "SkillTemplateToken",
           type: "Alexa.Presentation.APLT.RenderDocument"
         }

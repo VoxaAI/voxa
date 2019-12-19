@@ -59,6 +59,7 @@ export const views = {
       APLTTemplate: {
         datasources: {},
         document: {},
+        targetProfile: "FOUR_CHARACTER_CLOCK",
         token: "SkillTemplateToken",
         type: "Alexa.Presentation.APLT.RenderDocument"
       },
@@ -121,6 +122,7 @@ export const views = {
       APLTTemplate: {
         datasources: {},
         document: {},
+        targetProfile: "FOUR_CHARACTER_CLOCK",
         token: "SkillTemplateToken",
         type: "Alexa.Presentation.APLT.RenderDocument"
       },
