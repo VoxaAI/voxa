@@ -217,7 +217,7 @@ Alexa Presentation Language - T (APLT) Templates
 
 Alexa Presentation Language is supported on devices with character displays. Use the APLT document format to send text to these devices. The APLT document format is smaller and simpler than the APL document format supported by devices with screens.
 
-One important thing to know is that is you sent a Render Template and a APLT Template in the same response but the APLT Template will be the one being rendered if the device supports it; if not, the Render Template will be one being rendered.
+One important thing to know is that if you sent a Render Template and a APLT Template in the same response but the APLT Template will be the one being rendered if the device supports it; if not, the Render Template will be one being rendered.
 
 .. code-block:: javascript
 
@@ -636,4 +636,3 @@ Dynamic entities are sent with the `alexaDynamicEntities` key in your controller
         },
       };
     });
-
