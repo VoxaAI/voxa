@@ -27,13 +27,9 @@ const dockerLambda = require("docker-lambda");
 const { getPortPromise } = require("portfinder");
 const { spawn, execSync } = require("child_process");
 
-const NODE_VERSION = process.env.NODE_VERSION;
+const LAMBDA_VERSION = process.env.LAMBDA_VERSION;
 const launchIntent = require("../test/requests/alexa/launchRequest.json");
 const lambdaProxyLaunchIntent = require("../test/requests/dialogflow/lambdaProxyLaunchIntent.json");
-const alexaEvent = require("../test/requests/alexa/launchRequest.json");
-
-/* tslint:disable-next-line:no-var-requires */
-const views = require("./views.json");
 
 describe("Hello World", () => {
   describe("azureFunction", () => {
@@ -47,7 +43,7 @@ describe("Hello World", () => {
       endpoint = `http://localhost:${port}/api/HelloWorldHttpTrigger`;
 
       await new Promise((resolve, reject) => {
-        child = spawn("npx", ["func", "start", "--port", port]);
+        child = spawn("npx", ["func", "start", "--port", port, "--javascript"]);
         child.stdout.on("data", data => {
           if (_.includes(data.toString(), endpoint)) {
             return resolve();
@@ -99,7 +95,7 @@ describe("Hello World", () => {
     it("runs the lambda call", function() {
       this.timeout(10000);
       const lambdaCallbackResult = dockerLambda({
-        dockerImage: `lambci/lambda:nodejs${NODE_VERSION}`,
+        dockerImage: `lambci/lambda:nodejs${LAMBDA_VERSION}`,
         event: launchIntent,
         handler: "hello-world.alexaLambdaHandler"
       });
@@ -121,7 +117,7 @@ describe("Hello World", () => {
     it("runs the apiGateway call", function() {
       this.timeout(10000);
       const lambdaCallbackResult = dockerLambda({
-        dockerImage: `lambci/lambda:nodejs${NODE_VERSION}`,
+        dockerImage: `lambci/lambda:nodejs${LAMBDA_VERSION}`,
         event: lambdaProxyLaunchIntent,
         handler: "hello-world.googleAssistantActionLambdaHTTPHandler"
       });

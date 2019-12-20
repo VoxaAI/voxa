@@ -8,6 +8,8 @@ export {
   AccountLinkingCard,
   APLCommand,
   APLTemplate,
+  APLTTemplate,
+  APLTCommand,
   ConnectionsSendRequest,
   DialogDelegate,
   DialogElicitSlot,

@@ -22,6 +22,8 @@ export {
   AlexaEvent,
   APLCommand,
   APLTemplate,
+  APLTTemplate,
+  APLTCommand,
   ANCHOR_ENUM,
   ConnectionsSendRequest,
   DialogDelegate,
@@ -134,12 +136,7 @@ export {
 } from "./errors";
 export { Model } from "./Model";
 
-import {
-  autoLoad,
-  replaceIntent,
-  s3Persistence,
-  stateFlow,
-} from "./plugins";
+import { autoLoad, replaceIntent, s3Persistence, stateFlow } from "./plugins";
 
 export { IS3Persistence } from "./plugins";
 
