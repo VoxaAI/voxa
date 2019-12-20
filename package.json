@@ -13,7 +13,8 @@
     "test": "mocha test/*.spec.* test/**/*.spec.* test/**/**/*.spec.*",
     "test-ci": "nyc mocha --colors --reporter mocha-jenkins-reporter test test/*.spec.* test/**/*.spec.* test/**/**/*.spec.*",
     "snyk-protect": "snyk protect",
-    "prepublish": "npm run snyk-protect"
+    "prepublish": "npm run snyk-protect",
+    "lint:fix": "tslint --fix --config tslint.json --project tsconfig.json --exclude \"**/*.json\""
   },
   "repository": {
     "type": "git",
