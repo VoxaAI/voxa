@@ -35,6 +35,28 @@ export const views = {
         token: "SkillTemplateToken",
         type: "Alexa.Presentation.APL.ExecuteCommands",
       },
+      APLTCommand: {
+        commands: [
+          {
+            componentId: "myTextId",
+            delay: 3000,
+            description:
+              "Changes the text property value on the 'myTextId' component.",
+            property: "text",
+            type: "SetValue",
+            value: "New text value!",
+          },
+        ],
+        token: "SkillTemplateToken",
+        type: "Alexa.Presentation.APLT.ExecuteCommands",
+      },
+      APLTTemplate: {
+        datasources: {},
+        document: {},
+        targetProfile: "FOUR_CHARACTER_CLOCK",
+        token: "SkillTemplateToken",
+        type: "Alexa.Presentation.APLT.RenderDocument",
+      },
       APLTemplate: {
         datasources: {},
         document: {},
@@ -75,6 +97,28 @@ export const views = {
         ],
         token: "SkillTemplateToken",
         type: "Alexa.Presentation.APL.ExecuteCommands",
+      },
+      APLTCommand: {
+        commands: [
+          {
+            componentId: "myTextId",
+            delay: 3000,
+            description:
+              "Changes the text property value on the 'myTextId' component.",
+            property: "text",
+            type: "SetValue",
+            value: "New text value!",
+          },
+        ],
+        token: "SkillTemplateToken",
+        type: "Alexa.Presentation.APLT.ExecuteCommands",
+      },
+      APLTTemplate: {
+        datasources: {},
+        document: {},
+        targetProfile: "FOUR_CHARACTER_CLOCK",
+        token: "SkillTemplateToken",
+        type: "Alexa.Presentation.APLT.RenderDocument",
       },
       APLTemplate: {
         datasources: {},

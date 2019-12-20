@@ -13,7 +13,8 @@
     "test": "mocha test/*.spec.* test/**/*.spec.* test/**/**/*.spec.*",
     "test-ci": "nyc mocha --colors --reporter mocha-jenkins-reporter test test/*.spec.* test/**/*.spec.* test/**/**/*.spec.*",
     "snyk-protect": "snyk protect",
-    "prepublish": "npm run snyk-protect"
+    "prepublish": "npm run snyk-protect",
+    "lint:fix": "tslint --fix --config tslint.json --project tsconfig.json --exclude \"**/*.json\""
   },
   "repository": {
     "type": "git",
@@ -44,7 +45,7 @@
     "@types/url-join": "^4.0.0",
     "@types/uuid": "^3.4.5",
     "actions-on-google": "^2.12.0",
-    "ask-sdk-model": "^1.18.0",
+    "ask-sdk-model": "^1.25.1",
     "azure-functions-ts-essentials": "^1.3.2",
     "bluebird": "^3.5.5",
     "botbuilder": "^3.16",
@@ -56,10 +57,10 @@
     "lodash": "^4.17.14",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
+    "snyk": "^1.260.0",
     "striptags": "^3.1.1",
     "url-join": "^4.0.1",
-    "uuid": "^3.3.2",
-    "snyk": "^1.260.0"
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",

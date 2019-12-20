@@ -67,6 +67,7 @@ describe("AlexaEvent", () => {
     const alexaEvent = new AlexaEvent(rawEvent);
     expect(alexaEvent.supportedInterfaces).to.deep.equal([
       "Alexa.Presentation.APL",
+      "Alexa.Presentation.APLT",
       "AudioPlayer",
       "Display",
       "VideoApp",
@@ -83,6 +84,12 @@ describe("AlexaEvent", () => {
 
   it("should add AlexaPresentationAPLUserEvent intent params", () => {
     const rawEvent = rb.getAlexaPresentationAPLUserEvent();
+    const alexaEvent = new AlexaEvent(rawEvent) as IVoxaIntentEvent;
+    expect(alexaEvent.intent.params).to.be.ok;
+  });
+
+  it("should add AlexaPresentationAPLTUserEvent intent params", () => {
+    const rawEvent = rb.getAlexaPresentationAPLTUserEvent();
     const alexaEvent = new AlexaEvent(rawEvent) as IVoxaIntentEvent;
     expect(alexaEvent.intent.params).to.be.ok;
   });

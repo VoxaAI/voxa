@@ -210,6 +210,129 @@ An APL Command is sent with the `alexaAPLCommand` key in your controller. Just l
 
 
 
+Alexa Presentation Language - T (APLT) Templates
+-------------------------------------------
+
+`Alexa Documentation <https://developer.amazon.com/en-US/docs/alexa/alexa-presentation-language/apl-reference-character-displays.html>`_
+
+Alexa Presentation Language is supported on devices with character displays. Use the APLT document format to send text to these devices. The APLT document format is smaller and simpler than the APL document format supported by devices with screens.
+
+One important thing to know is that if you sent a Render Template and a APLT Template in the same response but the APLT Template will be the one being rendered if the device supports it; if not, the Render Template will be one being rendered.
+
+.. code-block:: javascript
+
+  // variables.js
+
+    exports.MyAPLTTemplate = (voxaEvent) => {
+      // Do something with the voxaEvent, or not...
+
+       return {
+        datasources: {},
+        document: {},
+        targetProfile: "FOUR_CHARACTER_CLOCK",
+        token: SkillTemplateToken,
+        type: "Alexa.Presentation.APLT.RenderDocument"
+      };
+    });
+
+  // views.js
+
+    const views = {
+      "en-US": {
+        translation: {
+          MyAPLTTemplate: "{MyAPLTTemplate}"
+        },
+      };
+    };
+
+  // state.js
+
+    app.onState('someState', () => {
+      return {
+        alexaAPLTTemplate: "MyAPLTTemplate",
+      };
+    });
+
+    // Or you can do it directly...
+
+    app.onState('someState', () => {
+      return {
+        alexaAPLTTemplate: {
+          datasources: {},
+          document: {},
+          targetProfile: "FOUR_CHARACTER_CLOCK",
+          token: "SkillTemplateToken",
+          type: "Alexa.Presentation.APLT.RenderDocument",
+        },
+      };
+    });
+
+Alexa Presentation Language - T (APLT) Commands
+------------------------------------------
+
+`Alexa Documentation <https://developer.amazon.com/en-US/docs/alexa/alexa-presentation-language/aplt-interface.html#executecommands-directive>`_
+
+An APLT Command is sent with the `alexaAPLTCommand` key in your controller. Just like the APLT Template, you can pass the directive object directly or a view name with the directive object.
+
+
+  // variables.js
+
+    exports.MyAPLTCommand = (voxaEvent) => {
+      // Do something with the voxaEvent, or not...
+
+      return {
+        token: "SkillTemplateToken",
+        type: "Alexa.Presentation.APLT.ExecuteCommands";
+        commands: [ {
+          type: "SetValue",
+          description:
+            "Changes the text property value on the 'myTextId' component.",
+          componentId: "myTextId",
+          property: "text",
+          value: "New text value!",
+          delay: 3000
+        }]
+      };
+    });
+
+  // views.js
+
+    const views = {
+      "en-US": {
+        translation: {
+          MyAPLTCommand: "{MyAPLTCommand}"
+        },
+      };
+    };
+
+  // state.js
+
+    app.onState('someState', () => {
+      return {
+        alexaAPLTCommand: "MyAPLTCommand",
+      };
+    });
+
+    // Or you can do it directly...
+
+    app.onState('someState', () => {
+      return {
+        alexaAPLTCommand: {
+          token: "SkillTemplateToken",
+          type: "Alexa.Presentation.APLT.ExecuteCommands";
+          commands: [ {
+            type: "SetValue",
+            description:
+              "Changes the text property value on the 'myTextId' component.",
+            componentId: "myTextId",
+            property: "text",
+            value: "New text value!",
+            delay: 3000
+          }]
+        },
+      };
+    });
+
 PlayAudio
 ---------
 
@@ -513,4 +636,3 @@ Dynamic entities are sent with the `alexaDynamicEntities` key in your controller
         },
       };
     });
-
