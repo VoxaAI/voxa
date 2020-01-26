@@ -1102,4 +1102,36 @@ describe("Google Assistant Directives", () => {
       });
     });
   });
+
+  describe("Session Entities", () => {
+    it("Do we have session", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        sayp: "Hello!",
+        sessionEntity: "MySessionEntity",
+        to: "entry",
+      });
+
+      event.originalDetectIntentRequest.payload.surface.capabilities = [];
+      const reply = await dialogflowAgent.execute(event);
+      console.log("reply ", reply);
+      expect(reply.SessionEntity).to.deep.equal([
+        {
+          entities: [
+            {
+              synonyms: ["apple", "green apple", "crabapple"],
+              value: "APPLE_KEY",
+            },
+            {
+              synonyms: ["orange"],
+              value: "ORANGE_KEY",
+            },
+          ],
+          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          name:
+            "projects/project/agent/sessions/1525973454075/entityTypes/fruit",
+        },
+      ]);
+    });
+  });
 });

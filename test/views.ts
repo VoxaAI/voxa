@@ -354,6 +354,22 @@ export const views = {
           ],
         },
       ],
+      MySessionEntity: [
+        {
+          entities: [
+            {
+              synonyms: ["apple", "green apple", "crabapple"],
+              value: "APPLE_KEY",
+            },
+            {
+              synonyms: ["orange"],
+              value: "ORANGE_KEY",
+            },
+          ],
+          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          name: "fruit",
+        },
+      ],
       Number: {
         One: "{numberOne}",
       },

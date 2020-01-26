@@ -1,3 +1,4 @@
+// tslint:disable:no-console
 import {
   BasicCard as ActionsOnGoogleBasicCard,
   BasicCardOptions,
@@ -12,8 +13,6 @@ import {
   DateTimeOptions,
   DeepLink as ActionsOnGoogleDeepLink,
   DeepLinkOptions,
-  dialogflow,
-  DialogflowApp,
   DialogflowConversation,
   GoogleActionsTransactionsV3CompletePurchaseValueSpec,
   GoogleActionsV2TransactionDecisionValueSpec,
@@ -44,7 +43,7 @@ import {
   TransactionDecision as ActionsOnGoogleTransactionDecision,
   TransactionRequirements as ActionsOnGoogleTransactionRequirements,
   UpdatePermission as ActionsOnGoogleUpdatePermission,
-  UpdatePermissionOptions
+  UpdatePermissionOptions,
 } from "actions-on-google";
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
@@ -52,7 +51,7 @@ import {
   IDirective,
   IDirectiveClass,
   sampleOrItem,
-  Say as BaseSay
+  Say as BaseSay,
 } from "../../../directives";
 import { ITransition } from "../../../StateMachine";
 import { IVoxaEvent } from "../../../VoxaEvent";
@@ -82,7 +81,7 @@ abstract class DialogflowDirective<IOptions> {
 function createSystemIntentDirective<IOptions>(
   QuestionClass: any,
   key: string,
-  requiredCapability?: string
+  requiredCapability?: string,
 ): IDirectiveClass {
   return class extends DialogflowDirective<IOptions> implements IDirective {
     public static platform: string = "google";
@@ -95,7 +94,7 @@ function createSystemIntentDirective<IOptions>(
     public async writeToReply(
       reply: IVoxaReply,
       event: IVoxaEvent,
-      transition?: ITransition
+      transition?: ITransition,
     ): Promise<void> {
       if (!this.hasRequiredCapability(event)) {
         return;
@@ -106,7 +105,7 @@ function createSystemIntentDirective<IOptions>(
 
       google.systemIntent = {
         data: question.inputValueData,
-        intent: question.intent
+        intent: question.intent,
       };
     }
   };
@@ -115,7 +114,7 @@ function createSystemIntentDirective<IOptions>(
 function createRichResponseDirective<IOptions>(
   RichResponseItemClass: any,
   key: string,
-  requiredCapability?: string
+  requiredCapability?: string,
 ): IDirectiveClass {
   return class extends DialogflowDirective<IOptions> implements IDirective {
     public static platform: string = "google";
@@ -128,7 +127,7 @@ function createRichResponseDirective<IOptions>(
     public async writeToReply(
       reply: IVoxaReply,
       event: IVoxaEvent,
-      transition?: ITransition
+      transition?: ITransition,
     ): Promise<void> {
       if (!this.hasRequiredCapability(event)) {
         return;
@@ -151,44 +150,44 @@ export const LinkOutSuggestion = createRichResponseDirective<
 
 export const NewSurface = createSystemIntentDirective<NewSurfaceOptions>(
   ActionsOnGoogleNewSurface,
-  "dialogflowNewSurface"
+  "dialogflowNewSurface",
 );
 
 export const List = createSystemIntentDirective<string | ListOptions>(
   ActionsOnGoogleList,
   "dialogflowList",
-  "actions.capability.SCREEN_OUTPUT"
+  "actions.capability.SCREEN_OUTPUT",
 );
 
 export const Carousel = createSystemIntentDirective<string | CarouselOptions>(
   ActionsOnGoogleCarousel,
   "dialogflowCarousel",
-  "actions.capability.SCREEN_OUTPUT"
+  "actions.capability.SCREEN_OUTPUT",
 );
 
 export const AccountLinkingCard = createSystemIntentDirective<string>(
   ActionsOnGoogleSignIn,
-  "dialogflowAccountLinkingCard"
+  "dialogflowAccountLinkingCard",
 );
 
 export const Permission = createSystemIntentDirective<PermissionOptions>(
   ActionsOnGooglePermission,
-  "dialogflowPermission"
+  "dialogflowPermission",
 );
 
 export const DateTime = createSystemIntentDirective<DateTimeOptions>(
   ActionsOnGoogleDateTime,
-  "dialogflowDateTime"
+  "dialogflowDateTime",
 );
 
 export const Confirmation = createSystemIntentDirective<string>(
   ActionsOnGoogleConfirmation,
-  "dialogflowConfirmation"
+  "dialogflowConfirmation",
 );
 
 export const DeepLink = createSystemIntentDirective<DeepLinkOptions>(
   ActionsOnGoogleDeepLink,
-  "dialogflowDeepLink"
+  "dialogflowDeepLink",
 );
 
 export interface IPlaceOptions {
@@ -210,7 +209,7 @@ export interface IPlaceOptions {
 
 export const Place = createSystemIntentDirective<IPlaceOptions>(
   ActionsOnGooglePlace,
-  "dialogflowPlace"
+  "dialogflowPlace",
 );
 
 export const CompletePurchase = createSystemIntentDirective<
@@ -236,19 +235,19 @@ export const UpdatePermission = createSystemIntentDirective<
 export const BasicCard = createRichResponseDirective<string | BasicCardOptions>(
   ActionsOnGoogleBasicCard,
   "dialogflowBasicCard",
-  "actions.capability.SCREEN_OUTPUT"
+  "actions.capability.SCREEN_OUTPUT",
 );
 
 export const MediaResponse = createRichResponseDirective<MediaResponseOptions>(
   ActionsOnGoogleMediaResponse,
   "dialogflowMediaResponse",
-  "actions.capability.AUDIO_OUTPUT"
+  "actions.capability.AUDIO_OUTPUT",
 );
 
 export const Table = createRichResponseDirective<TableOptions>(
   ActionsOnGoogleTable,
   "dialogflowTable",
-  "actions.capability.SCREEN_OUTPUT"
+  "actions.capability.SCREEN_OUTPUT",
 );
 
 export const BrowseCarousel = createRichResponseDirective<
@@ -256,7 +255,7 @@ export const BrowseCarousel = createRichResponseDirective<
 >(
   ActionsOnGoogleBrowseCarousel,
   "dialogflowBrowseCarousel",
-  "actions.capability.SCREEN_OUTPUT"
+  "actions.capability.SCREEN_OUTPUT",
 );
 
 export class Suggestions implements IDirective {
@@ -268,7 +267,7 @@ export class Suggestions implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     let options = this.suggestions;
 
@@ -298,14 +297,14 @@ export class Context implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     const conv: DialogflowConversation = (event as DialogflowEvent).dialogflow
       .conv;
     conv.contexts.set(
       this.contextConfig.name,
       this.contextConfig.lifespan,
-      this.contextConfig.parameters
+      this.contextConfig.parameters,
     );
   }
 }
@@ -317,7 +316,7 @@ export class Say extends BaseSay {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition
+    transition: ITransition,
   ): Promise<void> {
     const google = (reply as DialogflowReply).payload.google;
     let richResponse: RichResponse = google.richResponse;
@@ -341,101 +340,52 @@ export class Say extends BaseSay {
   }
 }
 
-/* To read about EntityOverrideMode please see documentation: https://cloud.google.com/dialogflow/docs/reference/rest/v2beta1/projects.agent.environments.users.sessions.entityTypes#SessionEntityType.EntityOverrideMode */
+export class SessionEntity implements IDirective {
+  public static key: string = "sessionEntity";
+  public static platform: string = "google";
 
-export enum EntityOverrideMode {
-  ENTITY_OVERRIDE_MODE_UNSPECIFIED = "ENTITY_OVERRIDE_MODE_UNSPECIFIED",
-  ENTITY_OVERRIDE_MODE_OVERRIDE = "ENTITY_OVERRIDE_MODE_OVERRIDE",
-  ENTITY_OVERRIDE_MODE_SUPPLEMENT = "ENTITY_OVERRIDE_MODE_SUPPLEMENT"
-}
+  public viewPath?: string;
+  public types?: any[];
 
-export interface ISessionEntityType {
-  name: string;
-  entities: IEntity[];
-  entityOverrideMode: EntityOverrideMode;
-}
-
-export interface IEntity {
-  value: string;
-  synonyms: string[];
-}
-
-export interface IResponseBody extends GoogleCloudDialogflowV2WebhookResponse {
-  sessionEntityTypes: ISessionEntityType[];
-}
-
-export class SessionEntitiesHelper {
-  public conv: DialogflowConversation;
-  public entities: ISessionEntityType[];
-
-  constructor(conv: DialogflowConversation) {
-    this.conv = conv;
-    this.entities = [];
-  }
-
-  public inject(entity: ISessionEntityType | ISessionEntityType[]): void {
-    if (Array.isArray(entity)) {
-      this.entities.push(...entity);
-    } else {
-      this.entities.push(entity);
+  constructor(viewPath: string | any[]) {
+    if (_.isString(viewPath)) {
+      this.viewPath = viewPath;
+    } else if (_.isArray(viewPath)) {
+      this.types = viewPath;
     }
   }
 
-  public set(entity: ISessionEntityType, index: number): void {
-    this.entities[index] = entity;
-  }
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition?: ITransition,
+  ): Promise<void> {
+    let types = [];
+    let newSessionEntity: any[];
 
-  public pick(index?: number): ISessionEntityType | ISessionEntityType[] {
-    if (index) {
-      return this.entities[index];
-    }
-    return this.entities;
-  }
+    if (this.viewPath) {
+      types = await event.renderer.renderPath(this.viewPath, event);
+      const entities = _.get(types, "[0].entities");
+      const name = _.get(types, "[0].name");
+      const entityOverrideMode = _.get(
+        types,
+        "[0].entityOverrideMode",
+        "ENTITY_OVERRIDE_MODE_OVERRIDE",
+      );
 
-  public clean(): void {
-    while (this.entities.length) {
-      this.entities.pop();
-    }
-  }
+      newSessionEntity = [
+        {
+          entities,
+          entityOverrideMode,
+          name: `${event.rawEvent.session}/entityTypes/${name}`,
+        },
+      ];
 
-  public injectValue(
-    entity: ISessionEntityType | ISessionEntityType[],
-    newValue: IEntity,
-    entityName: string
-  ) {
-    if (Array.isArray(entity)) {
-      const ent = entity.find((e) => e.name === entityName);
-      if (ent) {
-        ent.entities.push(newValue);
-        entity = ent;
+      if (entityOverrideMode) {
+        _.set(newSessionEntity, "[0].entityOverrideMode", entityOverrideMode);
       }
-    } else {
-      entity.entities.push(newValue);
+      types = newSessionEntity;
     }
-  }
-
-  public route(): void {
-    const body = this.conv.body as GoogleCloudDialogflowV2WebhookRequest;
-    const respBody = this.conv.serialize() as IResponseBody;
-
-    respBody.sessionEntityTypes = this.entities.map((sessionEntity) => {
-      sessionEntity.name = `${body.session}/entityTypes/${sessionEntity.name}`;
-      return sessionEntity;
-    });
-
-    this.conv.json(respBody);
+    _.set(reply, "SessionEntity", types);
   }
 }
-
-export interface ISessionEntities extends DialogflowConversation {
-  sessionEntities: SessionEntitiesHelper;
-}
-
-const app = dialogflow();
-
-app.middleware((conv) => {
-  const sessionEntities = new SessionEntitiesHelper(conv);
-  return Object.assign(conv, {
-    sessionEntities
-  } as ISessionEntities);
-});

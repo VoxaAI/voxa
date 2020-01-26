@@ -122,6 +122,7 @@ export {
   List,
   MediaResponse,
   Suggestions,
+  SessionEntity,
 } from "./platforms/dialogflow";
 export { Renderer } from "./renderers/Renderer";
 export { VoxaApp } from "./VoxaApp";
