@@ -375,14 +375,20 @@ export class SessionEntity implements IDirective {
             "ENTITY_OVERRIDE_MODE_OVERRIDE",
           );
 
-          const newEntity = {
-            name: `${event.rawEvent.session}/entityTypes/${property.name}`,
-            entities: property.entities,
-            entityOverrideMode: entityMode,
-          };
+          const name = _.get(property, "name");
 
-          filtered.push(newEntity);
-          return filtered;
+          if (name) {
+            const newEntity = {
+              name: `${event.rawEvent.session}/entityTypes/${name}`,
+              entities: property.entities,
+              entityOverrideMode: entityMode,
+            };
+
+            filtered.push(newEntity);
+            return filtered;
+          }
+
+          throw new Error(`A name is required for a Session Entity`);
         }, []);
 
         sessionEntity.push(...newSessionEntity);
