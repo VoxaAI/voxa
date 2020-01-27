@@ -1104,7 +1104,7 @@ describe("Google Assistant Directives", () => {
   });
 
   describe("Session Entities", () => {
-    it("Do we have session", async () => {
+    it("should add one object in sesssion entity", async () => {
       app.onIntent("LaunchIntent", {
         flow: "yield",
         sayp: "Hello!",
@@ -1130,6 +1130,50 @@ describe("Google Assistant Directives", () => {
           entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
           name:
             "projects/project/agent/sessions/1525973454075/entityTypes/fruit",
+        },
+      ]);
+    });
+    it("should add an array of objects in sesssion entity", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        sayp: "Hello!",
+        sessionEntity: "MultipleSessionEntities",
+        to: "entry",
+      });
+
+      event.originalDetectIntentRequest.payload.surface.capabilities = [];
+      const reply = await dialogflowAgent.execute(event);
+      console.log("reply ", reply);
+      expect(reply.SessionEntity).to.deep.equal([
+        {
+          entities: [
+            {
+              synonyms: ["apple", "green apple", "crabapple"],
+              value: "APPLE_KEY",
+            },
+            {
+              synonyms: ["orange"],
+              value: "ORANGE_KEY",
+            },
+          ],
+          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          name:
+            "projects/project/agent/sessions/1525973454075/entityTypes/fruit",
+        },
+        {
+          entities: [
+            {
+              synonyms: ["lion", "cat", "wild cat", "simba"],
+              value: "LION_KEY",
+            },
+            {
+              synonyms: ["elephant", "mammoth"],
+              value: "ELEPHANT_KEY",
+            },
+          ],
+          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          name:
+            "projects/project/agent/sessions/1525973454075/entityTypes/animal",
         },
       ]);
     });

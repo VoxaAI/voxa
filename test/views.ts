@@ -370,6 +370,36 @@ export const views = {
           name: "fruit",
         },
       ],
+      MultipleSessionEntities: [
+        {
+          entities: [
+            {
+              synonyms: ["apple", "green apple", "crabapple"],
+              value: "APPLE_KEY",
+            },
+            {
+              synonyms: ["orange"],
+              value: "ORANGE_KEY",
+            },
+          ],
+          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          name: "fruit",
+        },
+        {
+          entities: [
+            {
+              synonyms: ["lion", "cat", "wild cat", "simba"],
+              value: "LION_KEY",
+            },
+            {
+              synonyms: ["elephant", "mammoth"],
+              value: "ELEPHANT_KEY",
+            },
+          ],
+          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          name: "animal",
+        },
+      ],
       Number: {
         One: "{numberOne}",
       },
