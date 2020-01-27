@@ -362,30 +362,31 @@ export class SessionEntity implements IDirective {
   ): Promise<void> {
     let types = [];
     let newSessionEntity: any[];
+    const sessionEntity = (reply as DialogflowReply).sessionEntityTypes;
 
     if (this.viewPath) {
       types = await event.renderer.renderPath(this.viewPath, event);
-      const entities = _.get(types, "[0].entities");
-      const name = _.get(types, "[0].name");
-      const entityOverrideMode = _.get(
-        types,
-        "[0].entityOverrideMode",
-        "ENTITY_OVERRIDE_MODE_OVERRIDE",
-      );
 
-      newSessionEntity = [
-        {
-          entities,
-          entityOverrideMode,
-          name: `${event.rawEvent.session}/entityTypes/${name}`,
-        },
-      ];
+      if (_.isArray(types) && !_.isEmpty(types)) {
+        newSessionEntity = types.reduce(function(filtered, property) {
+          const entityMode = _.get(
+            property,
+            "entityOverrideMode",
+            "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          );
 
-      if (entityOverrideMode) {
-        _.set(newSessionEntity, "[0].entityOverrideMode", entityOverrideMode);
+          const newEntity = {
+            name: `${event.rawEvent.session}/entityTypes/${property.name}`,
+            entities: property.entities,
+            entityOverrideMode: entityMode,
+          };
+
+          filtered.push(newEntity);
+          return filtered;
+        }, []);
+
+        sessionEntity.push(...newSessionEntity);
       }
-      types = newSessionEntity;
     }
-    _.set(reply, "SessionEntity", types);
   }
 }

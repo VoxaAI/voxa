@@ -51,12 +51,24 @@ export interface IGooglePayload extends IDialogflowPayload {
   };
 }
 
+export interface ISessionEntityType {
+  name: string;
+  entities: IEntity[];
+  entityOverrideMode: string;
+}
+
+export interface IEntity {
+  value: string;
+  synonyms: string[];
+}
+
 export class DialogflowReply implements IVoxaReply {
   public outputContexts: GoogleCloudDialogflowV2Context[] = [];
   public fulfillmentMessages?: any[];
   public fulfillmentText: string = "";
   public source: string = "google";
   public payload: IDialogflowPayload;
+  public sessionEntityTypes: ISessionEntityType[];
 
   constructor() {
     this.payload = {
@@ -66,6 +78,7 @@ export class DialogflowReply implements IVoxaReply {
         userStorage: {},
       },
     };
+    this.sessionEntityTypes = [];
   }
 
   public async saveSession(attributes: IBag, event: IVoxaEvent): Promise<void> {
