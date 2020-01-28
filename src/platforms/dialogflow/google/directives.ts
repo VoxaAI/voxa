@@ -347,7 +347,7 @@ export class SessionEntity implements IDirective {
   public viewPath?: string | ISessionEntityType[];
   // public types?: The view should return a Card like object;
 
-  constructor(viewPath: string | any[]) {
+  constructor(viewPath: string | any[] | any) {
     this.viewPath = viewPath;
   }
 
@@ -366,6 +366,12 @@ export class SessionEntity implements IDirective {
 
     if (_.isArray(this.viewPath)) {
       types = this.viewPath;
+    }
+
+    if (!_.isArray(types) && !_.isEmpty(types)) {
+      const objSessionEntity = types;
+      types = [];
+      types.push(objSessionEntity);
     }
 
     if (_.isArray(types) && !_.isEmpty(types)) {

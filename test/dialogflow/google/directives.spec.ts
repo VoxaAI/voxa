@@ -1191,7 +1191,6 @@ describe("Google Assistant Directives", () => {
     });
 
     it("should throw error due to missing name property in Session Entity", async () => {
-      //      const reply = await dialogflowAgent.execute(event);
       const reply = new DialogflowReply();
       const googleAssistantEvent = new GoogleAssistantEvent(event);
       const sessionEntity = new SessionEntity([sessionEntityWithoutName]);
@@ -1209,6 +1208,36 @@ describe("Google Assistant Directives", () => {
       }
 
       expect(error.message).to.equal("A name is required for a Session Entity");
+    });
+
+    it("should add an object in sesssion entity", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        sayp: "Hello!",
+        sessionEntity: "SimpleSessionEntity",
+        to: "entry",
+      });
+
+      event.originalDetectIntentRequest.payload.surface.capabilities = [];
+      const reply = await dialogflowAgent.execute(event);
+
+      expect(reply.sessionEntityTypes).to.deep.equal([
+        {
+          entities: [
+            {
+              synonyms: ["lion", "cat", "wild cat", "simba"],
+              value: "LION_KEY",
+            },
+            {
+              synonyms: ["elephant", "mammoth"],
+              value: "ELEPHANT_KEY",
+            },
+          ],
+          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          name:
+            "projects/project/agent/sessions/1525973454075/entityTypes/animal",
+        },
+      ]);
     });
   });
 });
