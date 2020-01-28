@@ -366,6 +366,7 @@ export class SessionEntity implements IDirective {
 
     if (this.viewPath) {
       types = await event.renderer.renderPath(this.viewPath, event);
+      console.log("types?", types);
 
       if (_.isArray(types) && !_.isEmpty(types)) {
         newSessionEntity = types.reduce(function(filtered, property) {
@@ -375,7 +376,11 @@ export class SessionEntity implements IDirective {
             "ENTITY_OVERRIDE_MODE_OVERRIDE",
           );
 
-          const name = _.get(property, "name");
+          const name = _.get(property, "name", "NO NAME");
+
+          if (name === "NO NAME") {
+            throw new Error("A name is required for a Session Entity");
+          }
 
           if (name) {
             const newEntity = {
@@ -387,8 +392,6 @@ export class SessionEntity implements IDirective {
             filtered.push(newEntity);
             return filtered;
           }
-
-          throw new Error(`A name is required for a Session Entity`);
         }, []);
 
         sessionEntity.push(...newSessionEntity);

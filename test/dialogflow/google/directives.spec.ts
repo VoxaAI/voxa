@@ -17,6 +17,7 @@ import {
   MediaResponse,
   SessionEntity
 } from "../../../src/platforms/dialogflow";
+import { ISessionEntityType } from "../../../src/platforms/dialogflow/DialogflowReply";
 import { VoxaApp } from "../../../src/VoxaApp";
 import { variables } from "./../../variables";
 import { views } from "./../../views";
@@ -153,6 +154,7 @@ describe("Google Assistant Directives", () => {
       if (error == null) {
         throw expect(error).to.not.be.null;
       }
+      console.log("error.message? ", error.message);
       expect(error.message).to.equal(
         "A simple response is required before a dialogflowMediaResponse"
       );
@@ -1105,26 +1107,15 @@ describe("Google Assistant Directives", () => {
   });
 
   describe("Session Entities", () => {
-    // let sessionEntityObject: SessionEntity;
-    // beforeEach(() => {
-    //   sessionEntityObject = new SessionEntity([
-    //     {
-    //       entities: [
-    //         {
-    //           synonyms: ["apple", "green apple", "crabapple"],
-    //           value: "APPLE_KEY"
-    //         },
-    //         {
-    //           synonyms: ["orange"],
-    //           value: "ORANGE_KEY"
-    //         }
-    //       ],
-    //       entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE"
-    //     }
-    //   ]);
-    // });
+    const sessionEntityWithoutName = {
+      entities: [
+        { synonyms: ["apple", "green apple", "crabapple"], value: "APPLE_KEY" },
+        { synonyms: ["orange"], value: "ORANGE_KEY" }
+      ],
+      entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE"
+    };
 
-    it("should add one object in sesssion entity", async () => {
+    it("should add a simple sesssion entity", async () => {
       app.onIntent("LaunchIntent", {
         flow: "yield",
         sayp: "Hello!",
@@ -1200,39 +1191,16 @@ describe("Google Assistant Directives", () => {
     });
 
     it("should throw error due to missing name property in Session Entity", async () => {
-      const reply = new DialogflowReply();
-      const googleAssistantEvent = new GoogleAssistantEvent(event);
-      const sessionEntity = new SessionEntity([
-        {
-          entities: [
-            {
-              synonyms: ["apple", "green apple", "crabapple"],
-              value: "APPLE_KEY"
-            },
-            {
-              synonyms: ["orange"],
-              value: "ORANGE_KEY"
-            }
-          ],
-          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE"
-        }
-      ]);
-      // const mediaResponse = new SessionEntity(...sessionEntityObject);
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        sayp: "Hello!",
+        sessionEntity: "MySessionEntityNoName",
+        to: "entry"
+      });
 
-      let error: Error | null = null;
-      try {
-        await sessionEntity.writeToReply(reply, googleAssistantEvent, {});
-      } catch (e) {
-        console.log("e? ", e);
-        error = e;
-      }
-      console.log("error? ", error);
+      event.originalDetectIntentRequest.payload.surface.capabilities = [];
 
-      expect(error).to.be.an("error");
-      if (error === null) {
-        throw expect(error).to.not.be.null;
-      }
-      expect(error.message).to.equal("A name is required for a Session Entity");
+      await dialogflowAgent.execute(event);
     });
   });
 });
