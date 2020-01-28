@@ -2,7 +2,7 @@ import {
   Button,
   GoogleActionsTransactionsV3CompletePurchaseValueSpec,
   Image,
-  MediaObject
+  MediaObject,
 } from "actions-on-google";
 import { DialogflowConversation } from "actions-on-google";
 import { expect } from "chai";
@@ -15,7 +15,7 @@ import {
   GoogleAssistantEvent,
   GoogleAssistantPlatform,
   MediaResponse,
-  SessionEntity
+  SessionEntity,
 } from "../../../src/platforms/dialogflow";
 import { ISessionEntityType } from "../../../src/platforms/dialogflow/DialogflowReply";
 import { VoxaApp } from "../../../src/VoxaApp";
@@ -33,7 +33,7 @@ describe("Google Assistant Directives", () => {
     await i18n.init({
       load: "all",
       nonExplicitWhitelist: true,
-      resources: views
+      resources: views,
     });
   });
 
@@ -48,10 +48,10 @@ describe("Google Assistant Directives", () => {
       app.onIntent("LaunchIntent", {
         dialogflowContext: {
           lifespan: 5,
-          name: "DONE_YES_NO_CONTEXT"
+          name: "DONE_YES_NO_CONTEXT",
         },
         sayp: "Hello!",
-        to: "die"
+        to: "die",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -60,16 +60,16 @@ describe("Google Assistant Directives", () => {
           lifespanCount: 5,
           name:
             "projects/project/agent/sessions/1525973454075/contexts/DONE_YES_NO_CONTEXT",
-          parameters: undefined
+          parameters: undefined,
         },
         {
           lifespanCount: 10000,
           name:
             "projects/project/agent/sessions/1525973454075/contexts/attributes",
           parameters: {
-            attributes: '{"model":{},"state":"die"}'
-          }
-        }
+            attributes: '{"model":{},"state":"die"}',
+          },
+        },
       ]);
     });
   });
@@ -79,7 +79,7 @@ describe("Google Assistant Directives", () => {
     beforeEach(() => {
       mediaObject = new MediaObject({
         description: "Title",
-        url: "https://example.com/example.mp3"
+        url: "https://example.com/example.mp3",
       });
     });
 
@@ -88,7 +88,7 @@ describe("Google Assistant Directives", () => {
       app.onIntent("LaunchIntent", {
         dialogflowMediaResponse: mediaObject,
         sayp: "Hello!",
-        to: "die"
+        to: "die",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -97,10 +97,10 @@ describe("Google Assistant Directives", () => {
         items: [
           {
             simpleResponse: {
-              textToSpeech: "<speak>Hello!</speak>"
-            }
-          }
-        ]
+              textToSpeech: "<speak>Hello!</speak>",
+            },
+          },
+        ],
       });
     });
 
@@ -108,7 +108,7 @@ describe("Google Assistant Directives", () => {
       app.onIntent("LaunchIntent", {
         dialogflowMediaResponse: mediaObject,
         sayp: "Hello!",
-        to: "die"
+        to: "die",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -117,8 +117,8 @@ describe("Google Assistant Directives", () => {
         items: [
           {
             simpleResponse: {
-              textToSpeech: "<speak>Hello!</speak>"
-            }
+              textToSpeech: "<speak>Hello!</speak>",
+            },
           },
           {
             mediaResponse: {
@@ -128,13 +128,13 @@ describe("Google Assistant Directives", () => {
                   description: "Title",
                   icon: undefined,
                   largeImage: undefined,
-                  name: undefined
-                }
+                  name: undefined,
+                },
               ],
-              mediaType: "AUDIO"
-            }
-          }
-        ]
+              mediaType: "AUDIO",
+            },
+          },
+        ],
       });
     });
 
@@ -156,7 +156,7 @@ describe("Google Assistant Directives", () => {
       }
       console.log("error.message? ", error.message);
       expect(error.message).to.equal(
-        "A simple response is required before a dialogflowMediaResponse"
+        "A simple response is required before a dialogflowMediaResponse",
       );
     });
   });
@@ -168,17 +168,17 @@ describe("Google Assistant Directives", () => {
           LIST_ITEM: {
             description: "The item description",
             image: {
-              url: "http://example.com/image.png"
+              url: "http://example.com/image.png",
             },
             synonyms: ["item"],
-            title: "the list item"
-          }
-        }
+            title: "the list item",
+          },
+        },
       };
 
       app.onIntent("LaunchIntent", {
         dialogflowCarousel: carousel,
-        to: "die"
+        to: "die",
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
@@ -192,17 +192,17 @@ describe("Google Assistant Directives", () => {
           LIST_ITEM: {
             description: "The item description",
             image: {
-              url: "http://example.com/image.png"
+              url: "http://example.com/image.png",
             },
             synonyms: ["item"],
-            title: "the list item"
-          }
-        }
+            title: "the list item",
+          },
+        },
       };
 
       app.onIntent("LaunchIntent", {
         dialogflowCarousel: carousel,
-        to: "die"
+        to: "die",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -215,25 +215,25 @@ describe("Google Assistant Directives", () => {
               {
                 description: "The item description",
                 image: {
-                  url: "http://example.com/image.png"
+                  url: "http://example.com/image.png",
                 },
                 optionInfo: {
                   key: "LIST_ITEM",
-                  synonyms: ["item"]
+                  synonyms: ["item"],
                 },
-                title: "the list item"
-              }
-            ]
-          }
+                title: "the list item",
+              },
+            ],
+          },
         },
-        intent: "actions.intent.OPTION"
+        intent: "actions.intent.OPTION",
       });
     });
 
     it("should add a carousel from a view to the reply", async () => {
       app.onIntent("LaunchIntent", {
         dialogflowCarousel: "DialogflowCarousel",
-        to: "die"
+        to: "die",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -248,14 +248,14 @@ describe("Google Assistant Directives", () => {
                 image: undefined,
                 optionInfo: {
                   key: "LIST_ITEM",
-                  synonyms: undefined
+                  synonyms: undefined,
                 },
-                title: "the list item"
-              }
-            ]
-          }
+                title: "the list item",
+              },
+            ],
+          },
         },
-        intent: "actions.intent.OPTION"
+        intent: "actions.intent.OPTION",
       });
     });
   });
@@ -264,7 +264,7 @@ describe("Google Assistant Directives", () => {
     it("should not add a List if event has no screen capabilites", async () => {
       app.onIntent("LaunchIntent", {
         dialogflowList: "DialogflowListSelect",
-        to: "die"
+        to: "die",
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
@@ -275,7 +275,7 @@ describe("Google Assistant Directives", () => {
     it("should add a List from a view to the reply", async () => {
       app.onIntent("LaunchIntent", {
         dialogflowList: "DialogflowListSelect",
-        to: "die"
+        to: "die",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -288,15 +288,15 @@ describe("Google Assistant Directives", () => {
                 description: "The item description",
                 image: {
                   accessibilityText: "The image",
-                  url: "http://example.com/image.jpg"
+                  url: "http://example.com/image.jpg",
                 },
-                title: "The list item"
-              }
+                title: "The list item",
+              },
             ],
-            title: "The list select"
-          }
+            title: "The list select",
+          },
         },
-        intent: "actions.intent.OPTION"
+        intent: "actions.intent.OPTION",
       });
     });
 
@@ -307,17 +307,17 @@ describe("Google Assistant Directives", () => {
             description: "The item description",
             image: {
               accessibilityText: "The image",
-              url: "http://example.com/image.jpg"
+              url: "http://example.com/image.jpg",
             },
-            title: "The list item"
-          }
+            title: "The list item",
+          },
         },
-        title: "The list select"
+        title: "The list select",
       };
 
       app.onIntent("LaunchIntent", {
         dialogflowList: list,
-        to: "die"
+        to: "die",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -330,19 +330,19 @@ describe("Google Assistant Directives", () => {
                 description: "The item description",
                 image: {
                   accessibilityText: "The image",
-                  url: "http://example.com/image.jpg"
+                  url: "http://example.com/image.jpg",
                 },
                 optionInfo: {
                   key: "LIST_ITEM",
-                  synonyms: undefined
+                  synonyms: undefined,
                 },
-                title: "The list item"
-              }
+                title: "The list item",
+              },
             ],
-            title: "The list select"
-          }
+            title: "The list select",
+          },
         },
-        intent: "actions.intent.OPTION"
+        intent: "actions.intent.OPTION",
       });
     });
   });
@@ -354,12 +354,12 @@ describe("Google Assistant Directives", () => {
           prompts: {
             date: "Which date works best for you?",
             initial: "When do you want to come in?",
-            time: "What time of day works best for you?"
-          }
+            time: "What time of day works best for you?",
+          },
         },
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -369,10 +369,10 @@ describe("Google Assistant Directives", () => {
           "dialogSpec": {
             requestDateText: "Which date works best for you?",
             requestDatetimeText: "When do you want to come in?",
-            requestTimeText: "What time of day works best for you?"
-          }
+            requestTimeText: "What time of day works best for you?",
+          },
         },
-        intent: "actions.intent.DATETIME"
+        intent: "actions.intent.DATETIME",
       });
     });
   });
@@ -383,7 +383,7 @@ describe("Google Assistant Directives", () => {
         dialogflowConfirmation: "Confirmation",
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -392,10 +392,10 @@ describe("Google Assistant Directives", () => {
           "@type":
             "type.googleapis.com/google.actions.v2.ConfirmationValueSpec",
           "dialogSpec": {
-            requestConfirmationText: "Is that true?"
-          }
+            requestConfirmationText: "Is that true?",
+          },
         },
-        intent: "actions.intent.CONFIRMATION"
+        intent: "actions.intent.CONFIRMATION",
       });
     });
   });
@@ -405,11 +405,11 @@ describe("Google Assistant Directives", () => {
       app.onIntent("LaunchIntent", {
         dialogflowPlace: {
           context: "To get a your home address",
-          prompt: "can i get your location?"
+          prompt: "can i get your location?",
         },
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -421,11 +421,11 @@ describe("Google Assistant Directives", () => {
               "@type":
                 "type.googleapis.com/google.actions.v2.PlaceValueSpec.PlaceDialogSpec",
               "permissionContext": "To get a your home address",
-              "requestPrompt": "can i get your location?"
-            }
-          }
+              "requestPrompt": "can i get your location?",
+            },
+          },
         },
-        intent: "actions.intent.PLACE"
+        intent: "actions.intent.PLACE",
       });
     });
   });
@@ -435,11 +435,11 @@ describe("Google Assistant Directives", () => {
       app.onIntent("LaunchIntent", {
         dialogflowPermission: {
           context: "Can i get your name?",
-          permissions: "NAME"
+          permissions: "NAME",
         },
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -447,9 +447,9 @@ describe("Google Assistant Directives", () => {
         data: {
           "@type": "type.googleapis.com/google.actions.v2.PermissionValueSpec",
           "optContext": "Can i get your name?",
-          "permissions": ["NAME"]
+          "permissions": ["NAME"],
         },
-        intent: "actions.intent.PERMISSION"
+        intent: "actions.intent.PERMISSION",
       });
     });
   });
@@ -461,11 +461,11 @@ describe("Google Assistant Directives", () => {
           destination: "Google",
           package: "com.example.gizmos",
           reason: "handle this for you",
-          url: "example://gizmos"
+          url: "example://gizmos",
         },
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -477,17 +477,17 @@ describe("Google Assistant Directives", () => {
               "@type":
                 "type.googleapis.com/google.actions.v2.LinkValueSpec.LinkDialogSpec",
               "destinationName": "Google",
-              "requestLinkReason": "handle this for you"
-            }
+              "requestLinkReason": "handle this for you",
+            },
           },
           "openUrlAction": {
             androidApp: {
-              packageName: "com.example.gizmos"
+              packageName: "com.example.gizmos",
             },
-            url: "example://gizmos"
-          }
+            url: "example://gizmos",
+          },
         },
-        intent: "actions.intent.LINK"
+        intent: "actions.intent.LINK",
       });
     });
   });
@@ -498,7 +498,7 @@ describe("Google Assistant Directives", () => {
         dialogflowBasicCard: "DialogflowBasicCard",
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
@@ -511,28 +511,28 @@ describe("Google Assistant Directives", () => {
         dialogflowBasicCard: "DialogflowBasicCard",
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
       expect(
-        _.get(reply, "payload.google.richResponse.items[1]")
+        _.get(reply, "payload.google.richResponse.items[1]"),
       ).to.deep.equal({
         basicCard: {
           buttons: [
             {
               openUrlAction: "https://example.com",
-              title: "Example.com"
-            }
+              title: "Example.com",
+            },
           ],
           formattedText: "This is the text",
           image: {
-            url: "https://example.com/image.png"
+            url: "https://example.com/image.png",
           },
           imageDisplayOptions: "DEFAULT",
           subtitle: "subtitle",
-          title: "title"
-        }
+          title: "title",
+        },
       });
     });
 
@@ -541,40 +541,40 @@ describe("Google Assistant Directives", () => {
         dialogflowBasicCard: {
           buttons: {
             openUrlAction: "https://example.com",
-            title: "Example.com"
+            title: "Example.com",
           },
           display: "DEFAULT",
           image: {
-            url: "https://example.com/image.png"
+            url: "https://example.com/image.png",
           },
           subtitle: "subtitle",
           text: "This is the text",
-          title: "title"
+          title: "title",
         },
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
       expect(
-        _.get(reply, "payload.google.richResponse.items[1]")
+        _.get(reply, "payload.google.richResponse.items[1]"),
       ).to.deep.equal({
         basicCard: {
           buttons: [
             {
               openUrlAction: "https://example.com",
-              title: "Example.com"
-            }
+              title: "Example.com",
+            },
           ],
           formattedText: "This is the text",
           image: {
-            url: "https://example.com/image.png"
+            url: "https://example.com/image.png",
           },
           imageDisplayOptions: "DEFAULT",
           subtitle: "subtitle",
-          title: "title"
-        }
+          title: "title",
+        },
       });
     });
   });
@@ -585,16 +585,16 @@ describe("Google Assistant Directives", () => {
         dialogflowSuggestions: ["suggestion"],
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
       expect(
-        _.get(reply, "payload.google.richResponse.suggestions")
+        _.get(reply, "payload.google.richResponse.suggestions"),
       ).to.deep.equal([
         {
-          title: "suggestion"
-        }
+          title: "suggestion",
+        },
       ]);
     });
 
@@ -603,19 +603,19 @@ describe("Google Assistant Directives", () => {
         flow: "yield",
         reply: "DialogflowSuggestions",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
       expect(
-        _.get(reply, "payload.google.richResponse.suggestions")
+        _.get(reply, "payload.google.richResponse.suggestions"),
       ).to.deep.equal([
         {
-          title: "Suggestion 1"
+          title: "Suggestion 1",
         },
         {
-          title: "Suggestion 2"
-        }
+          title: "Suggestion 2",
+        },
       ]);
     });
   });
@@ -626,16 +626,16 @@ describe("Google Assistant Directives", () => {
         dialogflowAccountLinkingCard: "AccountLinking",
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
       expect(_.get(reply, "payload.google.systemIntent")).to.deep.equal({
         data: {
           "@type": "type.googleapis.com/google.actions.v2.SignInValueSpec",
-          "optContext": "Please Log in"
+          "optContext": "Please Log in",
         },
-        intent: "actions.intent.SIGN_IN"
+        intent: "actions.intent.SIGN_IN",
       });
     });
   });
@@ -647,15 +647,15 @@ describe("Google Assistant Directives", () => {
         skuId: {
           id: "subscription",
           packageName: "com.example",
-          skuType: "SKU_TYPE_SUBSCRIPTION"
-        }
+          skuType: "SKU_TYPE_SUBSCRIPTION",
+        },
       };
 
       app.onIntent("LaunchIntent", {
         flow: "yield",
         googleCompletePurchase: googleCompletePurchaseOptions,
         say: "DigitalGoods.BuyItem.say",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -663,11 +663,11 @@ describe("Google Assistant Directives", () => {
         data: _.merge(
           {
             "@type":
-              "type.googleapis.com/google.actions.transactions.v3.CompletePurchaseValueSpec"
+              "type.googleapis.com/google.actions.transactions.v3.CompletePurchaseValueSpec",
           },
-          googleCompletePurchaseOptions
+          googleCompletePurchaseOptions,
         ),
-        intent: "actions.intent.COMPLETE_PURCHASE"
+        intent: "actions.intent.COMPLETE_PURCHASE",
       });
     });
 
@@ -675,7 +675,7 @@ describe("Google Assistant Directives", () => {
       app.onIntent("LaunchIntent", {
         flow: "yield",
         reply: "DigitalGoods.BuyItem",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -687,10 +687,10 @@ describe("Google Assistant Directives", () => {
           "skuId": {
             id: "subscription",
             packageName: "com.example",
-            skuType: "SKU_TYPE_SUBSCRIPTION"
-          }
+            skuType: "SKU_TYPE_SUBSCRIPTION",
+          },
         },
-        intent: "actions.intent.COMPLETE_PURCHASE"
+        intent: "actions.intent.COMPLETE_PURCHASE",
       });
     });
   });
@@ -700,7 +700,7 @@ describe("Google Assistant Directives", () => {
       const order = require("./order.json");
       const transactionDecisionOptions = {
         orderOptions: {
-          requestDeliveryAddress: false
+          requestDeliveryAddress: false,
         },
         paymentOptions: {
           googleProvidedOptions: {
@@ -711,18 +711,18 @@ describe("Google Assistant Directives", () => {
             tokenizationParameters: {
               "gateway": "stripe",
               "stripe:publishableKey": "pk_test_key",
-              "stripe:version": "2017-04-06"
-            }
-          }
+              "stripe:version": "2017-04-06",
+            },
+          },
         },
-        proposedOrder: order
+        proposedOrder: order,
       };
 
       app.onIntent("LaunchIntent", {
         dialogflowTransactionDecision: transactionDecisionOptions,
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -730,11 +730,11 @@ describe("Google Assistant Directives", () => {
         data: _.merge(
           {
             "@type":
-              "type.googleapis.com/google.actions.v2.TransactionDecisionValueSpec"
+              "type.googleapis.com/google.actions.v2.TransactionDecisionValueSpec",
           },
-          transactionDecisionOptions
+          transactionDecisionOptions,
         ),
-        intent: "actions.intent.TRANSACTION_DECISION"
+        intent: "actions.intent.TRANSACTION_DECISION",
       });
     });
   });
@@ -743,7 +743,7 @@ describe("Google Assistant Directives", () => {
     it("should add a TransactionRequirements response", async () => {
       const transactionRequirementsOptions = {
         orderOptions: {
-          requestDeliveryAddress: false
+          requestDeliveryAddress: false,
         },
         paymentOptions: {
           googleProvidedOptions: {
@@ -751,15 +751,15 @@ describe("Google Assistant Directives", () => {
             supportedCardNetworks: ["VISA", "AMEX"],
             // These will be provided by payment processor,
             // like Stripe, Braintree, or Vantiv.
-            tokenizationParameters: {}
-          }
-        }
+            tokenizationParameters: {},
+          },
+        },
       };
       app.onIntent("LaunchIntent", {
         dialogflowTransactionRequirements: transactionRequirementsOptions,
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -767,11 +767,11 @@ describe("Google Assistant Directives", () => {
         data: _.merge(
           {
             "@type":
-              "type.googleapis.com/google.actions.v2.TransactionRequirementsCheckSpec"
+              "type.googleapis.com/google.actions.v2.TransactionRequirementsCheckSpec",
           },
-          transactionRequirementsOptions
+          transactionRequirementsOptions,
         ),
-        intent: "actions.intent.TRANSACTION_REQUIREMENTS_CHECK"
+        intent: "actions.intent.TRANSACTION_REQUIREMENTS_CHECK",
       });
     });
   });
@@ -780,14 +780,14 @@ describe("Google Assistant Directives", () => {
     it("should add a RegisterUpdate response", async () => {
       const registerUpdateOptions = {
         frequency: "ROUTINES",
-        intent: "tell.tip"
+        intent: "tell.tip",
       };
 
       app.onIntent("LaunchIntent", {
         dialogflowRegisterUpdate: registerUpdateOptions,
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -799,11 +799,11 @@ describe("Google Assistant Directives", () => {
           "intent": "tell.tip",
           "triggerContext": {
             timeContext: {
-              frequency: "ROUTINES"
-            }
-          }
+              frequency: "ROUTINES",
+            },
+          },
         },
-        intent: "actions.intent.REGISTER_UPDATE"
+        intent: "actions.intent.REGISTER_UPDATE",
       });
     });
   });
@@ -814,17 +814,17 @@ describe("Google Assistant Directives", () => {
         arguments: [
           {
             name: "image_to_show",
-            textValue: "image_type_1"
-          }
+            textValue: "image_type_1",
+          },
         ],
-        intent: "show.image"
+        intent: "show.image",
       };
 
       app.onIntent("LaunchIntent", {
         dialogflowUpdatePermission: updatePermissionOptions,
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -837,13 +837,13 @@ describe("Google Assistant Directives", () => {
             arguments: [
               {
                 name: "image_to_show",
-                textValue: "image_type_1"
-              }
+                textValue: "image_type_1",
+              },
             ],
-            intent: "show.image"
-          }
+            intent: "show.image",
+          },
         },
-        intent: "actions.intent.PERMISSION"
+        intent: "actions.intent.PERMISSION",
       });
     });
   });
@@ -852,41 +852,41 @@ describe("Google Assistant Directives", () => {
     const table = {
       buttons: new Button({
         title: "Button Title",
-        url: "https://github.com/actions-on-google"
+        url: "https://github.com/actions-on-google",
       }),
       columns: [
         {
           align: "CENTER",
-          header: "header 1"
+          header: "header 1",
         },
         {
           align: "LEADING",
-          header: "header 2"
+          header: "header 2",
         },
         {
           align: "TRAILING",
-          header: "header 3"
-        }
+          header: "header 3",
+        },
       ],
       image: new Image({
         alt: "Actions on Google",
-        url: "https://avatars0.githubusercontent.com/u/23533486"
+        url: "https://avatars0.githubusercontent.com/u/23533486",
       }),
       rows: [
         {
           cells: ["row 1 item 1", "row 1 item 2", "row 1 item 3"],
-          dividerAfter: false
+          dividerAfter: false,
         },
         {
           cells: ["row 2 item 1", "row 2 item 2", "row 2 item 3"],
-          dividerAfter: true
+          dividerAfter: true,
         },
         {
-          cells: ["row 3 item 1", "row 3 item 2", "row 3 item 3"]
-        }
+          cells: ["row 3 item 1", "row 3 item 2", "row 3 item 3"],
+        },
       ],
       subtitle: "Table Subtitle",
-      title: "Table Title"
+      title: "Table Title",
     };
 
     it("should not add a Table Response if no screen output", async () => {
@@ -894,7 +894,7 @@ describe("Google Assistant Directives", () => {
         dialogflowTable: table,
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
@@ -907,89 +907,89 @@ describe("Google Assistant Directives", () => {
         dialogflowTable: table,
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
       expect(
-        _.get(reply, "payload.google.richResponse.items[1]")
+        _.get(reply, "payload.google.richResponse.items[1]"),
       ).to.deep.equal({
         tableCard: {
           buttons: [
             {
               openUrlAction: {
-                url: "https://github.com/actions-on-google"
+                url: "https://github.com/actions-on-google",
               },
-              title: "Button Title"
-            }
+              title: "Button Title",
+            },
           ],
           columnProperties: [
             {
               header: "header 1",
-              horizontalAlignment: "CENTER"
+              horizontalAlignment: "CENTER",
             },
             {
               header: "header 2",
-              horizontalAlignment: "LEADING"
+              horizontalAlignment: "LEADING",
             },
             {
               header: "header 3",
-              horizontalAlignment: "TRAILING"
-            }
+              horizontalAlignment: "TRAILING",
+            },
           ],
           image: {
             accessibilityText: "Actions on Google",
             height: undefined,
             url: "https://avatars0.githubusercontent.com/u/23533486",
-            width: undefined
+            width: undefined,
           },
           rows: [
             {
               cells: [
                 {
-                  text: "row 1 item 1"
+                  text: "row 1 item 1",
                 },
                 {
-                  text: "row 1 item 2"
+                  text: "row 1 item 2",
                 },
                 {
-                  text: "row 1 item 3"
-                }
+                  text: "row 1 item 3",
+                },
               ],
-              dividerAfter: false
+              dividerAfter: false,
             },
             {
               cells: [
                 {
-                  text: "row 2 item 1"
+                  text: "row 2 item 1",
                 },
                 {
-                  text: "row 2 item 2"
+                  text: "row 2 item 2",
                 },
                 {
-                  text: "row 2 item 3"
-                }
+                  text: "row 2 item 3",
+                },
               ],
-              dividerAfter: true
+              dividerAfter: true,
             },
             {
               cells: [
                 {
-                  text: "row 3 item 1"
+                  text: "row 3 item 1",
                 },
                 {
-                  text: "row 3 item 2"
+                  text: "row 3 item 2",
                 },
                 {
-                  text: "row 3 item 3"
-                }
+                  text: "row 3 item 3",
+                },
               ],
-              dividerAfter: undefined
-            }
+              dividerAfter: undefined,
+            },
           ],
           subtitle: "Table Subtitle",
-          title: "Table Title"
-        }
+          title: "Table Title",
+        },
       });
     });
   });
@@ -1001,11 +1001,11 @@ describe("Google Assistant Directives", () => {
         dialogflowNewSurface: {
           capabilities: capability,
           context: "To show you an image",
-          notification: "Check out this image"
+          notification: "Check out this image",
         },
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -1014,9 +1014,9 @@ describe("Google Assistant Directives", () => {
           "@type": "type.googleapis.com/google.actions.v2.NewSurfaceValueSpec",
           "capabilities": ["actions.capability.SCREEN_OUTPUT"],
           "context": "To show you an image",
-          "notificationTitle": "Check out this image"
+          "notificationTitle": "Check out this image",
         },
-        intent: "actions.intent.NEW_SURFACE"
+        intent: "actions.intent.NEW_SURFACE",
       });
     });
   });
@@ -1027,7 +1027,7 @@ describe("Google Assistant Directives", () => {
         dialogflowBrowseCarousel: {},
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
@@ -1040,16 +1040,16 @@ describe("Google Assistant Directives", () => {
         dialogflowBrowseCarousel: {},
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
       expect(
-        _.get(reply, "payload.google.richResponse.items[1]")
+        _.get(reply, "payload.google.richResponse.items[1]"),
       ).to.deep.equal({
         carouselBrowse: {
-          items: [{}]
-        }
+          items: [{}],
+        },
       });
     });
   });
@@ -1059,11 +1059,11 @@ describe("Google Assistant Directives", () => {
       app.onIntent("LaunchIntent", {
         dialogflowLinkOutSuggestion: {
           name: "Example",
-          url: "https://example.com"
+          url: "https://example.com",
         },
         flow: "yield",
         sayp: "Hello!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -1071,14 +1071,14 @@ describe("Google Assistant Directives", () => {
         items: [
           {
             simpleResponse: {
-              textToSpeech: "<speak>Hello!</speak>"
-            }
-          }
+              textToSpeech: "<speak>Hello!</speak>",
+            },
+          },
         ],
         linkOutSuggestion: {
           destinationName: "Example",
-          url: "https://example.com"
-        }
+          url: "https://example.com",
+        },
       });
     });
   });
@@ -1089,7 +1089,7 @@ describe("Google Assistant Directives", () => {
         flow: "yield",
         sayp: "Say!",
         textp: "Text!",
-        to: "entry"
+        to: "entry",
       });
 
       const reply = await dialogflowAgent.execute(event);
@@ -1098,10 +1098,10 @@ describe("Google Assistant Directives", () => {
           {
             simpleResponse: {
               displayText: "Text!",
-              textToSpeech: "<speak>Say!</speak>"
-            }
-          }
-        ]
+              textToSpeech: "<speak>Say!</speak>",
+            },
+          },
+        ],
       });
     });
   });
@@ -1110,9 +1110,9 @@ describe("Google Assistant Directives", () => {
     const sessionEntityWithoutName = {
       entities: [
         { synonyms: ["apple", "green apple", "crabapple"], value: "APPLE_KEY" },
-        { synonyms: ["orange"], value: "ORANGE_KEY" }
+        { synonyms: ["orange"], value: "ORANGE_KEY" },
       ],
-      entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE"
+      entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
     };
 
     it("should add a simple sesssion entity", async () => {
@@ -1120,7 +1120,7 @@ describe("Google Assistant Directives", () => {
         flow: "yield",
         sayp: "Hello!",
         sessionEntity: "MySessionEntity",
-        to: "entry"
+        to: "entry",
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
@@ -1131,17 +1131,17 @@ describe("Google Assistant Directives", () => {
           entities: [
             {
               synonyms: ["apple", "green apple", "crabapple"],
-              value: "APPLE_KEY"
+              value: "APPLE_KEY",
             },
             {
               synonyms: ["orange"],
-              value: "ORANGE_KEY"
-            }
+              value: "ORANGE_KEY",
+            },
           ],
           entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
           name:
-            "projects/project/agent/sessions/1525973454075/entityTypes/fruit"
-        }
+            "projects/project/agent/sessions/1525973454075/entityTypes/fruit",
+        },
       ]);
     });
 
@@ -1150,7 +1150,7 @@ describe("Google Assistant Directives", () => {
         flow: "yield",
         sayp: "Hello!",
         sessionEntity: "MultipleSessionEntities",
-        to: "entry"
+        to: "entry",
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
@@ -1161,46 +1161,54 @@ describe("Google Assistant Directives", () => {
           entities: [
             {
               synonyms: ["apple", "green apple", "crabapple"],
-              value: "APPLE_KEY"
+              value: "APPLE_KEY",
             },
             {
               synonyms: ["orange"],
-              value: "ORANGE_KEY"
-            }
+              value: "ORANGE_KEY",
+            },
           ],
           entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
           name:
-            "projects/project/agent/sessions/1525973454075/entityTypes/fruit"
+            "projects/project/agent/sessions/1525973454075/entityTypes/fruit",
         },
         {
           entities: [
             {
               synonyms: ["lion", "cat", "wild cat", "simba"],
-              value: "LION_KEY"
+              value: "LION_KEY",
             },
             {
               synonyms: ["elephant", "mammoth"],
-              value: "ELEPHANT_KEY"
-            }
+              value: "ELEPHANT_KEY",
+            },
           ],
           entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
           name:
-            "projects/project/agent/sessions/1525973454075/entityTypes/animal"
-        }
+            "projects/project/agent/sessions/1525973454075/entityTypes/animal",
+        },
       ]);
     });
 
     it("should throw error due to missing name property in Session Entity", async () => {
-      app.onIntent("LaunchIntent", {
-        flow: "yield",
-        sayp: "Hello!",
-        sessionEntity: "MySessionEntityNoName",
-        to: "entry"
-      });
+      //      const reply = await dialogflowAgent.execute(event);
+      const reply = new DialogflowReply();
+      const googleAssistantEvent = new GoogleAssistantEvent(event);
+      const sessionEntity = new SessionEntity([sessionEntityWithoutName]);
 
-      event.originalDetectIntentRequest.payload.surface.capabilities = [];
+      let error: Error | null = null;
+      try {
+        await sessionEntity.writeToReply(reply, googleAssistantEvent, {});
+      } catch (e) {
+        error = e;
+      }
 
-      await dialogflowAgent.execute(event);
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal("A name is required for a Session Entity");
     });
   });
 });

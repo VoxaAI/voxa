@@ -57,7 +57,7 @@ import { ITransition } from "../../../StateMachine";
 import { IVoxaEvent } from "../../../VoxaEvent";
 import { IVoxaReply } from "../../../VoxaReply";
 import { DialogflowEvent } from "../DialogflowEvent";
-import { DialogflowReply } from "../DialogflowReply";
+import { DialogflowReply, ISessionEntityType } from "../DialogflowReply";
 
 abstract class DialogflowDirective<IOptions> {
   constructor(public options: IOptions, public requiredCapability?: string) {}
@@ -344,15 +344,11 @@ export class SessionEntity implements IDirective {
   public static key: string = "sessionEntity";
   public static platform: string = "google";
 
-  public viewPath?: string;
-  public types?: any[];
+  public viewPath?: string | ISessionEntityType[];
+  // public types?: The view should return a Card like object;
 
   constructor(viewPath: string | any[]) {
-    if (_.isString(viewPath)) {
-      this.viewPath = viewPath;
-    } else if (_.isArray(viewPath)) {
-      this.types = viewPath;
-    }
+    this.viewPath = viewPath;
   }
 
   public async writeToReply(
@@ -364,38 +360,39 @@ export class SessionEntity implements IDirective {
     let newSessionEntity: any[];
     const sessionEntity = (reply as DialogflowReply).sessionEntityTypes;
 
-    if (this.viewPath) {
+    if (_.isString(this.viewPath)) {
       types = await event.renderer.renderPath(this.viewPath, event);
-      console.log("types?", types);
+    }
 
-      if (_.isArray(types) && !_.isEmpty(types)) {
-        newSessionEntity = types.reduce(function(filtered, property) {
-          const entityMode = _.get(
-            property,
-            "entityOverrideMode",
-            "ENTITY_OVERRIDE_MODE_OVERRIDE",
-          );
+    if (_.isArray(this.viewPath)) {
+      types = this.viewPath;
+    }
 
-          const name = _.get(property, "name", "NO NAME");
+    if (_.isArray(types) && !_.isEmpty(types)) {
+      newSessionEntity = types.reduce(function(filtered, property) {
+        const entityMode = _.get(
+          property,
+          "entityOverrideMode",
+          "ENTITY_OVERRIDE_MODE_OVERRIDE",
+        );
 
-          if (name === "NO NAME") {
-            throw new Error("A name is required for a Session Entity");
-          }
+        const name = _.get(property, "name");
 
-          if (name) {
-            const newEntity = {
-              name: `${event.rawEvent.session}/entityTypes/${name}`,
-              entities: property.entities,
-              entityOverrideMode: entityMode,
-            };
+        if (!name) {
+          throw new Error("A name is required for a Session Entity");
+        }
 
-            filtered.push(newEntity);
-            return filtered;
-          }
-        }, []);
+        const newEntity = {
+          name: `${event.rawEvent.session}/entityTypes/${name}`,
+          entities: property.entities,
+          entityOverrideMode: entityMode,
+        };
 
-        sessionEntity.push(...newSessionEntity);
-      }
+        filtered.push(newEntity);
+        return filtered;
+      }, []);
+
+      sessionEntity.push(...newSessionEntity);
     }
   }
 }
