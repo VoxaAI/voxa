@@ -1145,6 +1145,17 @@ describe("Google Assistant Directives", () => {
       name: "projects/project-id/agent/sessions/session-id/entityTypes/animal",
     };
 
+    const simpleSessionEntityWithoutEntities = {
+      entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+      name: "animal",
+    };
+
+    const simpleSessionEntityEmptyEntities = {
+      entities: [],
+      entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+      name: "animal",
+    };
+
     it("should add a simple sesssion entity", async () => {
       app.onIntent("LaunchIntent", {
         flow: "yield",
@@ -1315,6 +1326,52 @@ describe("Google Assistant Directives", () => {
 
       expect(error.message).to.equal(
         "The name property for Session Entity Type should be only alphabetic characters",
+      );
+    });
+
+    it("should throw an error due to missing entities property", async () => {
+      const reply = new DialogflowReply();
+      const googleAssistantEvent = new GoogleAssistantEvent(event);
+      const sessionEntity = new SessionEntity(
+        simpleSessionEntityWithoutEntities,
+      );
+
+      let error: Error | null = null;
+      try {
+        await sessionEntity.writeToReply(reply, googleAssistantEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal(
+        "The entities property is empty or was not provided, please verify",
+      );
+    });
+
+    it("should throw an error due to missing entities property", async () => {
+      const reply = new DialogflowReply();
+      const googleAssistantEvent = new GoogleAssistantEvent(event);
+      const sessionEntity = new SessionEntity(simpleSessionEntityEmptyEntities);
+
+      let error: Error | null = null;
+      try {
+        await sessionEntity.writeToReply(reply, googleAssistantEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal(
+        "The entities property is empty or was not provided, please verify",
       );
     });
   });

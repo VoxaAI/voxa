@@ -438,6 +438,12 @@ function generateSessionEntity(
         "The name property for Session Entity Type should be only alphabetic characters",
       );
     }
+    const entities = _.get(property, "entities");
+    if (!entities || _.isEmpty(entities)) {
+      throw new Error(
+        "The entities property is empty or was not provided, please verify",
+      );
+    }
     const newEntity = {
       entities: property.entities,
       entityOverrideMode: entityMode,
