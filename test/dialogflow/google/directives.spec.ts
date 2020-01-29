@@ -1130,6 +1130,21 @@ describe("Google Assistant Directives", () => {
       name: "animal",
     };
 
+    const simpleSessionEntityIncorrectNameFormat = {
+      entities: [
+        {
+          synonyms: ["lion", "cat", "wild cat", "simba"],
+          value: "LION_KEY",
+        },
+        {
+          synonyms: ["elephant", "mammoth"],
+          value: "ELEPHANT_KEY",
+        },
+      ],
+      entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+      name: "projects/project-id/agent/sessions/session-id/entityTypes/animal",
+    };
+
     it("should add a simple sesssion entity", async () => {
       app.onIntent("LaunchIntent", {
         flow: "yield",
@@ -1276,6 +1291,30 @@ describe("Google Assistant Directives", () => {
 
       expect(error.message).to.equal(
         "The Entity Override Mode specified is incorrect, please consider use one of the followings: ENTITY_OVERRIDE_MODE_UNSPECIFIED, ENTITY_OVERRIDE_MODE_OVERRIDE or ENTITY_OVERRIDE_MODE_SUPPLEMENT",
+      );
+    });
+
+    it("should throw an error due to incorrect name format", async () => {
+      const reply = new DialogflowReply();
+      const googleAssistantEvent = new GoogleAssistantEvent(event);
+      const sessionEntity = new SessionEntity([
+        simpleSessionEntityIncorrectNameFormat,
+      ]);
+
+      let error: Error | null = null;
+      try {
+        await sessionEntity.writeToReply(reply, googleAssistantEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal(
+        "The name property for Session Entity Type should be only alphabetic characters",
       );
     });
   });

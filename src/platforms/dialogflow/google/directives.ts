@@ -359,6 +359,7 @@ export class SessionEntity implements IDirective {
     let types = [];
     let newSessionEntity: any[];
     const sessionEntity = (reply as DialogflowReply).sessionEntityTypes;
+    const regexName = new RegExp(/^[A-Z]+$/i);
 
     if (_.isString(this.viewPath)) {
       types = await event.renderer.renderPath(this.viewPath, event);
@@ -375,7 +376,7 @@ export class SessionEntity implements IDirective {
     }
 
     if (_.isArray(types) && !_.isEmpty(types)) {
-      newSessionEntity = types.reduce(function(filtered, property) {
+      newSessionEntity = types.reduce((filtered, property) => {
         const entityMode = _.get(
           property,
           "entityOverrideMode",
@@ -402,10 +403,18 @@ export class SessionEntity implements IDirective {
           throw new Error("A name is required for a Session Entity");
         }
 
+        const validRegexName = regexName.test(name);
+
+        if (!validRegexName) {
+          throw new Error(
+            "The name property for Session Entity Type should be only alphabetic characters",
+          );
+        }
+
         const newEntity = {
-          name: `${event.rawEvent.session}/entityTypes/${name}`,
           entities: property.entities,
           entityOverrideMode: entityMode,
+          name: `${event.rawEvent.session}/entityTypes/${name}`,
         };
 
         filtered.push(newEntity);
