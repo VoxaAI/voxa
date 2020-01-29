@@ -1115,6 +1115,21 @@ describe("Google Assistant Directives", () => {
       entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
     };
 
+    const simpleSessionEntityIncorrectEntityOverrideMode = {
+      entities: [
+        {
+          synonyms: ["lion", "cat", "wild cat", "simba"],
+          value: "LION_KEY",
+        },
+        {
+          synonyms: ["elephant", "mammoth"],
+          value: "ELEPHANT_KEY",
+        },
+      ],
+      entityOverrideMode: "TEST",
+      name: "animal",
+    };
+
     it("should add a simple sesssion entity", async () => {
       app.onIntent("LaunchIntent", {
         flow: "yield",
@@ -1238,6 +1253,30 @@ describe("Google Assistant Directives", () => {
             "projects/project/agent/sessions/1525973454075/entityTypes/animal",
         },
       ]);
+    });
+
+    it("should throw an error due to incorrect Entity Override Mode property", async () => {
+      const reply = new DialogflowReply();
+      const googleAssistantEvent = new GoogleAssistantEvent(event);
+      const sessionEntity = new SessionEntity([
+        simpleSessionEntityIncorrectEntityOverrideMode,
+      ]);
+
+      let error: Error | null = null;
+      try {
+        await sessionEntity.writeToReply(reply, googleAssistantEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal(
+        "The Entity Override Mode specified is incorrect, please consider use one of the followings: ENTITY_OVERRIDE_MODE_UNSPECIFIED, ENTITY_OVERRIDE_MODE_OVERRIDE or ENTITY_OVERRIDE_MODE_SUPPLEMENT",
+      );
     });
   });
 });

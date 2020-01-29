@@ -382,6 +382,20 @@ export class SessionEntity implements IDirective {
           "ENTITY_OVERRIDE_MODE_OVERRIDE",
         );
 
+        if (
+          !_.includes(
+            [
+              EntityOverrideMode.Unspecified,
+              EntityOverrideMode.Override,
+              EntityOverrideMode.Supplement,
+            ],
+            entityMode,
+          )
+        ) {
+          throw new Error(
+            "The Entity Override Mode specified is incorrect, please consider use one of the followings: ENTITY_OVERRIDE_MODE_UNSPECIFIED, ENTITY_OVERRIDE_MODE_OVERRIDE or ENTITY_OVERRIDE_MODE_SUPPLEMENT",
+          );
+        }
         const name = _.get(property, "name");
 
         if (!name) {
@@ -401,4 +415,10 @@ export class SessionEntity implements IDirective {
       sessionEntity.push(...newSessionEntity);
     }
   }
+}
+
+export enum EntityOverrideMode {
+  Unspecified = "ENTITY_OVERRIDE_MODE_UNSPECIFIED",
+  Override = "ENTITY_OVERRIDE_MODE_OVERRIDE",
+  Supplement = "ENTITY_OVERRIDE_MODE_SUPPLEMENT",
 }
