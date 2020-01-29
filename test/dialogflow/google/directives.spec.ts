@@ -1223,7 +1223,7 @@ describe("Google Assistant Directives", () => {
     it("should throw error due to missing name property in Session Entity", async () => {
       const reply = new DialogflowReply();
       const googleAssistantEvent = new GoogleAssistantEvent(event);
-      const sessionEntity = new SessionEntity([sessionEntityWithoutName]);
+      const sessionEntity = new SessionEntity(sessionEntityWithoutName);
 
       let error: Error | null = null;
       try {
@@ -1273,9 +1273,9 @@ describe("Google Assistant Directives", () => {
     it("should throw an error due to incorrect Entity Override Mode property", async () => {
       const reply = new DialogflowReply();
       const googleAssistantEvent = new GoogleAssistantEvent(event);
-      const sessionEntity = new SessionEntity([
+      const sessionEntity = new SessionEntity(
         simpleSessionEntityIncorrectEntityOverrideMode,
-      ]);
+      );
 
       let error: Error | null = null;
       try {

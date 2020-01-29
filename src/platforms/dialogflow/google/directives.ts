@@ -47,6 +47,7 @@ import {
 } from "actions-on-google";
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
+import { type } from "os";
 import {
   IDirective,
   IDirectiveClass,
@@ -345,7 +346,6 @@ export class SessionEntity implements IDirective {
   public static platform: string = "google";
 
   public viewPath?: string | ISessionEntityType[];
-  // public types?: The view should return a Card like object;
 
   constructor(viewPath: string | any[] | any) {
     this.viewPath = viewPath;
@@ -356,70 +356,41 @@ export class SessionEntity implements IDirective {
     event: IVoxaEvent,
     transition?: ITransition,
   ): Promise<void> {
-    let types = [];
+    let entity = [];
     let newSessionEntity: any[];
     const sessionEntity = (reply as DialogflowReply).sessionEntityTypes;
     const regexName = new RegExp(/^[A-Z]+$/i);
 
     if (_.isString(this.viewPath)) {
-      types = await event.renderer.renderPath(this.viewPath, event);
+      const sessionEntityType = await event.renderer.renderPath(
+        this.viewPath,
+        event,
+      );
+
+      if (!_.isArray(sessionEntityType)) {
+        entity.push(sessionEntityType);
+      }
+
+      if (_.isArray(sessionEntityType)) {
+        entity = sessionEntityType;
+      }
     }
 
     if (_.isArray(this.viewPath)) {
-      types = this.viewPath;
+      entity = this.viewPath;
     }
 
-    if (!_.isArray(types) && !_.isEmpty(types)) {
-      const objSessionEntity = types;
-      types = [];
-      types.push(objSessionEntity);
+    if (
+      !_.isString(this.viewPath) &&
+      !_.isArray(this.viewPath) &&
+      !_.isEmpty(this.viewPath)
+    ) {
+      const sessionEntityObj = this.viewPath;
+      entity.push(sessionEntityObj);
     }
 
-    if (_.isArray(types) && !_.isEmpty(types)) {
-      newSessionEntity = types.reduce((filtered, property) => {
-        const entityMode = _.get(
-          property,
-          "entityOverrideMode",
-          "ENTITY_OVERRIDE_MODE_OVERRIDE",
-        );
-
-        if (
-          !_.includes(
-            [
-              EntityOverrideMode.Unspecified,
-              EntityOverrideMode.Override,
-              EntityOverrideMode.Supplement,
-            ],
-            entityMode,
-          )
-        ) {
-          throw new Error(
-            "The Entity Override Mode specified is incorrect, please consider use one of the followings: ENTITY_OVERRIDE_MODE_UNSPECIFIED, ENTITY_OVERRIDE_MODE_OVERRIDE or ENTITY_OVERRIDE_MODE_SUPPLEMENT",
-          );
-        }
-        const name = _.get(property, "name");
-
-        if (!name) {
-          throw new Error("A name is required for a Session Entity");
-        }
-
-        const validRegexName = regexName.test(name);
-
-        if (!validRegexName) {
-          throw new Error(
-            "The name property for Session Entity Type should be only alphabetic characters",
-          );
-        }
-
-        const newEntity = {
-          entities: property.entities,
-          entityOverrideMode: entityMode,
-          name: `${event.rawEvent.session}/entityTypes/${name}`,
-        };
-
-        filtered.push(newEntity);
-        return filtered;
-      }, []);
+    if (_.isArray(entity) && !_.isEmpty(entity)) {
+      newSessionEntity = generateSessionEntity(entity, regexName, event);
 
       sessionEntity.push(...newSessionEntity);
     }
@@ -430,4 +401,50 @@ export enum EntityOverrideMode {
   Unspecified = "ENTITY_OVERRIDE_MODE_UNSPECIFIED",
   Override = "ENTITY_OVERRIDE_MODE_OVERRIDE",
   Supplement = "ENTITY_OVERRIDE_MODE_SUPPLEMENT",
+}
+
+function generateSessionEntity(
+  entity: any[],
+  regexName: RegExp,
+  event: IVoxaEvent,
+) {
+  const newSessionEntity = entity.reduce((filteredSessionEntity, property) => {
+    const entityMode = _.get(
+      property,
+      "entityOverrideMode",
+      "ENTITY_OVERRIDE_MODE_OVERRIDE",
+    );
+    if (
+      !_.includes(
+        [
+          EntityOverrideMode.Unspecified,
+          EntityOverrideMode.Override,
+          EntityOverrideMode.Supplement,
+        ],
+        entityMode,
+      )
+    ) {
+      throw new Error(
+        "The Entity Override Mode specified is incorrect, please consider use one of the followings: ENTITY_OVERRIDE_MODE_UNSPECIFIED, ENTITY_OVERRIDE_MODE_OVERRIDE or ENTITY_OVERRIDE_MODE_SUPPLEMENT",
+      );
+    }
+    const name = _.get(property, "name");
+    if (!name) {
+      throw new Error("A name is required for a Session Entity");
+    }
+    const validRegexName = regexName.test(name);
+    if (!validRegexName) {
+      throw new Error(
+        "The name property for Session Entity Type should be only alphabetic characters",
+      );
+    }
+    const newEntity = {
+      entities: property.entities,
+      entityOverrideMode: entityMode,
+      name: `${event.rawEvent.session}/entityTypes/${name}`,
+    };
+    filteredSessionEntity.push(newEntity);
+    return filteredSessionEntity;
+  }, []);
+  return newSessionEntity;
 }
