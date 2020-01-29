@@ -4,12 +4,10 @@ import {
   Image,
   MediaObject,
 } from "actions-on-google";
-import { DialogflowConversation } from "actions-on-google";
 import { expect } from "chai";
 import * as i18next from "i18next";
 import * as _ from "lodash";
 import "mocha";
-
 import {
   DialogflowReply,
   GoogleAssistantEvent,
@@ -17,7 +15,6 @@ import {
   MediaResponse,
   SessionEntity,
 } from "../../../src/platforms/dialogflow";
-import { ISessionEntityType } from "../../../src/platforms/dialogflow/DialogflowReply";
 import { VoxaApp } from "../../../src/VoxaApp";
 import { variables } from "./../../variables";
 import { views } from "./../../views";
