@@ -38,7 +38,7 @@ import {
   TransactionDecision as ActionsOnGoogleTransactionDecision,
   TransactionRequirements as ActionsOnGoogleTransactionRequirements,
   UpdatePermission as ActionsOnGoogleUpdatePermission,
-  UpdatePermissionOptions,
+  UpdatePermissionOptions
 } from "actions-on-google";
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
@@ -46,7 +46,7 @@ import {
   IDirective,
   IDirectiveClass,
   sampleOrItem,
-  Say as BaseSay,
+  Say as BaseSay
 } from "../../../directives";
 import { ITransition } from "../../../StateMachine";
 import { IVoxaEvent } from "../../../VoxaEvent";
@@ -76,7 +76,7 @@ abstract class DialogflowDirective<IOptions> {
 function createSystemIntentDirective<IOptions>(
   QuestionClass: any,
   key: string,
-  requiredCapability?: string,
+  requiredCapability?: string
 ): IDirectiveClass {
   return class extends DialogflowDirective<IOptions> implements IDirective {
     public static platform: string = "google";
@@ -89,7 +89,7 @@ function createSystemIntentDirective<IOptions>(
     public async writeToReply(
       reply: IVoxaReply,
       event: IVoxaEvent,
-      transition?: ITransition,
+      transition?: ITransition
     ): Promise<void> {
       if (!this.hasRequiredCapability(event)) {
         return;
@@ -100,7 +100,7 @@ function createSystemIntentDirective<IOptions>(
 
       google.systemIntent = {
         data: question.inputValueData,
-        intent: question.intent,
+        intent: question.intent
       };
     }
   };
@@ -109,7 +109,7 @@ function createSystemIntentDirective<IOptions>(
 function createRichResponseDirective<IOptions>(
   RichResponseItemClass: any,
   key: string,
-  requiredCapability?: string,
+  requiredCapability?: string
 ): IDirectiveClass {
   return class extends DialogflowDirective<IOptions> implements IDirective {
     public static platform: string = "google";
@@ -122,7 +122,7 @@ function createRichResponseDirective<IOptions>(
     public async writeToReply(
       reply: IVoxaReply,
       event: IVoxaEvent,
-      transition?: ITransition,
+      transition?: ITransition
     ): Promise<void> {
       if (!this.hasRequiredCapability(event)) {
         return;
@@ -145,44 +145,44 @@ export const LinkOutSuggestion = createRichResponseDirective<
 
 export const NewSurface = createSystemIntentDirective<NewSurfaceOptions>(
   ActionsOnGoogleNewSurface,
-  "dialogflowNewSurface",
+  "dialogflowNewSurface"
 );
 
 export const List = createSystemIntentDirective<string | ListOptions>(
   ActionsOnGoogleList,
   "dialogflowList",
-  "actions.capability.SCREEN_OUTPUT",
+  "actions.capability.SCREEN_OUTPUT"
 );
 
 export const Carousel = createSystemIntentDirective<string | CarouselOptions>(
   ActionsOnGoogleCarousel,
   "dialogflowCarousel",
-  "actions.capability.SCREEN_OUTPUT",
+  "actions.capability.SCREEN_OUTPUT"
 );
 
 export const AccountLinkingCard = createSystemIntentDirective<string>(
   ActionsOnGoogleSignIn,
-  "dialogflowAccountLinkingCard",
+  "dialogflowAccountLinkingCard"
 );
 
 export const Permission = createSystemIntentDirective<PermissionOptions>(
   ActionsOnGooglePermission,
-  "dialogflowPermission",
+  "dialogflowPermission"
 );
 
 export const DateTime = createSystemIntentDirective<DateTimeOptions>(
   ActionsOnGoogleDateTime,
-  "dialogflowDateTime",
+  "dialogflowDateTime"
 );
 
 export const Confirmation = createSystemIntentDirective<string>(
   ActionsOnGoogleConfirmation,
-  "dialogflowConfirmation",
+  "dialogflowConfirmation"
 );
 
 export const DeepLink = createSystemIntentDirective<DeepLinkOptions>(
   ActionsOnGoogleDeepLink,
-  "dialogflowDeepLink",
+  "dialogflowDeepLink"
 );
 
 export interface IPlaceOptions {
@@ -204,7 +204,7 @@ export interface IPlaceOptions {
 
 export const Place = createSystemIntentDirective<IPlaceOptions>(
   ActionsOnGooglePlace,
-  "dialogflowPlace",
+  "dialogflowPlace"
 );
 
 export const CompletePurchase = createSystemIntentDirective<
@@ -230,19 +230,19 @@ export const UpdatePermission = createSystemIntentDirective<
 export const BasicCard = createRichResponseDirective<string | BasicCardOptions>(
   ActionsOnGoogleBasicCard,
   "dialogflowBasicCard",
-  "actions.capability.SCREEN_OUTPUT",
+  "actions.capability.SCREEN_OUTPUT"
 );
 
 export const MediaResponse = createRichResponseDirective<MediaResponseOptions>(
   ActionsOnGoogleMediaResponse,
   "dialogflowMediaResponse",
-  "actions.capability.AUDIO_OUTPUT",
+  "actions.capability.AUDIO_OUTPUT"
 );
 
 export const Table = createRichResponseDirective<TableOptions>(
   ActionsOnGoogleTable,
   "dialogflowTable",
-  "actions.capability.SCREEN_OUTPUT",
+  "actions.capability.SCREEN_OUTPUT"
 );
 
 export const BrowseCarousel = createRichResponseDirective<
@@ -250,7 +250,7 @@ export const BrowseCarousel = createRichResponseDirective<
 >(
   ActionsOnGoogleBrowseCarousel,
   "dialogflowBrowseCarousel",
-  "actions.capability.SCREEN_OUTPUT",
+  "actions.capability.SCREEN_OUTPUT"
 );
 
 export class Suggestions implements IDirective {
@@ -262,7 +262,7 @@ export class Suggestions implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition,
+    transition?: ITransition
   ): Promise<void> {
     let options = this.suggestions;
 
@@ -292,14 +292,14 @@ export class Context implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition,
+    transition?: ITransition
   ): Promise<void> {
     const conv: DialogflowConversation = (event as DialogflowEvent).dialogflow
       .conv;
     conv.contexts.set(
       this.contextConfig.name,
       this.contextConfig.lifespan,
-      this.contextConfig.parameters,
+      this.contextConfig.parameters
     );
   }
 }
@@ -311,7 +311,7 @@ export class Say extends BaseSay {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition,
+    transition: ITransition
   ): Promise<void> {
     const google = (reply as DialogflowReply).payload.google;
     let richResponse: RichResponse = google.richResponse;
@@ -348,9 +348,9 @@ export class SessionEntity implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition,
+    transition?: ITransition
   ): Promise<void> {
-    let entity: any;
+    let entity: any = this.viewPath;
 
     if (_.isString(this.viewPath)) {
       entity = await event.renderer.renderPath(this.viewPath, event);
@@ -360,17 +360,9 @@ export class SessionEntity implements IDirective {
       entity = [entity];
     }
 
-    if (_.isPlainObject(this.viewPath)) {
-      entity = [this.viewPath];
-    }
-
-    if (_.isArray(this.viewPath)) {
-      entity = this.viewPath;
-    }
-
     if (!_.isArray(entity) || _.isEmpty(entity)) {
       throw new Error(
-        "Please verify your entity it could be empty or is not an array",
+        "Please verify your entity it could be empty or is not an array"
       );
     }
 
@@ -383,7 +375,7 @@ export class SessionEntity implements IDirective {
 export enum EntityOverrideMode {
   Unspecified = "ENTITY_OVERRIDE_MODE_UNSPECIFIED",
   Override = "ENTITY_OVERRIDE_MODE_OVERRIDE",
-  Supplement = "ENTITY_OVERRIDE_MODE_SUPPLEMENT",
+  Supplement = "ENTITY_OVERRIDE_MODE_SUPPLEMENT"
 }
 
 function generateSessionEntity(entity: any[], event: IVoxaEvent) {
@@ -391,7 +383,7 @@ function generateSessionEntity(entity: any[], event: IVoxaEvent) {
     const entityMode = _.get(
       property,
       "entityOverrideMode",
-      EntityOverrideMode.Override,
+      EntityOverrideMode.Override
     );
     const name = _.get(property, "name");
     const entities = _.get(property, "entities");
@@ -403,7 +395,7 @@ function generateSessionEntity(entity: any[], event: IVoxaEvent) {
     const newEntity = {
       entities: property.entities,
       entityOverrideMode: entityMode,
-      name: `${event.rawEvent.session}/entityTypes/${name}`,
+      name: `${event.rawEvent.session}/entityTypes/${name}`
     };
     filteredSessionEntity.push(newEntity);
     return filteredSessionEntity;
@@ -417,13 +409,13 @@ function validateEntityMode(entityMode: any) {
       [
         EntityOverrideMode.Unspecified,
         EntityOverrideMode.Override,
-        EntityOverrideMode.Supplement,
+        EntityOverrideMode.Supplement
       ],
-      entityMode,
+      entityMode
     )
   ) {
     throw new Error(
-      "The Entity Override Mode specified is incorrect, please consider use one of the followings: ENTITY_OVERRIDE_MODE_UNSPECIFIED, ENTITY_OVERRIDE_MODE_OVERRIDE or ENTITY_OVERRIDE_MODE_SUPPLEMENT",
+      "The Entity Override Mode specified is incorrect, please consider use one of the followings: ENTITY_OVERRIDE_MODE_UNSPECIFIED, ENTITY_OVERRIDE_MODE_OVERRIDE or ENTITY_OVERRIDE_MODE_SUPPLEMENT"
     );
   }
 }
@@ -431,7 +423,7 @@ function validateEntityMode(entityMode: any) {
 function validateEntity(entities: any) {
   if (!entities || _.isEmpty(entities)) {
     throw new Error(
-      "The entities property is empty or was not provided, please verify",
+      "The entities property is empty or was not provided, please verify"
     );
   }
 }
@@ -444,7 +436,7 @@ function validateEntityName(name: any) {
 
   if (!regexName.test(name)) {
     throw new Error(
-      "The name property for Session Entity Type should be only alphabetic characters",
+      "The name property for Session Entity Type should be only alphabetic characters"
     );
   }
 }
