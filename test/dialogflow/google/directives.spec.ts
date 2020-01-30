@@ -1371,5 +1371,27 @@ describe("Google Assistant Directives", () => {
         "The entities property is empty or was not provided, please verify",
       );
     });
+
+    it("should throw an error due to empty array", async () => {
+      const reply = new DialogflowReply();
+      const googleAssistantEvent = new GoogleAssistantEvent(event);
+      const sessionEntity = new SessionEntity([]);
+
+      let error: Error | null = null;
+      try {
+        await sessionEntity.writeToReply(reply, googleAssistantEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal(
+        "Please verify your entity it could be empty or is not an array",
+      );
+    });
   });
 });

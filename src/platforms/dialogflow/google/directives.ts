@@ -350,32 +350,33 @@ export class SessionEntity implements IDirective {
     event: IVoxaEvent,
     transition?: ITransition,
   ): Promise<void> {
-    let newSessionEntity: any[];
-    const sessionEntity = (reply as DialogflowReply).sessionEntityTypes;
+    let entity: any;
 
-    if (this.viewPath) {
-      let entity;
-      _.isArray(this.viewPath) ? (entity = this.viewPath) : (entity = []);
-
-      if (_.isString(this.viewPath)) {
-        const sessionEntityType = await event.renderer.renderPath(
-          this.viewPath,
-          event,
-        );
-
-        _.isArray(sessionEntityType)
-          ? (entity = sessionEntityType)
-          : entity.push(sessionEntityType);
-      }
-
-      if (typeof this.viewPath === "object") {
-        entity.push(this.viewPath);
-      }
-
-      newSessionEntity = generateSessionEntity(entity, event);
-
-      sessionEntity.push(...newSessionEntity);
+    if (_.isString(this.viewPath)) {
+      entity = await event.renderer.renderPath(this.viewPath, event);
     }
+
+    if (_.isPlainObject(entity)) {
+      entity = [entity];
+    }
+
+    if (_.isPlainObject(this.viewPath)) {
+      entity = [this.viewPath];
+    }
+
+    if (_.isArray(this.viewPath)) {
+      entity = this.viewPath;
+    }
+
+    if (!_.isArray(entity) || _.isEmpty(entity)) {
+      throw new Error(
+        "Please verify your entity it could be empty or is not an array",
+      );
+    }
+
+    entity = generateSessionEntity(entity, event);
+
+    (reply as DialogflowReply).sessionEntityTypes = entity;
   }
 }
 
