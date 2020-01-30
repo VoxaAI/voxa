@@ -151,7 +151,7 @@ describe("Google Assistant Directives", () => {
       if (error == null) {
         throw expect(error).to.not.be.null;
       }
-      console.log("error.message? ", error.message);
+
       expect(error.message).to.equal(
         "A simple response is required before a dialogflowMediaResponse",
       );
