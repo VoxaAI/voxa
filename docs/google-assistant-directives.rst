@@ -599,3 +599,66 @@ If you need to add output contexts to the dialog flow webhook you can use the `d
       to: "entry",
       flow: "yield",
     });
+
+
+Session Entities
+-------------------------------------------
+
+`Google Documentation <https://cloud.google.com/dialogflow/docs/entities-session>`_
+
+A session represents a conversation between a Dialogflow agent and an end-user. You can create special entities, called session entities during a session. Session entities can extend or replace custom entity types and only exist during the session that they were created for. All session data, including session entities, is stored by Dialogflow for 20 minutes.
+
+For example, if your agent has a @fruit entity type that includes "pear" and "grape", that entity type could be updated to include "apple" or "orange", depending on the information your agent collects from the end-user. The updated entity type would have the "apple" or "orange" entity entry for the rest of the session.
+
+.. code-block:: javascript
+  
+  // Define entity 
+  const mySessionEntity = [
+        {
+          entities: [
+            {
+              synonyms: ["apple", "green apple", "crabapple"],
+              value: "APPLE_KEY",
+            },
+            {
+              synonyms: ["orange"],
+              value: "ORANGE_KEY",
+            },
+          ],
+          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          name: "fruit",
+        },
+      ]
+
+  // state.js
+
+    app.onIntent("LaunchIntent", {
+        flow: "yield",
+        sayp: "Hello!",
+        sessionEntity: mySessionEntity,
+        to: "entry",
+      });
+
+    // Or you can do it directly...
+
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        sayp: "Hello!",
+        sessionEntity:  [
+          {
+            entities: [
+              {
+                synonyms: ["apple", "green apple", "crabapple"],
+                value: "APPLE_KEY",
+              },
+              {
+                synonyms: ["orange"],
+                value: "ORANGE_KEY",
+              },
+            ],
+            entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+            name: "fruit",
+          },
+        ],
+        to: "entry",
+      });
