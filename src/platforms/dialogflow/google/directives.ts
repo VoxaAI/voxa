@@ -1,4 +1,3 @@
-// tslint:disable:no-console
 import {
   BasicCard as ActionsOnGoogleBasicCard,
   BasicCardOptions,
@@ -8,7 +7,6 @@ import {
   CarouselOptions,
   CompletePurchase as ActionsOnGoogleCompletePurchase,
   Confirmation as ActionsOnGoogleConfirmation,
-  Contexts,
   DateTime as ActionsOnGoogleDateTime,
   DateTimeOptions,
   DeepLink as ActionsOnGoogleDeepLink,
@@ -44,7 +42,6 @@ import {
 } from "actions-on-google";
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
-import { type } from "os";
 import {
   IDirective,
   IDirectiveClass,
