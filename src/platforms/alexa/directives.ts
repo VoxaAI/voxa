@@ -767,8 +767,7 @@ export class VideoAppLaunch extends MultimediaAlexaDirective {
   }
 }
 
-export class DynamicEntitiesDirective extends AlexaDirective
-  implements IDirective {
+export class DynamicEntitiesDirective extends AlexaDirective implements IDirective {
   public static key: string = "alexaDynamicEntities";
   public static platform: string = "alexa";
 
@@ -776,12 +775,7 @@ export class DynamicEntitiesDirective extends AlexaDirective
   public types?: er.dynamic.EntityListItem[];
   public directive?: dialog.DynamicEntitiesDirective;
 
-  constructor(
-    viewPath:
-      | string
-      | dialog.DynamicEntitiesDirective
-      | er.dynamic.EntityListItem[],
-  ) {
+  constructor(viewPath: string | dialog.DynamicEntitiesDirective | er.dynamic.EntityListItem[]) {
     super();
     if (_.isString(viewPath)) {
       this.viewPath = viewPath;
