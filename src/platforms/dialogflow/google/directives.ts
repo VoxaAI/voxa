@@ -350,14 +350,12 @@ export class SessionEntity implements IDirective {
     event: IVoxaEvent,
     transition?: ITransition,
   ): Promise<void> {
-    let entity = [];
     let newSessionEntity: any[];
     const sessionEntity = (reply as DialogflowReply).sessionEntityTypes;
 
     if (this.viewPath) {
-      if (_.isArray(this.viewPath)) {
-        entity = this.viewPath;
-      }
+      let entity;
+      _.isArray(this.viewPath) ? (entity = this.viewPath) : (entity = []);
 
       if (_.isString(this.viewPath)) {
         const sessionEntityType = await event.renderer.renderPath(
@@ -371,8 +369,7 @@ export class SessionEntity implements IDirective {
       }
 
       if (typeof this.viewPath === "object") {
-        const sessionEntityObj = this.viewPath;
-        entity.push(sessionEntityObj);
+        entity.push(this.viewPath);
       }
 
       newSessionEntity = generateSessionEntity(entity, event);
