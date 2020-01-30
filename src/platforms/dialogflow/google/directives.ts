@@ -339,9 +339,9 @@ export class SessionEntity implements IDirective {
   public static key: string = "sessionEntity";
   public static platform: string = "google";
 
-  public viewPath?: string | ISessionEntityType[];
+  public viewPath?: any | any[];
 
-  constructor(viewPath: string | any[] | any) {
+  constructor(viewPath: any | any[]) {
     this.viewPath = viewPath;
   }
 
@@ -354,35 +354,27 @@ export class SessionEntity implements IDirective {
     let newSessionEntity: any[];
     const sessionEntity = (reply as DialogflowReply).sessionEntityTypes;
 
-    if (_.isString(this.viewPath)) {
-      const sessionEntityType = await event.renderer.renderPath(
-        this.viewPath,
-        event,
-      );
-
-      if (!_.isArray(sessionEntityType)) {
-        entity.push(sessionEntityType);
+    if (this.viewPath) {
+      if (_.isArray(this.viewPath)) {
+        entity = this.viewPath;
       }
 
-      if (_.isArray(sessionEntityType)) {
-        entity = sessionEntityType;
+      if (_.isString(this.viewPath)) {
+        const sessionEntityType = await event.renderer.renderPath(
+          this.viewPath,
+          event,
+        );
+
+        _.isArray(sessionEntityType)
+          ? (entity = sessionEntityType)
+          : entity.push(sessionEntityType);
       }
-    }
 
-    if (_.isArray(this.viewPath)) {
-      entity = this.viewPath;
-    }
+      if (typeof this.viewPath === "object") {
+        const sessionEntityObj = this.viewPath;
+        entity.push(sessionEntityObj);
+      }
 
-    if (
-      !_.isString(this.viewPath) &&
-      !_.isArray(this.viewPath) &&
-      !_.isEmpty(this.viewPath)
-    ) {
-      const sessionEntityObj = this.viewPath;
-      entity.push(sessionEntityObj);
-    }
-
-    if (_.isArray(entity) && !_.isEmpty(entity)) {
       newSessionEntity = generateSessionEntity(entity, event);
 
       sessionEntity.push(...newSessionEntity);
@@ -401,7 +393,7 @@ function generateSessionEntity(entity: any[], event: IVoxaEvent) {
     const entityMode = _.get(
       property,
       "entityOverrideMode",
-      "ENTITY_OVERRIDE_MODE_OVERRIDE",
+      EntityOverrideMode.Override,
     );
     const name = _.get(property, "name");
     const entities = _.get(property, "entities");
