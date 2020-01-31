@@ -610,32 +610,43 @@ A session represents a conversation between a Dialogflow agent and an end-user. 
 
 For example, if your agent has a @fruit entity type that includes "pear" and "grape", that entity type could be updated to include "apple" or "orange", depending on the information your agent collects from the end-user. The updated entity type would have the "apple" or "orange" entity entry for the rest of the session.
 
+Pre-conditions:
+In your VUI file create a LIST_OF_ENTITY tab (example: LIST_OF_FRUITS) and add the entity content to be overridden, which the one used by default.
+
 .. code-block:: javascript
+ 
+ // variables.js
+
+  export function mySessionEntity(voxaEvent: IVoxaEvent) {
+    const sessionEntityType: any = sessionEntity.fruit;
+
+    return sessionEntityType;
+  }
   
-  // Define entity 
-  const mySessionEntity = [
+  // You can create a json file with the entity (mySessionEntity.json)
+  [
+    {
+      "entities": [
         {
-          entities: [
-            {
-              synonyms: ["apple", "green apple", "crabapple"],
-              value: "APPLE_KEY",
-            },
-            {
-              synonyms: ["orange"],
-              value: "ORANGE_KEY",
-            },
-          ],
-          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
-          name: "fruit",
+          "synonyms": ["apple", "green apple", "crabapple"],
+          "value": "APPLE_KEY"
         },
-      ]
+        {
+          "synonyms": ["orange"],
+          "value": "ORANGE_KEY"
+        }
+      ],
+      "entityOverrideMode": "ENTITY_OVERRIDE_MODE_OVERRIDE",
+      "name": "list-of-fruits"
+    }
+  ]
 
   // state.js
 
     app.onIntent("LaunchIntent", {
         flow: "yield",
         sayp: "Hello!",
-        sessionEntity: mySessionEntity,
+        sessionEntity: "mySessionEntity",
         to: "entry",
       });
 
