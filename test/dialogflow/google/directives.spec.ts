@@ -1155,9 +1155,9 @@ describe("Google Assistant Directives", () => {
 
     it("should add a simple sesssion entity", async () => {
       app.onIntent("LaunchIntent", {
+        dialogflowSessionEntity: "MySessionEntity",
         flow: "yield",
         sayp: "Hello!",
-        dialogflowSessionEntity: "MySessionEntity",
         to: "entry",
       });
 
@@ -1185,9 +1185,9 @@ describe("Google Assistant Directives", () => {
 
     it("should add an array of objects in sesssion entity", async () => {
       app.onIntent("LaunchIntent", {
+        dialogflowSessionEntity: "MultipleSessionEntities",
         flow: "yield",
         sayp: "Hello!",
-        dialogflowSessionEntity: "MultipleSessionEntities",
         to: "entry",
       });
 
@@ -1250,9 +1250,9 @@ describe("Google Assistant Directives", () => {
 
     it("should add an object in sesssion entity", async () => {
       app.onIntent("LaunchIntent", {
+        dialogflowSessionEntity: "SimpleSessionEntity",
         flow: "yield",
         sayp: "Hello!",
-        dialogflowSessionEntity: "SimpleSessionEntity",
         to: "entry",
       });
 
