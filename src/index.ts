@@ -22,8 +22,6 @@ export {
   AlexaEvent,
   APLCommand,
   APLTemplate,
-  APLTTemplate,
-  APLTCommand,
   ANCHOR_ENUM,
   ConnectionsSendRequest,
   DialogDelegate,
