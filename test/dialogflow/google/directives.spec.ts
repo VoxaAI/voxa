@@ -1157,7 +1157,7 @@ describe("Google Assistant Directives", () => {
       app.onIntent("LaunchIntent", {
         flow: "yield",
         sayp: "Hello!",
-        sessionEntity: "MySessionEntity",
+        dialogflowSessionEntity: "MySessionEntity",
         to: "entry",
       });
 
@@ -1187,7 +1187,7 @@ describe("Google Assistant Directives", () => {
       app.onIntent("LaunchIntent", {
         flow: "yield",
         sayp: "Hello!",
-        sessionEntity: "MultipleSessionEntities",
+        dialogflowSessionEntity: "MultipleSessionEntities",
         to: "entry",
       });
 
@@ -1252,7 +1252,7 @@ describe("Google Assistant Directives", () => {
       app.onIntent("LaunchIntent", {
         flow: "yield",
         sayp: "Hello!",
-        sessionEntity: "SimpleSessionEntity",
+        dialogflowSessionEntity: "SimpleSessionEntity",
         to: "entry",
       });
 

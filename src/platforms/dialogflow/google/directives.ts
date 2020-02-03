@@ -336,7 +336,7 @@ export class Say extends BaseSay {
 }
 
 export class SessionEntity implements IDirective {
-  public static key: string = "sessionEntity";
+  public static key: string = "dialogflowSessionEntity";
   public static platform: string = "google";
 
   public viewPath?: any | any[];

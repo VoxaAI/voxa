@@ -68,7 +68,7 @@ export class DialogflowReply implements IVoxaReply {
   public fulfillmentText: string = "";
   public source: string = "google";
   public payload: IDialogflowPayload;
-  public sessionEntityTypes: ISessionEntityType[];
+  public sessionEntityTypes?: ISessionEntityType[];
 
   constructor() {
     this.payload = {
