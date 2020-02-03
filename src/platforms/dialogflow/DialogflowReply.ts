@@ -78,7 +78,6 @@ export class DialogflowReply implements IVoxaReply {
         userStorage: {},
       },
     };
-    this.sessionEntityTypes = [];
   }
 
   public async saveSession(attributes: IBag, event: IVoxaEvent): Promise<void> {
