@@ -610,66 +610,74 @@ A session represents a conversation between a Dialogflow agent and an end-user. 
 
 For example, if your agent has a @fruit entity type that includes "pear" and "grape", that entity type could be updated to include "apple" or "orange", depending on the information your agent collects from the end-user. The updated entity type would have the "apple" or "orange" entity entry for the rest of the session.
 
-Pre-conditions:
-In your VUI file create a LIST_OF_ENTITY tab (example: LIST_OF_FRUITS) and add the entity content to be overridden, which the one used by default.
+Create an entity in your dialogflow agent and make sure that define synonyms option is checked. Add some values and synonyms if needed according agent instructions. Notice that the name of the entity is the value to be used by the directive (i.e., list-of-fruits).
 
 .. code-block:: javascript
  
- // variables.js
+  // variables.js
 
-  export function mySessionEntity(voxaEvent: IVoxaEvent) {
-    const sessionEntityType: any = sessionEntity.fruit;
+    export function mySessionEntity(voxaEvent: VoxaEvent) {
+      // Do something with the voxaEvent, or not...
 
-    return sessionEntityType;
-  }
-  
-  // You can create a json file with the entity (mySessionEntity.json)
-  [
-    {
-      "entities": [
+      const sessionEntityType = [
         {
-          "synonyms": ["apple", "green apple", "crabapple"],
-          "value": "APPLE_KEY"
-        },
-        {
-          "synonyms": ["orange"],
-          "value": "ORANGE_KEY"
+          "entities": [
+            {
+              "synonyms": ["apple", "green apple", "crabapple"],
+              "value": "APPLE_KEY"
+            },
+            {
+              "synonyms": ["orange"],
+              "value": "ORANGE_KEY"
+            }
+          ],
+          "entityOverrideMode": "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          "name": "list-of-fruits"
         }
-      ],
-      "entityOverrideMode": "ENTITY_OVERRIDE_MODE_OVERRIDE",
-      "name": "list-of-fruits"
+      ];
+
+      return sessionEntityType;
     }
-  ]
+  
+  // views.js
+
+    const views = {
+      "en-US": {
+        translation: {
+          mySessionEntity: "{mySessionEntity}"
+        },
+      };
+    };
 
   // state.js
 
-    app.onIntent("LaunchIntent", {
-        flow: "yield",
-        sayp: "Hello!",
-        sessionEntity: "mySessionEntity",
-        to: "entry",
-      });
+    app.onState('someState', {
+      dialogflowSessionEntity: "mySessionEntity",
+      flow: "yield",
+      sayp: "Hello!",
+      to: "entry",
+    });
 
-    // Or you can do it directly...
+  // Or you can do it directly...
 
-      app.onIntent("LaunchIntent", {
-        flow: "yield",
-        sayp: "Hello!",
-        sessionEntity:  [
-          {
-            entities: [
-              {
-                synonyms: ["apple", "green apple", "crabapple"],
-                value: "APPLE_KEY",
-              },
-              {
-                synonyms: ["orange"],
-                value: "ORANGE_KEY",
-              },
-            ],
-            entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
-            name: "fruit",
-          },
-        ],
-        to: "entry",
-      });
+    app.onState('someState', {
+      dialogflowSessionEntity:  [
+        {
+          "entities": [
+            {
+              "synonyms": ["apple", "green apple", "crabapple"],
+              "value": "APPLE_KEY"
+            },
+            {
+              "synonyms": ["orange"],
+              "value": "ORANGE_KEY"
+            }
+          ],
+          "entityOverrideMode": "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          "name": "list-of-fruits"
+        }
+      ],
+      flow: "yield",
+      sayp: "Hello!",
+      to: "entry",
+    });
