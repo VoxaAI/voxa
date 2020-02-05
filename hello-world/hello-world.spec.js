@@ -93,7 +93,7 @@ describe("Hello World", () => {
 
   describe("Lambda", () => {
     it("runs the lambda call", function() {
-      this.timeout(3000);
+      this.timeout(10000);
       const lambdaCallbackResult = dockerLambda({
         dockerImage: `lambci/lambda:nodejs${LAMBDA_VERSION}`,
         event: launchIntent,
