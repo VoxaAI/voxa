@@ -926,7 +926,9 @@ describe("VoxaApp", () => {
       const alexaSkill = new AlexaPlatform(voxaApp);
       const response = await alexaSkill.execute(event);
 
-      expect(response.speech).to.deep.equal("<speak>this is a say\nthis is another say</speak>");
+      expect(response.speech).to.deep.equal(
+        "<speak>this is a say\nthis is another say</speak>",
+      );
       expect(response.reprompt).to.deep.equal(
         "<speak>this is a reprompt</speak>",
       );

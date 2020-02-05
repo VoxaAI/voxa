@@ -262,7 +262,7 @@ export class StateMachine {
 
     return (
       states.find(
-        (s: State) => s.intents.length && s.intents.includes(intentName),
+        (s: State) => !!s.intents.length && s.intents.includes(intentName),
       ) || states[0] // If no state with name is found, the first state is returned by default as an State object is always needed
     );
   }

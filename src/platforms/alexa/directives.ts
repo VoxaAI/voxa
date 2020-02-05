@@ -469,9 +469,7 @@ export class PlayAudio extends MultimediaAlexaDirective implements IDirective {
 
   public directive?: interfaces.audioplayer.PlayDirective;
 
-  constructor(
-    public data: IAlexaPlayAudioDataOptions,
-  ) {
+  constructor(public data: IAlexaPlayAudioDataOptions) {
     super();
   }
 
@@ -673,7 +671,8 @@ export class VideoAppLaunch extends MultimediaAlexaDirective {
   }
 }
 
-export class DynamicEntitiesDirective extends AlexaDirective implements IDirective {
+export class DynamicEntitiesDirective extends AlexaDirective
+  implements IDirective {
   public static key: string = "alexaDynamicEntities";
   public static platform: string = "alexa";
 
@@ -681,7 +680,12 @@ export class DynamicEntitiesDirective extends AlexaDirective implements IDirecti
   public types?: er.dynamic.EntityListItem[];
   public directive?: dialog.DynamicEntitiesDirective;
 
-  constructor(viewPath: string | dialog.DynamicEntitiesDirective | er.dynamic.EntityListItem[]) {
+  constructor(
+    viewPath:
+      | string
+      | dialog.DynamicEntitiesDirective
+      | er.dynamic.EntityListItem[],
+  ) {
     super();
     if (_.isString(viewPath)) {
       this.viewPath = viewPath;

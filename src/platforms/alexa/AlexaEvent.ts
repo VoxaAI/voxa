@@ -106,9 +106,7 @@ export class AlexaEvent extends VoxaEvent {
     const httpOptions: any = {
       json: true,
       method: "GET",
-      uri: `https://api.amazon.com/user/profile?access_token=${
-        this.user.accessToken
-      }`,
+      uri: `https://api.amazon.com/user/profile?access_token=${this.user.accessToken}`,
     };
 
     const result: any = await rp(httpOptions);

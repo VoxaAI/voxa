@@ -208,8 +208,6 @@ An APL Command is sent with the `alexaAPLCommand` key in your controller. Just l
       };
     });
 
-
-
 PlayAudio
 ---------
 
@@ -513,4 +511,3 @@ Dynamic entities are sent with the `alexaDynamicEntities` key in your controller
         },
       };
     });
-
