@@ -1,9 +1,10 @@
 # VOXA Changelog
 
-## Unreleased
+## 3.3.2 (2020-02-05)
 
 #### Enhancement
 
+- Add Google Action session entities directive
 - Add support for APLT
 
 ## 3.3.1 (2019-10-29)
