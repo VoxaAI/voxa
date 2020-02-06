@@ -7,10 +7,11 @@ import {
   AlexaEvent,
   AlexaPlatform,
   APLTemplate,
+  APLTTemplate,
   DisplayTemplate,
   HomeCard,
   IVoxaIntentEvent,
-  VoxaApp,
+  VoxaApp
 } from "../../src/";
 import { AlexaRequestBuilder } from "./../tools";
 import { variables } from "./../variables";
@@ -28,7 +29,7 @@ describe("Alexa directives", () => {
     await i18n.init({
       load: "all",
       nonExplicitWhitelist: true,
-      resources: views,
+      resources: views
     });
   });
 
@@ -37,7 +38,7 @@ describe("Alexa directives", () => {
     app = new VoxaApp({ views, variables });
     alexaSkill = new AlexaPlatform(app);
     dialogStateEvent = rb.getIntentRequest("GreetingIntent", {
-      hello_world: "Hello",
+      hello_world: "Hello"
     });
     event = rb.getIntentRequest("AMAZON.YesIntent");
   });
@@ -46,7 +47,7 @@ describe("Alexa directives", () => {
     it("should only add the template if request supports it", async () => {
       app.onIntent("YesIntent", {
         alexaRenderTemplate: "RenderTemplate",
-        to: "die",
+        to: "die"
       });
 
       event.context.System.device.supportedInterfaces = {};
@@ -58,28 +59,28 @@ describe("Alexa directives", () => {
       app.onIntent("YesIntent", () => {
         const template = new DisplayTemplate("BodyTemplate1");
         return {
-          alexaRenderTemplate: template,
+          alexaRenderTemplate: template
         };
       });
 
       const reply = await alexaSkill.execute(event);
       expect(reply.response.directives).to.not.be.undefined;
       expect(
-        JSON.parse(JSON.stringify(reply.response.directives)),
+        JSON.parse(JSON.stringify(reply.response.directives))
       ).to.deep.equal([
         {
           template: {
-            type: "BodyTemplate1",
+            type: "BodyTemplate1"
           },
-          type: "Display.RenderTemplate",
-        },
+          type: "Display.RenderTemplate"
+        }
       ]);
     });
 
     it("should add to the directives", async () => {
       app.onIntent("YesIntent", {
         alexaRenderTemplate: "RenderTemplate",
-        to: "die",
+        to: "die"
       });
 
       const reply = await alexaSkill.execute(event);
@@ -92,23 +93,23 @@ describe("Alexa directives", () => {
             textContent: {
               primaryText: {
                 text: "string",
-                type: "string",
+                type: "string"
               },
               secondaryText: {
                 text: "string",
-                type: "string",
+                type: "string"
               },
               tertiaryText: {
                 text: "string",
-                type: "string",
-              },
+                type: "string"
+              }
             },
             title: "string",
             token: "string",
-            type: "BodyTemplate1",
+            type: "BodyTemplate1"
           },
-          type: "Display.RenderTemplate",
-        },
+          type: "Display.RenderTemplate"
+        }
       ]);
     });
 
@@ -116,7 +117,7 @@ describe("Alexa directives", () => {
       app.onIntent("YesIntent", {
         alexaAPLTemplate: "APLTemplate",
         alexaRenderTemplate: "RenderTemplate",
-        to: "die",
+        to: "die"
       });
 
       event.context.System.device.supportedInterfaces = { Display: {} };
@@ -130,23 +131,61 @@ describe("Alexa directives", () => {
             textContent: {
               primaryText: {
                 text: "string",
-                type: "string",
+                type: "string"
               },
               secondaryText: {
                 text: "string",
-                type: "string",
+                type: "string"
               },
               tertiaryText: {
                 text: "string",
-                type: "string",
-              },
+                type: "string"
+              }
             },
             title: "string",
             token: "string",
-            type: "BodyTemplate1",
+            type: "BodyTemplate1"
           },
-          type: "Display.RenderTemplate",
-        },
+          type: "Display.RenderTemplate"
+        }
+      ]);
+    });
+
+    it("should be the only directive if APLT is not supported", async () => {
+      app.onIntent("YesIntent", {
+        alexaAPLTTemplate: "APLTTemplate",
+        alexaRenderTemplate: "RenderTemplate",
+        to: "die"
+      });
+
+      event.context.System.device.supportedInterfaces = { Display: {} };
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.not.be.undefined;
+      expect(reply.response.directives).to.deep.equal([
+        {
+          template: {
+            backButton: "VISIBLE",
+            backgroundImage: "Image",
+            textContent: {
+              primaryText: {
+                text: "string",
+                type: "string"
+              },
+              secondaryText: {
+                text: "string",
+                type: "string"
+              },
+              tertiaryText: {
+                text: "string",
+                type: "string"
+              }
+            },
+            title: "string",
+            token: "string",
+            type: "BodyTemplate1"
+          },
+          type: "Display.RenderTemplate"
+        }
       ]);
     });
   });
@@ -155,7 +194,7 @@ describe("Alexa directives", () => {
     it("should only add the template if request supports it", async () => {
       app.onIntent("YesIntent", {
         alexaAPLTemplate: "APLTemplate",
-        to: "die",
+        to: "die"
       });
 
       event.context.System.device.supportedInterfaces = {};
@@ -166,7 +205,7 @@ describe("Alexa directives", () => {
     it("should add to the directives", async () => {
       app.onIntent("YesIntent", {
         alexaAPLTemplate: "APLTemplate",
-        to: "die",
+        to: "die"
       });
 
       const reply = await alexaSkill.execute(event);
@@ -176,8 +215,8 @@ describe("Alexa directives", () => {
           datasources: {},
           document: {},
           token: "SkillTemplateToken",
-          type: "Alexa.Presentation.APL.RenderDocument",
-        },
+          type: "Alexa.Presentation.APL.RenderDocument"
+        }
       ]);
     });
 
@@ -185,7 +224,7 @@ describe("Alexa directives", () => {
       app.onIntent("YesIntent", {
         alexaAPLTemplate: "APLTemplate",
         alexaRenderTemplate: "RenderTemplate",
-        to: "die",
+        to: "die"
       });
 
       const reply = await alexaSkill.execute(event);
@@ -198,29 +237,29 @@ describe("Alexa directives", () => {
             textContent: {
               primaryText: {
                 text: "string",
-                type: "string",
+                type: "string"
               },
               secondaryText: {
                 text: "string",
-                type: "string",
+                type: "string"
               },
               tertiaryText: {
                 text: "string",
-                type: "string",
-              },
+                type: "string"
+              }
             },
             title: "string",
             token: "string",
-            type: "BodyTemplate1",
+            type: "BodyTemplate1"
           },
-          type: "Display.RenderTemplate",
+          type: "Display.RenderTemplate"
         },
         {
           datasources: {},
           document: {},
           token: "SkillTemplateToken",
-          type: "Alexa.Presentation.APL.RenderDocument",
-        },
+          type: "Alexa.Presentation.APL.RenderDocument"
+        }
       ]);
     });
   });
@@ -229,7 +268,7 @@ describe("Alexa directives", () => {
     it("should only add the command if request supports it", async () => {
       app.onIntent("YesIntent", {
         alexaAPLCommand: "APLKaraokeCommand",
-        to: "die",
+        to: "die"
       });
 
       event.context.System.device.supportedInterfaces = {};
@@ -240,7 +279,7 @@ describe("Alexa directives", () => {
     it("should add to the directives", async () => {
       app.onIntent("YesIntent", {
         alexaAPLCommand: "APLKaraokeCommand",
-        to: "die",
+        to: "die"
       });
 
       const reply = await alexaSkill.execute(event);
@@ -252,12 +291,128 @@ describe("Alexa directives", () => {
               align: "center",
               componentId: "textComponent",
               highlightMode: "line",
-              type: "SpeakItem",
-            },
+              type: "SpeakItem"
+            }
           ],
           token: "SkillTemplateToken",
-          type: "Alexa.Presentation.APL.ExecuteCommands",
+          type: "Alexa.Presentation.APL.ExecuteCommands"
+        }
+      ]);
+    });
+  });
+
+  describe("APLTRenderTemplate", () => {
+    it("should only add the template if request supports it", async () => {
+      app.onIntent("YesIntent", {
+        alexaAPLTTemplate: "APLTTemplate",
+        to: "die"
+      });
+
+      event.context.System.device.supportedInterfaces = {};
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.be.undefined;
+    });
+
+    it("should add to the directives", async () => {
+      app.onIntent("YesIntent", {
+        alexaAPLTTemplate: "APLTTemplate",
+        to: "die"
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.not.be.undefined;
+      expect(reply.response.directives).to.deep.equal([
+        {
+          datasources: {},
+          document: {},
+          targetProfile: "FOUR_CHARACTER_CLOCK",
+          token: "SkillTemplateToken",
+          type: "Alexa.Presentation.APLT.RenderDocument"
+        }
+      ]);
+    });
+
+    it("should be in the directives array after the RenderTemplate", async () => {
+      app.onIntent("YesIntent", {
+        alexaAPLTTemplate: "APLTTemplate",
+        alexaRenderTemplate: "RenderTemplate",
+        to: "die"
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.not.be.undefined;
+      expect(reply.response.directives).to.deep.equal([
+        {
+          template: {
+            backButton: "VISIBLE",
+            backgroundImage: "Image",
+            textContent: {
+              primaryText: {
+                text: "string",
+                type: "string"
+              },
+              secondaryText: {
+                text: "string",
+                type: "string"
+              },
+              tertiaryText: {
+                text: "string",
+                type: "string"
+              }
+            },
+            title: "string",
+            token: "string",
+            type: "BodyTemplate1"
+          },
+          type: "Display.RenderTemplate"
         },
+        {
+          datasources: {},
+          document: {},
+          targetProfile: "FOUR_CHARACTER_CLOCK",
+          token: "SkillTemplateToken",
+          type: "Alexa.Presentation.APLT.RenderDocument"
+        }
+      ]);
+    });
+  });
+
+  describe("APLTCommand", () => {
+    it("should only add the command if request supports it", async () => {
+      app.onIntent("YesIntent", {
+        alexaAPLTCommand: "APLTCommand",
+        to: "die"
+      });
+
+      event.context.System.device.supportedInterfaces = {};
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.be.undefined;
+    });
+
+    it("should add to the directives", async () => {
+      app.onIntent("YesIntent", {
+        alexaAPLTCommand: "APLTCommand",
+        to: "die"
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.not.be.undefined;
+      expect(reply.response.directives).to.deep.equal([
+        {
+          commands: [
+            {
+              componentId: "myTextId",
+              delay: 3000,
+              description:
+                "Changes the text property value on the 'myTextId' component.",
+              property: "text",
+              type: "SetValue",
+              value: "New text value!"
+            }
+          ],
+          token: "SkillTemplateToken",
+          type: "Alexa.Presentation.APLT.ExecuteCommands"
+        }
       ]);
     });
   });
@@ -266,7 +421,7 @@ describe("Alexa directives", () => {
     it("should render a Hint directive", async () => {
       app.onIntent("YesIntent", {
         alexaHint: "Hint",
-        to: "die",
+        to: "die"
       });
 
       const reply = await alexaSkill.execute(event);
@@ -274,10 +429,10 @@ describe("Alexa directives", () => {
         {
           hint: {
             text: "string",
-            type: "PlainText",
+            type: "PlainText"
           },
-          type: "Hint",
-        },
+          type: "Hint"
+        }
       ]);
     });
   });
@@ -286,13 +441,13 @@ describe("Alexa directives", () => {
     it("should render an AudioPlayer.Stop directive", async () => {
       app.onIntent("YesIntent", {
         alexaStopAudio: undefined,
-        to: "die",
+        to: "die"
       });
       const reply = await alexaSkill.execute(event);
       expect(reply.response.directives).to.deep.equal([
         {
-          type: "AudioPlayer.Stop",
-        },
+          type: "AudioPlayer.Stop"
+        }
       ]);
     });
   });
@@ -301,11 +456,11 @@ describe("Alexa directives", () => {
     it("should render an AccountLinkingCard", async () => {
       app.onIntent("YesIntent", {
         alexaAccountLinkingCard: undefined,
-        to: "die",
+        to: "die"
       });
       const reply = await alexaSkill.execute(event);
       expect(reply.response.card).to.deep.equal({
-        type: "LinkAccount",
+        type: "LinkAccount"
       });
     });
   });
@@ -314,41 +469,41 @@ describe("Alexa directives", () => {
     it("should be usable from the directives", async () => {
       app.onIntent("YesIntent", {
         directives: [new HomeCard("Card")],
-        to: "die",
+        to: "die"
       });
 
       const reply = await alexaSkill.execute(event);
       expect(reply.response.card).to.deep.equal({
         image: {
           largeImageUrl: "https://example.com/large.jpg",
-          smallImageUrl: "https://example.com/small.jpg",
+          smallImageUrl: "https://example.com/small.jpg"
         },
         title: "Title",
-        type: "Standard",
+        type: "Standard"
       });
     });
 
     it("should render the home card", async () => {
       app.onIntent("YesIntent", {
         alexaCard: "Card",
-        to: "die",
+        to: "die"
       });
 
       const reply = await alexaSkill.execute(event);
       expect(reply.response.card).to.deep.equal({
         image: {
           largeImageUrl: "https://example.com/large.jpg",
-          smallImageUrl: "https://example.com/small.jpg",
+          smallImageUrl: "https://example.com/small.jpg"
         },
         title: "Title",
-        type: "Standard",
+        type: "Standard"
       });
     });
 
     it("should render faile if variable doesn't return a card like object", async () => {
       app.onIntent("YesIntent", () => ({
         alexaCard: "Card2",
-        to: "die",
+        to: "die"
       }));
 
       const reply = await alexaSkill.execute(event);
@@ -360,12 +515,12 @@ describe("Alexa directives", () => {
       app.onIntent("YesIntent", {
         alexaCard: "Card",
         directives: [new HomeCard("Card")],
-        to: "entry",
+        to: "entry"
       });
 
       app.onError((request: AlexaEvent, error: Error) => {
         expect(error.message).to.equal(
-          "At most one card can be specified in a response",
+          "At most one card can be specified in a response"
         );
       });
 
@@ -375,7 +530,7 @@ describe("Alexa directives", () => {
       }
 
       expect(reply.speech).to.equal(
-        "<speak>An unrecoverable error occurred.</speak>",
+        "<speak>An unrecoverable error occurred.</speak>"
       );
     });
 
@@ -384,13 +539,13 @@ describe("Alexa directives", () => {
         alexaCard: {
           image: {
             largeImageUrl: "https://example.com/large.jpg",
-            smallImageUrl: "https://example.com/small.jpg",
+            smallImageUrl: "https://example.com/small.jpg"
           },
           title: "Title",
-          type: "Standard",
+          type: "Standard"
         },
         flow: "yield",
-        to: "entry",
+        to: "entry"
       }));
 
       const reply = await alexaSkill.execute(event);
@@ -398,10 +553,10 @@ describe("Alexa directives", () => {
       expect(reply.response.card).to.deep.equal({
         image: {
           largeImageUrl: "https://example.com/large.jpg",
-          smallImageUrl: "https://example.com/small.jpg",
+          smallImageUrl: "https://example.com/small.jpg"
         },
         title: "Title",
-        type: "Standard",
+        type: "Standard"
       });
     });
   });
@@ -410,20 +565,20 @@ describe("Alexa directives", () => {
     it("should render a DialogDelegate directive with no slots", async () => {
       app.onIntent("YesIntent", {
         alexaDialogDelegate: undefined,
-        to: "die",
+        to: "die"
       });
       const reply = await alexaSkill.execute(event);
       expect(reply.response.directives).to.deep.equal([
         {
-          type: "Dialog.Delegate",
-        },
+          type: "Dialog.Delegate"
+        }
       ]);
     });
 
     it("should render a DialogDelegate directive with slot values", async () => {
       app.onIntent("GreetingIntent", (voxaEvent: IVoxaIntentEvent) => ({
         alexaDialogDelegate: voxaEvent.intent.params,
-        to: "die",
+        to: "die"
       }));
       const reply = await alexaSkill.execute(dialogStateEvent);
       expect(reply.response.directives).to.deep.equal([
@@ -436,11 +591,11 @@ describe("Alexa directives", () => {
               hello_world: {
                 confirmationStatus: "NONE",
                 name: "hello_world",
-                value: "Hello",
-              },
-            },
-          },
-        },
+                value: "Hello"
+              }
+            }
+          }
+        }
       ]);
     });
   });
@@ -449,8 +604,8 @@ describe("Alexa directives", () => {
     it("should render a DialogElicitSlot directive", async () => {
       app.onIntent("GreetingIntent", {
         alexaElicitDialog: {
-          slotToElicit: "hello_world",
-        },
+          slotToElicit: "hello_world"
+        }
       });
       const reply = await alexaSkill.execute(dialogStateEvent);
       expect(reply.response.directives).to.deep.equal([
@@ -463,11 +618,11 @@ describe("Alexa directives", () => {
             slots: {
               hello_world: {
                 name: "hello_world",
-                value: "Hello",
-              },
-            },
-          },
-        },
+                value: "Hello"
+              }
+            }
+          }
+        }
       ]);
     });
 
@@ -476,9 +631,9 @@ describe("Alexa directives", () => {
         alexaElicitDialog: {
           slotToElicit: "hello_world",
           slots: {
-            hello_world: {},
-          },
-        },
+            hello_world: {}
+          }
+        }
       });
       const reply = await alexaSkill.execute(dialogStateEvent);
       expect(reply.response.directives).to.deep.equal([
@@ -490,21 +645,21 @@ describe("Alexa directives", () => {
             name: "GreetingIntent",
             slots: {
               hello_world: {
-                name: "hello_world",
-              },
-            },
-          },
-        },
+                name: "hello_world"
+              }
+            }
+          }
+        }
       ]);
     });
 
     it("DialogElicitSlot no slotToElicit error", async () => {
       app.onIntent("GreetingIntent", {
-        alexaElicitDialog: {},
+        alexaElicitDialog: {}
       });
       app.onError((request: AlexaEvent, error: Error) => {
         expect(error.message).to.equal(
-          "slotToElicit is required for the Dialog.ElicitSlot directive",
+          "slotToElicit is required for the Dialog.ElicitSlot directive"
         );
       });
 
@@ -514,12 +669,12 @@ describe("Alexa directives", () => {
     it("DialogElicitSlot transition error", async () => {
       app.onIntent("GreetingIntent", {
         alexaElicitDialog: {
-          slotToElicit: "hello_world",
-        },
+          slotToElicit: "hello_world"
+        }
       });
       app.onError((request: AlexaEvent, error: Error) => {
         expect(error.message).to.equal(
-          "You cannot transition to a new intent while using a Dialog.ElicitSlot directive",
+          "You cannot transition to a new intent while using a Dialog.ElicitSlot directive"
         );
       });
 
@@ -535,12 +690,12 @@ describe("Alexa directives", () => {
     it("DialogElicitSlot should return an error because dialog is complete", async () => {
       app.onIntent("GreetingIntent", {
         alexaElicitDialog: {
-          slotToElicit: "hello_world",
-        },
+          slotToElicit: "hello_world"
+        }
       });
       app.onError((request: AlexaEvent, error: Error) => {
         expect(error.message).to.equal(
-          "Intent is missing dialogState or has already completed this dialog and cannot elicit any slots",
+          "Intent is missing dialogState or has already completed this dialog and cannot elicit any slots"
         );
       });
 
@@ -557,25 +712,25 @@ describe("Alexa directives", () => {
             art: {
               sources: [
                 {
-                  url: "url",
-                },
-              ],
+                  url: "url"
+                }
+              ]
             },
             backgroundImage: {
               sources: [
                 {
-                  url: "url",
-                },
-              ],
+                  url: "url"
+                }
+              ]
             },
             subtitle: "subtitle",
-            title: "title",
+            title: "title"
           },
           offsetInMilliseconds: 0,
           token: "token",
-          url: "url",
+          url: "url"
         },
-        to: "die",
+        to: "die"
       });
 
       const reply = await alexaSkill.execute(event);
@@ -586,29 +741,29 @@ describe("Alexa directives", () => {
               art: {
                 sources: [
                   {
-                    url: "url",
-                  },
-                ],
+                    url: "url"
+                  }
+                ]
               },
               backgroundImage: {
                 sources: [
                   {
-                    url: "url",
-                  },
-                ],
+                    url: "url"
+                  }
+                ]
               },
               subtitle: "subtitle",
-              title: "title",
+              title: "title"
             },
             stream: {
               offsetInMilliseconds: 0,
               token: "token",
-              url: "url",
-            },
+              url: "url"
+            }
           },
           playBehavior: "REPLACE_ENQUEUED",
-          type: "AudioPlayer.Play",
-        },
+          type: "AudioPlayer.Play"
+        }
       ]);
     });
 
@@ -616,9 +771,9 @@ describe("Alexa directives", () => {
       app.onIntent("YesIntent", {
         alexaPlayAudio: {
           token: "token",
-          url: "url",
+          url: "url"
         },
-        to: "die",
+        to: "die"
       });
 
       const reply = await alexaSkill.execute(event);
@@ -629,12 +784,12 @@ describe("Alexa directives", () => {
             stream: {
               offsetInMilliseconds: 0,
               token: "token",
-              url: "url",
-            },
+              url: "url"
+            }
           },
           playBehavior: "REPLACE_ALL",
-          type: "AudioPlayer.Play",
-        },
+          type: "AudioPlayer.Play"
+        }
       ]);
     });
 
@@ -643,14 +798,14 @@ describe("Alexa directives", () => {
         const response = {
           alexaPlayAudio: {
             token: "token",
-            url: "url",
+            url: "url"
           },
           alexaVideoAppLaunch: {
             source: "source",
             subtitle: "subtitle",
-            title: "title",
+            title: "title"
           },
-          to: "die",
+          to: "die"
         };
 
         return response;
@@ -665,7 +820,7 @@ describe("Alexa directives", () => {
     it("should render a VideApp.Launch directive", async () => {
       app.onIntent("YesIntent", {
         alexaVideoAppLaunch: "Reply.VideoAppLaunch.alexaVideoAppLaunch",
-        to: "die",
+        to: "die"
       });
 
       const reply = await alexaSkill.execute(event);
@@ -675,18 +830,18 @@ describe("Alexa directives", () => {
           videoItem: {
             metadata: {
               subtitle: "Video Subtitle",
-              title: "Video Title",
+              title: "Video Title"
             },
-            source: "https://example.com/video.mp4",
-          },
-        },
+            source: "https://example.com/video.mp4"
+          }
+        }
       ]);
     });
 
     it("should render a VideoApp.Directive when sending a reply response", async () => {
       app.onIntent("YesIntent", {
         reply: "Reply.VideoAppLaunch",
-        to: "die",
+        to: "die"
       });
 
       const reply = await alexaSkill.execute(event);
@@ -696,11 +851,11 @@ describe("Alexa directives", () => {
           videoItem: {
             metadata: {
               subtitle: "Video Subtitle",
-              title: "Video Title",
+              title: "Video Title"
             },
-            source: "https://example.com/video.mp4",
-          },
-        },
+            source: "https://example.com/video.mp4"
+          }
+        }
       ]);
     });
 
@@ -709,9 +864,9 @@ describe("Alexa directives", () => {
         alexaVideoAppLaunch: {
           source: "https://example.com/video.mp4",
           subtitle: "Video Subtitle",
-          title: "Video Title",
+          title: "Video Title"
         },
-        to: "die",
+        to: "die"
       });
 
       const reply = await alexaSkill.execute(event);
@@ -721,11 +876,11 @@ describe("Alexa directives", () => {
           videoItem: {
             metadata: {
               subtitle: "Video Subtitle",
-              title: "Video Title",
+              title: "Video Title"
             },
-            source: "https://example.com/video.mp4",
-          },
-        },
+            source: "https://example.com/video.mp4"
+          }
+        }
       ]);
     });
 
@@ -733,10 +888,10 @@ describe("Alexa directives", () => {
       app.onIntent("YesIntent", {
         alexaPlayAudio: {
           token: "token",
-          url: "url",
+          url: "url"
         },
         reply: ["Reply.VideoAppLaunch"],
-        to: "die",
+        to: "die"
       });
 
       const reply = await alexaSkill.execute(event);
@@ -748,7 +903,7 @@ describe("Alexa directives", () => {
     it("should render a Dialog.UpdateDynamicEntities directive with the view path", async () => {
       app.onIntent("YesIntent", {
         alexaDynamicEntities: "MyDynamicEntity",
-        to: "die",
+        to: "die"
       });
 
       const reply = await alexaSkill.execute(event);
@@ -763,14 +918,14 @@ describe("Alexa directives", () => {
                   id: "nathan",
                   name: {
                     synonyms: ["nate"],
-                    value: "nathan",
-                  },
-                },
-              ],
-            },
+                    value: "nathan"
+                  }
+                }
+              ]
+            }
           ],
-          updateBehavior: "REPLACE",
-        },
+          updateBehavior: "REPLACE"
+        }
       ]);
     });
 
@@ -784,13 +939,13 @@ describe("Alexa directives", () => {
                 id: "nathan",
                 name: {
                   synonyms: ["nate"],
-                  value: "nathan",
-                },
-              },
-            ],
-          },
+                  value: "nathan"
+                }
+              }
+            ]
+          }
         ],
-        to: "die",
+        to: "die"
       });
 
       const reply = await alexaSkill.execute(event);
@@ -805,14 +960,14 @@ describe("Alexa directives", () => {
                   id: "nathan",
                   name: {
                     synonyms: ["nate"],
-                    value: "nathan",
-                  },
-                },
-              ],
-            },
+                    value: "nathan"
+                  }
+                }
+              ]
+            }
           ],
-          updateBehavior: "REPLACE",
-        },
+          updateBehavior: "REPLACE"
+        }
       ]);
     });
 
@@ -828,15 +983,15 @@ describe("Alexa directives", () => {
                   id: "nathan",
                   name: {
                     synonyms: ["nate"],
-                    value: "nathan",
-                  },
-                },
-              ],
-            },
+                    value: "nathan"
+                  }
+                }
+              ]
+            }
           ],
-          updateBehavior: "REPLACE",
+          updateBehavior: "REPLACE"
         },
-        to: "die",
+        to: "die"
       });
 
       const reply = await alexaSkill.execute(event);
@@ -851,14 +1006,14 @@ describe("Alexa directives", () => {
                   id: "nathan",
                   name: {
                     synonyms: ["nate"],
-                    value: "nathan",
-                  },
-                },
-              ],
-            },
+                    value: "nathan"
+                  }
+                }
+              ]
+            }
           ],
-          updateBehavior: "REPLACE",
-        },
+          updateBehavior: "REPLACE"
+        }
       ]);
     });
   });

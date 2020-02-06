@@ -34,7 +34,9 @@ import { AlexaReply } from "./AlexaReply";
 import {
   AccountLinkingCard,
   APLCommand,
+  APLTCommand,
   APLTemplate,
+  APLTTemplate,
   ConnectionsSendRequest,
   DialogDelegate,
   DialogElicitSlot,
@@ -47,7 +49,7 @@ import {
   PlayAudio,
   RenderTemplate,
   StopAudio,
-  VideoAppLaunch,
+  VideoAppLaunch
 } from "./directives";
 
 const AlexaRequests = [
@@ -75,7 +77,8 @@ const AlexaRequests = [
   "CanFulfillIntentRequest",
   "GameEngine.InputHandlerEvent",
   "Alexa.Presentation.APL.UserEvent",
-  "Messaging.MessageReceived",
+  "Alexa.Presentation.APLT.UserEvent",
+  "Messaging.MessageReceived"
 ];
 
 export interface IAlexaPlatformConfig extends IVoxaPlatformConfig {
@@ -106,7 +109,7 @@ export class AlexaPlatform extends VoxaPlatform {
         }
 
         return reply;
-      },
+      }
     );
   }
 
@@ -127,7 +130,9 @@ export class AlexaPlatform extends VoxaPlatform {
       RenderTemplate,
       APLTemplate,
       APLCommand,
-      StopAudio,
+      APLTTemplate,
+      APLTCommand,
+      StopAudio
     ];
   }
 
@@ -137,7 +142,7 @@ export class AlexaPlatform extends VoxaPlatform {
 
   public async execute(
     rawEvent: RequestEnvelope,
-    context?: AWSLambdaContext | AzureContext,
+    context?: AWSLambdaContext | AzureContext
   ): Promise<any> {
     this.checkAppIds(rawEvent);
     const alexaEvent = (await this.getEvent(rawEvent, context)) as AlexaEvent;
