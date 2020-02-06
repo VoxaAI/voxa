@@ -28,7 +28,7 @@
     "echo",
     "amazon"
   ],
-  "author": "Rain Agency <npm@rain.agency> (http://rain.agency)",
+  "author": "Voxa <voxa@nicasource.com> (https://voxa.ai)",
   "engines": {
     "node": ">=8.10"
   },
