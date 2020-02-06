@@ -79,6 +79,20 @@ export class AlexaRequestBuilder {
     };
   }
 
+  public getAlexaPresentationAPLTUserEvent(): RequestEnvelope {
+    return {
+      context: this.getContextData(),
+      request: {
+        arguments: [],
+        requestId: `EdwRequestId.${v1()}`,
+        timestamp: new Date().toISOString(),
+        type: "Alexa.Presentation.APLT.UserEvent",
+      },
+      session: this.getSessionData(),
+      version: this.version,
+    };
+  }
+
   public getCanFulfillIntentRequestRequest(
     intentName: string,
     slots?: any,
@@ -171,6 +185,7 @@ export class AlexaRequestBuilder {
           deviceId: this.deviceId,
           supportedInterfaces: {
             "Alexa.Presentation.APL": {},
+            "Alexa.Presentation.APLT": {},
             "AudioPlayer": {},
             "Display": {},
             "VideoApp": {},

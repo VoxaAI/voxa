@@ -23,6 +23,8 @@ export {
   APLCommand,
   APLTemplate,
   ANCHOR_ENUM,
+  APLTTemplate,
+  APLTCommand,
   ConnectionsSendRequest,
   DialogDelegate,
   DisplayTemplate,

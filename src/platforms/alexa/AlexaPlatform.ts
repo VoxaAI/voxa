@@ -34,7 +34,9 @@ import { AlexaReply } from "./AlexaReply";
 import {
   AccountLinkingCard,
   APLCommand,
+  APLTCommand,
   APLTemplate,
+  APLTTemplate,
   ConnectionsSendRequest,
   DialogDelegate,
   DialogElicitSlot,
@@ -75,6 +77,7 @@ const AlexaRequests = [
   "CanFulfillIntentRequest",
   "GameEngine.InputHandlerEvent",
   "Alexa.Presentation.APL.UserEvent",
+  "Alexa.Presentation.APLT.UserEvent",
   "Messaging.MessageReceived",
 ];
 
@@ -127,6 +130,8 @@ export class AlexaPlatform extends VoxaPlatform {
       RenderTemplate,
       APLTemplate,
       APLCommand,
+      APLTTemplate,
+      APLTCommand,
       StopAudio,
     ];
   }
