@@ -22,6 +22,6 @@ export {
   HomeCard,
   PlayAudio,
   StopAudio,
-  RenderTemplate
+  RenderTemplate,
 } from "./directives";
 export { GadgetController, TRIGGER_EVENT_ENUM } from "./GadgetController";

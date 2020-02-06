@@ -24,7 +24,7 @@ import {
   canfulfill,
   IntentRequest,
   RequestEnvelope,
-  User as IAlexaUser
+  User as IAlexaUser,
 } from "ask-sdk-model";
 import { Context as AWSLambdaContext } from "aws-lambda";
 import { Context as AzureContext } from "azure-functions-ts-essentials";
@@ -40,7 +40,7 @@ import {
   DeviceSettings,
   InSkillPurchase,
   Lists,
-  Reminders
+  Reminders,
 } from "./apis";
 import { isLocalizedRequest } from "./utils";
 
@@ -53,7 +53,7 @@ export class AlexaEvent extends VoxaEvent {
     const interfaces = _.get(
       this.rawEvent,
       "context.System.device.supportedInterfaces",
-      {}
+      {},
     );
     return _.keys(interfaces);
   }
@@ -74,13 +74,13 @@ export class AlexaEvent extends VoxaEvent {
     "Connections.Response": "Connections.Response",
     "Display.ElementSelected": "Display.ElementSelected",
     "GameEngine.InputHandlerEvent": "GameEngine.InputHandlerEvent",
-    LaunchRequest: "LaunchIntent"
+    "LaunchRequest": "LaunchIntent",
   };
 
   constructor(
     rawEvent: RequestEnvelope,
     logOptions?: LambdaLogOptions,
-    executionContext?: AWSLambdaContext | AzureContext
+    executionContext?: AWSLambdaContext | AzureContext,
   ) {
     super(rawEvent, logOptions, executionContext);
 
@@ -90,7 +90,7 @@ export class AlexaEvent extends VoxaEvent {
 
     this.request = {
       locale,
-      type: rawEvent.request.type
+      type: rawEvent.request.type,
     };
 
     this.initIntents();
@@ -107,7 +107,7 @@ export class AlexaEvent extends VoxaEvent {
     const httpOptions: any = {
       json: true,
       method: "GET",
-      uri: `https://api.amazon.com/user/profile?access_token=${this.user.accessToken}`
+      uri: `https://api.amazon.com/user/profile?access_token=${this.user.accessToken}`,
     };
 
     const result: any = await rp(httpOptions);
@@ -132,7 +132,7 @@ export class AlexaEvent extends VoxaEvent {
     this.user = {
       accessToken: user.accessToken,
       id: user.userId,
-      userId: user.userId
+      userId: user.userId,
     };
   }
 
@@ -143,7 +143,7 @@ export class AlexaEvent extends VoxaEvent {
       deviceSettings: new DeviceSettings(this.rawEvent, this.log),
       isp: new InSkillPurchase(this.rawEvent, this.log),
       lists: new Lists(this.rawEvent, this.log),
-      reminders: new Reminders(this.rawEvent, this.log)
+      reminders: new Reminders(this.rawEvent, this.log),
     };
   }
 
@@ -152,7 +152,7 @@ export class AlexaEvent extends VoxaEvent {
       attributes: _.get(this.rawEvent, "session.attributes", {}),
       new: _.get(this.rawEvent, "session.new", false),
       outputAttributes: {},
-      sessionId: _.get(this.rawEvent, "session.sessionId", "")
+      sessionId: _.get(this.rawEvent, "session.sessionId", ""),
     };
   }
 
@@ -165,7 +165,7 @@ export class AlexaEvent extends VoxaEvent {
 }
 
 function isIntentRequest(
-  request: any
+  request: any,
 ): request is IntentRequest | canfulfill.CanFulfillIntentRequest {
   return (
     request.type === "IntentRequest" ||

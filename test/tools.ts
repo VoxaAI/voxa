@@ -3,12 +3,12 @@ import {
   interfaces,
   RequestEnvelope,
   Session,
-  SessionEndedReason
+  SessionEndedReason,
 } from "ask-sdk-model";
 import {
   APIGatewayProxyEvent,
   Callback as AWSLambdaCallback,
-  Context as AWSLambdaContext
+  Context as AWSLambdaContext,
 } from "aws-lambda";
 import * as _ from "lodash";
 import { v1 } from "uuid";
@@ -24,7 +24,7 @@ export class AlexaRequestBuilder {
   constructor(
     userId?: string,
     applicationId?: string,
-    public locale: string = "en-US"
+    public locale: string = "en-US",
   ) {
     this.userId = userId || `amzn1.ask.account.${v1()}`;
     this.applicationId = applicationId || `amzn1.ask.skill.${v1()}`;
@@ -33,7 +33,7 @@ export class AlexaRequestBuilder {
 
   public getSessionEndedRequest(
     reason: SessionEndedReason = "ERROR",
-    error?: any
+    error?: any,
   ): RequestEnvelope {
     return {
       context: this.getContextData(),
@@ -43,10 +43,10 @@ export class AlexaRequestBuilder {
         reason,
         requestId: `EdwRequestId.${v1()}`,
         timestamp: new Date().toISOString(),
-        type: "SessionEndedRequest"
+        type: "SessionEndedRequest",
       },
       session: this.getSessionData(),
-      version: this.version
+      version: this.version,
     };
   }
 
@@ -58,10 +58,10 @@ export class AlexaRequestBuilder {
         requestId: `EdwRequestId.${v1()}`,
         timestamp: new Date().toISOString(),
         token,
-        type: "Display.ElementSelected"
+        type: "Display.ElementSelected",
       },
       session: this.getSessionData(),
-      version: this.version
+      version: this.version,
     };
   }
 
@@ -72,10 +72,10 @@ export class AlexaRequestBuilder {
         arguments: [],
         requestId: `EdwRequestId.${v1()}`,
         timestamp: new Date().toISOString(),
-        type: "Alexa.Presentation.APL.UserEvent"
+        type: "Alexa.Presentation.APL.UserEvent",
       },
       session: this.getSessionData(),
-      version: this.version
+      version: this.version,
     };
   }
 
@@ -86,23 +86,23 @@ export class AlexaRequestBuilder {
         arguments: [],
         requestId: `EdwRequestId.${v1()}`,
         timestamp: new Date().toISOString(),
-        type: "Alexa.Presentation.APLT.UserEvent"
+        type: "Alexa.Presentation.APLT.UserEvent",
       },
       session: this.getSessionData(),
-      version: this.version
+      version: this.version,
     };
   }
 
   public getCanFulfillIntentRequestRequest(
     intentName: string,
-    slots?: any
+    slots?: any,
   ): RequestEnvelope {
     if (!slots) {
       slots = {};
     } else {
       slots = _(slots)
         .keys()
-        .map(key => [key, { name: key, value: slots[key] }])
+        .map((key) => [key, { name: key, value: slots[key] }])
         .fromPairs()
         .value();
     }
@@ -114,10 +114,10 @@ export class AlexaRequestBuilder {
         locale: this.locale,
         requestId: `EdwRequestId.${v1()}`,
         timestamp: new Date().toISOString(),
-        type: "CanFulfillIntentRequest"
+        type: "CanFulfillIntentRequest",
       },
       session: this.getSessionData(),
-      version: this.version
+      version: this.version,
     };
   }
 
@@ -127,7 +127,7 @@ export class AlexaRequestBuilder {
     } else {
       slots = _(slots)
         .keys()
-        .map(key => [key, { name: key, value: slots[key] }])
+        .map((key) => [key, { name: key, value: slots[key] }])
         .fromPairs()
         .value();
     }
@@ -139,10 +139,10 @@ export class AlexaRequestBuilder {
         locale: this.locale,
         requestId: `EdwRequestId.${v1()}`,
         timestamp: new Date().toISOString(),
-        type: "IntentRequest"
+        type: "IntentRequest",
       },
       session: this.getSessionData(),
-      version: this.version
+      version: this.version,
     };
   }
 
@@ -152,7 +152,7 @@ export class AlexaRequestBuilder {
     } else {
       slots = _(slots)
         .keys()
-        .map(key => [key, { name: key, value: slots[key] }])
+        .map((key) => [key, { name: key, value: slots[key] }])
         .fromPairs()
         .value();
     }
@@ -165,17 +165,17 @@ export class AlexaRequestBuilder {
         locale: this.locale,
         requestId: `EdwRequestId.${v1()}`,
         timestamp: new Date().toISOString(),
-        type: "IntentRequest"
+        type: "IntentRequest",
       },
       session: this.getSessionData(),
-      version: this.version
+      version: this.version,
     };
   }
 
   public getContextData(): Context {
     return {
       AudioPlayer: {
-        playerActivity: "IDLE"
+        playerActivity: "IDLE",
       },
       System: {
         apiAccessToken: v1(),
@@ -186,18 +186,18 @@ export class AlexaRequestBuilder {
           supportedInterfaces: {
             "Alexa.Presentation.APL": {},
             "Alexa.Presentation.APLT": {},
-            AudioPlayer: {},
-            Display: {},
-            VideoApp: {}
-          }
+            "AudioPlayer": {},
+            "Display": {},
+            "VideoApp": {},
+          },
         },
         user: {
           permissions: {
-            consentToken: v1()
+            consentToken: v1(),
           },
-          userId: this.userId
-        }
-      }
+          userId: this.userId,
+        },
+      },
     };
   }
   public getSessionData(newSession: boolean = true): Session {
@@ -209,10 +209,10 @@ export class AlexaRequestBuilder {
       sessionId: `SessionId.${v1()}`,
       user: {
         permissions: {
-          consentToken: ""
+          consentToken: "",
         },
-        userId: this.userId
-      }
+        userId: this.userId,
+      },
     };
   }
 
@@ -223,10 +223,10 @@ export class AlexaRequestBuilder {
         locale: this.locale,
         requestId: "EdwRequestId." + v1(),
         timestamp: new Date().toISOString(),
-        type: "LaunchRequest"
+        type: "LaunchRequest",
       },
       session: this.getSessionData(),
-      version: this.version
+      version: this.version,
     };
   }
 
@@ -236,32 +236,32 @@ export class AlexaRequestBuilder {
       requestId: "EdwRequestId." + v1(),
       timestamp: new Date().toISOString(),
       token,
-      type: "AudioPlayer.PlaybackStopped"
+      type: "AudioPlayer.PlaybackStopped",
     };
 
     return {
       context: this.getContextData(),
       request,
       session: this.getSessionData(),
-      version: this.version
+      version: this.version,
     };
   }
 
   public getGameEngineInputHandlerEventRequest(
-    buttonsRecognized: number = 1
+    buttonsRecognized: number = 1,
   ): RequestEnvelope {
     const request: interfaces.gameEngine.InputHandlerEventRequest = {
       events: [],
       locale: this.locale,
       requestId: `amzn1.echo-api.request.${v1()}`,
       timestamp: new Date().toISOString(),
-      type: "GameEngine.InputHandlerEvent"
+      type: "GameEngine.InputHandlerEvent",
     };
 
     const eventArray: any[] = [];
     eventArray.push({
       inputEvents: [],
-      name: "sample_event"
+      name: "sample_event",
     });
 
     let id = 1;
@@ -272,7 +272,7 @@ export class AlexaRequestBuilder {
         color: "000000",
         feature: "press",
         gadgetId: `id${id}`,
-        timestamp: "timestamp"
+        timestamp: "timestamp",
       };
 
       id += 1;
@@ -286,7 +286,7 @@ export class AlexaRequestBuilder {
       context: this.getContextData(),
       request,
       session: this.getSessionData(false),
-      version: this.version
+      version: this.version,
     };
   }
 
@@ -294,7 +294,7 @@ export class AlexaRequestBuilder {
     name: string,
     token: string,
     payload: any,
-    status?: interfaces.connections.ConnectionsStatus
+    status?: interfaces.connections.ConnectionsStatus,
   ): RequestEnvelope {
     status = status || { code: "200", message: "OK" };
 
@@ -306,14 +306,14 @@ export class AlexaRequestBuilder {
       status,
       timestamp: new Date().toISOString(),
       token,
-      type: "Connections.Response"
+      type: "Connections.Response",
     };
 
     return {
       context: this.getContextData(),
       request,
       session: this.getSessionData(false),
-      version: this.version
+      version: this.version,
     };
   }
 
@@ -325,16 +325,16 @@ export class AlexaRequestBuilder {
         message,
         requestId: `EdwRequestId.${v1()}`,
         timestamp: new Date().toISOString(),
-        type: "Messaging.MessageReceived"
+        type: "Messaging.MessageReceived",
       },
       session: this.getSessionData(),
-      version: this.version
+      version: this.version,
     };
   }
 }
 
 export function getLambdaContext(
-  callback: AWSLambdaCallback<any>
+  callback: AWSLambdaCallback<any>,
 ): AWSLambdaContext {
   return {
     awsRequestId: "aws://",
@@ -356,13 +356,13 @@ export function getLambdaContext(
 
       return callback(err);
     },
-    succeed: (msg: any) => callback(undefined, msg)
+    succeed: (msg: any) => callback(undefined, msg),
   };
 }
 
 export function getAPIGatewayProxyEvent(
   method: string = "GET",
-  body: string | null = null
+  body: string | null = null,
 ): APIGatewayProxyEvent {
   return {
     body,
@@ -392,17 +392,17 @@ export function getAPIGatewayProxyEvent(
         sourceIp: "",
         user: null,
         userAgent: null,
-        userArn: null
+        userArn: null,
       },
       path: "/",
       requestId: "",
       requestTimeEpoch: 123,
       resourceId: "",
       resourcePath: "/",
-      stage: ""
+      stage: "",
     },
     resource: "",
-    stageVariables: null
+    stageVariables: null,
   };
 }
 

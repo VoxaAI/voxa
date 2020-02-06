@@ -49,7 +49,7 @@ import {
   PlayAudio,
   RenderTemplate,
   StopAudio,
-  VideoAppLaunch
+  VideoAppLaunch,
 } from "./directives";
 
 const AlexaRequests = [
@@ -78,7 +78,7 @@ const AlexaRequests = [
   "GameEngine.InputHandlerEvent",
   "Alexa.Presentation.APL.UserEvent",
   "Alexa.Presentation.APLT.UserEvent",
-  "Messaging.MessageReceived"
+  "Messaging.MessageReceived",
 ];
 
 export interface IAlexaPlatformConfig extends IVoxaPlatformConfig {
@@ -109,7 +109,7 @@ export class AlexaPlatform extends VoxaPlatform {
         }
 
         return reply;
-      }
+      },
     );
   }
 
@@ -132,7 +132,7 @@ export class AlexaPlatform extends VoxaPlatform {
       APLCommand,
       APLTTemplate,
       APLTCommand,
-      StopAudio
+      StopAudio,
     ];
   }
 
@@ -142,7 +142,7 @@ export class AlexaPlatform extends VoxaPlatform {
 
   public async execute(
     rawEvent: RequestEnvelope,
-    context?: AWSLambdaContext | AzureContext
+    context?: AWSLambdaContext | AzureContext,
   ): Promise<any> {
     this.checkAppIds(rawEvent);
     const alexaEvent = (await this.getEvent(rawEvent, context)) as AlexaEvent;

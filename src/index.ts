@@ -12,7 +12,7 @@ export {
   IVoxaIntentEvent,
   IVoxaIntent,
   IVoxaUserProfile,
-  VoxaEvent
+  VoxaEvent,
 } from "./VoxaEvent";
 export { IVoxaReply } from "./VoxaReply";
 export {
@@ -41,7 +41,7 @@ export {
   RenderTemplate,
   StopAudio,
   TRIGGER_EVENT_ENUM,
-  Hint
+  Hint,
 } from "./platforms/alexa";
 export {
   EventBuilder,
@@ -69,7 +69,7 @@ export {
   SportsEventBuilder,
   TrashCollectionAlertEventBuilder,
   WEATHER_ALERT_TYPE,
-  WeatherAlertEventBuilder
+  WeatherAlertEventBuilder,
 } from "./platforms/alexa/apis";
 export {
   BotFrameworkPlatform,
@@ -78,7 +78,7 @@ export {
   BotFrameworkReply,
   HeroCard,
   SigninCard,
-  SuggestedActions
+  SuggestedActions,
 } from "./platforms/botframework";
 export {
   AccountLinkingCard as DialogflowAccountLinkingCard,
@@ -122,7 +122,7 @@ export {
   List,
   MediaResponse,
   Suggestions,
-  SessionEntity
+  SessionEntity,
 } from "./platforms/dialogflow";
 export { Renderer } from "./renderers/Renderer";
 export { VoxaApp } from "./VoxaApp";
@@ -133,7 +133,7 @@ export {
   UnknownState,
   UnknownRequestType,
   NotImplementedError,
-  SSMLError
+  SSMLError,
 } from "./errors";
 export { Model } from "./Model";
 
@@ -145,5 +145,5 @@ export const plugins = {
   autoLoad,
   replaceIntent,
   s3Persistence,
-  stateFlow
+  stateFlow,
 };

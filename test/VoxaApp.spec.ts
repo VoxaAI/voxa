@@ -37,7 +37,7 @@ import {
   IVoxaReply,
   Model,
   State,
-  VoxaApp
+  VoxaApp,
 } from "../src";
 import { AlexaRequestBuilder } from "./tools";
 import { variables } from "./variables";
@@ -61,7 +61,7 @@ describe("VoxaApp", () => {
       SomeIntent: { tell: "ExitIntent.Farewell", to: "die" },
       initState: { to: "endState" },
       secondState: { to: "initState" },
-      thirdState: () => Promise.resolve({ to: "endState" })
+      thirdState: () => Promise.resolve({ to: "endState" }),
     };
   });
 
@@ -72,10 +72,10 @@ describe("VoxaApp", () => {
     const platform = new AlexaPlatform(voxaApp);
 
     const APLTemplateIndex = voxaApp.directiveHandlers.findIndex(
-      directive => directive.key === "alexaAPLTemplate"
+      (directive) => directive.key === "alexaAPLTemplate",
     );
     const APLCommandIndex = voxaApp.directiveHandlers.findIndex(
-      directive => directive.key === "alexaAPLCommand"
+      (directive) => directive.key === "alexaAPLCommand",
     );
 
     expect(APLTemplateIndex).to.be.lessThan(APLCommandIndex);
@@ -88,10 +88,10 @@ describe("VoxaApp", () => {
     const platform = new AlexaPlatform(voxaApp);
 
     const APLTTemplateIndex = voxaApp.directiveHandlers.findIndex(
-      directive => directive.key === "alexaAPLTTemplate"
+      (directive) => directive.key === "alexaAPLTTemplate",
     );
     const APLTCommandIndex = voxaApp.directiveHandlers.findIndex(
-      directive => directive.key === "alexaAPLTCommand"
+      (directive) => directive.key === "alexaAPLTCommand",
     );
 
     expect(APLTTemplateIndex).to.be.lessThan(APLTCommandIndex);
@@ -110,7 +110,7 @@ describe("VoxaApp", () => {
     launchEvent.platform = platform;
     const reply = (await voxaApp.execute(
       launchEvent,
-      new AlexaReply()
+      new AlexaReply(),
     )) as AlexaReply;
     expect(reply.sessionAttributes.state).to.equal("secondState");
     expect(reply.response.shouldEndSession).to.be.false;
@@ -119,7 +119,7 @@ describe("VoxaApp", () => {
   it("should include outputAttributes in the session attributes", async () => {
     const voxaApp = new VoxaApp({ variables, views });
     const platform = new AlexaPlatform(voxaApp);
-    voxaApp.onIntent("LaunchIntent", request => {
+    voxaApp.onIntent("LaunchIntent", (request) => {
       request.session.outputAttributes.foo = "bar";
       return { to: "secondState", sayp: "This is my message", flow: "yield" };
     });
@@ -129,7 +129,7 @@ describe("VoxaApp", () => {
     launchEvent.platform = platform;
     const reply = (await voxaApp.execute(
       launchEvent,
-      new AlexaReply()
+      new AlexaReply(),
     )) as AlexaReply;
     expect(reply.sessionAttributes.foo).to.equal("bar");
   });
@@ -143,7 +143,7 @@ describe("VoxaApp", () => {
 
     const reply = (await voxaApp.execute(
       launchEvent,
-      new AlexaReply()
+      new AlexaReply(),
     )) as AlexaReply;
     expect(reply.speech).to.deep.equal("<speak>This is my message</speak>");
   });
@@ -157,18 +157,18 @@ describe("VoxaApp", () => {
 
     const reply = (await voxaApp.execute(
       launchEvent,
-      new AlexaReply()
+      new AlexaReply(),
     )) as AlexaReply;
     // expect(reply.error).to.be.an("error");
     expect(reply.speech).to.equal(
-      "<speak>An unrecoverable error occurred.</speak>"
+      "<speak>An unrecoverable error occurred.</speak>",
     );
   });
 
   it("should allow multiple reply paths in reply key", async () => {
     const voxaApp = new VoxaApp({ variables, views });
     const platform = new AlexaPlatform(voxaApp);
-    voxaApp.onIntent("LaunchIntent", voxaEvent => {
+    voxaApp.onIntent("LaunchIntent", (voxaEvent) => {
       voxaEvent.model.count = 0;
       return { say: ["Count.Say", "Count.Tell"] };
     });
@@ -177,7 +177,7 @@ describe("VoxaApp", () => {
 
     const reply = (await voxaApp.execute(
       launchEvent,
-      new AlexaReply()
+      new AlexaReply(),
     )) as AlexaReply;
     expect(reply.speech).to.deep.equal("<speak>0\n0</speak>");
   });
@@ -187,13 +187,13 @@ describe("VoxaApp", () => {
     const alexaEvent = rb.getDisplayElementSelectedRequest("token");
     voxaApp.onIntent("Display.ElementSelected", {
       tell: "ExitIntent.Farewell",
-      to: "die"
+      to: "die",
     });
 
     const alexaSkill = new AlexaPlatform(voxaApp);
     const reply = await alexaSkill.execute(alexaEvent);
     expect(_.get(reply, "response.outputSpeech.ssml")).to.equal(
-      "<speak>Ok. For more info visit example.com site.</speak>"
+      "<speak>Ok. For more info visit example.com site.</speak>",
     );
   });
 
@@ -224,14 +224,14 @@ describe("VoxaApp", () => {
       voxaApp.onBeforeStateChanged(
         (voxaEvent: IVoxaEvent, voxaReply: IVoxaReply, state: State) => {
           voxaEvent.model.previousState = state.name;
-        }
+        },
       );
 
       voxaApp.onIntent("SomeIntent", (voxaEvent: IVoxaIntentEvent) => {
         expect(voxaEvent.model.previousState).to.equal("SomeIntent");
         return {
           flow: "terminate",
-          sayp: "done"
+          sayp: "done",
         };
       });
 
@@ -243,7 +243,7 @@ describe("VoxaApp", () => {
 
   it("should set properties on request and have those available in the state callbacks", async () => {
     const voxaApp = new VoxaApp({ views, variables });
-    statesDefinition.SomeIntent = simple.spy(request => {
+    statesDefinition.SomeIntent = simple.spy((request) => {
       expect(request.model).to.not.be.undefined;
       expect(request.model).to.be.an.instanceOf(Model);
 
@@ -251,7 +251,7 @@ describe("VoxaApp", () => {
     });
 
     _.map(statesDefinition, (state: any, name: string) =>
-      voxaApp.onState(name, state)
+      voxaApp.onState(name, state),
     );
 
     const platform = new AlexaPlatform(voxaApp);
@@ -280,20 +280,20 @@ describe("VoxaApp", () => {
       public serialize() {
         // eslint-disable-line class-methods-use-this
         return Promise.resolve({
-          value: 1
+          value: 1,
         });
       }
     }
 
     const voxaApp = new VoxaApp({ views, variables, Model: PromisyModel });
-    statesDefinition.SomeIntent = simple.spy(request => {
+    statesDefinition.SomeIntent = simple.spy((request) => {
       expect(request.model).to.not.be.undefined;
       expect(request.model).to.be.an.instanceOf(PromisyModel);
       return { ask: "Ask", to: "initState" };
     });
 
     _.map(statesDefinition, (state: any, name: string) =>
-      voxaApp.onState(name, state)
+      voxaApp.onState(name, state),
     );
     const platform = new AlexaPlatform(voxaApp);
     const reply = (await platform.execute(event)) as AlexaReply;
@@ -301,7 +301,7 @@ describe("VoxaApp", () => {
     expect(statesDefinition.SomeIntent.lastCall.threw).to.be.not.ok;
     expect(reply.sessionAttributes).to.deep.equal({
       model: { value: 1 },
-      state: "initState"
+      state: "initState",
     });
   });
 
@@ -319,7 +319,7 @@ describe("VoxaApp", () => {
     const alexaEvent = new AlexaEvent(event);
     alexaEvent.platform = platform;
 
-    statesDefinition.SomeIntent = simple.spy(request => {
+    statesDefinition.SomeIntent = simple.spy((request) => {
       expect(request.model).to.not.be.undefined;
       expect(request.model).to.be.an.instanceOf(PromisyModel);
       expect(request.model.didDeserialize).to.eql("yep");
@@ -327,7 +327,7 @@ describe("VoxaApp", () => {
     });
 
     _.map(statesDefinition, (state: any, name: string) =>
-      voxaApp.onState(name, state)
+      voxaApp.onState(name, state),
     );
 
     const sessionEvent = rb.getIntentRequest("SomeIntent");
@@ -343,7 +343,7 @@ describe("VoxaApp", () => {
     const platform = new AlexaPlatform(voxaApp);
     const alexaEvent = event;
     _.map(statesDefinition, (state: any, name: string) =>
-      voxaApp.onState(name, state)
+      voxaApp.onState(name, state),
     );
     const onSessionEnded = simple.stub();
     voxaApp.onSessionEnded(onSessionEnded);
@@ -358,7 +358,7 @@ describe("VoxaApp", () => {
     const alexaEvent = new AlexaEvent(event);
     alexaEvent.platform = platform;
     _.map(statesDefinition, (state: any, name: string) =>
-      voxaApp.onState(name, state)
+      voxaApp.onState(name, state),
     );
     const onBeforeReplySent = simple.stub();
     voxaApp.onBeforeReplySent(onBeforeReplySent);
@@ -373,9 +373,9 @@ describe("VoxaApp", () => {
       slots: {
         slot1: {
           canFulfill: "YES",
-          canUnderstand: "YES"
-        }
-      }
+          canUnderstand: "YES",
+        },
+      },
     };
 
     const voxaApp = new VoxaApp({ views, variables });
@@ -385,11 +385,11 @@ describe("VoxaApp", () => {
         alexaReply.fulfillIntent("YES");
         alexaReply.fulfillSlot("slot1", "YES", "YES");
         return alexaReply;
-      }
+      },
     );
 
     event = rb.getCanFulfillIntentRequestRequest("NameIntent", {
-      slot1: "something"
+      slot1: "something",
     });
     const reply = (await alexaSkill.execute(event)) as AlexaReply;
 
@@ -405,9 +405,9 @@ describe("VoxaApp", () => {
       slots: {
         slot1: {
           canFulfill: "YES",
-          canUnderstand: "YES"
-        }
-      }
+          canUnderstand: "YES",
+        },
+      },
     };
 
     const defaultFulfillIntents = ["NameIntent"];
@@ -415,7 +415,7 @@ describe("VoxaApp", () => {
     const alexaSkill = new AlexaPlatform(voxaApp, { defaultFulfillIntents });
 
     event = rb.getCanFulfillIntentRequestRequest("NameIntent", {
-      slot1: "something"
+      slot1: "something",
     });
     const reply = (await alexaSkill.execute(event)) as AlexaReply;
 
@@ -431,9 +431,9 @@ describe("VoxaApp", () => {
       slots: {
         slot1: {
           canFulfill: "YES",
-          canUnderstand: "YES"
-        }
-      }
+          canUnderstand: "YES",
+        },
+      },
     };
 
     const voxaApp = new VoxaApp({ views, variables });
@@ -443,11 +443,11 @@ describe("VoxaApp", () => {
         alexaReply.fulfillIntent("MAYBE");
         alexaReply.fulfillSlot("slot1", "YES", "YES");
         return alexaReply;
-      }
+      },
     );
 
     event = rb.getCanFulfillIntentRequestRequest("NameIntent", {
-      slot1: "something"
+      slot1: "something",
     });
     const reply = (await alexaSkill.execute(event)) as AlexaReply;
 
@@ -459,7 +459,7 @@ describe("VoxaApp", () => {
 
   it("should not fulfill request", async () => {
     const canFulfillIntent: canfulfill.CanFulfillIntent = {
-      canFulfill: "NO"
+      canFulfill: "NO",
     };
 
     const voxaApp = new VoxaApp({ views, variables });
@@ -468,11 +468,11 @@ describe("VoxaApp", () => {
       (alexaEvent: AlexaEvent, alexaReply: AlexaReply) => {
         alexaReply.fulfillIntent("NO");
         return alexaReply;
-      }
+      },
     );
 
     event = rb.getCanFulfillIntentRequestRequest("NameIntent", {
-      slot1: "something"
+      slot1: "something",
     });
     const reply = (await alexaSkill.execute(event)) as AlexaReply;
 
@@ -488,9 +488,9 @@ describe("VoxaApp", () => {
       slots: {
         slot1: {
           canFulfill: "NO",
-          canUnderstand: "NO"
-        }
-      }
+          canUnderstand: "NO",
+        },
+      },
     };
 
     const voxaApp = new VoxaApp({ views, variables });
@@ -500,11 +500,11 @@ describe("VoxaApp", () => {
         alexaReply.fulfillIntent("yes");
         alexaReply.fulfillSlot("slot1", "yes", "yes");
         return alexaReply;
-      }
+      },
     );
 
     event = rb.getCanFulfillIntentRequestRequest("NameIntent", {
-      slot1: "something"
+      slot1: "something",
     });
     const reply = (await alexaSkill.execute(event)) as AlexaReply;
 
@@ -527,11 +527,11 @@ describe("VoxaApp", () => {
       statesDefinition.LaunchIntent = simple.stub().resolveWith(null);
 
       _.map(statesDefinition, (state: any, name: string) =>
-        voxaApp.onState(name, state)
+        voxaApp.onState(name, state),
       );
       const reply = await platform.execute(launchEvent);
       expect(reply.speech).to.equal(
-        "<speak>An unrecoverable error occurred.</speak>"
+        "<speak>An unrecoverable error occurred.</speak>",
       );
     });
 
@@ -542,22 +542,22 @@ describe("VoxaApp", () => {
       const onUnhandledState = simple.stub().returnWith(
         Promise.resolve({
           flow: "terminate",
-          sayp: "Unhandled State"
-        })
+          sayp: "Unhandled State",
+        }),
       );
 
       voxaApp.onUnhandledState(onUnhandledState);
       voxaApp.onIntent("LaunchIntent", {
-        to: "otherState"
+        to: "otherState",
       });
 
       voxaApp.onState(
         "otherState",
         {
           flow: "terminate",
-          sayp: "Other State"
+          sayp: "Other State",
         },
-        "SomeIntent"
+        "SomeIntent",
       );
 
       const platform = new AlexaPlatform(voxaApp);
@@ -576,8 +576,8 @@ describe("VoxaApp", () => {
         const onUnhandledState = simple.stub().returnWith(
           Promise.resolve({
             tell: "ExitIntent.Farewell",
-            to: "die"
-          })
+            to: "die",
+          }),
         );
 
         voxaApp.onUnhandledState(onUnhandledState);
@@ -585,14 +585,14 @@ describe("VoxaApp", () => {
         statesDefinition.LaunchIntent = simple.stub().resolveWith(null);
 
         _.map(statesDefinition, (state: any, name: string) =>
-          voxaApp.onState(name, state)
+          voxaApp.onState(name, state),
         );
         const reply = await platform.execute(launchEvent);
         expect(onUnhandledState.called).to.be.true;
         expect(reply.speech).to.equal(
-          "<speak>Ok. For more info visit example.com site.</speak>"
+          "<speak>Ok. For more info visit example.com site.</speak>",
         );
-      }
+      },
     );
 
     it("should call onUnhandledState for intents without a handler", async () => {
@@ -602,8 +602,8 @@ describe("VoxaApp", () => {
       const onUnhandledState = simple.stub().returnWith(
         Promise.resolve({
           tell: "ExitIntent.Farewell",
-          to: "die"
-        })
+          to: "die",
+        }),
       );
 
       voxaApp.onUnhandledState(onUnhandledState);
@@ -611,12 +611,12 @@ describe("VoxaApp", () => {
       statesDefinition.LaunchIntent = simple.stub().resolveWith(null);
 
       _.map(statesDefinition, (state: any, name: string) =>
-        voxaApp.onState(name, state)
+        voxaApp.onState(name, state),
       );
       const reply = await platform.execute(launchEvent);
       expect(onUnhandledState.called).to.be.true;
       expect(reply.speech).to.equal(
-        "<speak>Ok. For more info visit example.com site.</speak>"
+        "<speak>Ok. For more info visit example.com site.</speak>",
       );
     });
 
@@ -631,9 +631,9 @@ describe("VoxaApp", () => {
 
           return {
             tell: "ExitIntent.Farewell",
-            to: "die"
+            to: "die",
           };
-        }
+        },
       );
 
       voxaApp.onError((voxaEvent: IVoxaEvent, err: Error) => {
@@ -643,11 +643,11 @@ describe("VoxaApp", () => {
       statesDefinition.LaunchIntent = simple.stub().resolveWith(null);
 
       _.map(statesDefinition, (state: any, name: string) =>
-        voxaApp.onState(name, state)
+        voxaApp.onState(name, state),
       );
       const reply = await platform.execute(launchEvent);
       expect(reply.speech).to.equal(
-        "<speak>Ok. For more info visit example.com site.</speak>"
+        "<speak>Ok. For more info visit example.com site.</speak>",
       );
     });
 
@@ -663,7 +663,7 @@ describe("VoxaApp", () => {
       statesDefinition.LaunchIntent = simple.stub().resolveWith(null);
 
       _.map(statesDefinition, (state: any, name: string) =>
-        voxaApp.onState(name, state)
+        voxaApp.onState(name, state),
       );
 
       voxaApp.onError((voxaEvent: IVoxaEvent, err: Error) => {
@@ -672,7 +672,7 @@ describe("VoxaApp", () => {
 
       const reply = await platform.execute(launchEvent);
       expect(reply.speech).to.equal(
-        "<speak>An unrecoverable error occurred.</speak>"
+        "<speak>An unrecoverable error occurred.</speak>",
       );
     });
 
@@ -688,7 +688,7 @@ describe("VoxaApp", () => {
       statesDefinition.LaunchIntent = simple.stub().resolveWith(null);
 
       _.map(statesDefinition, (state: any, name: string) =>
-        voxaApp.onState(name, state)
+        voxaApp.onState(name, state),
       );
 
       voxaApp.onError((voxaEvent: IVoxaEvent, err: Error) => {
@@ -697,7 +697,7 @@ describe("VoxaApp", () => {
 
       const reply = await platform.execute(launchEvent);
       expect(reply.speech).to.equal(
-        "<speak>An unrecoverable error occurred.</speak>"
+        "<speak>An unrecoverable error occurred.</speak>",
       );
     });
   });
@@ -713,15 +713,15 @@ describe("VoxaApp", () => {
         behavior: "REPLACE_ALL",
         offsetInMilliseconds: 0,
         token: "123",
-        url: "url"
+        url: "url",
       },
       tell: "ExitIntent.Farewell",
-      to: "entry"
+      to: "entry",
     }));
 
     const reply = (await voxaApp.execute(
       alexaEvent,
-      new AlexaReply()
+      new AlexaReply(),
     )) as AlexaReply;
     expect(reply.response.directives).to.not.be.undefined;
     expect(reply.response.directives).to.have.length(1);
@@ -732,12 +732,12 @@ describe("VoxaApp", () => {
           stream: {
             offsetInMilliseconds: 0,
             token: "123",
-            url: "url"
-          }
+            url: "url",
+          },
         },
         playBehavior: "REPLACE_ALL",
-        type: "AudioPlayer.Play"
-      }
+        type: "AudioPlayer.Play",
+      },
     ]);
   });
 
@@ -752,14 +752,14 @@ describe("VoxaApp", () => {
         behavior: "REPLACE_ALL",
         offsetInMilliseconds: 0,
         token: "123",
-        url: "url"
+        url: "url",
       },
-      say: "ExitIntent.Farewell"
+      say: "ExitIntent.Farewell",
     }));
 
     const reply = (await voxaApp.execute(
       alexaEvent,
-      new AlexaReply()
+      new AlexaReply(),
     )) as AlexaReply;
     expect(reply.response.directives).to.not.be.undefined;
     expect(reply.response.directives).to.have.length(1);
@@ -770,12 +770,12 @@ describe("VoxaApp", () => {
           stream: {
             offsetInMilliseconds: 0,
             token: "123",
-            url: "url"
-          }
+            url: "url",
+          },
         },
         playBehavior: "REPLACE_ALL",
-        type: "AudioPlayer.Play"
-      }
+        type: "AudioPlayer.Play",
+      },
     ]);
   });
 
@@ -786,7 +786,7 @@ describe("VoxaApp", () => {
     const alexaEvent = launchEvent;
 
     statesDefinition.LaunchIntent = {
-      to: "fourthState"
+      to: "fourthState",
     };
 
     statesDefinition.fourthState = (request: IVoxaEvent) => {
@@ -800,7 +800,7 @@ describe("VoxaApp", () => {
     };
 
     _.map(statesDefinition, (state: any, name: string) =>
-      voxaApp.onState(name, state)
+      voxaApp.onState(name, state),
     );
     const reply = await platform.execute(alexaEvent);
     expect(reply.speech).to.deep.equal("<speak>0\n1</speak>");
@@ -812,7 +812,7 @@ describe("VoxaApp", () => {
     const alexaEvent = new AlexaEvent(event);
     alexaEvent.platform = platform;
     _.map(statesDefinition, (state: any, name: string) =>
-      voxaApp.onState(name, state)
+      voxaApp.onState(name, state),
     );
     const stubResponse = "STUB RESPONSE";
     const stub = simple.stub().resolveWith(stubResponse);
@@ -820,12 +820,12 @@ describe("VoxaApp", () => {
 
     const reply = (await voxaApp.execute(
       alexaEvent,
-      new AlexaReply()
+      new AlexaReply(),
     )) as AlexaReply;
     expect(stub.called).to.be.true;
     expect(reply).to.not.equal(stubResponse);
     expect(reply.speech).to.equal(
-      "<speak>Ok. For more info visit example.com site.</speak>"
+      "<speak>Ok. For more info visit example.com site.</speak>",
     );
   });
 
@@ -855,12 +855,12 @@ describe("VoxaApp", () => {
       voxaApp.onIntent("LaunchIntent", {
         flow: "yield",
         reply: "Reply.Say",
-        to: "entry"
+        to: "entry",
       });
       const response = await platform.execute(launchEvent);
       expect(response.speech).to.deep.equal("<speak>this is a say</speak>");
       expect(response.reprompt).to.deep.equal(
-        "<speak>this is a reprompt</speak>"
+        "<speak>this is a reprompt</speak>",
       );
       expect(response.hasTerminated).to.be.false;
     });
@@ -872,31 +872,31 @@ describe("VoxaApp", () => {
         reply: "Reply.Card",
         reprompt: "Reprompt",
         say: "Say",
-        to: "entry"
+        to: "entry",
       });
       const alexaSkill = new AlexaPlatform(voxaApp);
       const response = await alexaSkill.execute(event);
 
       expect(_.get(response, "response.outputSpeech.ssml")).to.deep.equal(
-        "<speak>say</speak>"
+        "<speak>say</speak>",
       );
       expect(
-        _.get(response, "response.reprompt.outputSpeech.ssml")
+        _.get(response, "response.reprompt.outputSpeech.ssml"),
       ).to.deep.equal("<speak>reprompt</speak>");
       expect(response.response.card).to.deep.equal({
         image: {
           largeImageUrl: "https://example.com/large.jpg",
-          smallImageUrl: "https://example.com/small.jpg"
+          smallImageUrl: "https://example.com/small.jpg",
         },
         title: "Title",
-        type: "Standard"
+        type: "Standard",
       });
       expect(_.get(response, "response.directives[0]")).to.deep.equal({
         hint: {
           text: "this is the hint",
-          type: "PlainText"
+          type: "PlainText",
         },
-        type: "Hint"
+        type: "Hint",
       });
     });
 
@@ -905,30 +905,30 @@ describe("VoxaApp", () => {
       voxaApp.onIntent("SomeIntent", {
         flow: "yield",
         reply: ["Reply.Say", "Reply.Card"],
-        to: "entry"
+        to: "entry",
       });
       const alexaSkill = new AlexaPlatform(voxaApp);
       const response = await alexaSkill.execute(event);
 
       expect(response.speech).to.deep.equal("<speak>this is a say</speak>");
       expect(response.reprompt).to.deep.equal(
-        "<speak>this is a reprompt</speak>"
+        "<speak>this is a reprompt</speak>",
       );
       expect(response.hasTerminated).to.be.false;
       expect(response.response.card).to.deep.equal({
         image: {
           largeImageUrl: "https://example.com/large.jpg",
-          smallImageUrl: "https://example.com/small.jpg"
+          smallImageUrl: "https://example.com/small.jpg",
         },
         title: "Title",
-        type: "Standard"
+        type: "Standard",
       });
       expect(_.get(response, "response.directives[0]")).to.deep.equal({
         hint: {
           text: "this is the hint",
-          type: "PlainText"
+          type: "PlainText",
         },
-        type: "Hint"
+        type: "Hint",
       });
     });
 
@@ -937,16 +937,16 @@ describe("VoxaApp", () => {
       voxaApp.onIntent("SomeIntent", {
         flow: "yield",
         reply: ["Reply.Say", "Reply.Say2"],
-        to: "entry"
+        to: "entry",
       });
       const alexaSkill = new AlexaPlatform(voxaApp);
       const response = await alexaSkill.execute(event);
 
       expect(response.speech).to.deep.equal(
-        "<speak>this is a say\nthis is another say</speak>"
+        "<speak>this is a say\nthis is another say</speak>",
       );
       expect(response.reprompt).to.deep.equal(
-        "<speak>this is a reprompt</speak>"
+        "<speak>this is a reprompt</speak>",
       );
       expect(response.hasTerminated).to.be.false;
     });
@@ -958,13 +958,13 @@ describe("VoxaApp", () => {
       voxaApp.onIntent("LaunchIntent", {
         flow: "yield",
         reply: "Reply.Say",
-        to: "entry"
+        to: "entry",
       });
 
       voxaApp.onBeforeReplySent(
         (voxaEvent: IVoxaEvent, reply: IVoxaReply, transition: ITransition) => {
           voxaEvent.model.transition = transition;
-        }
+        },
       );
       const platform = new AlexaPlatform(voxaApp);
       const response = await platform.execute(launchEvent);
@@ -973,7 +973,7 @@ describe("VoxaApp", () => {
         reply: "Reply.Say",
         reprompt: "Reply.Say.reprompt",
         say: "Reply.Say.say",
-        to: "entry"
+        to: "entry",
       });
     });
   });
