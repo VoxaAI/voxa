@@ -437,6 +437,102 @@ export class APLCommand extends AlexaDirective implements IDirective {
   }
 }
 
+export class APLTTemplate extends AlexaDirective implements IDirective {
+  public static key: string = "alexaAPLTTemplate";
+  public static platform: string = "alexa";
+
+  public viewPath?: string;
+  public directive?: interfaces.alexa.presentation.aplt.RenderDocumentDirective;
+
+  constructor(
+    viewPath:
+      | string
+      | interfaces.alexa.presentation.aplt.RenderDocumentDirective,
+  ) {
+    super();
+
+    if (_.isString(viewPath)) {
+      this.viewPath = viewPath;
+    } else {
+      this.directive = viewPath;
+    }
+  }
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition?: ITransition,
+  ): Promise<void> {
+    this.validateReply(reply);
+
+    if (!_.includes(event.supportedInterfaces, "Alexa.Presentation.APLT")) {
+      return;
+    }
+
+    if (this.viewPath) {
+      this.directive = await event.renderer.renderPath(this.viewPath, event);
+    }
+
+    this.addDirective(reply);
+  }
+
+  private validateReply(reply: IVoxaReply) {
+    if (reply.hasDirective("Alexa.Presentation.APLT.RenderDocument")) {
+      throw new Error(
+        "At most one Alexa.Presentation.APLT.RenderDocument directive can be specified in a response",
+      );
+    }
+  }
+}
+
+export class APLTCommand extends AlexaDirective implements IDirective {
+  public static key: string = "alexaAPLTCommand";
+  public static platform: string = "alexa";
+
+  public viewPath?: string;
+  public directive?: interfaces.alexa.presentation.aplt.ExecuteCommandsDirective;
+
+  constructor(
+    viewPath:
+      | string
+      | interfaces.alexa.presentation.aplt.ExecuteCommandsDirective,
+  ) {
+    super();
+
+    if (_.isString(viewPath)) {
+      this.viewPath = viewPath;
+    } else {
+      this.directive = viewPath;
+    }
+  }
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition?: ITransition,
+  ): Promise<void> {
+    this.validateReply(reply);
+
+    if (!_.includes(event.supportedInterfaces, "Alexa.Presentation.APLT")) {
+      return;
+    }
+
+    if (this.viewPath) {
+      this.directive = await event.renderer.renderPath(this.viewPath, event);
+    }
+
+    this.addDirective(reply);
+  }
+
+  private validateReply(reply: IVoxaReply) {
+    if (reply.hasDirective("Alexa.Presentation.APLT.ExecuteCommands")) {
+      throw new Error(
+        "At most one Alexa.Presentation.APLT.ExecuteCommands directive can be specified in a response",
+      );
+    }
+  }
+}
+
 export class AccountLinkingCard implements IDirective {
   public static key: string = "alexaAccountLinkingCard";
   public static platform: string = "alexa";

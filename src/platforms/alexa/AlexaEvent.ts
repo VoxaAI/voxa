@@ -70,6 +70,7 @@ export class AlexaEvent extends VoxaEvent {
 
   public requestToIntent: any = {
     "Alexa.Presentation.APL.UserEvent": "Alexa.Presentation.APL.UserEvent",
+    "Alexa.Presentation.APLT.UserEvent": "Alexa.Presentation.APLT.UserEvent",
     "Connections.Response": "Connections.Response",
     "Display.ElementSelected": "Display.ElementSelected",
     "GameEngine.InputHandlerEvent": "GameEngine.InputHandlerEvent",
