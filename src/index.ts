@@ -139,6 +139,8 @@ export { Model } from "./Model";
 
 import { autoLoad, replaceIntent, s3Persistence, stateFlow } from "./plugins";
 
+export { Entity } from "./platforms/shared";
+
 export { IS3Persistence } from "./plugins";
 
 export const plugins = {
