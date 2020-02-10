@@ -54,7 +54,7 @@ import {
   Table,
   TransactionDecision,
   TransactionRequirements,
-  UpdatePermission,
+  UpdatePermission
 } from "./directives";
 import { GoogleAssistantEvent } from "./GoogleAssistantEvent";
 
@@ -79,7 +79,7 @@ export class GoogleAssistantPlatform extends DialogflowPlatform {
   protected saveStorage(
     voxaEvent: IVoxaEvent,
     reply: IVoxaReply,
-    transition: ITransition,
+    transition: ITransition
   ) {
     const { conv } = (voxaEvent as GoogleAssistantEvent).dialogflow;
     const dialogflowReply = reply as DialogflowReply;
@@ -117,7 +117,7 @@ export class GoogleAssistantPlatform extends DialogflowPlatform {
       UpdatePermission,
       Say,
       SessionEntity,
-      Entity,
+      Entity
     ];
   }
 }
