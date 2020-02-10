@@ -22,9 +22,9 @@ export {
   AlexaEvent,
   APLCommand,
   APLTemplate,
+  ANCHOR_ENUM,
   APLTTemplate,
   APLTCommand,
-  ANCHOR_ENUM,
   ConnectionsSendRequest,
   DialogDelegate,
   DisplayTemplate,
@@ -122,6 +122,7 @@ export {
   List,
   MediaResponse,
   Suggestions,
+  SessionEntity,
 } from "./platforms/dialogflow";
 export { Renderer } from "./renderers/Renderer";
 export { VoxaApp } from "./VoxaApp";

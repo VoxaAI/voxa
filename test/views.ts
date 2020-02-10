@@ -340,6 +340,36 @@ export const views = {
         ProductModified: "Product has been successfully modified",
         WithItems: "Lists with items are: {listsWithItems}",
       },
+      MultipleSessionEntities: [
+        {
+          entities: [
+            {
+              synonyms: ["apple", "green apple", "crabapple"],
+              value: "APPLE_KEY",
+            },
+            {
+              synonyms: ["orange"],
+              value: "ORANGE_KEY",
+            },
+          ],
+          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          name: "fruit",
+        },
+        {
+          entities: [
+            {
+              synonyms: ["lion", "cat", "wild cat", "simba"],
+              value: "LION_KEY",
+            },
+            {
+              synonyms: ["elephant", "mammoth"],
+              value: "ELEPHANT_KEY",
+            },
+          ],
+          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          name: "animal",
+        },
+      ],
       MyDynamicEntity: [
         {
           name: "LIST_OF_AVAILABLE_NAMES",
@@ -352,6 +382,37 @@ export const views = {
               },
             },
           ],
+        },
+      ],
+      MySessionEntity: [
+        {
+          entities: [
+            {
+              synonyms: ["apple", "green apple", "crabapple"],
+              value: "APPLE_KEY",
+            },
+            {
+              synonyms: ["orange"],
+              value: "ORANGE_KEY",
+            },
+          ],
+          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          name: "fruit",
+        },
+      ],
+      MySessionEntityNoName: [
+        {
+          entities: [
+            {
+              synonyms: ["apple", "green apple", "crabapple"],
+              value: "APPLE_KEY",
+            },
+            {
+              synonyms: ["orange"],
+              value: "ORANGE_KEY",
+            },
+          ],
+          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
         },
       ],
       Number: {
@@ -440,6 +501,20 @@ export const views = {
       RepromptRandom: ["reprompt1", "reprompt2", "reprompt3"],
       Say: "say",
       SayRandom: ["say1", "say2", "say3"],
+      SimpleSessionEntity: {
+        entities: [
+          {
+            synonyms: ["lion", "cat", "wild cat", "simba"],
+            value: "LION_KEY",
+          },
+          {
+            synonyms: ["elephant", "mammoth"],
+            value: "ELEPHANT_KEY",
+          },
+        ],
+        entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+        name: "animal",
+      },
       Tell: "tell",
       TellRandom: ["tell1", "tell2", "tell3"],
       XML: {

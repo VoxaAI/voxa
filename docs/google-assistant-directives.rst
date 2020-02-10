@@ -599,3 +599,85 @@ If you need to add output contexts to the dialog flow webhook you can use the `d
       to: "entry",
       flow: "yield",
     });
+
+
+Session Entities
+-------------------------------------------
+
+`Google Documentation <https://cloud.google.com/dialogflow/docs/entities-session>`_
+
+A session represents a conversation between a Dialogflow agent and an end-user. You can create special entities, called session entities during a session. Session entities can extend or replace custom entity types and only exist during the session that they were created for. All session data, including session entities, is stored by Dialogflow for 20 minutes.
+
+For example, if your agent has a @fruit entity type that includes "pear" and "grape", that entity type could be updated to include "apple" or "orange", depending on the information your agent collects from the end-user. The updated entity type would have the "apple" or "orange" entity entry for the rest of the session.
+
+Create an entity in your dialogflow agent and make sure that define synonyms option is checked. Add some values and synonyms if needed according agent instructions. Notice that the name of the entity is the value to be used by the directive (i.e., list-of-fruits).
+
+.. code-block:: javascript
+ 
+  // variables.js
+
+    export function mySessionEntity(voxaEvent: VoxaEvent) {
+      // Do something with the voxaEvent, or not...
+
+      const sessionEntityType = [
+        {
+          "entities": [
+            {
+              "synonyms": ["apple", "green apple", "crabapple"],
+              "value": "APPLE_KEY"
+            },
+            {
+              "synonyms": ["orange"],
+              "value": "ORANGE_KEY"
+            }
+          ],
+          "entityOverrideMode": "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          "name": "list-of-fruits"
+        }
+      ];
+
+      return sessionEntityType;
+    }
+  
+  // views.js
+
+    const views = {
+      "en-US": {
+        translation: {
+          mySessionEntity: "{mySessionEntity}"
+        },
+      };
+    };
+
+  // state.js
+
+    app.onState('someState', {
+      dialogflowSessionEntity: "mySessionEntity",
+      flow: "yield",
+      sayp: "Hello!",
+      to: "entry",
+    });
+
+  // Or you can do it directly...
+
+    app.onState('someState', {
+      dialogflowSessionEntity:  [
+        {
+          "entities": [
+            {
+              "synonyms": ["apple", "green apple", "crabapple"],
+              "value": "APPLE_KEY"
+            },
+            {
+              "synonyms": ["orange"],
+              "value": "ORANGE_KEY"
+            }
+          ],
+          "entityOverrideMode": "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          "name": "list-of-fruits"
+        }
+      ],
+      flow: "yield",
+      sayp: "Hello!",
+      to: "entry",
+    });

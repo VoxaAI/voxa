@@ -210,7 +210,7 @@ An APL Command is sent with the `alexaAPLCommand` key in your controller. Just l
 
 
 
-Alexa Presentation Language - T (APLT) Templates
+ Alexa Presentation Language - T (APLT) Templates
 -------------------------------------------
 
 `Alexa Documentation <https://developer.amazon.com/en-US/docs/alexa/alexa-presentation-language/apl-reference-character-displays.html>`_
@@ -252,9 +252,9 @@ One important thing to know is that if you sent a Render Template and a APLT Tem
         alexaAPLTTemplate: "MyAPLTTemplate",
       };
     });
-
+    
     // Or you can do it directly...
-
+    
     app.onState('someState', () => {
       return {
         alexaAPLTTemplate: {
@@ -314,7 +314,7 @@ An APLT Command is sent with the `alexaAPLTCommand` key in your controller. Just
     });
 
     // Or you can do it directly...
-
+    
     app.onState('someState', () => {
       return {
         alexaAPLTCommand: {
@@ -331,7 +331,7 @@ An APLT Command is sent with the `alexaAPLTCommand` key in your controller. Just
           }]
         },
       };
-    });
+    });   
 
 PlayAudio
 ---------

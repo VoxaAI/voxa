@@ -1,9 +1,10 @@
 # VOXA Changelog
 
-## Unreleased
+## 3.3.2 (2020-02-05)
 
 #### Enhancement
 
+- Add Google Action session entities directive
 - Add support for APLT
 
 ## 3.3.1 (2019-10-29)
@@ -17,9 +18,8 @@
 ## 3.3.1-alpha2 (2019-08-13)
 
 #### Enhancement
-
-- Add Browse Carousel directive usage to docs
-- Updates i18next imports
+* Add Browse Carousel directive usage to docs
+* Updates i18next imports 
 
 ## 3.3.0 (2019-07-11)
 

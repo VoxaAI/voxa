@@ -7,10 +7,19 @@ export {
   FACEBOOK_USER_FIELDS,
   IVoxaFacebookUserProfile,
 } from "./facebook/FacebookEvent";
-export { FacebookPlatform, IFacebookPlatformConfig } from "./facebook/FacebookPlatform";
+export {
+  FacebookPlatform,
+  IFacebookPlatformConfig,
+} from "./facebook/FacebookPlatform";
 export { FacebookReply } from "./facebook/FacebookReply";
-export { GoogleAssistantEvent, IVoxaGoogleUserProfile } from "./google/GoogleAssistantEvent";
-export { GoogleAssistantPlatform, IGoogleAssistantPlatformConfig } from "./google/GoogleAssistantPlatform";
+export {
+  GoogleAssistantEvent,
+  IVoxaGoogleUserProfile,
+} from "./google/GoogleAssistantEvent";
+export {
+  GoogleAssistantPlatform,
+  IGoogleAssistantPlatformConfig,
+} from "./google/GoogleAssistantPlatform";
 export {
   AccountLinkingCard,
   BasicCard,
@@ -28,6 +37,7 @@ export {
   Permission,
   Place,
   RegisterUpdate,
+  SessionEntity,
   Suggestions,
   Table,
   TransactionDecision,
