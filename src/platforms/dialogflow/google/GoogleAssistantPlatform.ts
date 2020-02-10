@@ -117,6 +117,7 @@ export class GoogleAssistantPlatform extends DialogflowPlatform {
       UpdatePermission,
       Say,
       SessionEntity,
+      Entity,
     ];
   }
 }

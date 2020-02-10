@@ -2,12 +2,7 @@ import { expect } from "chai";
 import * as i18next from "i18next";
 import * as _ from "lodash";
 import "mocha";
-import {
-  DialogflowReply,
-  GoogleAssistantEvent,
-  GoogleAssistantPlatform,
-  VoxaApp,
-} from "../../src";
+import { GoogleAssistantPlatform, VoxaApp } from "../../src";
 import { Entity } from "../../src/platforms/shared";
 import { variables } from "./../variables";
 import { views } from "./../views";
@@ -43,9 +38,7 @@ describe("Shared Directives", () => {
       });
 
       event.originalDetectIntentRequest.payload.surface.capabilities = [];
-      console.log("event? ", event);
-      const reply = await dialogflowAgent.execute(JSON.stringify(event));
-      console.log("reply? ", JSON.stringify(reply));
+      const reply = await dialogflowAgent.execute(event);
       expect(reply.sessionEntityTypes).to.deep.equal([
         {
           entities: [

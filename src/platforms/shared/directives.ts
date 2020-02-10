@@ -20,14 +20,10 @@ export class Entity implements IDirective {
     event: IVoxaEvent,
     transition?: ITransition,
   ): Promise<void> {
-    console.log("this.viewPath? ", this.viewPath);
     let entity: any = this.viewPath;
-    console.log("entity? ", entity);
-    // Entity.platform = event.platform.name;
 
     if (_.isString(this.viewPath)) {
       entity = await event.renderer.renderPath(this.viewPath, event);
-      console.log("event.platform.name? ", JSON.stringify(event.platform.name));
     }
 
     if (_.isPlainObject(entity)) {
@@ -40,7 +36,7 @@ export class Entity implements IDirective {
       );
     }
 
-    entity = generateEntity(entity, Entity.platform);
+    entity = generateEntity(entity, event);
 
     (reply as DialogflowReply).sessionEntityTypes = entity;
   }
@@ -52,10 +48,11 @@ export enum EntityOverrideMode {
   Supplement = "ENTITY_OVERRIDE_MODE_SUPPLEMENT",
 }
 
-function generateEntity(entity: any[], platform: string) {
+function generateEntity(entity: any[], event: IVoxaEvent) {
   const newSessionEntity = entity.reduce((filteredEntity, property) => {
     let behavior = "updateBehavior";
     let defaultBehavior = "REPLACE";
+    const platform = _.get(event, "platform.name");
 
     if (platform === "google") {
       behavior = "entityOverrideMode";
@@ -75,13 +72,12 @@ function generateEntity(entity: any[], platform: string) {
       newEntity = alexaDynamicEntity(property, entityMode, name);
     }
     if (platform === "google") {
-      newEntity = dialogflowSessionEntity(property, entityMode, name);
+      newEntity = dialogflowSessionEntity(property, entityMode, name, event);
     }
     filteredEntity.push(newEntity);
     return filteredEntity;
   }, []);
 
-  console.log("newSessionEntity? ", JSON.stringify(newSessionEntity));
   return newSessionEntity;
 }
 
@@ -89,11 +85,12 @@ function dialogflowSessionEntity(
   property: any,
   entityOverrideMode: string,
   name: string,
+  event: IVoxaEvent,
 ) {
   return {
     entities: property.entities,
     entityOverrideMode,
-    name,
+    name: `${event.rawEvent.session}/entityTypes/${name}`,
   };
 }
 
@@ -116,9 +113,9 @@ function alexaDynamicEntity(
 
 function validateEntityBehavior(behavior: string, platform: string) {
   const dialogflowEntityBehaviorList = [
-    "ENTITY_OVERRIDE_MODE_UNSPECIFIED",
-    "ENTITY_OVERRIDE_MODE_OVERRIDE",
-    "ENTITY_OVERRIDE_MODE_SUPPLEMENT",
+    EntityOverrideMode.Unspecified,
+    EntityOverrideMode.Override,
+    EntityOverrideMode.Supplement,
   ];
 
   const alexaEntityBehaviorList = ["REPLACE", "CLEAR"];
