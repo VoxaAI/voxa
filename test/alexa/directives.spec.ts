@@ -1017,4 +1017,36 @@ describe("Alexa directives", () => {
       ]);
     });
   });
+
+  describe("Alexa Entities", () => {
+    it("should add a simple entity", async () => {
+      app.onIntent("YesIntent", {
+        entities: "DynamicEntity",
+        to: "die",
+      });
+      console.log("event? ", JSON.stringify(event));
+      const reply = await alexaSkill.execute(event);
+      console.log("reply? ", JSON.stringify(reply.response.directives));
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "Dialog.UpdateDynamicEntities",
+          types: [
+            {
+              name: "LIST_OF_AVAILABLE_NAMES",
+              values: [
+                {
+                  id: "nathan",
+                  name: {
+                    synonyms: ["nate"],
+                    value: "nathan",
+                  },
+                },
+              ],
+            },
+          ],
+          updateBehavior: "REPLACE",
+        },
+      ]);
+    });
+  });
 });

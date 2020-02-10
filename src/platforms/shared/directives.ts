@@ -1,8 +1,10 @@
+import { Response } from "ask-sdk-model";
 import * as _ from "lodash";
 import { IDirective } from "../../directives";
 import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
+import { AlexaReply } from "../alexa/AlexaReply";
 import { DialogflowReply } from "../dialogflow/DialogflowReply";
 
 export class Entity implements IDirective {
@@ -21,6 +23,8 @@ export class Entity implements IDirective {
     transition?: ITransition,
   ): Promise<void> {
     let entity: any = this.viewPath;
+    const response: Response = (reply as AlexaReply).response;
+
     Entity.platform = _.get(event, "platform.name");
 
     if (_.isString(this.viewPath)) {
@@ -39,7 +43,18 @@ export class Entity implements IDirective {
 
     entity = generateEntity(entity, event);
 
-    (reply as DialogflowReply).sessionEntityTypes = entity;
+    if (Entity.platform === "google") {
+      (reply as DialogflowReply).sessionEntityTypes = entity;
+    }
+
+    if (Entity.platform === "alexa") {
+      const directive = _.get(response, "directive");
+      if (!response.directives) {
+        response.directives = [];
+      }
+
+      response.directives.push(...entity);
+    }
   }
 }
 

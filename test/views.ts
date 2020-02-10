@@ -240,6 +240,20 @@ export const views = {
           say: "What item would you like to buy?",
         },
       },
+      DynamicEntity: [
+        {
+          entities: [
+            {
+              id: "nathan",
+              name: {
+                synonyms: ["nate"],
+                value: "nathan",
+              },
+            },
+          ],
+          name: "LIST_OF_AVAILABLE_NAMES",
+        },
+      ],
       Error: "There was some error, please try again later",
       ExitIntent: {
         Farewell: "Ok. For more info visit {site} site.",

@@ -28,6 +28,7 @@ import { OnSessionEndedError } from "../../errors";
 import { VoxaApp } from "../../VoxaApp";
 import { IVoxaEvent, IVoxaIntentEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
+import { Entity } from "../shared";
 import { IVoxaPlatformConfig, VoxaPlatform } from "../VoxaPlatform";
 import { AlexaEvent } from "./AlexaEvent";
 import { AlexaReply } from "./AlexaReply";
@@ -133,6 +134,7 @@ export class AlexaPlatform extends VoxaPlatform {
       APLTTemplate,
       APLTCommand,
       StopAudio,
+      Entity,
     ];
   }
 
