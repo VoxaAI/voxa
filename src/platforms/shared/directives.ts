@@ -7,7 +7,7 @@ import { DialogflowReply } from "../dialogflow/DialogflowReply";
 
 export class Entity implements IDirective {
   public static key: string = "entities";
-  public static platform: string = "google";
+  public static platform: string = "core";
 
   public viewPath?: any | any[];
 
@@ -21,6 +21,7 @@ export class Entity implements IDirective {
     transition?: ITransition,
   ): Promise<void> {
     let entity: any = this.viewPath;
+    Entity.platform = _.get(event, "platform.name");
 
     if (_.isString(this.viewPath)) {
       entity = await event.renderer.renderPath(this.viewPath, event);
