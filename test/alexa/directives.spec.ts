@@ -1035,7 +1035,6 @@ describe("Alexa directives", () => {
               name: "LIST_OF_AVAILABLE_NAMES",
               values: [
                 {
-                  id: "nathan",
                   name: {
                     synonyms: ["nate"],
                     value: "nathan",

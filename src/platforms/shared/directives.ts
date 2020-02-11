@@ -23,7 +23,6 @@ export class Entity implements IDirective {
     transition?: ITransition,
   ): Promise<void> {
     let entity: any = this.viewPath;
-    const response: Response = (reply as AlexaReply).response;
 
     Entity.platform = _.get(event, "platform.name");
 
@@ -48,7 +47,7 @@ export class Entity implements IDirective {
     }
 
     if (Entity.platform === "alexa") {
-      const directive = _.get(response, "directive");
+      const response: Response = (reply as AlexaReply).response;
       if (!response.directives) {
         response.directives = [];
       }
@@ -115,12 +114,21 @@ function alexaDynamicEntity(
   updateBehavior: string,
   name: string,
 ) {
+  const values: any = property.entities.map(
+    (item: { synonyms: any; value: any }) => ({
+      name: {
+        synonyms: item.synonyms,
+        value: item.value,
+      },
+    }),
+  );
+
   return {
     type: "Dialog.UpdateDynamicEntities",
     types: [
       {
         name,
-        values: property.entities,
+        values,
       },
     ],
     updateBehavior,

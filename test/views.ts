@@ -244,11 +244,8 @@ export const views = {
         {
           entities: [
             {
-              id: "nathan",
-              name: {
-                synonyms: ["nate"],
-                value: "nathan",
-              },
+              synonyms: ["nate"],
+              value: "nathan",
             },
           ],
           name: "LIST_OF_AVAILABLE_NAMES",
