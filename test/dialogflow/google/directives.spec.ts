@@ -1245,7 +1245,7 @@ describe("Google Assistant Directives", () => {
         throw expect(error).to.not.be.null;
       }
 
-      expect(error.message).to.equal("A name is required for a Session Entity");
+      expect(error.message).to.equal("A name is required for the Entity");
     });
 
     it("should add an object in sesssion entity", async () => {
@@ -1298,7 +1298,7 @@ describe("Google Assistant Directives", () => {
       }
 
       expect(error.message).to.equal(
-        "The Entity Override Mode specified is incorrect, please consider use one of the followings: ENTITY_OVERRIDE_MODE_UNSPECIFIED, ENTITY_OVERRIDE_MODE_OVERRIDE or ENTITY_OVERRIDE_MODE_SUPPLEMENT",
+        "The entityOverrideMode is incorrect, please consider use one of the followings: ENTITY_OVERRIDE_MODE_UNSPECIFIED, ENTITY_OVERRIDE_MODE_OVERRIDE or ENTITY_OVERRIDE_MODE_SUPPLEMENT",
       );
     });
 
@@ -1322,7 +1322,7 @@ describe("Google Assistant Directives", () => {
       }
 
       expect(error.message).to.equal(
-        "The name property for Session Entity Type should be only alphabetic characters",
+        "The name property for the Entity should be only alphabetic characters, and you can include - or _",
       );
     });
 

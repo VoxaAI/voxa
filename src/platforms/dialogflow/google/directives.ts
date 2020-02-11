@@ -51,6 +51,7 @@ import {
 import { ITransition } from "../../../StateMachine";
 import { IVoxaEvent } from "../../../VoxaEvent";
 import { IVoxaReply } from "../../../VoxaReply";
+import { EntityOverrideMode, generateEntity } from "../../shared/directives";
 import { DialogflowEvent } from "../DialogflowEvent";
 import { DialogflowReply, ISessionEntityType } from "../DialogflowReply";
 
@@ -366,76 +367,7 @@ export class SessionEntity implements IDirective {
       );
     }
 
-    entity = generateSessionEntity(entity, event);
-
+    entity = generateEntity(entity, event);
     (reply as DialogflowReply).sessionEntityTypes = entity;
-  }
-}
-
-export enum EntityOverrideMode {
-  Unspecified = "ENTITY_OVERRIDE_MODE_UNSPECIFIED",
-  Override = "ENTITY_OVERRIDE_MODE_OVERRIDE",
-  Supplement = "ENTITY_OVERRIDE_MODE_SUPPLEMENT",
-}
-
-function generateSessionEntity(entity: any[], event: IVoxaEvent) {
-  const newSessionEntity = entity.reduce((filteredSessionEntity, property) => {
-    const entityMode = _.get(
-      property,
-      "entityOverrideMode",
-      EntityOverrideMode.Override,
-    );
-    const name = _.get(property, "name");
-    const entities = _.get(property, "entities");
-
-    validateEntityMode(entityMode);
-    validateEntityName(name);
-    validateEntity(entities);
-
-    const newEntity = {
-      entities: property.entities,
-      entityOverrideMode: entityMode,
-      name: `${event.rawEvent.session}/entityTypes/${name}`,
-    };
-    filteredSessionEntity.push(newEntity);
-    return filteredSessionEntity;
-  }, []);
-  return newSessionEntity;
-}
-
-function validateEntityMode(entityMode: any) {
-  if (
-    !_.includes(
-      [
-        EntityOverrideMode.Unspecified,
-        EntityOverrideMode.Override,
-        EntityOverrideMode.Supplement,
-      ],
-      entityMode,
-    )
-  ) {
-    throw new Error(
-      "The Entity Override Mode specified is incorrect, please consider use one of the followings: ENTITY_OVERRIDE_MODE_UNSPECIFIED, ENTITY_OVERRIDE_MODE_OVERRIDE or ENTITY_OVERRIDE_MODE_SUPPLEMENT",
-    );
-  }
-}
-
-function validateEntity(entities: any) {
-  if (!entities || _.isEmpty(entities)) {
-    throw new Error(
-      "The entities property is empty or was not provided, please verify",
-    );
-  }
-}
-
-function validateEntityName(name: any) {
-  const regexName = new RegExp(/^[A-Z-_]+$/i);
-  if (!name) {
-    throw new Error("A name is required for a Session Entity");
-  }
-  if (!regexName.test(name)) {
-    throw new Error(
-      "The name property for Session Entity Type should be only alphabetic characters",
-    );
   }
 }

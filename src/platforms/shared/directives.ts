@@ -63,11 +63,16 @@ export enum EntityOverrideMode {
   Supplement = "ENTITY_OVERRIDE_MODE_SUPPLEMENT",
 }
 
-function generateEntity(entity: any[], event: IVoxaEvent) {
+export function generateEntity(entity: any[], event: IVoxaEvent) {
   const newSessionEntity = entity.reduce((filteredEntity, property) => {
     let behavior = "updateBehavior";
     let defaultBehavior = "REPLACE";
-    const platform = _.get(event, "platform.name");
+
+    const platformRawEvent = _.get(
+      event,
+      "rawEvent.originalDetectIntentRequest.source",
+    );
+    const platform = _.get(event, "platform.name", platformRawEvent);
 
     if (platform === "google") {
       behavior = "entityOverrideMode";
