@@ -24,7 +24,7 @@ export class Entity implements IDirective {
   ): Promise<void> {
     let entity: any = this.viewPath;
 
-    Entity.platform = _.get(event, "platform.name");
+    const platform = _.get(event, "platform.name");
 
     if (_.isString(this.viewPath)) {
       entity = await event.renderer.renderPath(this.viewPath, event);
@@ -42,11 +42,11 @@ export class Entity implements IDirective {
 
     entity = generateEntity(entity, event);
 
-    if (Entity.platform === "google") {
+    if (platform === "google") {
       (reply as DialogflowReply).sessionEntityTypes = entity;
     }
 
-    if (Entity.platform === "alexa") {
+    if (platform === "alexa") {
       const response: Response = (reply as AlexaReply).response;
       if (!response.directives) {
         response.directives = [];

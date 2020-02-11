@@ -1404,9 +1404,8 @@ describe("Google Assistant Directives", () => {
         to: "entry",
       });
 
-      event.originalDetectIntentRequest.payload.surface.capabilities = [];
       const reply = await dialogflowAgent.execute(event);
-      expect(reply.sessionEntityTypes).to.deep.equal([
+      expect(_.get(reply, "sessionEntityTypes")).to.deep.equal([
         {
           entities: [
             {
