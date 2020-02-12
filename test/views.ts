@@ -580,6 +580,16 @@ export const views = {
       RepromptRandom: ["reprompt1", "reprompt2", "reprompt3"],
       Say: "say",
       SayRandom: ["say1", "say2", "say3"],
+      SimpleAlexaEntity: {
+        entities: [
+          {
+            id: "nathan",
+            synonyms: ["nate"],
+            value: "nathan",
+          },
+        ],
+        name: "LIST_OF_AVAILABLE_NAMES",
+      },
       SimpleGoogleEntity: {
         entities: [
           {
