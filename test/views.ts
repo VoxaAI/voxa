@@ -320,6 +320,21 @@ export const views = {
             "To get the user's info, go to your Alexa app and grant permission to the skill.",
         },
       },
+      GoogleEntity: [
+        {
+          entities: [
+            {
+              synonyms: ["apple", "green apple", "crabapple"],
+              value: "APPLE_KEY",
+            },
+            {
+              synonyms: ["orange"],
+              value: "ORANGE_KEY",
+            },
+          ],
+          name: "fruit",
+        },
+      ],
       Help: "This is the help",
       HelpIntent: {
         HelpAboutSkill: "For more help visit www.rain.agency",
@@ -351,6 +366,34 @@ export const views = {
         ProductModified: "Product has been successfully modified",
         WithItems: "Lists with items are: {listsWithItems}",
       },
+      MultipleGoogleEntities: [
+        {
+          entities: [
+            {
+              synonyms: ["apple", "green apple", "crabapple"],
+              value: "APPLE_KEY",
+            },
+            {
+              synonyms: ["orange"],
+              value: "ORANGE_KEY",
+            },
+          ],
+          name: "fruit",
+        },
+        {
+          entities: [
+            {
+              synonyms: ["lion", "cat", "wild cat", "simba"],
+              value: "LION_KEY",
+            },
+            {
+              synonyms: ["elephant", "mammoth"],
+              value: "ELEPHANT_KEY",
+            },
+          ],
+          name: "animal",
+        },
+      ],
       MultipleSessionEntities: [
         {
           entities: [
@@ -512,6 +555,19 @@ export const views = {
       RepromptRandom: ["reprompt1", "reprompt2", "reprompt3"],
       Say: "say",
       SayRandom: ["say1", "say2", "say3"],
+      SimpleGoogleEntity: {
+        entities: [
+          {
+            synonyms: ["lion", "cat", "wild cat", "simba"],
+            value: "LION_KEY",
+          },
+          {
+            synonyms: ["elephant", "mammoth"],
+            value: "ELEPHANT_KEY",
+          },
+        ],
+        name: "animal",
+      },
       SimpleSessionEntity: {
         entities: [
           {
