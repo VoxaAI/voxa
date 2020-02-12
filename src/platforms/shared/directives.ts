@@ -1,5 +1,6 @@
 import { Response } from "ask-sdk-model";
 import * as _ from "lodash";
+import { AudioItem } from "virtual-alexa";
 import { IDirective } from "../../directives";
 import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";
@@ -119,13 +120,22 @@ function alexaDynamicEntity(
   updateBehavior: string,
   name: string,
 ) {
-  const values: any = property.entities.map(
-    (item: { synonyms: any; value: any }) => ({
-      name: {
-        synonyms: item.synonyms,
-        value: item.value,
-      },
-    }),
+  function entityValues(prop: any) {
+    const entity: any = {};
+    if (_.get(prop, "id")) {
+      entity.id = prop.id;
+    }
+    if (_.get(prop, "synonyms") && _.get(prop, "value")) {
+      entity.name = {
+        synonyms: prop.synonyms,
+        value: prop.value,
+      };
+    }
+    return entity;
+  }
+
+  const values: any = property.entities.map((entity: any) =>
+    entityValues(entity),
   );
 
   return {

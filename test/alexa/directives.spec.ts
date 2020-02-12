@@ -1024,9 +1024,8 @@ describe("Alexa directives", () => {
         entities: "DynamicEntity",
         to: "die",
       });
-      console.log("event? ", JSON.stringify(event));
+
       const reply = await alexaSkill.execute(event);
-      console.log("reply? ", JSON.stringify(reply.response.directives));
       expect(reply.response.directives).to.deep.equal([
         {
           type: "Dialog.UpdateDynamicEntities",
@@ -1035,6 +1034,62 @@ describe("Alexa directives", () => {
               name: "LIST_OF_AVAILABLE_NAMES",
               values: [
                 {
+                  name: {
+                    synonyms: ["nate"],
+                    value: "nathan",
+                  },
+                },
+              ],
+            },
+          ],
+          updateBehavior: "REPLACE",
+        },
+      ]);
+    });
+
+    it("should add an array of objects", async () => {
+      app.onIntent("YesIntent", {
+        entities: "MultipleAlexaEntities",
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      console.log(
+        "reply.response.directives? ",
+        JSON.stringify(reply.response.directives),
+      );
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "Dialog.UpdateDynamicEntities",
+          types: [
+            {
+              name: "LIST_OF_AIRPORTS_TYPES",
+              values: [
+                {
+                  name: {
+                    synonyms: ["Boston Logan"],
+                    value: "Logan International Airport",
+                  },
+                },
+                {
+                  name: {
+                    synonyms: ["New York"],
+                    value: "LaGuardia Airport",
+                  },
+                },
+              ],
+            },
+          ],
+          updateBehavior: "REPLACE",
+        },
+        {
+          type: "Dialog.UpdateDynamicEntities",
+          types: [
+            {
+              name: "LIST_OF_AVAILABLE_NAMES",
+              values: [
+                {
+                  id: "nathan",
                   name: {
                     synonyms: ["nate"],
                     value: "nathan",

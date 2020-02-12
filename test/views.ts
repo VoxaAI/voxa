@@ -366,6 +366,31 @@ export const views = {
         ProductModified: "Product has been successfully modified",
         WithItems: "Lists with items are: {listsWithItems}",
       },
+      MultipleAlexaEntities: [
+        {
+          entities: [
+            {
+              synonyms: ["Boston Logan"],
+              value: "Logan International Airport",
+            },
+            {
+              synonyms: ["New York"],
+              value: "LaGuardia Airport",
+            },
+          ],
+          name: "LIST_OF_AIRPORTS_TYPES",
+        },
+        {
+          entities: [
+            {
+              id: "nathan",
+              synonyms: ["nate"],
+              value: "nathan",
+            },
+          ],
+          name: "LIST_OF_AVAILABLE_NAMES",
+        },
+      ],
       MultipleGoogleEntities: [
         {
           entities: [
