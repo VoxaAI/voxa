@@ -5,7 +5,7 @@
  * Licensed under the MIT license.
  */
 
-export { Tell, Say, SayP, Ask, Reprompt } from "./directives";
+export { Tell, Say, SayP, Ask, Reprompt, Entity } from "./directives";
 export { VoxaPlatform } from "./platforms";
 export {
   IVoxaEvent,
@@ -138,8 +138,6 @@ export {
 export { Model } from "./Model";
 
 import { autoLoad, replaceIntent, s3Persistence, stateFlow } from "./plugins";
-
-export { Entity } from "./platforms/shared";
 
 export { IS3Persistence } from "./plugins";
 

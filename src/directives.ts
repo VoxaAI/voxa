@@ -7,8 +7,12 @@
  * return { reply: 'View' }
  */
 
+import { Response } from "ask-sdk-model";
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
+import { DialogflowReply } from ".";
+import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
+import { generateEntity } from "../src/platforms/shared/directives";
 import { VoxaPlatform } from "./platforms/VoxaPlatform";
 import { ITransition } from "./StateMachine";
 import { IVoxaEvent } from "./VoxaEvent";
@@ -195,5 +199,55 @@ export class TextP implements IDirective {
     transition: ITransition,
   ): Promise<void> {
     reply.addStatement(this.text, true);
+  }
+}
+
+export class Entity implements IDirective {
+  public static key: string = "entities";
+  public static platform: string = "core";
+
+  public viewPath?: any | any[];
+
+  constructor(viewPath: any | any[]) {
+    this.viewPath = viewPath;
+  }
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition?: ITransition,
+  ): Promise<void> {
+    let entity: any = this.viewPath;
+
+    const platform = _.get(event, "platform.name");
+
+    if (_.isString(this.viewPath)) {
+      entity = await event.renderer.renderPath(this.viewPath, event);
+    }
+
+    if (_.isPlainObject(entity)) {
+      entity = [entity];
+    }
+
+    if (!_.isArray(entity) || _.isEmpty(entity)) {
+      throw new Error(
+        "Please verify your entity it could be empty or is not an array",
+      );
+    }
+
+    entity = generateEntity(entity, event);
+
+    if (platform === "google") {
+      (reply as DialogflowReply).sessionEntityTypes = entity;
+    }
+
+    if (platform === "alexa") {
+      const response: Response = (reply as AlexaReply).response;
+      if (!response.directives) {
+        response.directives = [];
+      }
+
+      response.directives.push(...entity);
+    }
   }
 }

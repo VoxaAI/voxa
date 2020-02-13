@@ -26,7 +26,6 @@ import { ITransition } from "../../../StateMachine";
 import { VoxaApp } from "../../../VoxaApp";
 import { IVoxaEvent } from "../../../VoxaEvent";
 import { IVoxaReply } from "../../../VoxaReply";
-import { Entity } from "../../shared";
 import { IVoxaPlatformConfig } from "../../VoxaPlatform";
 import { DialogflowPlatform } from "../DialogflowPlatform";
 import { DialogflowReply } from "../DialogflowReply";
@@ -117,7 +116,6 @@ export class GoogleAssistantPlatform extends DialogflowPlatform {
       UpdatePermission,
       Say,
       SessionEntity,
-      Entity,
     ];
   }
 }

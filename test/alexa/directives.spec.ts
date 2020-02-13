@@ -2,7 +2,6 @@ import { expect } from "chai";
 import * as i18next from "i18next";
 import * as _ from "lodash";
 import "mocha";
-
 import {
   AlexaEvent,
   AlexaPlatform,
