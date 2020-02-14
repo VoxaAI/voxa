@@ -7,7 +7,7 @@
  * return { reply: 'View' }
  */
 
-import { Response } from "ask-sdk-model";
+import { dialog, Response } from "ask-sdk-model";
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
 import { DialogflowReply } from ".";
@@ -247,7 +247,11 @@ export class Entity implements IDirective {
         response.directives = [];
       }
 
-      response.directives.push(...entity);
+      if (_.isArray(response.directives)) {
+        response.directives = _.concat(response.directives, entity);
+      } else {
+        response.directives!.push(entity);
+      }
     }
   }
 }

@@ -8,39 +8,56 @@ export enum EntityOverrideMode {
 }
 
 export function generateEntity(entity: any[], event: IVoxaEvent) {
-  const newSessionEntity = entity.reduce((filteredEntity, property) => {
-    let behavior = "updateBehavior";
-    let defaultBehavior = "REPLACE";
+  const platformRawEvent = _.get(
+    event,
+    "rawEvent.originalDetectIntentRequest.source",
+  );
+  const platform = _.get(event, "platform.name", platformRawEvent);
 
-    const platformRawEvent = _.get(
-      event,
-      "rawEvent.originalDetectIntentRequest.source",
-    );
-    const platform = _.get(event, "platform.name", platformRawEvent);
+  let newSessionEntity;
 
-    if (platform === "google") {
-      behavior = "entityOverrideMode";
-      defaultBehavior = "ENTITY_OVERRIDE_MODE_OVERRIDE";
-    }
+  newSessionEntity = entity.reduce((filteredEntity, property) => {
+    let newEntity;
+    let entityMode = _.get(property, "updateBehavior", "REPLACE");
 
-    const entityMode = _.get(property, behavior, defaultBehavior);
     const name = _.get(property, "name");
     const entities = _.get(property, "entities");
 
-    validateEntityBehavior(entityMode, platform);
     validateEntityName(name);
     validateEntity(entities);
-    let newEntity;
 
-    if (platform === "alexa") {
-      newEntity = alexaDynamicEntity(property, entityMode, name);
-    }
     if (platform === "google") {
+      entityMode = _.get(
+        property,
+        "entityOverrideMode",
+        "ENTITY_OVERRIDE_MODE_OVERRIDE",
+      );
+      validateEntityBehavior(entityMode, platform);
       newEntity = dialogflowSessionEntity(property, entityMode, name, event);
     }
+
+    if (platform === "alexa") {
+      newEntity = alexaDynamicEntity(property, name);
+    }
+
     filteredEntity.push(newEntity);
     return filteredEntity;
   }, []);
+
+  if (platform === "alexa") {
+    const behavior =
+      _.chain(entity)
+        .map((e) => e.updateBehavior)
+        .find()
+        .value() || "REPLACE";
+
+    validateEntityBehavior(behavior, platform);
+    return (newSessionEntity = {
+      type: "Dialog.UpdateDynamicEntities",
+      types: newSessionEntity,
+      updateBehavior: behavior,
+    });
+  }
 
   return newSessionEntity;
 }
@@ -58,11 +75,7 @@ function dialogflowSessionEntity(
   };
 }
 
-function alexaDynamicEntity(
-  property: any,
-  updateBehavior: string,
-  name: string,
-) {
+function alexaDynamicEntity(property: any, name: string) {
   function entityValues(prop: any) {
     const entity: any = {};
     if (_.get(prop, "id")) {
@@ -82,14 +95,8 @@ function alexaDynamicEntity(
   );
 
   return {
-    type: "Dialog.UpdateDynamicEntities",
-    types: [
-      {
-        name,
-        values,
-      },
-    ],
-    updateBehavior,
+    name,
+    values,
   };
 }
 
