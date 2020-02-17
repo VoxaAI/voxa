@@ -8,11 +8,9 @@ export enum EntityOverrideMode {
 }
 
 export function generateEntity(entity: any[], event: IVoxaEvent) {
-  const platformRawEvent = _.get(
-    event,
-    "rawEvent.originalDetectIntentRequest.source",
-  );
-  const platform = _.get(event, "platform.name", platformRawEvent);
+  const source = _.get(event, "rawEvent.originalDetectIntentRequest.source");
+  const platformName = _.get(event, "platform.name");
+  const platform = source || platformName;
 
   let newSessionEntity;
 

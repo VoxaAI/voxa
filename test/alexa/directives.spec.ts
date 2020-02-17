@@ -5,6 +5,7 @@ import "mocha";
 import {
   AlexaEvent,
   AlexaPlatform,
+  AlexaReply,
   APLTemplate,
   APLTTemplate,
   DisplayTemplate,
@@ -1118,12 +1119,6 @@ describe("Alexa directives", () => {
                 },
               ],
             },
-          ],
-          updateBehavior: "REPLACE",
-        },
-        {
-          type: "Dialog.UpdateDynamicEntities",
-          types: [
             {
               name: "LIST_OF_AVAILABLE_NAMES",
               values: [
@@ -1195,7 +1190,8 @@ describe("Alexa directives", () => {
     it("should throw an error due to incorrect Entity Override Mode property", async () => {
       const reply = await alexaSkill.execute(event);
       const alexaEvent = new AlexaEvent(event);
-      const entity = new Entity(simpleEntityIncorrectMode);
+      _.set(alexaEvent, "platform.name", "alexa");
+      const entity = new Entity([simpleEntityIncorrectMode]);
 
       let error: Error | null = null;
       try {
