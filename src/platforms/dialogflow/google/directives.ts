@@ -42,6 +42,7 @@ import {
 } from "actions-on-google";
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
+import { EntityHelper } from "../../../../src/directives";
 import {
   IDirective,
   IDirectiveClass,
@@ -51,7 +52,6 @@ import {
 import { ITransition } from "../../../StateMachine";
 import { IVoxaEvent } from "../../../VoxaEvent";
 import { IVoxaReply } from "../../../VoxaReply";
-import { EntityOverrideMode, generateEntity } from "../../shared/directives";
 import { DialogflowEvent } from "../DialogflowEvent";
 import { DialogflowReply, ISessionEntityType } from "../DialogflowReply";
 
@@ -336,13 +336,14 @@ export class Say extends BaseSay {
   }
 }
 
-export class SessionEntity implements IDirective {
+export class SessionEntity extends EntityHelper implements IDirective {
   public static key: string = "dialogflowSessionEntity";
   public static platform: string = "google";
 
   public viewPath?: any | any[];
 
   constructor(viewPath: any | any[]) {
+    super();
     this.viewPath = viewPath;
   }
 
@@ -367,7 +368,7 @@ export class SessionEntity implements IDirective {
       );
     }
 
-    entity = generateEntity(entity, event);
+    entity = this.generateEntity(entity, event);
     (reply as DialogflowReply).sessionEntityTypes = entity;
   }
 }
