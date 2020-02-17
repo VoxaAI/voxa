@@ -7,9 +7,8 @@
  * return { reply: 'View' }
  */
 
-import { dialog, events, Response } from "ask-sdk-model";
+import { Response } from "ask-sdk-model";
 import * as bluebird from "bluebird";
-import { promises } from "dns";
 import * as _ from "lodash";
 import { DialogflowReply } from ".";
 import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
