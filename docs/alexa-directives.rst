@@ -644,10 +644,11 @@ The Entity Directive allows to create Dynamic Entities based on a generic struct
 
 Entities are sent with the `entities` key in your controller. You need to pass a view name with the types array or object.
 
-If the updateBehavior is ommited, the REPLACE value is used by default. The id property is optional an only used for Alexa platform.
+If the updateBehavior is ommited, the REPLACE value is used by default. Use only one updateBehavior property. In case each entity has an updateBehavior property, just the first coincident will be used. 
+
+The id property is optional an only used for Alexa platform.
 
 The value in alexaEntityName should be the same as the one used for the Slot Types in the Alexa  Developer Console. 
-
 
 .. code-block:: javascript
 
