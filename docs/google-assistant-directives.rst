@@ -681,3 +681,82 @@ Create an entity in your dialogflow agent and make sure that define synonyms opt
       sayp: "Hello!",
       to: "entry",
     });
+
+Entity Directive
+------------------------------------------
+
+The Entity Directive allows to create Session Entities based on a generic structure.
+
+Entities are sent with the `entities` key in your controller. You need to pass a view name with the types array or object.
+
+If the entityOverrideMode is ommited, the ENTITY_OVERRIDE_MODE_OVERRIDE value is used by default. 
+
+The value in googleEntityName should be the same as the one used for the Entities in the Dialogflow agent. 
+
+.. code-block:: javascript
+
+ // variables.js
+
+    export function myEntity(voxaEvent: VoxaEvent) {
+      // Do something with the voxaEvent, or not...
+
+      const entityType = [
+        {
+          "entities": [
+            {
+              "synonyms": ["apple", "green apple", "crabapple"],
+              "value": "APPLE_KEY"
+            },
+            {
+              "synonyms": ["orange"],
+              "value": "ORANGE_KEY"
+            }
+          ],
+          "googleEntityName": "list-of-animals"
+        }
+      ];
+
+      return entityType;
+    }
+  
+  // views.js
+
+    const views = {
+      "en-US": {
+        translation: {
+          myEntity: "{myEntity}"
+        },
+      };
+    };
+
+  // state.js
+
+    app.onState('someState', {
+      entities: "myEntity",
+      flow: "yield",
+      sayp: "Hello!",
+      to: "entry",
+    });
+
+// Or you can do it directly...
+
+    app.onState('someState', {
+      entities:  [
+        {
+          "entities": [
+            {
+              "synonyms": ["apple", "green apple", "crabapple"],
+              "value": "APPLE_KEY"
+            },
+            {
+              "synonyms": ["orange"],
+              "value": "ORANGE_KEY"
+            }
+          ],
+          "googleEntityName": "list-of-animals"
+        }
+      ],
+      flow: "yield",
+      sayp: "Hello!",
+      to: "entry",
+    });
