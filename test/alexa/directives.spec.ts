@@ -1213,6 +1213,7 @@ describe("Alexa directives", () => {
     it("should throw an error due to incorrect name format", async () => {
       const reply = await alexaSkill.execute(event);
       const alexaEvent = new AlexaEvent(event);
+      _.set(alexaEvent, "platform.name", "alexa");
       const entity = new Entity([simpleEntityIncorrectName]);
 
       let error: Error | null = null;
@@ -1228,7 +1229,7 @@ describe("Alexa directives", () => {
       }
 
       expect(error.message).to.equal(
-        "The name property for the Entity should be only alphabetic characters, and you can include - or _",
+        "The name property (alexaEntityName) should be only alphabetic characters, and can include underscore character _",
       );
     });
 

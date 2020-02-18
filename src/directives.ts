@@ -220,10 +220,11 @@ export abstract class EntityHelper {
         let newEntity;
         let entityMode = _.get(property, "updateBehavior", "REPLACE");
 
-        const name = _.get(property, "name");
+        let name = _.get(property, "name");
+        name = _.get(property, `${platform}EntityName`, name);
         const entities = _.get(property, "entities");
 
-        this.validateEntityName(name);
+        this.validateEntityName(name, platform);
         this.validateEntity(entities);
 
         if (platform === "google") {
@@ -278,29 +279,39 @@ export abstract class EntityHelper {
     event: IVoxaEvent,
   ): any {
     return {
-      entities: property.entities,
+      entities: property.entities.map((item: any) =>
+        this.entityValues(item, "google"),
+      ),
       entityOverrideMode,
       name: `${event.rawEvent.session}/entityTypes/${name}`,
     };
   }
 
-  protected alexaDynamicEntity(property: any, name: string): any {
-    function entityValues(prop: any) {
-      const entity: any = {};
-      if (_.get(prop, "id")) {
-        entity.id = prop.id;
-      }
-      if (_.get(prop, "synonyms") && _.get(prop, "value")) {
-        entity.name = {
-          synonyms: prop.synonyms,
-          value: prop.value,
-        };
-      }
-      return entity;
+  protected entityValues(prop: any, platform?: string) {
+    const entity: any = {};
+    if (platform === "google") {
+      return {
+        synonyms: prop.synonyms,
+        value: prop.value,
+      };
     }
 
+    if (_.get(prop, "id")) {
+      entity.id = prop.id;
+    }
+
+    if (_.get(prop, "synonyms") && _.get(prop, "value")) {
+      entity.name = {
+        synonyms: prop.synonyms,
+        value: prop.value,
+      };
+    }
+    return entity;
+  }
+
+  protected alexaDynamicEntity(property: any, name: string): any {
     const values: any = property.entities.map((entity: any) =>
-      entityValues(entity),
+      this.entityValues(entity),
     );
 
     return {
@@ -341,15 +352,23 @@ export abstract class EntityHelper {
     }
   }
 
-  protected validateEntityName(name: string): any {
-    const regexName = new RegExp(/^[A-Z-_]+$/i);
+  protected validateEntityName(name: string, platform: string): any {
+    let pattern = /^[A-Z_]+$/i;
+    let specialCharacter = "underscore character _";
+
+    if (platform === "google") {
+      specialCharacter = "dash character -";
+      pattern = /^[A-Z-]+$/i;
+    }
+
     if (!name) {
       throw new Error("A name is required for the Entity");
     }
 
-    if (!regexName.test(name)) {
+    const regex = new RegExp(pattern);
+    if (!regex.test(name)) {
       throw new Error(
-        "The name property for the Entity should be only alphabetic characters, and you can include - or _",
+        `The name property (${platform}EntityName) should be only alphabetic characters, and can include ${specialCharacter}`,
       );
     }
   }
