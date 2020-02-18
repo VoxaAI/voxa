@@ -5,9 +5,6 @@ import "mocha";
 import {
   AlexaEvent,
   AlexaPlatform,
-  AlexaReply,
-  APLTemplate,
-  APLTTemplate,
   DisplayTemplate,
   Entity,
   HomeCard,
