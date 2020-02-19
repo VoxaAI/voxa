@@ -215,16 +215,13 @@ export class TextP implements IDirective {
 export abstract class EntityHelper {
   public getEntity(rawEntity: any, event: IVoxaEvent): any {
     const source = _.get(event, "rawEvent.originalDetectIntentRequest.source");
-    const platformName = _.get(event, "platform.name");
-    const platform = source || platformName;
+    const platform = _.get(event, "platform.name") || source;
 
     let entity: any;
     let behavior: any;
 
     ({ entity, behavior } = this.generateEntityFormat(
-      entity,
       rawEntity,
-      behavior,
       platform,
       event,
     ));
@@ -388,35 +385,37 @@ export abstract class EntityHelper {
   }
 
   private generateEntityFormat(
-    entity: any,
     rawEntity: any,
-    behavior: any,
     platform: any,
     event: IVoxaEvent,
   ) {
-    entity = rawEntity.reduce((filteredEntity: any, property: any): any => {
-      let newEntity: any;
-      behavior = _.get(property, "entityOverrideMode");
-      let name = _.get(property, "name");
-      name = _.get(property, `${platform}EntityName`, name);
-      const entities = _.get(property, "entities");
-      this.validateEntityName(name, platform);
-      this.validateEntity(entities);
-      behavior = this.validateEntityBehavior(behavior, platform);
-      if (platform === "google") {
-        newEntity = this.dialogflowSessionEntity(
-          property,
-          behavior,
-          name,
-          event,
-        );
-      }
-      if (platform === "alexa") {
-        newEntity = this.alexaDynamicEntity(property, name);
-      }
-      filteredEntity.push(newEntity);
-      return filteredEntity;
-    }, []);
+    let behavior: any;
+    const entity = rawEntity.reduce(
+      (filteredEntity: any, property: any): any => {
+        let newEntity: any;
+        behavior = _.get(property, "entityOverrideMode");
+        let name = _.get(property, "name");
+        name = _.get(property, `${platform}EntityName`, name);
+        const entities = _.get(property, "entities");
+        this.validateEntityName(name, platform);
+        this.validateEntity(entities);
+        behavior = this.validateEntityBehavior(behavior, platform);
+        if (platform === "google") {
+          newEntity = this.dialogflowSessionEntity(
+            property,
+            behavior,
+            name,
+            event,
+          );
+        }
+        if (platform === "alexa") {
+          newEntity = this.alexaDynamicEntity(property, name);
+        }
+        filteredEntity.push(newEntity);
+        return filteredEntity;
+      },
+      [],
+    );
     return { entity, behavior };
   }
 }
