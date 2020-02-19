@@ -383,6 +383,22 @@ export abstract class EntityHelper {
       );
     }
   }
+
+  protected addReplyPerPlatform(platform: any, reply: IVoxaReply, entity: any) {
+    if (platform === "google") {
+      (reply as DialogflowReply).sessionEntityTypes = entity;
+    }
+
+    const response: Response = (reply as AlexaReply).response;
+    if (!response.directives) {
+      response.directives = [];
+    }
+    if (_.isArray(response.directives)) {
+      response.directives = _.concat(response.directives, entity);
+    } else {
+      response.directives!.push(entity);
+    }
+  }
 }
 
 export class Entity extends EntityHelper implements IDirective {
@@ -421,21 +437,6 @@ export class Entity extends EntityHelper implements IDirective {
 
     entity = this.generateEntity(entity, event);
 
-    if (platform === "google") {
-      (reply as DialogflowReply).sessionEntityTypes = entity;
-    }
-
-    if (platform === "alexa") {
-      const response: Response = (reply as AlexaReply).response;
-      if (!response.directives) {
-        response.directives = [];
-      }
-
-      if (_.isArray(response.directives)) {
-        response.directives = _.concat(response.directives, entity);
-      } else {
-        response.directives!.push(entity);
-      }
-    }
+    this.addReplyPerPlatform(platform, reply, entity);
   }
 }
