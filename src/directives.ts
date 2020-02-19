@@ -38,6 +38,11 @@ export enum EntityOverrideMode {
   Supplement = "ENTITY_OVERRIDE_MODE_SUPPLEMENT",
 }
 
+export enum UpdateBehavior {
+  Replace = "REPLACE",
+  Clear = "CLEAR",
+}
+
 export function sampleOrItem(
   statement: string | string[],
   platform: VoxaPlatform,
@@ -218,7 +223,11 @@ export abstract class EntityHelper {
     newSessionEntity = entity.reduce(
       (filteredEntity: any, property: any): any => {
         let newEntity;
-        let entityMode = _.get(property, "updateBehavior", "REPLACE");
+        let entityMode = _.get(
+          property,
+          "updateBehavior",
+          UpdateBehavior.Replace,
+        );
 
         let name = _.get(property, "name");
         name = _.get(property, `${platform}EntityName`, name);
@@ -231,7 +240,7 @@ export abstract class EntityHelper {
           entityMode = _.get(
             property,
             "entityOverrideMode",
-            "ENTITY_OVERRIDE_MODE_OVERRIDE",
+            EntityOverrideMode.Override,
           );
 
           this.validateEntityBehavior(entityMode, platform);
@@ -259,7 +268,7 @@ export abstract class EntityHelper {
         _.chain(entity)
           .map((e) => e.updateBehavior)
           .find()
-          .value() || "REPLACE";
+          .value() || UpdateBehavior.Replace;
 
       this.validateEntityBehavior(behavior, platform);
       return (newSessionEntity = {
@@ -327,16 +336,17 @@ export abstract class EntityHelper {
       EntityOverrideMode.Supplement,
     ];
 
-    const alexaEntityBehaviorList = ["REPLACE", "CLEAR"];
+    const alexaEntityBehaviorList = [
+      UpdateBehavior.Replace,
+      UpdateBehavior.Clear,
+    ];
 
-    let behaviorList = alexaEntityBehaviorList;
-    let error =
-      "The updateBehavior is incorrect, please consider use one of the followings: REPLACE or CLEAR";
+    const behaviorList = alexaEntityBehaviorList;
+    let error = `The updateBehavior is incorrect, please consider use one of the followings: ${UpdateBehavior.Replace} or ${UpdateBehavior.Clear}`;
 
     if (platform === "google") {
-      behaviorList = dialogflowEntityBehaviorList;
-      error =
-        "The entityOverrideMode is incorrect, please consider use one of the followings: ENTITY_OVERRIDE_MODE_UNSPECIFIED, ENTITY_OVERRIDE_MODE_OVERRIDE or ENTITY_OVERRIDE_MODE_SUPPLEMENT";
+      (behaviorList as any) = dialogflowEntityBehaviorList;
+      error = `The entityOverrideMode is incorrect, please consider use one of the followings: ${EntityOverrideMode.Unspecified}, ${EntityOverrideMode.Override} or ${EntityOverrideMode.Supplement}`;
     }
 
     if (!_.includes(behaviorList, behavior)) {
