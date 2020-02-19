@@ -356,7 +356,7 @@ export class SessionEntity extends EntityHelper implements IDirective {
 
     entity = await this.rawEntity(entity, event, this.viewPath);
 
-    entity = this.generateEntity(entity, event);
+    entity = this.getEntity(entity, event);
     (reply as DialogflowReply).sessionEntityTypes = entity;
   }
 }
