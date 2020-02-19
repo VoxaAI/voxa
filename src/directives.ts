@@ -213,72 +213,59 @@ export class TextP implements IDirective {
 }
 
 export abstract class EntityHelper {
-  public generateEntity(entity: any, event: IVoxaEvent): any {
+  public generateEntity(rawEntity: any, event: IVoxaEvent): any {
     const source = _.get(event, "rawEvent.originalDetectIntentRequest.source");
     const platformName = _.get(event, "platform.name");
     const platform = source || platformName;
 
-    let newSessionEntity;
+    let entity: any;
+    let behavior: any;
 
-    newSessionEntity = entity.reduce(
-      (filteredEntity: any, property: any): any => {
-        let newEntity;
-        let entityMode = _.get(
+    entity = rawEntity.reduce((filteredEntity: any, property: any): any => {
+      let newEntity: any;
+      behavior = _.get(property, "entityOverrideMode");
+
+      let name = _.get(property, "name");
+      name = _.get(property, `${platform}EntityName`, name);
+      const entities = _.get(property, "entities");
+
+      this.validateEntityName(name, platform);
+      this.validateEntity(entities);
+
+      behavior = this.validateEntityBehavior(behavior, platform);
+      if (platform === "google") {
+        newEntity = this.dialogflowSessionEntity(
           property,
-          "updateBehavior",
-          UpdateBehavior.Replace,
+          behavior,
+          name,
+          event,
         );
+      }
 
-        let name = _.get(property, "name");
-        name = _.get(property, `${platform}EntityName`, name);
-        const entities = _.get(property, "entities");
+      if (platform === "alexa") {
+        newEntity = this.alexaDynamicEntity(property, name);
+      }
 
-        this.validateEntityName(name, platform);
-        this.validateEntity(entities);
-
-        if (platform === "google") {
-          entityMode = _.get(
-            property,
-            "entityOverrideMode",
-            EntityOverrideMode.Override,
-          );
-
-          this.validateEntityBehavior(entityMode, platform);
-
-          newEntity = this.dialogflowSessionEntity(
-            property,
-            entityMode,
-            name,
-            event,
-          );
-        }
-
-        if (platform === "alexa") {
-          newEntity = this.alexaDynamicEntity(property, name);
-        }
-
-        filteredEntity.push(newEntity);
-        return filteredEntity;
-      },
-      [],
-    );
+      filteredEntity.push(newEntity);
+      return filteredEntity;
+    }, []);
 
     if (platform === "alexa") {
-      const behavior =
-        _.chain(entity)
+      behavior = this.validateEntityBehavior(
+        _.chain(rawEntity)
           .map((e) => e.updateBehavior)
           .find()
-          .value() || UpdateBehavior.Replace;
-
-      this.validateEntityBehavior(behavior, platform);
-      return (newSessionEntity = {
+          .value(),
+        platform,
+      );
+      return (entity = {
         type: "Dialog.UpdateDynamicEntities",
-        types: newSessionEntity,
+        types: entity,
         updateBehavior: behavior,
       });
     }
 
-    return newSessionEntity;
+    return entity;
   }
 
   protected dialogflowSessionEntity(
@@ -345,7 +332,12 @@ export abstract class EntityHelper {
     let behaviorList = alexaEntityBehaviorList;
     let error = `The updateBehavior is incorrect, please consider use one of the followings: ${UpdateBehavior.Replace} or ${UpdateBehavior.Clear}`;
 
+    if (platform === "alexa") {
+      behavior = behavior || UpdateBehavior.Replace;
+    }
+
     if (platform === "google") {
+      behavior = behavior || EntityOverrideMode.Override;
       (behaviorList as any) = dialogflowEntityBehaviorList;
       error = `The entityOverrideMode is incorrect, please consider use one of the followings: ${EntityOverrideMode.Unspecified}, ${EntityOverrideMode.Override} or ${EntityOverrideMode.Supplement}`;
     }
@@ -353,6 +345,7 @@ export abstract class EntityHelper {
     if (!_.includes(behaviorList, behavior)) {
       throw new Error(error);
     }
+    return behavior;
   }
 
   protected validateEntity(entities: any): any {
