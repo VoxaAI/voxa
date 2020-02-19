@@ -341,7 +341,8 @@ export abstract class EntityHelper {
       UpdateBehavior.Clear,
     ];
 
-    const behaviorList = alexaEntityBehaviorList;
+    // tslint:disable-next-line
+    let behaviorList = alexaEntityBehaviorList;
     let error = `The updateBehavior is incorrect, please consider use one of the followings: ${UpdateBehavior.Replace} or ${UpdateBehavior.Clear}`;
 
     if (platform === "google") {
