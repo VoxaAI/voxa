@@ -399,6 +399,21 @@ export abstract class EntityHelper {
       response.directives!.push(entity);
     }
   }
+
+  protected async rawEntity(entity: any, event: IVoxaEvent, viewPath: any) {
+    if (_.isString(viewPath)) {
+      entity = await event.renderer.renderPath(viewPath, event);
+    }
+    if (_.isPlainObject(entity)) {
+      entity = [entity];
+    }
+    if (!_.isArray(entity) || _.isEmpty(entity)) {
+      throw new Error(
+        "Please verify your entity it could be empty or is not an array",
+      );
+    }
+    return entity;
+  }
 }
 
 export class Entity extends EntityHelper implements IDirective {
@@ -421,19 +436,7 @@ export class Entity extends EntityHelper implements IDirective {
 
     const platform = _.get(event, "platform.name");
 
-    if (_.isString(this.viewPath)) {
-      entity = await event.renderer.renderPath(this.viewPath, event);
-    }
-
-    if (_.isPlainObject(entity)) {
-      entity = [entity];
-    }
-
-    if (!_.isArray(entity) || _.isEmpty(entity)) {
-      throw new Error(
-        "Please verify your entity it could be empty or is not an array",
-      );
-    }
+    entity = await this.rawEntity(entity, event, this.viewPath);
 
     entity = this.generateEntity(entity, event);
 

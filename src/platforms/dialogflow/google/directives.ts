@@ -354,19 +354,7 @@ export class SessionEntity extends EntityHelper implements IDirective {
   ): Promise<void> {
     let entity: any = this.viewPath;
 
-    if (_.isString(this.viewPath)) {
-      entity = await event.renderer.renderPath(this.viewPath, event);
-    }
-
-    if (_.isPlainObject(entity)) {
-      entity = [entity];
-    }
-
-    if (!_.isArray(entity) || _.isEmpty(entity)) {
-      throw new Error(
-        "Please verify your entity it could be empty or is not an array",
-      );
-    }
+    entity = await this.rawEntity(entity, event, this.viewPath);
 
     entity = this.generateEntity(entity, event);
     (reply as DialogflowReply).sessionEntityTypes = entity;
