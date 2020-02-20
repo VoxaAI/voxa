@@ -214,8 +214,9 @@ export class TextP implements IDirective {
 
 export abstract class EntityHelper {
   public getEntity(rawEntity: any, event: IVoxaEvent): any {
-    const source = _.get(event, "rawEvent.originalDetectIntentRequest.source");
-    const platform = _.get(event, "platform.name") || source;
+    const platform =
+      _.get(event, "platform.name") ||
+      _.get(event, "rawEvent.originalDetectIntentRequest.source");
 
     let entity: any;
     let behavior: any;
@@ -292,7 +293,10 @@ export abstract class EntityHelper {
     };
   }
 
-  protected validateEntityBehavior(behavior: string, platform: string): any {
+  protected validateEntityBehavior(property: any, platform: string): any {
+    let behavior =
+      _.get(property, "entityOverrideMode") ||
+      _.get(property, "updateBehavior");
     const dialogflowEntityBehaviorList = [
       EntityOverrideMode.Unspecified,
       EntityOverrideMode.Override,
@@ -324,7 +328,8 @@ export abstract class EntityHelper {
     return behavior;
   }
 
-  protected validateEntity(entities: any): any {
+  protected validateEntity(property: any): any {
+    const entities = _.get(property, "entities");
     if (!entities || _.isEmpty(entities)) {
       throw new Error(
         "The entities property is empty or was not provided, please verify",
@@ -332,9 +337,11 @@ export abstract class EntityHelper {
     }
   }
 
-  protected validateEntityName(name: string, platform: string): any {
+  protected validateEntityName(property: any, platform: string): any {
     let pattern = /^[A-Z_]+$/i;
     let specialCharacter = "underscore character _";
+    let name = _.get(property, "name");
+    name = _.get(property, `${platform}EntityName`, name);
 
     if (platform === "google") {
       specialCharacter = "dash character -";
@@ -351,6 +358,7 @@ export abstract class EntityHelper {
         `The name property (${platform}EntityName) should be only alphabetic characters, and can include ${specialCharacter}`,
       );
     }
+    return name;
   }
 
   protected addReplyPerPlatform(platform: any, reply: IVoxaReply, entity: any) {
@@ -393,13 +401,10 @@ export abstract class EntityHelper {
     const entity = rawEntity.reduce(
       (filteredEntity: any, property: any): any => {
         let newEntity: any;
-        behavior = _.get(property, "entityOverrideMode");
-        let name = _.get(property, "name");
-        name = _.get(property, `${platform}EntityName`, name);
-        const entities = _.get(property, "entities");
-        this.validateEntityName(name, platform);
-        this.validateEntity(entities);
-        behavior = this.validateEntityBehavior(behavior, platform);
+        const name = this.validateEntityName(property, platform);
+        this.validateEntity(property);
+
+        behavior = this.validateEntityBehavior(property, platform);
         if (platform === "google") {
           newEntity = this.dialogflowSessionEntity(
             property,
