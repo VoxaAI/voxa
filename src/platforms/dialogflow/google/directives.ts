@@ -42,7 +42,7 @@ import {
 } from "actions-on-google";
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
-import { EntityHelper } from "../../../../src/directives";
+import { EntityHelper } from "../../../../src/helpers";
 import {
   IDirective,
   IDirectiveClass,
