@@ -34,6 +34,7 @@ import { IDirective } from "../../directives";
 import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
+import { EntityHelper } from "../share";
 import { AlexaReply } from "./AlexaReply";
 
 function isCard(card: any): card is ui.Card {

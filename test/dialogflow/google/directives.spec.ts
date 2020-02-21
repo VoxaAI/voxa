@@ -8,7 +8,6 @@ import { expect } from "chai";
 import * as i18next from "i18next";
 import * as _ from "lodash";
 import "mocha";
-import { Entity } from "../../../src";
 import {
   DialogflowReply,
   GoogleAssistantEvent,
@@ -16,6 +15,7 @@ import {
   MediaResponse,
   SessionEntity,
 } from "../../../src/platforms/dialogflow";
+import { Entity } from "../../../src/platforms/share";
 import { VoxaApp } from "../../../src/VoxaApp";
 import { variables } from "./../../variables";
 import { views } from "./../../views";

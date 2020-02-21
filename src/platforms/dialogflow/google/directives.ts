@@ -42,7 +42,6 @@ import {
 } from "actions-on-google";
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
-import { EntityHelper } from "../../../../src/helpers";
 import {
   IDirective,
   IDirectiveClass,
@@ -52,8 +51,9 @@ import {
 import { ITransition } from "../../../StateMachine";
 import { IVoxaEvent } from "../../../VoxaEvent";
 import { IVoxaReply } from "../../../VoxaReply";
+import { EntityHelper } from "../../share";
 import { DialogflowEvent } from "../DialogflowEvent";
-import { DialogflowReply, ISessionEntityType } from "../DialogflowReply";
+import { DialogflowReply } from "../DialogflowReply";
 
 abstract class DialogflowDirective<IOptions> {
   constructor(public options: IOptions, public requiredCapability?: string) {}

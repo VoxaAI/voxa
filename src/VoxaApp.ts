@@ -28,7 +28,6 @@ import { Context as AWSLambdaContext } from "aws-lambda";
 import { LambdaLogOptions } from "lambda-log";
 import {
   Ask,
-  Entity,
   IDirective,
   IDirectiveClass,
   Reprompt,
@@ -137,16 +136,7 @@ export class VoxaApp {
     this.onAfterStateChanged(this.renderDirectives);
     this.onBeforeReplySent(this.saveSession, true);
 
-    this.directiveHandlers = [
-      Say,
-      SayP,
-      Ask,
-      Reprompt,
-      Tell,
-      Text,
-      TextP,
-      Entity,
-    ];
+    this.directiveHandlers = [Say, SayP, Ask, Reprompt, Tell, Text, TextP];
   }
 
   public validateConfig() {

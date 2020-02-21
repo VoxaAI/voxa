@@ -5,7 +5,7 @@
  * Licensed under the MIT license.
  */
 
-export { Tell, Say, SayP, Ask, Reprompt, Entity } from "./directives";
+export { Tell, Say, SayP, Ask, Reprompt } from "./directives";
 export { VoxaPlatform } from "./platforms";
 export {
   IVoxaEvent,
@@ -148,4 +148,4 @@ export const plugins = {
   stateFlow,
 };
 
-export { EntityHelper } from "./helpers";
+export { Entity, EntityHelper } from "./platforms/share";

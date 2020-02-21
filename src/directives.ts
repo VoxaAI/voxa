@@ -7,12 +7,8 @@
  * return { reply: 'View' }
  */
 
-import { Response } from "ask-sdk-model";
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
-import { DialogflowReply } from ".";
-import { AlexaReply } from "../src/platforms/alexa/AlexaReply";
-import { EntityHelper } from "./helpers";
 import { VoxaPlatform } from "./platforms/VoxaPlatform";
 import { ITransition } from "./StateMachine";
 import { IVoxaEvent } from "./VoxaEvent";
@@ -199,33 +195,5 @@ export class TextP implements IDirective {
     transition: ITransition,
   ): Promise<void> {
     reply.addStatement(this.text, true);
-  }
-}
-
-export class Entity extends EntityHelper implements IDirective {
-  public static key: string = "entities";
-  public static platform: string = "core";
-
-  public viewPath?: any | any[];
-
-  constructor(viewPath: any | any[]) {
-    super();
-    this.viewPath = viewPath;
-  }
-
-  public async writeToReply(
-    reply: IVoxaReply,
-    event: IVoxaEvent,
-    transition?: ITransition,
-  ): Promise<void> {
-    let entity: any = this.viewPath;
-
-    const platform = _.get(event, "platform.name");
-
-    entity = await this.rawEntity(entity, event, this.viewPath);
-
-    entity = this.getEntity(entity, event);
-
-    this.addReplyPerPlatform(platform, reply, entity);
   }
 }

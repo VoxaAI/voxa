@@ -1,7 +1,8 @@
 import { Response } from "ask-sdk-model";
 import * as _ from "lodash";
-import { AlexaReply, DialogflowReply, IVoxaReply } from "..";
-import { IVoxaEvent } from "../VoxaEvent";
+import { AlexaReply, DialogflowReply, ITransition, IVoxaReply } from "../..";
+import { IDirective } from "../../directives";
+import { IVoxaEvent } from "../../VoxaEvent";
 
 export enum EntityOverrideMode {
   Unspecified = "ENTITY_OVERRIDE_MODE_UNSPECIFIED",
@@ -224,5 +225,33 @@ export abstract class EntityHelper {
       [],
     );
     return { entity, behavior };
+  }
+}
+
+export class Entity extends EntityHelper implements IDirective {
+  public static key: string = "entities";
+  public static platform: string = "core";
+
+  public viewPath?: any | any[];
+
+  constructor(viewPath: any | any[]) {
+    super();
+    this.viewPath = viewPath;
+  }
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition?: ITransition,
+  ): Promise<void> {
+    let entity: any = this.viewPath;
+
+    const platform = _.get(event, "platform.name");
+
+    entity = await this.rawEntity(entity, event, this.viewPath);
+
+    entity = this.getEntity(entity, event);
+
+    this.addReplyPerPlatform(platform, reply, entity);
   }
 }
