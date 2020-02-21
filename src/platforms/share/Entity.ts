@@ -111,19 +111,17 @@ export abstract class EntityHelper {
       UpdateBehavior.Clear,
     ];
 
-    // tslint:disable-next-line
-    let behaviorList = alexaEntityBehaviorList;
-    let error = `The updateBehavior is incorrect, please consider use one of the followings: ${UpdateBehavior.Replace} or ${UpdateBehavior.Clear}`;
+    let defaultBehavior: any;
+    let behaviorList: any;
+    let error: any;
 
-    if (platform === "alexa") {
-      behavior = behavior || UpdateBehavior.Replace;
-    }
+    ({ defaultBehavior, behaviorList, error } = this.getErrorPerPlatform(
+      alexaEntityBehaviorList,
+      dialogflowEntityBehaviorList,
+      platform,
+    ));
 
-    if (platform === "google") {
-      behavior = behavior || EntityOverrideMode.Override;
-      (behaviorList as any) = dialogflowEntityBehaviorList;
-      error = `The entityOverrideMode is incorrect, please consider use one of the followings: ${EntityOverrideMode.Unspecified}, ${EntityOverrideMode.Override} or ${EntityOverrideMode.Supplement}`;
-    }
+    behavior = behavior || defaultBehavior;
 
     if (!_.includes(behaviorList, behavior)) {
       throw new Error(error);
@@ -193,6 +191,30 @@ export abstract class EntityHelper {
       );
     }
     return entity;
+  }
+
+  private getErrorPerPlatform(
+    alexaEntityBehaviorList: UpdateBehavior[],
+    dialogflowEntityBehaviorList: EntityOverrideMode[],
+    platform: string,
+  ) {
+    let defaultBehavior: any;
+    let behaviorList: any;
+    let error: any;
+
+    if (platform === "google") {
+      defaultBehavior = EntityOverrideMode.Override;
+      behaviorList = dialogflowEntityBehaviorList;
+      error = `The entityOverrideMode is incorrect, please consider use one of the followings: ${EntityOverrideMode.Unspecified}, ${EntityOverrideMode.Override} or ${EntityOverrideMode.Supplement}`;
+    }
+
+    if (platform === "alexa") {
+      defaultBehavior = UpdateBehavior.Replace;
+      behaviorList = alexaEntityBehaviorList;
+      error = `The updateBehavior is incorrect, please consider use one of the followings: ${UpdateBehavior.Replace} or ${UpdateBehavior.Clear}`;
+    }
+
+    return { defaultBehavior, behaviorList, error };
   }
 
   private generateEntityFormat(
