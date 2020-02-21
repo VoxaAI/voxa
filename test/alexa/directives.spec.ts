@@ -2,17 +2,15 @@ import { expect } from "chai";
 import * as i18next from "i18next";
 import * as _ from "lodash";
 import "mocha";
-
 import {
   AlexaEvent,
   AlexaPlatform,
-  APLTemplate,
-  APLTTemplate,
   DisplayTemplate,
   HomeCard,
   IVoxaIntentEvent,
   VoxaApp,
 } from "../../src/";
+import { Entity } from "../../src/platforms/share";
 import { AlexaRequestBuilder } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";
@@ -1015,6 +1013,265 @@ describe("Alexa directives", () => {
           updateBehavior: "REPLACE",
         },
       ]);
+    });
+  });
+
+  describe("Alexa Entities", () => {
+    const entityWithoutName = {
+      entities: [
+        { synonyms: ["apple", "green apple", "crabapple"], value: "APPLE_KEY" },
+        { synonyms: ["orange"], value: "ORANGE_KEY" },
+      ],
+    };
+
+    const simpleEntityIncorrectMode = {
+      entities: [
+        {
+          synonyms: ["lion", "cat", "wild cat", "simba"],
+          value: "LION_KEY",
+        },
+        {
+          synonyms: ["elephant", "mammoth"],
+          value: "ELEPHANT_KEY",
+        },
+      ],
+      name: "animal",
+      updateBehavior: "TEST",
+    };
+
+    const simpleEntityIncorrectName = {
+      entities: [
+        {
+          synonyms: ["lion", "cat", "wild cat", "simba"],
+          value: "LION_KEY",
+        },
+        {
+          synonyms: ["elephant", "mammoth"],
+          value: "ELEPHANT_KEY",
+        },
+      ],
+      name: "animal3",
+    };
+
+    const simpleEmptyEntity = {
+      entities: [],
+      name: "animal",
+      updateBehavior: "REPLACE",
+    };
+
+    it("should add a simple entity", async () => {
+      app.onIntent("YesIntent", {
+        entities: "DynamicEntity",
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "Dialog.UpdateDynamicEntities",
+          types: [
+            {
+              name: "LIST_OF_AVAILABLE_NAMES",
+              values: [
+                {
+                  name: {
+                    synonyms: ["nate"],
+                    value: "nathan",
+                  },
+                },
+              ],
+            },
+          ],
+          updateBehavior: "REPLACE",
+        },
+      ]);
+    });
+
+    it("should add an array of objects", async () => {
+      app.onIntent("YesIntent", {
+        entities: "MultipleAlexaEntities",
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "Dialog.UpdateDynamicEntities",
+          types: [
+            {
+              name: "LIST_OF_AIRPORTS_TYPES",
+              values: [
+                {
+                  name: {
+                    synonyms: ["Boston Logan"],
+                    value: "Logan International Airport",
+                  },
+                },
+                {
+                  name: {
+                    synonyms: ["New York"],
+                    value: "LaGuardia Airport",
+                  },
+                },
+              ],
+            },
+            {
+              name: "LIST_OF_AVAILABLE_NAMES",
+              values: [
+                {
+                  id: "nathan",
+                  name: {
+                    synonyms: ["nate"],
+                    value: "nathan",
+                  },
+                },
+              ],
+            },
+          ],
+          updateBehavior: "REPLACE",
+        },
+      ]);
+    });
+
+    it("should throw error due to missing name property", async () => {
+      const reply = await alexaSkill.execute(event);
+      const alexaEvent = new AlexaEvent(event);
+      const entity = new Entity(entityWithoutName);
+
+      let error: Error | null = null;
+      try {
+        await entity.writeToReply(reply, alexaEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal("A name is required for the Entity");
+    });
+
+    it("should add an object", async () => {
+      app.onIntent("YesIntent", {
+        entities: "SimpleAlexaEntity",
+        to: "die",
+      });
+
+      const reply = await alexaSkill.execute(event);
+
+      expect(reply.response.directives).to.deep.equal([
+        {
+          type: "Dialog.UpdateDynamicEntities",
+          types: [
+            {
+              name: "LIST_OF_AVAILABLE_NAMES",
+              values: [
+                {
+                  id: "nathan",
+                  name: {
+                    synonyms: ["nate"],
+                    value: "nathan",
+                  },
+                },
+              ],
+            },
+          ],
+          updateBehavior: "REPLACE",
+        },
+      ]);
+    });
+
+    it("should throw an error due to incorrect Entity Override Mode property", async () => {
+      const reply = await alexaSkill.execute(event);
+      const alexaEvent = new AlexaEvent(event);
+      _.set(alexaEvent, "platform.name", "alexa");
+      const entity = new Entity([simpleEntityIncorrectMode]);
+
+      let error: Error | null = null;
+      try {
+        await entity.writeToReply(reply, alexaEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal(
+        "The updateBehavior is incorrect, please consider use one of the followings: REPLACE or CLEAR",
+      );
+    });
+
+    it("should throw an error due to incorrect name format", async () => {
+      const reply = await alexaSkill.execute(event);
+      const alexaEvent = new AlexaEvent(event);
+      _.set(alexaEvent, "platform.name", "alexa");
+      const entity = new Entity([simpleEntityIncorrectName]);
+
+      let error: Error | null = null;
+      try {
+        await entity.writeToReply(reply, alexaEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal(
+        "The name property (alexaEntityName) should be only alphabetic characters, and can include underscore character _",
+      );
+    });
+
+    it("should throw an error due to missing entities property", async () => {
+      const reply = await alexaSkill.execute(event);
+      const alexaEvent = new AlexaEvent(event);
+      const entity = new Entity(simpleEmptyEntity);
+
+      let error: Error | null = null;
+      try {
+        await entity.writeToReply(reply, alexaEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal(
+        "The entities property is empty or was not provided, please verify",
+      );
+    });
+
+    it("should throw an error due to empty array", async () => {
+      const reply = await alexaSkill.execute(event);
+      const alexaEvent = new AlexaEvent(event);
+      const entity = new Entity([]);
+
+      let error: Error | null = null;
+      try {
+        await entity.writeToReply(reply, alexaEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal(
+        "Please verify your entity it could be empty or is not an array",
+      );
     });
   });
 });

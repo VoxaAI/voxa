@@ -147,3 +147,5 @@ export const plugins = {
   s3Persistence,
   stateFlow,
 };
+
+export { Entity, EntityHelper } from "./platforms/share";
