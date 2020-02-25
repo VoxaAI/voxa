@@ -10,7 +10,7 @@ import {
   IVoxaIntentEvent,
   VoxaApp,
 } from "../../src/";
-import { Entity } from "../../src/platforms/share";
+import { Entity } from "../../src/platforms/alexa/directives";
 import { AlexaRequestBuilder } from "./../tools";
 import { variables } from "./../variables";
 import { views } from "./../views";

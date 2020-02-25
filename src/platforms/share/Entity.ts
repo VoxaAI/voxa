@@ -1,7 +1,4 @@
-import { Response } from "ask-sdk-model";
 import * as _ from "lodash";
-import { AlexaReply, DialogflowReply, ITransition, IVoxaReply } from "../..";
-import { IDirective } from "../../directives";
 import { IVoxaEvent } from "../../VoxaEvent";
 
 export enum EntityOverrideMode {
@@ -16,79 +13,40 @@ export enum UpdateBehavior {
 }
 
 export abstract class EntityHelper {
-  public getEntity(rawEntity: any, event: IVoxaEvent): any {
-    const platform =
-      _.get(event, "platform.name") ||
-      _.get(event, "rawEvent.originalDetectIntentRequest.source");
-
-    let entity: any;
-    let behavior: any;
-
-    ({ entity, behavior } = this.generateEntityFormat(
-      rawEntity,
-      platform,
-      event,
-    ));
-
-    if (platform === "alexa") {
-      behavior = this.validateEntityBehavior(
-        _.chain(rawEntity)
-          .map((e) => e.updateBehavior)
-          .find()
-          .value(),
-        platform,
-      );
-      return (entity = {
-        type: "Dialog.UpdateDynamicEntities",
-        types: entity,
-        updateBehavior: behavior,
-      });
-    }
-
-    return entity;
-  }
-
-  protected dialogflowSessionEntity(
+  protected sessionEntityObject(
     property: any,
     entityOverrideMode: string,
     name: string,
     event: IVoxaEvent,
   ): any {
     return {
-      entities: property.entities.map((item: any) =>
-        this.entityValues(item, "google"),
-      ),
+      entities: property.entities.map((item: any) => this.entityValues(item)),
       entityOverrideMode,
       name: `${event.rawEvent.session}/entityTypes/${name}`,
     };
   }
 
-  protected entityValues(prop: any, platform?: string) {
-    const entity: any = {};
-    if (platform === "google") {
-      return {
-        synonyms: prop.synonyms,
-        value: prop.value,
-      };
-    }
-
-    if (_.get(prop, "id")) {
-      entity.id = prop.id;
-    }
-
-    if (_.get(prop, "synonyms") && _.get(prop, "value")) {
-      entity.name = {
-        synonyms: prop.synonyms,
-        value: prop.value,
-      };
-    }
-    return entity;
+  protected entityValues(prop: any) {
+    return {
+      synonyms: prop.synonyms,
+      value: prop.value,
+    };
   }
 
-  protected alexaDynamicEntity(property: any, name: string): any {
-    const values: any = property.entities.map((entity: any) =>
-      this.entityValues(entity),
-    );
+  protected dynamicEntityObject(property: any, name: string): any {
+    const values: any = property.entities.map((prop: any) => {
+      const entity: any = {};
+      if (_.get(prop, "id")) {
+        entity.id = prop.id;
+      }
+      if (_.get(prop, "synonyms") && _.get(prop, "value")) {
+        entity.name = {
+          synonyms: prop.synonyms,
+          value: prop.value,
+        };
+      }
+      return entity;
+    });
 
     return {
       name,
@@ -100,24 +58,12 @@ export abstract class EntityHelper {
     let behavior =
       _.get(property, "entityOverrideMode") ||
       _.get(property, "updateBehavior");
-    const dialogflowEntityBehaviorList = [
-      EntityOverrideMode.Unspecified,
-      EntityOverrideMode.Override,
-      EntityOverrideMode.Supplement,
-    ];
-
-    const alexaEntityBehaviorList = [
-      UpdateBehavior.Replace,
-      UpdateBehavior.Clear,
-    ];
 
     let defaultBehavior: any;
     let behaviorList: any;
     let error: any;
 
     ({ defaultBehavior, behaviorList, error } = this.getErrorPerPlatform(
-      alexaEntityBehaviorList,
-      dialogflowEntityBehaviorList,
       platform,
     ));
 
@@ -162,23 +108,11 @@ export abstract class EntityHelper {
     return name;
   }
 
-  protected addReplyPerPlatform(platform: any, reply: IVoxaReply, entity: any) {
-    if (platform === "google") {
-      (reply as DialogflowReply).sessionEntityTypes = entity;
-    }
-
-    const response: Response = (reply as AlexaReply).response;
-    if (!response.directives) {
-      response.directives = [];
-    }
-    if (_.isArray(response.directives)) {
-      response.directives = _.concat(response.directives, entity);
-    } else {
-      response.directives!.push(entity);
-    }
-  }
-
-  protected async rawEntity(entity: any, event: IVoxaEvent, viewPath: any) {
+  protected async getGenericEntity(
+    entity: any,
+    event: IVoxaEvent,
+    viewPath: any,
+  ) {
     if (_.isString(viewPath)) {
       entity = await event.renderer.renderPath(viewPath, event);
     }
@@ -193,14 +127,20 @@ export abstract class EntityHelper {
     return entity;
   }
 
-  private getErrorPerPlatform(
-    alexaEntityBehaviorList: UpdateBehavior[],
-    dialogflowEntityBehaviorList: EntityOverrideMode[],
-    platform: string,
-  ) {
+  protected getErrorPerPlatform(platform: string) {
     let defaultBehavior: any;
     let behaviorList: any;
     let error: any;
+    const dialogflowEntityBehaviorList = [
+      EntityOverrideMode.Unspecified,
+      EntityOverrideMode.Override,
+      EntityOverrideMode.Supplement,
+    ];
+
+    const alexaEntityBehaviorList = [
+      UpdateBehavior.Replace,
+      UpdateBehavior.Clear,
+    ];
 
     if (platform === "google") {
       defaultBehavior = EntityOverrideMode.Override;
@@ -217,7 +157,7 @@ export abstract class EntityHelper {
     return { defaultBehavior, behaviorList, error };
   }
 
-  private generateEntityFormat(
+  protected createSessionEntity(
     rawEntity: any,
     platform: any,
     event: IVoxaEvent,
@@ -230,50 +170,37 @@ export abstract class EntityHelper {
         this.validateEntity(property);
 
         behavior = this.validateEntityBehavior(property, platform);
-        if (platform === "google") {
-          newEntity = this.dialogflowSessionEntity(
-            property,
-            behavior,
-            name,
-            event,
-          );
-        }
-        if (platform === "alexa") {
-          newEntity = this.alexaDynamicEntity(property, name);
-        }
+
+        newEntity = this.sessionEntityObject(property, behavior, name, event);
+
         filteredEntity.push(newEntity);
         return filteredEntity;
       },
       [],
     );
-    return { entity, behavior };
-  }
-}
-
-export class Entity extends EntityHelper implements IDirective {
-  public static key: string = "entities";
-  public static platform: string = "core";
-
-  public viewPath?: any | any[];
-
-  constructor(viewPath: any | any[]) {
-    super();
-    this.viewPath = viewPath;
+    return entity;
   }
 
-  public async writeToReply(
-    reply: IVoxaReply,
+  protected createDynamicEntity(
+    rawEntity: any,
+    platform: any,
     event: IVoxaEvent,
-    transition?: ITransition,
-  ): Promise<void> {
-    let entity: any = this.viewPath;
+  ) {
+    const entity = rawEntity.reduce(
+      (filteredEntity: any, property: any): any => {
+        let newEntity: any;
+        const name = this.validateEntityName(property, platform);
+        this.validateEntity(property);
 
-    const platform = _.get(event, "platform.name");
+        this.validateEntityBehavior(property, platform);
 
-    entity = await this.rawEntity(entity, event, this.viewPath);
+        newEntity = this.dynamicEntityObject(property, name);
 
-    entity = this.getEntity(entity, event);
-
-    this.addReplyPerPlatform(platform, reply, entity);
+        filteredEntity.push(newEntity);
+        return filteredEntity;
+      },
+      [],
+    );
+    return entity;
   }
 }

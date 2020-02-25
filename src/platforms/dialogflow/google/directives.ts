@@ -354,9 +354,36 @@ export class SessionEntity extends EntityHelper implements IDirective {
   ): Promise<void> {
     let entity: any = this.viewPath;
 
-    entity = await this.rawEntity(entity, event, this.viewPath);
+    entity = await this.getGenericEntity(entity, event, this.viewPath);
 
-    entity = this.getEntity(entity, event);
+    entity = this.createSessionEntity(entity, Entity.platform, event);
+
+    (reply as DialogflowReply).sessionEntityTypes = entity;
+  }
+}
+
+export class Entity extends EntityHelper implements IDirective {
+  public static key: string = "entities";
+  public static platform: string = "google";
+
+  public viewPath?: any | any[];
+
+  constructor(viewPath: any | any[]) {
+    super();
+    this.viewPath = viewPath;
+  }
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition?: ITransition,
+  ): Promise<void> {
+    let entity: any = this.viewPath;
+
+    entity = await this.getGenericEntity(entity, event, this.viewPath);
+
+    entity = this.createSessionEntity(entity, Entity.platform, event);
+
     (reply as DialogflowReply).sessionEntityTypes = entity;
   }
 }

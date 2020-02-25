@@ -1,1 +1,1 @@
-export { Entity, EntityHelper } from "./Entity";
+export { EntityHelper } from "./Entity";

@@ -26,7 +26,6 @@ import { ITransition } from "../../../StateMachine";
 import { VoxaApp } from "../../../VoxaApp";
 import { IVoxaEvent } from "../../../VoxaEvent";
 import { IVoxaReply } from "../../../VoxaReply";
-import { Entity } from "../../share/index";
 import { IVoxaPlatformConfig } from "../../VoxaPlatform";
 import { DialogflowPlatform } from "../DialogflowPlatform";
 import { DialogflowReply } from "../DialogflowReply";
@@ -41,6 +40,7 @@ import {
   Context,
   DateTime,
   DeepLink,
+  Entity,
   LinkOutSuggestion,
   List,
   MediaResponse,

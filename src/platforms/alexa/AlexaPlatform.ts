@@ -28,7 +28,6 @@ import { OnSessionEndedError } from "../../errors";
 import { VoxaApp } from "../../VoxaApp";
 import { IVoxaEvent, IVoxaIntentEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
-import { Entity } from "../share/index";
 import { IVoxaPlatformConfig, VoxaPlatform } from "../VoxaPlatform";
 import { AlexaEvent } from "./AlexaEvent";
 import { AlexaReply } from "./AlexaReply";
@@ -42,6 +41,7 @@ import {
   DialogDelegate,
   DialogElicitSlot,
   DynamicEntitiesDirective,
+  Entity,
   GadgetControllerLightDirective,
   GameEngineStartInputHandler,
   GameEngineStopInputHandler,

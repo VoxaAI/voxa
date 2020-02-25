@@ -148,4 +148,4 @@ export const plugins = {
   stateFlow,
 };
 
-export { Entity, EntityHelper } from "./platforms/share";
+export { EntityHelper } from "./platforms/share";

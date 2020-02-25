@@ -15,7 +15,7 @@ import {
   MediaResponse,
   SessionEntity,
 } from "../../../src/platforms/dialogflow";
-import { Entity } from "../../../src/platforms/share";
+import { Entity } from "../../../src/platforms/dialogflow/google/directives";
 import { VoxaApp } from "../../../src/VoxaApp";
 import { variables } from "./../../variables";
 import { views } from "./../../views";
