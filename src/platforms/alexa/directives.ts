@@ -843,7 +843,7 @@ export class Entity extends EntityHelper implements IDirective {
 
     entity = await this.getGenericEntity(entity, event, this.viewPath);
 
-    entity = this.createDynamicEntity(entity, Entity.platform, event);
+    entity = this.createDynamicEntity(entity, Entity.platform);
 
     const behavior = this.validateEntityBehavior(
       _.chain(entity)

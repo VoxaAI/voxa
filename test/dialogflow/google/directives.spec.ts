@@ -1323,7 +1323,7 @@ describe("Google Assistant Directives", () => {
       }
 
       expect(error.message).to.equal(
-        "The name property (googleEntityName) should be only alphabetic characters, and can include dash character -",
+        "The name property in googleEntityName can only include alphanumeric and the dash(-) character",
       );
     });
 
@@ -1605,7 +1605,7 @@ describe("Google Assistant Directives", () => {
       }
 
       expect(error.message).to.equal(
-        "The name property (googleEntityName) should be only alphabetic characters, and can include dash character -",
+        "The name property in googleEntityName can only include alphanumeric and the dash(-) character",
       );
     });
 

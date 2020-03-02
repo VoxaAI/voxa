@@ -1226,7 +1226,7 @@ describe("Alexa directives", () => {
       }
 
       expect(error.message).to.equal(
-        "The name property (alexaEntityName) should be only alphabetic characters, and can include underscore character _",
+        "The name property in alexaEntityName can only include alphanumeric and the underscore(_) character",
       );
     });
 

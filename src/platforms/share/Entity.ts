@@ -86,12 +86,12 @@ export abstract class EntityHelper {
 
   protected validateEntityName(property: any, platform: string): any {
     let pattern = /^[A-Z_]+$/i;
-    let specialCharacter = "underscore character _";
+    let specialCharacter = "underscore(_)";
     let name = _.get(property, "name");
     name = _.get(property, `${platform}EntityName`, name);
 
     if (platform === "google") {
-      specialCharacter = "dash character -";
+      specialCharacter = "dash(-)";
       pattern = /^[A-Z-]+$/i;
     }
 
@@ -102,7 +102,7 @@ export abstract class EntityHelper {
     const regex = new RegExp(pattern);
     if (!regex.test(name)) {
       throw new Error(
-        `The name property (${platform}EntityName) should be only alphabetic characters, and can include ${specialCharacter}`,
+        `The name property in ${platform}EntityName can only include alphanumeric and the ${specialCharacter} character`,
       );
     }
     return name;
@@ -159,7 +159,7 @@ export abstract class EntityHelper {
 
   protected createSessionEntity(
     rawEntity: any,
-    platform: any,
+    platform: string,
     event: IVoxaEvent,
   ) {
     let behavior: any;
@@ -181,11 +181,7 @@ export abstract class EntityHelper {
     return entity;
   }
 
-  protected createDynamicEntity(
-    rawEntity: any,
-    platform: any,
-    event: IVoxaEvent,
-  ) {
+  protected createDynamicEntity(rawEntity: any, platform: string) {
     const entity = rawEntity.reduce(
       (filteredEntity: any, property: any): any => {
         let newEntity: any;
