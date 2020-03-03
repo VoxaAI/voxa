@@ -30,7 +30,6 @@ import {
   ui,
 } from "ask-sdk-model";
 import * as _ from "lodash";
-import { DialogflowReply } from "../..";
 import { IDirective } from "../../directives";
 import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";
@@ -826,39 +825,30 @@ export class DynamicEntitiesDirective extends AlexaDirective
 export class Entity extends EntityHelper implements IDirective {
   public static key: string = "entities";
   public static platform: string = "alexa";
-
   public viewPath?: any | any[];
-
   constructor(viewPath: any | any[]) {
     super();
     this.viewPath = viewPath;
   }
-
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
     transition?: ITransition,
   ): Promise<void> {
     let entity: any = this.viewPath;
-
     entity = await this.getGenericEntity(entity, event, this.viewPath);
-
     entity = this.createDynamicEntity(entity, Entity.platform);
-
-    const behavior = this.validateEntityBehavior(
+    const behavior: er.dynamic.UpdateBehavior = this.validateAlexaEntityBehavior(
       _.chain(entity)
         .map((e) => e.updateBehavior)
         .find()
         .value(),
-      Entity.platform,
     );
-
     entity = {
       type: "Dialog.UpdateDynamicEntities",
       types: entity,
       updateBehavior: behavior,
     };
-
     const response: Response = (reply as AlexaReply).response;
     if (!response.directives) {
       response.directives = [];
