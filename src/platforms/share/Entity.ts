@@ -2,15 +2,9 @@ import { er } from "ask-sdk-model";
 import * as _ from "lodash";
 import { IVoxaEvent } from "../../VoxaEvent";
 
-export enum EntityOverrideMode {
-  Unspecified = "ENTITY_OVERRIDE_MODE_UNSPECIFIED",
-  Override = "ENTITY_OVERRIDE_MODE_OVERRIDE",
-  Supplement = "ENTITY_OVERRIDE_MODE_SUPPLEMENT",
-}
-
 export enum UpdateBehavior {
   Replace = "REPLACE",
-  Clear = "CLEAR",
+  Clear = "CLEAR"
 }
 
 export interface ISessionEntity {
@@ -19,17 +13,23 @@ export interface ISessionEntity {
   entityOverrideMode: EntityOverrideMode;
 }
 
+export enum EntityOverrideMode {
+  Unspecified = "ENTITY_OVERRIDE_MODE_UNSPECIFIED",
+  Override = "ENTITY_OVERRIDE_MODE_OVERRIDE",
+  Supplement = "ENTITY_OVERRIDE_MODE_SUPPLEMENT"
+}
+
 export interface IEntity {
   value: string;
   synonyms: string[];
 }
 
-interface IDynamicEntityValues {
+export interface IDynamicEntityValues {
   id?: any;
   name: IEntity[];
 }
 
-interface IDynamicEntity {
+export interface IDynamicEntity {
   name: string;
   values: IDynamicEntityValues[];
 }
@@ -45,30 +45,30 @@ export abstract class EntityHelper {
         if (_.get(prop, "synonyms") && _.get(prop, "value")) {
           entity.name = {
             synonyms: prop.synonyms,
-            value: prop.value,
+            value: prop.value
           };
         }
         return entity;
-      },
+      }
     );
 
     return {
       name,
-      values,
+      values
     };
   }
 
   protected entityValues(prop: any) {
     return {
       synonyms: prop.synonyms,
-      value: prop.value,
+      value: prop.value
     };
   }
 
   protected getBehaviorError() {
     const alexaEntityBehaviorList = [
       UpdateBehavior.Replace,
-      UpdateBehavior.Clear,
+      UpdateBehavior.Clear
     ];
 
     const defaultBehavior = UpdateBehavior.Replace;
@@ -82,7 +82,7 @@ export abstract class EntityHelper {
     const dialogflowEntityBehaviorList = [
       EntityOverrideMode.Unspecified,
       EntityOverrideMode.Override,
-      EntityOverrideMode.Supplement,
+      EntityOverrideMode.Supplement
     ];
 
     const defaultBehavior = EntityOverrideMode.Override;
@@ -130,7 +130,7 @@ export abstract class EntityHelper {
     const entities = _.get(property, "entities");
     if (!entities || _.isEmpty(entities)) {
       throw new Error(
-        "The entities property is empty or was not provided, please verify",
+        "The entities property is empty or was not provided, please verify"
       );
     }
   }
@@ -153,7 +153,7 @@ export abstract class EntityHelper {
     const regex = new RegExp(pattern);
     if (!regex.test(name)) {
       throw new Error(
-        `The name property in ${platform}EntityName can only include alphanumeric and the ${specialCharacter} character`,
+        `The name property in ${platform}EntityName can only include alphanumeric and the ${specialCharacter} character`
       );
     }
     return name;
@@ -162,7 +162,7 @@ export abstract class EntityHelper {
   protected async getGenericEntity(
     entity: any,
     event: IVoxaEvent,
-    viewPath: any,
+    viewPath: any
   ) {
     if (_.isString(viewPath)) {
       entity = await event.renderer.renderPath(viewPath, event);
@@ -172,61 +172,9 @@ export abstract class EntityHelper {
     }
     if (!_.isArray(entity) || _.isEmpty(entity)) {
       throw new Error(
-        "Please verify your entity it could be empty or is not an array",
+        "Please verify your entity it could be empty or is not an array"
       );
     }
     return entity;
-  }
-
-  protected createSessionEntity(
-    rawEntity: any,
-    platform: string,
-    event: IVoxaEvent,
-  ): ISessionEntity[] {
-    let entityOverrideMode: EntityOverrideMode;
-    const entity = rawEntity.reduce(
-      (filteredEntity: any, property: any): ISessionEntity => {
-        let newEntity: ISessionEntity;
-        const name: string = this.validateEntityName(property, platform);
-        this.validateEntity(property);
-
-        entityOverrideMode = this.validateGoogleEntityBehavior(property);
-
-        newEntity = {
-          entities: property.entities.map((item: any) =>
-            this.entityValues(item),
-          ),
-          entityOverrideMode,
-          name: `${event.rawEvent.session}/entityTypes/${name}`,
-        };
-
-        filteredEntity.push(newEntity);
-        return filteredEntity;
-      },
-      [],
-    );
-    return entity;
-  }
-
-  protected createDynamicEntity(
-    rawEntity: any,
-    platform: string,
-  ): IDynamicEntity[] {
-    const dynamicEntity = rawEntity.reduce(
-      (filteredEntity: any, property: any): any => {
-        let newEntity: IDynamicEntity;
-        const name = this.validateEntityName(property, platform);
-        this.validateEntity(property);
-
-        this.validateAlexaEntityBehavior(property);
-
-        newEntity = this.dynamicEntityObject(property, name);
-
-        filteredEntity.push(newEntity);
-        return filteredEntity;
-      },
-      [],
-    );
-    return dynamicEntity;
   }
 }
