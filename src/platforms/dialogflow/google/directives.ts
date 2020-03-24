@@ -38,7 +38,7 @@ import {
   TransactionDecision as ActionsOnGoogleTransactionDecision,
   TransactionRequirements as ActionsOnGoogleTransactionRequirements,
   UpdatePermission as ActionsOnGoogleUpdatePermission,
-  UpdatePermissionOptions
+  UpdatePermissionOptions,
 } from "actions-on-google";
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
@@ -46,7 +46,7 @@ import {
   IDirective,
   IDirectiveClass,
   sampleOrItem,
-  Say as BaseSay
+  Say as BaseSay,
 } from "../../../directives";
 import { ITransition } from "../../../StateMachine";
 import { IVoxaEvent } from "../../../VoxaEvent";
@@ -59,7 +59,7 @@ import { DialogflowReply } from "../DialogflowReply";
 function createSessionEntity(
   this: any,
   rawEntity: any,
-  event: IVoxaEvent
+  event: IVoxaEvent,
 ): ISessionEntity[] {
   let entityOverrideMode: EntityOverrideMode;
   const entity = rawEntity.reduce(
@@ -73,13 +73,13 @@ function createSessionEntity(
       newEntity = {
         entities: property.entities.map((item: any) => this.entityValues(item)),
         entityOverrideMode,
-        name: `${event.rawEvent.session}/entityTypes/${name}`
+        name: `${event.rawEvent.session}/entityTypes/${name}`,
       };
 
       filteredEntity.push(newEntity);
       return filteredEntity;
     },
-    []
+    [],
   );
   return entity;
 }
@@ -106,7 +106,7 @@ abstract class DialogflowDirective<IOptions> {
 function createSystemIntentDirective<IOptions>(
   QuestionClass: any,
   key: string,
-  requiredCapability?: string
+  requiredCapability?: string,
 ): IDirectiveClass {
   return class extends DialogflowDirective<IOptions> implements IDirective {
     public static platform: string = "google";
@@ -119,7 +119,7 @@ function createSystemIntentDirective<IOptions>(
     public async writeToReply(
       reply: IVoxaReply,
       event: IVoxaEvent,
-      transition?: ITransition
+      transition?: ITransition,
     ): Promise<void> {
       if (!this.hasRequiredCapability(event)) {
         return;
@@ -130,7 +130,7 @@ function createSystemIntentDirective<IOptions>(
 
       google.systemIntent = {
         data: question.inputValueData,
-        intent: question.intent
+        intent: question.intent,
       };
     }
   };
@@ -139,7 +139,7 @@ function createSystemIntentDirective<IOptions>(
 function createRichResponseDirective<IOptions>(
   RichResponseItemClass: any,
   key: string,
-  requiredCapability?: string
+  requiredCapability?: string,
 ): IDirectiveClass {
   return class extends DialogflowDirective<IOptions> implements IDirective {
     public static platform: string = "google";
@@ -152,7 +152,7 @@ function createRichResponseDirective<IOptions>(
     public async writeToReply(
       reply: IVoxaReply,
       event: IVoxaEvent,
-      transition?: ITransition
+      transition?: ITransition,
     ): Promise<void> {
       if (!this.hasRequiredCapability(event)) {
         return;
@@ -175,44 +175,44 @@ export const LinkOutSuggestion = createRichResponseDirective<
 
 export const NewSurface = createSystemIntentDirective<NewSurfaceOptions>(
   ActionsOnGoogleNewSurface,
-  "dialogflowNewSurface"
+  "dialogflowNewSurface",
 );
 
 export const List = createSystemIntentDirective<string | ListOptions>(
   ActionsOnGoogleList,
   "dialogflowList",
-  "actions.capability.SCREEN_OUTPUT"
+  "actions.capability.SCREEN_OUTPUT",
 );
 
 export const Carousel = createSystemIntentDirective<string | CarouselOptions>(
   ActionsOnGoogleCarousel,
   "dialogflowCarousel",
-  "actions.capability.SCREEN_OUTPUT"
+  "actions.capability.SCREEN_OUTPUT",
 );
 
 export const AccountLinkingCard = createSystemIntentDirective<string>(
   ActionsOnGoogleSignIn,
-  "dialogflowAccountLinkingCard"
+  "dialogflowAccountLinkingCard",
 );
 
 export const Permission = createSystemIntentDirective<PermissionOptions>(
   ActionsOnGooglePermission,
-  "dialogflowPermission"
+  "dialogflowPermission",
 );
 
 export const DateTime = createSystemIntentDirective<DateTimeOptions>(
   ActionsOnGoogleDateTime,
-  "dialogflowDateTime"
+  "dialogflowDateTime",
 );
 
 export const Confirmation = createSystemIntentDirective<string>(
   ActionsOnGoogleConfirmation,
-  "dialogflowConfirmation"
+  "dialogflowConfirmation",
 );
 
 export const DeepLink = createSystemIntentDirective<DeepLinkOptions>(
   ActionsOnGoogleDeepLink,
-  "dialogflowDeepLink"
+  "dialogflowDeepLink",
 );
 
 export interface IPlaceOptions {
@@ -234,7 +234,7 @@ export interface IPlaceOptions {
 
 export const Place = createSystemIntentDirective<IPlaceOptions>(
   ActionsOnGooglePlace,
-  "dialogflowPlace"
+  "dialogflowPlace",
 );
 
 export const CompletePurchase = createSystemIntentDirective<
@@ -260,19 +260,19 @@ export const UpdatePermission = createSystemIntentDirective<
 export const BasicCard = createRichResponseDirective<string | BasicCardOptions>(
   ActionsOnGoogleBasicCard,
   "dialogflowBasicCard",
-  "actions.capability.SCREEN_OUTPUT"
+  "actions.capability.SCREEN_OUTPUT",
 );
 
 export const MediaResponse = createRichResponseDirective<MediaResponseOptions>(
   ActionsOnGoogleMediaResponse,
   "dialogflowMediaResponse",
-  "actions.capability.AUDIO_OUTPUT"
+  "actions.capability.AUDIO_OUTPUT",
 );
 
 export const Table = createRichResponseDirective<TableOptions>(
   ActionsOnGoogleTable,
   "dialogflowTable",
-  "actions.capability.SCREEN_OUTPUT"
+  "actions.capability.SCREEN_OUTPUT",
 );
 
 export const BrowseCarousel = createRichResponseDirective<
@@ -280,7 +280,7 @@ export const BrowseCarousel = createRichResponseDirective<
 >(
   ActionsOnGoogleBrowseCarousel,
   "dialogflowBrowseCarousel",
-  "actions.capability.SCREEN_OUTPUT"
+  "actions.capability.SCREEN_OUTPUT",
 );
 
 export class Suggestions implements IDirective {
@@ -292,7 +292,7 @@ export class Suggestions implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     let options = this.suggestions;
 
@@ -322,14 +322,14 @@ export class Context implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     const conv: DialogflowConversation = (event as DialogflowEvent).dialogflow
       .conv;
     conv.contexts.set(
       this.contextConfig.name,
       this.contextConfig.lifespan,
-      this.contextConfig.parameters
+      this.contextConfig.parameters,
     );
   }
 }
@@ -341,7 +341,7 @@ export class Say extends BaseSay {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition
+    transition: ITransition,
   ): Promise<void> {
     const google = (reply as DialogflowReply).payload.google;
     let richResponse: RichResponse = google.richResponse;
@@ -379,7 +379,7 @@ export class SessionEntity extends EntityHelper implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     let entity: any = this.viewPath;
 
@@ -407,7 +407,7 @@ export class Entity extends EntityHelper implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     let entity: any = this.viewPath;
 

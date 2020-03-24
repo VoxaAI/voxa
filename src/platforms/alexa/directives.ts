@@ -27,7 +27,7 @@ import {
   interfaces,
   Response,
   Slot,
-  ui
+  ui,
 } from "ask-sdk-model";
 import * as _ from "lodash";
 import { IDirective } from "../../directives";
@@ -35,8 +35,8 @@ import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
 import { EntityHelper } from "../share";
-import { AlexaReply } from "./AlexaReply";
 import { IDynamicEntity } from "../share/Entity";
+import { AlexaReply } from "./AlexaReply";
 
 function createDynamicEntity(this: any, rawEntity: any): IDynamicEntity[] {
   const dynamicEntity = rawEntity.reduce(
@@ -52,7 +52,7 @@ function createDynamicEntity(this: any, rawEntity: any): IDynamicEntity[] {
       filteredEntity.push(newEntity);
       return filteredEntity;
     },
-    []
+    [],
   );
   return dynamicEntity;
 }
@@ -64,7 +64,7 @@ function isCard(card: any): card is ui.Card {
 
   return _.includes(
     ["Standard", "Simple", "LinkAccount", "AskForPermissionsConsent"],
-    card.type
+    card.type,
   );
 }
 
@@ -94,7 +94,7 @@ export abstract class MultimediaAlexaDirective extends AlexaDirective {
     if (reply.hasDirective("AudioPlayer.Play")) {
       throw new Error(
         "Do not include both an AudioPlayer.Play" +
-          " directive and a VideoApp.Launch directive in the same response"
+          " directive and a VideoApp.Launch directive in the same response",
       );
     }
   }
@@ -109,7 +109,7 @@ export class HomeCard implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     if (reply.hasDirective("card")) {
       throw new Error("At most one card can be specified in a response");
@@ -140,11 +140,11 @@ export class Hint implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     if (reply.hasDirective("Hint")) {
       throw new Error(
-        "At most one Hint directive can be specified in a response"
+        "At most one Hint directive can be specified in a response",
       );
     }
 
@@ -157,9 +157,9 @@ export class Hint implements IDirective {
     response.directives.push({
       hint: {
         text,
-        type: "PlainText"
+        type: "PlainText",
       },
-      type: "Hint"
+      type: "Hint",
     });
 
     (reply as AlexaReply).response = response;
@@ -178,7 +178,7 @@ export class DialogDelegate extends AlexaDirective implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     this.buildDirective(event);
     this.buildSlots(event);
@@ -198,7 +198,7 @@ export class DialogDelegate extends AlexaDirective implements IDirective {
       .map((value, key) => {
         const data: any = {
           confirmationStatus: "NONE",
-          name: key
+          name: key,
         };
 
         if (value) {
@@ -213,13 +213,13 @@ export class DialogDelegate extends AlexaDirective implements IDirective {
     this.directive.updatedIntent = {
       confirmationStatus: "NONE",
       name: event.intent.name,
-      slots: directiveSlots
+      slots: directiveSlots,
     };
   }
 
   protected buildDirective(event: IVoxaEvent) {
     this.directive = {
-      type: "Dialog.Delegate"
+      type: "Dialog.Delegate",
     };
   }
 }
@@ -237,11 +237,11 @@ export class DialogElicitSlot extends AlexaDirective implements IDirective {
     options: IElicitDialogOptions,
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition
+    transition: ITransition,
   ) {
     if (reply.hasDirective("Dialog.ElicitSlot")) {
       throw new Error(
-        "At most one Dialog.ElicitSlot directive can be specified in a response"
+        "At most one Dialog.ElicitSlot directive can be specified in a response",
       );
     }
 
@@ -251,13 +251,13 @@ export class DialogElicitSlot extends AlexaDirective implements IDirective {
       transition.to !== _.get(event, "rawEvent.request.intent.name")
     ) {
       throw new Error(
-        "You cannot transition to a new intent while using a Dialog.ElicitSlot directive"
+        "You cannot transition to a new intent while using a Dialog.ElicitSlot directive",
       );
     }
 
     if (!options.slotToElicit) {
       throw new Error(
-        "slotToElicit is required for the Dialog.ElicitSlot directive"
+        "slotToElicit is required for the Dialog.ElicitSlot directive",
       );
     }
 
@@ -266,7 +266,7 @@ export class DialogElicitSlot extends AlexaDirective implements IDirective {
       _.get(event, "rawEvent.request.dialogState") === "COMPLETED"
     ) {
       throw new Error(
-        "Intent is missing dialogState or has already completed this dialog and cannot elicit any slots"
+        "Intent is missing dialogState or has already completed this dialog and cannot elicit any slots",
       );
     }
   }
@@ -280,7 +280,7 @@ export class DialogElicitSlot extends AlexaDirective implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition: ITransition
+    transition: ITransition,
   ): Promise<void> {
     DialogElicitSlot.validate(this.options, reply, event, transition);
     this.buildDirective(event);
@@ -313,8 +313,8 @@ export class DialogElicitSlot extends AlexaDirective implements IDirective {
       updatedIntent: {
         confirmationStatus: "NONE",
         name: intent.name,
-        slots
-      }
+        slots,
+      },
     };
   }
 }
@@ -340,7 +340,7 @@ export class RenderTemplate extends AlexaDirective implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     this.validateReply(reply);
 
@@ -358,7 +358,7 @@ export class RenderTemplate extends AlexaDirective implements IDirective {
   private validateReply(reply: IVoxaReply) {
     if (reply.hasDirective("Display.RenderTemplate")) {
       throw new Error(
-        "At most one Display.RenderTemplate directive can be specified in a response"
+        "At most one Display.RenderTemplate directive can be specified in a response",
       );
     }
   }
@@ -372,7 +372,7 @@ export class APLTemplate extends AlexaDirective implements IDirective {
   public directive?: interfaces.alexa.presentation.apl.RenderDocumentDirective;
 
   constructor(
-    viewPath: string | interfaces.alexa.presentation.apl.RenderDocumentDirective
+    viewPath: string | interfaces.alexa.presentation.apl.RenderDocumentDirective,
   ) {
     super();
 
@@ -386,7 +386,7 @@ export class APLTemplate extends AlexaDirective implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     this.validateReply(reply);
 
@@ -404,7 +404,7 @@ export class APLTemplate extends AlexaDirective implements IDirective {
   private validateReply(reply: IVoxaReply) {
     if (reply.hasDirective("Alexa.Presentation.APL.RenderDocument")) {
       throw new Error(
-        "At most one Alexa.Presentation.APL.RenderDocument directive can be specified in a response"
+        "At most one Alexa.Presentation.APL.RenderDocument directive can be specified in a response",
       );
     }
   }
@@ -420,7 +420,7 @@ export class APLCommand extends AlexaDirective implements IDirective {
   constructor(
     viewPath:
       | string
-      | interfaces.alexa.presentation.apl.ExecuteCommandsDirective
+      | interfaces.alexa.presentation.apl.ExecuteCommandsDirective,
   ) {
     super();
 
@@ -434,7 +434,7 @@ export class APLCommand extends AlexaDirective implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     this.validateReply(reply);
 
@@ -452,7 +452,7 @@ export class APLCommand extends AlexaDirective implements IDirective {
   private validateReply(reply: IVoxaReply) {
     if (reply.hasDirective("Alexa.Presentation.APL.ExecuteCommands")) {
       throw new Error(
-        "At most one Alexa.Presentation.APL.ExecuteCommands directive can be specified in a response"
+        "At most one Alexa.Presentation.APL.ExecuteCommands directive can be specified in a response",
       );
     }
   }
@@ -468,7 +468,7 @@ export class APLTTemplate extends AlexaDirective implements IDirective {
   constructor(
     viewPath:
       | string
-      | interfaces.alexa.presentation.aplt.RenderDocumentDirective
+      | interfaces.alexa.presentation.aplt.RenderDocumentDirective,
   ) {
     super();
 
@@ -482,7 +482,7 @@ export class APLTTemplate extends AlexaDirective implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     this.validateReply(reply);
 
@@ -500,7 +500,7 @@ export class APLTTemplate extends AlexaDirective implements IDirective {
   private validateReply(reply: IVoxaReply) {
     if (reply.hasDirective("Alexa.Presentation.APLT.RenderDocument")) {
       throw new Error(
-        "At most one Alexa.Presentation.APLT.RenderDocument directive can be specified in a response"
+        "At most one Alexa.Presentation.APLT.RenderDocument directive can be specified in a response",
       );
     }
   }
@@ -516,7 +516,7 @@ export class APLTCommand extends AlexaDirective implements IDirective {
   constructor(
     viewPath:
       | string
-      | interfaces.alexa.presentation.aplt.ExecuteCommandsDirective
+      | interfaces.alexa.presentation.aplt.ExecuteCommandsDirective,
   ) {
     super();
 
@@ -530,7 +530,7 @@ export class APLTCommand extends AlexaDirective implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     this.validateReply(reply);
 
@@ -548,7 +548,7 @@ export class APLTCommand extends AlexaDirective implements IDirective {
   private validateReply(reply: IVoxaReply) {
     if (reply.hasDirective("Alexa.Presentation.APLT.ExecuteCommands")) {
       throw new Error(
-        "At most one Alexa.Presentation.APLT.ExecuteCommands directive can be specified in a response"
+        "At most one Alexa.Presentation.APLT.ExecuteCommands directive can be specified in a response",
       );
     }
   }
@@ -561,7 +561,7 @@ export class AccountLinkingCard implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event?: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     if (reply.hasDirective("card")) {
       throw new Error("At most one card can be specified in a response");
@@ -593,7 +593,7 @@ export class PlayAudio extends MultimediaAlexaDirective implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event?: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     this.validateReply(reply);
 
@@ -603,11 +603,11 @@ export class PlayAudio extends MultimediaAlexaDirective implements IDirective {
         stream: {
           offsetInMilliseconds: this.data.offsetInMilliseconds || 0,
           token: this.data.token,
-          url: this.data.url
-        }
+          url: this.data.url,
+        },
       },
       playBehavior: this.data.behavior || "REPLACE_ALL",
-      type: "AudioPlayer.Play"
+      type: "AudioPlayer.Play",
     };
 
     this.addDirective(reply);
@@ -619,13 +619,13 @@ export class StopAudio extends AlexaDirective implements IDirective {
   public static platform: string = "alexa";
 
   public directive: interfaces.audioplayer.StopDirective = {
-    type: "AudioPlayer.Stop"
+    type: "AudioPlayer.Stop",
   };
 
   public async writeToReply(
     reply: IVoxaReply,
     event?: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     this.addDirective(reply);
   }
@@ -639,7 +639,7 @@ export class GadgetControllerLightDirective extends AlexaDirective
   constructor(
     public directive:
       | interfaces.gadgetController.SetLightDirective
-      | interfaces.gadgetController.SetLightDirective[]
+      | interfaces.gadgetController.SetLightDirective[],
   ) {
     super();
   }
@@ -647,7 +647,7 @@ export class GadgetControllerLightDirective extends AlexaDirective
   public async writeToReply(
     reply: IVoxaReply,
     event?: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     this.addDirective(reply);
   }
@@ -659,7 +659,7 @@ export class GameEngineStartInputHandler extends AlexaDirective
   public static platform: string = "alexa";
 
   constructor(
-    public directive: interfaces.gameEngine.StartInputHandlerDirective
+    public directive: interfaces.gameEngine.StartInputHandlerDirective,
   ) {
     super();
   }
@@ -667,7 +667,7 @@ export class GameEngineStartInputHandler extends AlexaDirective
   public async writeToReply(
     reply: IVoxaReply,
     event?: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     this.addDirective(reply);
 
@@ -688,11 +688,11 @@ export class GameEngineStopInputHandler extends AlexaDirective
   public async writeToReply(
     reply: IVoxaReply,
     event?: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     this.directive = {
       originatingRequestId: this.originatingRequestId,
-      type: "GameEngine.StopInputHandler"
+      type: "GameEngine.StopInputHandler",
     };
 
     this.addDirective(reply);
@@ -711,7 +711,7 @@ export class ConnectionsSendRequest extends AlexaDirective
   constructor(
     name: string | interfaces.connections.SendRequestDirective,
     public payload: any,
-    public token: string
+    public token: string,
   ) {
     super();
     if (_.isString(name)) {
@@ -724,14 +724,14 @@ export class ConnectionsSendRequest extends AlexaDirective
   public async writeToReply(
     reply: IVoxaReply,
     event?: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     if (this.name) {
       this.directive = {
         name: this.name,
         payload: this.payload,
         token: this.token || "token",
-        type: "Connections.SendRequest"
+        type: "Connections.SendRequest",
       };
     }
 
@@ -758,7 +758,7 @@ export class VideoAppLaunch extends MultimediaAlexaDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     this.validateReply(reply);
 
@@ -778,10 +778,10 @@ export class VideoAppLaunch extends MultimediaAlexaDirective {
       videoItem: {
         metadata: {
           subtitle: options.subtitle,
-          title: options.title
+          title: options.title,
         },
-        source: options.source
-      }
+        source: options.source,
+      },
     };
 
     this.addDirective(reply);
@@ -801,7 +801,7 @@ export class DynamicEntitiesDirective extends AlexaDirective
     viewPath:
       | string
       | dialog.DynamicEntitiesDirective
-      | er.dynamic.EntityListItem[]
+      | er.dynamic.EntityListItem[],
   ) {
     super();
     if (_.isString(viewPath)) {
@@ -816,7 +816,7 @@ export class DynamicEntitiesDirective extends AlexaDirective
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     let types = [];
 
@@ -826,7 +826,7 @@ export class DynamicEntitiesDirective extends AlexaDirective
       this.directive = {
         type: "Dialog.UpdateDynamicEntities",
         types,
-        updateBehavior: "REPLACE"
+        updateBehavior: "REPLACE",
       };
     }
 
@@ -834,7 +834,7 @@ export class DynamicEntitiesDirective extends AlexaDirective
       this.directive = {
         type: "Dialog.UpdateDynamicEntities",
         types: this.types,
-        updateBehavior: "REPLACE"
+        updateBehavior: "REPLACE",
       };
     }
 
@@ -853,7 +853,7 @@ export class Entity extends EntityHelper implements IDirective {
   public async writeToReply(
     reply: IVoxaReply,
     event: IVoxaEvent,
-    transition?: ITransition
+    transition?: ITransition,
   ): Promise<void> {
     let entity: any = this.viewPath;
     entity = await this.getGenericEntity(entity, event, this.viewPath);
@@ -863,14 +863,14 @@ export class Entity extends EntityHelper implements IDirective {
 
     const behavior: er.dynamic.UpdateBehavior = this.validateAlexaEntityBehavior(
       _.chain(entity)
-        .map(e => e.updateBehavior)
+        .map((e) => e.updateBehavior)
         .find()
-        .value()
+        .value(),
     );
     entity = {
       type: "Dialog.UpdateDynamicEntities",
       types: entity,
-      updateBehavior: behavior
+      updateBehavior: behavior,
     };
 
     const response: Response = (reply as AlexaReply).response;
