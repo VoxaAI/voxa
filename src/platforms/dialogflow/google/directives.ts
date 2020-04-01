@@ -439,3 +439,39 @@ function validateEntityName(name: any) {
     );
   }
 }
+
+export class Telephony implements IDirective {
+  public static key: string = "telephony";
+  public static platform: string = "google";
+
+  public viewPath?: any | any[];
+
+  constructor(viewPath: any | any[]) {
+    this.viewPath = viewPath;
+  }
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition?: ITransition,
+  ): Promise<void> {
+    let telephony: any = this.viewPath;
+    console.log("telephony initial value? ", JSON.stringify(telephony));
+
+    if (_.isString(this.viewPath)) {
+      telephony = await event.renderer.renderPath(this.viewPath, event);
+    }
+
+    if (_.isPlainObject(telephony)) {
+      telephony = [telephony];
+    }
+
+    if (!_.isArray(telephony) || _.isEmpty(telephony)) {
+      throw new Error(
+        "Please verify your entity it could be empty or is not an array",
+      );
+    }
+
+    (reply as DialogflowReply).fulfillmentMessages = telephony;
+  }
+}

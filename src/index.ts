@@ -123,6 +123,7 @@ export {
   MediaResponse,
   Suggestions,
   SessionEntity,
+  Telephony,
 } from "./platforms/dialogflow";
 export { Renderer } from "./renderers/Renderer";
 export { VoxaApp } from "./VoxaApp";
