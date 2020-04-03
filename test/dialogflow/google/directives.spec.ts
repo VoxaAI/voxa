@@ -1395,4 +1395,137 @@ describe("Google Assistant Directives", () => {
       );
     });
   });
+
+  describe("Telephony", () => {
+    it("should add Telephony Play Audio", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        sayp: "Say!",
+        telephony: "MyTelephonyPlayAudio",
+        textp: "Text!",
+        to: "entry",
+      });
+
+      const reply = await dialogflowAgent.execute(event);
+
+      expect(reply.fulfillmentMessages).to.deep.equal([
+        {
+          lang: "en",
+          platform: "TELEPHONY",
+          telephonyPlayAudio: { audioUri: "gs://bucket/object" },
+        },
+      ]);
+    });
+
+    it("should add Synthesize Speech", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        sayp: "Say!",
+        telephony: "MyTelephonySynthesizeSpeech",
+        textp: "Text!",
+        to: "entry",
+      });
+
+      const reply = await dialogflowAgent.execute(event);
+
+      expect(reply.fulfillmentMessages).to.deep.equal([
+        {
+          lang: "en",
+          platform: "TELEPHONY",
+          telephonySynthesizeSpeech: {
+            ssml:
+              "<speak>You will be connected to a human now<break time=0.2s />Please hold on line</speak>",
+          },
+        },
+      ]);
+    });
+
+    it("should add Transfer Call", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        sayp: "Say!",
+        telephony: "MyTelephonyTransferCall",
+        textp: "Text!",
+        to: "entry",
+      });
+
+      const reply = await dialogflowAgent.execute(event);
+
+      expect(reply.fulfillmentMessages).to.deep.equal([
+        {
+          lang: "en",
+          platform: "TELEPHONY",
+          telephonyTransferCall: {
+            phoneNumber: "+18013739120",
+          },
+        },
+      ]);
+    });
+
+    it("should add Simple Transfer Call", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        sayp: "Say!",
+        telephony: {
+          lang: "en-CA",
+          phoneNumber: "+18013739120",
+        },
+        textp: "Text!",
+        to: "entry",
+      });
+
+      const reply = await dialogflowAgent.execute(event);
+
+      expect(reply.fulfillmentMessages).to.deep.equal([
+        {
+          lang: "en",
+          platform: "TELEPHONY",
+          telephonyTransferCall: {
+            phoneNumber: "+18013739120",
+          },
+        },
+      ]);
+    });
+
+    it("should add all telephony types", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        sayp: "Say!",
+        telephony: [
+          {
+            audioUri: "gs://bucket/object",
+            lang: "en-CA",
+            phoneNumber: "+18013739120",
+            ssml:
+              "<speak>You will be connected to a human now<break time=0.2s />Please hold on line</speak>",
+          },
+        ],
+        textp: "Text!",
+        to: "entry",
+      });
+
+      const reply = await dialogflowAgent.execute(event);
+
+      expect(reply.fulfillmentMessages).to.deep.equal([
+        {
+          lang: "en",
+          platform: "TELEPHONY",
+          telephonySynthesizeSpeech: {
+            ssml:
+              "<speak>You will be connected to a human now<break time=0.2s />Please hold on line</speak>",
+          },
+        },
+        {
+          lang: "en",
+          platform: "TELEPHONY",
+          telephonyTransferCall: { phoneNumber: "+18013739120" },
+        },
+        {
+          lang: "en",
+          platform: "TELEPHONY",
+          telephonyPlayAudio: { audioUri: "gs://bucket/object" },
+        },
+      ]);
+    });
+  });
 });
