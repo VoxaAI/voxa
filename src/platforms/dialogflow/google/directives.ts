@@ -598,7 +598,7 @@ function generateTelephony(telephony: any) {
   const validProperties = validateProperties(telephony, telephonyProperties);
 
   const telephonyResult = validProperties.map((prop) => {
-    const telephonyType = _.chain(telephonyTypes)
+    const telephonyType: string[] = _.chain(telephonyTypes)
       .map(_.toPairs)
       .flatten()
       .find((t) => t[1] === prop)
