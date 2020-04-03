@@ -1632,5 +1632,27 @@ describe("Google Assistant Directives", () => {
         "Just one object is accepted in Telephony array",
       );
     });
+
+    it("should throw an error due to missing empty telephony", async () => {
+      const reply = new DialogflowReply();
+      const googleAssistantEvent = new GoogleAssistantEvent(event);
+      const telephony = new Telephony([]);
+
+      let error: Error | null = null;
+      try {
+        await telephony.writeToReply(reply, googleAssistantEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal(
+        "Please verify, your telephony directive could be empty or is not an array",
+      );
+    });
   });
 });
