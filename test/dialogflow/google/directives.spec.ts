@@ -1397,6 +1397,31 @@ describe("Google Assistant Directives", () => {
   });
 
   describe("Telephony", () => {
+    const telephonyMissingProperties = {
+      audioUriTest: "gs://bucket/object",
+      lang: "en-CA",
+      phoneNumberTest: "+18013739120",
+      ssmlTest:
+        "<speak>You will be connected to a human now<break time=0.2s />Please hold on line</speak>",
+    };
+
+    const telephonyWithMultipleObjects = [
+      {
+        audioUriTest: "gs://bucket/object",
+        lang: "en-CA",
+        phoneNumberTest: "+18013739120",
+        ssmlTest:
+          "<speak>You will be connected to a human now<break time=0.2s />Please hold on line</speak>",
+      },
+      {
+        audioUriTest: "gs://bucket/object",
+        lang: "en-CA",
+        phoneNumberTest: "+18013739120",
+        ssmlTest:
+          "<speak>You will be connected to a human now<break time=0.2s />Please hold on line</speak>",
+      },
+    ];
+
     it("should add Telephony Play Audio", async () => {
       app.onIntent("LaunchIntent", {
         flow: "yield",
@@ -1410,7 +1435,7 @@ describe("Google Assistant Directives", () => {
 
       expect(reply.fulfillmentMessages).to.deep.equal([
         {
-          lang: "en",
+          lang: "en-CA",
           platform: "TELEPHONY",
           telephonyPlayAudio: { audioUri: "gs://bucket/object" },
         },
@@ -1430,7 +1455,7 @@ describe("Google Assistant Directives", () => {
 
       expect(reply.fulfillmentMessages).to.deep.equal([
         {
-          lang: "en",
+          lang: "en-CA",
           platform: "TELEPHONY",
           telephonySynthesizeSpeech: {
             ssml:
@@ -1453,7 +1478,7 @@ describe("Google Assistant Directives", () => {
 
       expect(reply.fulfillmentMessages).to.deep.equal([
         {
-          lang: "en",
+          lang: "en-CA",
           platform: "TELEPHONY",
           telephonyTransferCall: {
             phoneNumber: "+18013739120",
@@ -1478,7 +1503,7 @@ describe("Google Assistant Directives", () => {
 
       expect(reply.fulfillmentMessages).to.deep.equal([
         {
-          lang: "en",
+          lang: "en-CA",
           platform: "TELEPHONY",
           telephonyTransferCall: {
             phoneNumber: "+18013739120",
@@ -1508,11 +1533,47 @@ describe("Google Assistant Directives", () => {
 
       expect(reply.fulfillmentMessages).to.deep.equal([
         {
-          lang: "en",
+          lang: "en-CA",
           platform: "TELEPHONY",
           telephonySynthesizeSpeech: {
             ssml:
               "<speak>You will be connected to a human now<break time=0.2s />Please hold on line</speak>",
+          },
+        },
+        {
+          lang: "en-CA",
+          platform: "TELEPHONY",
+          telephonyTransferCall: { phoneNumber: "+18013739120" },
+        },
+        {
+          lang: "en-CA",
+          platform: "TELEPHONY",
+          telephonyPlayAudio: { audioUri: "gs://bucket/object" },
+        },
+      ]);
+    });
+
+    it("should defaut language", async () => {
+      app.onIntent("LaunchIntent", {
+        flow: "yield",
+        sayp: "Say!",
+        telephony: {
+          audioUri: "gs://bucket/object2",
+          phoneNumber: "+18013739120",
+          ssml: "<speak>Test<break time=0.2s />Test </speak>",
+        },
+        textp: "Text!",
+        to: "entry",
+      });
+
+      const reply = await dialogflowAgent.execute(event);
+
+      expect(reply.fulfillmentMessages).to.deep.equal([
+        {
+          lang: "en",
+          platform: "TELEPHONY",
+          telephonySynthesizeSpeech: {
+            ssml: "<speak>Test<break time=0.2s />Test </speak>",
           },
         },
         {
@@ -1523,9 +1584,53 @@ describe("Google Assistant Directives", () => {
         {
           lang: "en",
           platform: "TELEPHONY",
-          telephonyPlayAudio: { audioUri: "gs://bucket/object" },
+          telephonyPlayAudio: { audioUri: "gs://bucket/object2" },
         },
       ]);
+    });
+
+    it("should throw an error due to missing valid properties ", async () => {
+      const reply = new DialogflowReply();
+      const googleAssistantEvent = new GoogleAssistantEvent(event);
+      const telephony = new Telephony(telephonyMissingProperties);
+
+      let error: Error | null = null;
+      try {
+        await telephony.writeToReply(reply, googleAssistantEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal(
+        "No valid properties found, please check you includes at least one of the following: ssml, phoneNumber, audioUri",
+      );
+    });
+
+    it("should throw an error due to missing valid properties ", async () => {
+      const reply = new DialogflowReply();
+      const googleAssistantEvent = new GoogleAssistantEvent(event);
+      const telephony = new Telephony(telephonyWithMultipleObjects);
+
+      let error: Error | null = null;
+      try {
+        await telephony.writeToReply(reply, googleAssistantEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal(
+        "Just one object is accepted in Telephony array",
+      );
     });
   });
 });

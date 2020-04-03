@@ -578,7 +578,6 @@ class TelephonyFactory implements IFactory {
 }
 
 function generateTelephony(telephony: any) {
-  let lang = _.get(telephony, "lang");
   const telephonyProperties = ["ssml", "phoneNumber", "audioUri"];
 
   const telephonyTypes = [
@@ -587,14 +586,14 @@ function generateTelephony(telephony: any) {
     { telephonyPlayAudio: "audioUri" },
   ];
 
-  lang = validateLanguage(lang);
   const isTelephonyArray = _.isArray(telephony);
   if (isTelephonyArray) {
-    if (telephony.length > 1) {
-      throw new Error("Just one object is accepted in Telephony array");
-    }
+    validateTelephonyArray(telephony);
     telephony = _.head(telephony);
   }
+
+  let lang = _.get(telephony, "lang");
+  lang = validateLanguage(lang);
 
   const validProperties = validateProperties(telephony, telephonyProperties);
 
@@ -615,6 +614,12 @@ function generateTelephony(telephony: any) {
   });
 
   return telephonyResult;
+}
+
+function validateTelephonyArray(telephony: any) {
+  if (telephony.length > 1) {
+    throw new Error("Just one object is accepted in Telephony array");
+  }
 }
 
 function validateProperties(telephony: any, telephonyProperties: string[]) {
