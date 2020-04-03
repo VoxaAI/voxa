@@ -14,6 +14,7 @@ import {
   GoogleAssistantPlatform,
   MediaResponse,
   SessionEntity,
+  Telephony,
 } from "../../../src/platforms/dialogflow";
 import { VoxaApp } from "../../../src/VoxaApp";
 import { variables } from "./../../variables";

@@ -415,6 +415,34 @@ export const views = {
           entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
         },
       ],
+      MyTelephony: [
+        {
+          audioUri: "gs://bucket/object",
+          lang: "en-CA",
+          phoneNumber: "+18013739120",
+          ssml:
+            "<speak>You will be connected to a human now<break time=0.2s />Please hold on line</speak>",
+        },
+      ],
+      MyTelephonyPlayAudio: [
+        {
+          audioUri: "gs://bucket/object",
+          lang: "en-CA",
+        },
+      ],
+      MyTelephonySynthesizeSpeech: [
+        {
+          lang: "en-CA",
+          ssml:
+            "<speak>You will be connected to a human now<break time=0.2s />Please hold on line</speak>",
+        },
+      ],
+      MyTelephonyTransferCall: [
+        {
+          lang: "en-CA",
+          phoneNumber: "+18013739120",
+        },
+      ],
       Number: {
         One: "{numberOne}",
       },
