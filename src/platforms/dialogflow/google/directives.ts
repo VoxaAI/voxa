@@ -440,12 +440,6 @@ function validateEntityName(name: any) {
   }
 }
 
-export enum telephonyTransferCall {
-  Unspecified = "ENTITY_OVERRIDE_MODE_UNSPECIFIED",
-  Override = "ENTITY_OVERRIDE_MODE_OVERRIDE",
-  Supplement = "ENTITY_OVERRIDE_MODE_SUPPLEMENT",
-}
-
 export class Telephony implements IDirective {
   public static key: string = "telephony";
   public static platform: string = "google";
