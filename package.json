@@ -48,7 +48,7 @@
     "ask-sdk-model": "^1.25.1",
     "azure-functions-ts-essentials": "^1.3.2",
     "bluebird": "^3.5.5",
-    "botbuilder": "^3.16",
+    "botbuilder": "3.16",
     "fast-xml-parser": "^3.12.16",
     "google-auth-library": "1.6.1",
     "googleapis": "^40.0.1",
