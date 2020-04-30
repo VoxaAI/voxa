@@ -4,7 +4,7 @@
 
 #### Bug Fix
 
-- Fixes error `Cannot find module 'skills-validator' brought by new botbuilder package version.`
+- Fixes error to find module 'skills-validator' brought by new botbuilder package version.
 
 ## 3.3.2 (2020-02-05)
 
