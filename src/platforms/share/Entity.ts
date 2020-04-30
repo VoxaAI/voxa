@@ -1,4 +1,4 @@
-import { er } from "ask-sdk-model";
+// import { er } from "ask-sdk-model";
 import * as _ from "lodash";
 import { IVoxaEvent } from "../../VoxaEvent";
 
@@ -49,7 +49,7 @@ export abstract class EntityHelper {
           };
         }
         return entity;
-      },
+      }
     );
 
     return {
@@ -65,18 +65,18 @@ export abstract class EntityHelper {
     };
   }
 
-  protected getBehaviorError() {
-    const alexaEntityBehaviorList = [
-      UpdateBehavior.Replace,
-      UpdateBehavior.Clear,
-    ];
+  // protected getBehaviorError() {
+  //   const alexaEntityBehaviorList = [
+  //     UpdateBehavior.Replace,
+  //     UpdateBehavior.Clear,
+  //   ];
 
-    const defaultBehavior = UpdateBehavior.Replace;
-    const behaviorList = alexaEntityBehaviorList;
-    const error = `The updateBehavior is incorrect, please consider use one of the followings: ${UpdateBehavior.Replace} or ${UpdateBehavior.Clear}`;
+  //   const defaultBehavior = UpdateBehavior.Replace;
+  //   const behaviorList = alexaEntityBehaviorList;
+  //   const error = `The updateBehavior is incorrect, please consider use one of the followings: ${UpdateBehavior.Replace} or ${UpdateBehavior.Clear}`;
 
-    return { defaultBehavior, behaviorList, error };
-  }
+  //   return { defaultBehavior, behaviorList, error };
+  // }
 
   protected getOverrideModeError() {
     const dialogflowEntityBehaviorList = [
@@ -109,28 +109,28 @@ export abstract class EntityHelper {
     return behavior;
   }
 
-  protected validateAlexaEntityBehavior(property: any): any {
-    let behavior: er.dynamic.UpdateBehavior = _.get(property, "updateBehavior");
+  // protected validateAlexaEntityBehavior(property: any): any {
+  //   let behavior: er.dynamic.UpdateBehavior = _.get(property, "updateBehavior");
 
-    let defaultBehavior: er.dynamic.UpdateBehavior;
-    let behaviorList: any;
-    let error: string;
+  //   let defaultBehavior: er.dynamic.UpdateBehavior;
+  //   let behaviorList: any;
+  //   let error: string;
 
-    ({ defaultBehavior, behaviorList, error } = this.getBehaviorError());
+  //   ({ defaultBehavior, behaviorList, error } = this.getBehaviorError());
 
-    behavior = behavior || defaultBehavior;
+  //   behavior = behavior || defaultBehavior;
 
-    if (!_.includes(behaviorList, behavior)) {
-      throw new Error(error);
-    }
-    return behavior;
-  }
+  //   if (!_.includes(behaviorList, behavior)) {
+  //     throw new Error(error);
+  //   }
+  //   return behavior;
+  // }
 
   protected validateEntity(property: any): any {
     const entities = _.get(property, "entities");
     if (!entities || _.isEmpty(entities)) {
       throw new Error(
-        "The entities property is empty or was not provided, please verify",
+        "The entities property is empty or was not provided, please verify"
       );
     }
   }
@@ -153,7 +153,7 @@ export abstract class EntityHelper {
     const regex = new RegExp(pattern);
     if (!regex.test(name)) {
       throw new Error(
-        `The name property in ${platform}EntityName can only include alphanumeric and the ${specialCharacter} character`,
+        `The name property in ${platform}EntityName can only include alphanumeric and the ${specialCharacter} character`
       );
     }
     return name;
@@ -162,7 +162,7 @@ export abstract class EntityHelper {
   protected async getGenericEntity(
     entity: any,
     event: IVoxaEvent,
-    viewPath: any,
+    viewPath: any
   ) {
     if (_.isString(viewPath)) {
       entity = await event.renderer.renderPath(viewPath, event);
@@ -172,7 +172,7 @@ export abstract class EntityHelper {
     }
     if (!_.isArray(entity) || _.isEmpty(entity)) {
       throw new Error(
-        "Please verify your entity it could be empty or is not an array",
+        "Please verify your entity it could be empty or is not an array"
       );
     }
     return entity;
