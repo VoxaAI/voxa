@@ -1,5 +1,11 @@
 # VOXA Changelog
 
+## 3.3.3 (2020-04-30)
+
+#### Bug Fix
+
+- Fixes error `Cannot find module 'skills-validator' brought by new botbuilder package version.`
+
 ## 3.3.2 (2020-02-05)
 
 #### Enhancement
