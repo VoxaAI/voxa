@@ -439,3 +439,213 @@ function validateEntityName(name: any) {
     );
   }
 }
+
+export class Telephony implements IDirective {
+  public static key: string = "telephony";
+  public static platform: string = "google";
+
+  public viewPath?: any | any[];
+
+  constructor(viewPath: any | any[]) {
+    this.viewPath = viewPath;
+  }
+
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition?: ITransition,
+  ): Promise<void> {
+    let telephony: any = this.viewPath;
+
+    if (_.isString(this.viewPath)) {
+      telephony = await event.renderer.renderPath(this.viewPath, event);
+    }
+
+    if (_.isPlainObject(telephony)) {
+      telephony = [telephony];
+    }
+
+    if (!_.isArray(telephony) || _.isEmpty(telephony)) {
+      throw new Error(
+        "Please verify, your telephony directive could be empty or is not an array",
+      );
+    }
+
+    (reply as DialogflowReply).fulfillmentMessages = generateTelephony(
+      telephony,
+    );
+  }
+}
+
+interface ITelephony {
+  platform: string;
+  lang: string;
+  telephonyPlayAudio?: ITelephonyPlayAudio;
+  telephonyTransferCall?: ITelephonyTransferCall;
+  telephonySynthesizeSpeech?: ITelephonySynthesizeSpeech;
+}
+
+interface ITelephonyMethods extends ITelephony {
+  createTelephonyType(property: string): any;
+}
+
+interface ITelephonyTransferCall {
+  phoneNumber: string;
+}
+
+interface ITelephonySynthesizeSpeech {
+  ssml?: string;
+  text?: string;
+}
+
+interface ITelephonyPlayAudio {
+  audioUri: string;
+}
+
+interface IFactory {
+  createTelephony(name: string, lang: string): ITelephony | null;
+}
+
+class TelephonyTransferCall implements ITelephonyMethods {
+  public platform: string = "TELEPHONY";
+  public lang: string;
+
+  constructor(lang: string) {
+    this.lang = lang;
+  }
+
+  public createTelephonyType(phoneNumber: string): ITelephony {
+    return {
+      lang: this.lang,
+      platform: this.platform,
+      telephonyTransferCall: {
+        phoneNumber,
+      },
+    };
+  }
+}
+
+class TelephonySynthesizeSpeech implements ITelephonyMethods {
+  public platform: string = "TELEPHONY";
+  public lang: string;
+
+  constructor(lang: string) {
+    this.lang = lang;
+  }
+
+  public createTelephonyType(ssml: string): ITelephony {
+    return {
+      lang: this.lang,
+      platform: this.platform,
+      telephonySynthesizeSpeech: {
+        ssml,
+      },
+    };
+  }
+}
+
+class TelephonyPlayAudio implements ITelephonyMethods {
+  public platform: string = "TELEPHONY";
+  public lang: string;
+
+  constructor(lang: string) {
+    this.lang = lang;
+  }
+
+  public createTelephonyType(audioUri: string): ITelephony {
+    return {
+      lang: this.lang,
+      platform: this.platform,
+      telephonyPlayAudio: {
+        audioUri,
+      },
+    };
+  }
+}
+class TelephonyFactory implements IFactory {
+  public createTelephony(name: string, lang: string): ITelephonyMethods | null {
+    switch (name) {
+      case "telephonyTransferCall":
+        return new TelephonyTransferCall(lang);
+      case "telephonySynthesizeSpeech":
+        return new TelephonySynthesizeSpeech(lang);
+      case "telephonyPlayAudio":
+        return new TelephonyPlayAudio(lang);
+      default:
+        return null;
+    }
+  }
+}
+
+function generateTelephony(telephony: any) {
+  const telephonyProperties = ["ssml", "phoneNumber", "audioUri"];
+
+  const telephonyTypes = [
+    { telephonySynthesizeSpeech: "ssml" },
+    { telephonyTransferCall: "phoneNumber" },
+    { telephonyPlayAudio: "audioUri" },
+  ];
+
+  const isTelephonyArray = _.isArray(telephony);
+  if (isTelephonyArray) {
+    validateTelephonyArray(telephony);
+    telephony = _.head(telephony);
+  }
+
+  let lang = _.get(telephony, "lang");
+  lang = validateLanguage(lang);
+
+  const validProperties = validateProperties(telephony, telephonyProperties);
+
+  const telephonyResult = validProperties.map((prop) => {
+    const telephonyType: string[] = _.chain(telephonyTypes)
+      .map(_.toPairs)
+      .flatten()
+      .find((t) => t[1] === prop)
+      .value();
+
+    const type = _.get(telephonyType, "[0]");
+
+    const factory = new TelephonyFactory();
+    const product = factory.createTelephony(type, lang);
+    const result = product!.createTelephonyType(telephony[prop!]);
+
+    return result;
+  });
+
+  return telephonyResult;
+}
+
+function validateTelephonyArray(telephony: any) {
+  if (telephony.length > 1) {
+    throw new Error("Just one object is accepted in Telephony array");
+  }
+}
+
+function validateProperties(telephony: any, telephonyProperties: string[]) {
+  const keysInTelephony = _.keys(telephony);
+
+  // Find valid properties used in telephony objects and remove undefined
+  const validProperties = telephonyProperties
+    .map((element) => {
+      return keysInTelephony.find((e) => {
+        return e === element && telephony[e] != null && telephony[e].length > 0;
+      });
+    })
+    .filter((el) => {
+      return el != null;
+    });
+  if (_.isEmpty(validProperties)) {
+    throw new Error(
+      "No valid properties found, please check you includes at least one of the following: ssml, phoneNumber, audioUri",
+    );
+  }
+  return validProperties;
+}
+
+function validateLanguage(lang: any) {
+  if (!lang) {
+    return (lang = "en");
+  }
+  return lang;
+}

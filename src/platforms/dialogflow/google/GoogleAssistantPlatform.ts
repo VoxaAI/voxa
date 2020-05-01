@@ -51,6 +51,7 @@ import {
   SessionEntity,
   Suggestions,
   Table,
+  Telephony,
   TransactionDecision,
   TransactionRequirements,
   UpdatePermission,
@@ -116,6 +117,7 @@ export class GoogleAssistantPlatform extends DialogflowPlatform {
       UpdatePermission,
       Say,
       SessionEntity,
+      Telephony,
     ];
   }
 }

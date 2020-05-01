@@ -681,3 +681,68 @@ Create an entity in your dialogflow agent and make sure that define synonyms opt
       sayp: "Hello!",
       to: "entry",
     });
+
+Telephony
+-------------------------------------------
+
+`Google Documentation <https://cloud.google.com/dialogflow/docs/integrations/phone-gateway#rich>`_
+
+The Dialogflow phone gateway feature provides a telephone interface to your agent. It is used to build conversational IVR (interactive voice response) solutions that integrate with the rest of your call center network. Currently, you can select a telephone number hosted by Google. In the future, you will also be able to port an existing telephone number.
+
+ Telephony rich response messages:
+
+- **Play audio**: Plays the supplied audio file.
+
+- **Synthesize speech**: Synthesizes the supplied text to audio and plays it. Alternatively, you can enable Use response from the DEFAULT tab as the first response, which will use the default response to synthesize a speech response. If you only define default responses, and you do not enable Use response from the DEFAULT tab as the first response, only the text populated in QueryResult.fulfillment_text (populated with a randomly selected text response), is synthesized to audio.
+
+- **Transfer call**: Transfers the caller to another number.
+
+.. code-block:: javascript
+ 
+  // variables.js
+
+    export function myTelephony(voxaEvent: VoxaEvent) {
+      // Do something with the voxaEvent, or not...
+
+      const telephony = [
+        {
+          audioUri: "gs://bucket/object",
+          lang: "en-CA",
+          phoneNumber: "+18013739120",
+          ssml:
+            "<speak>You will be connected to a human now<break time=0.2s />Please hold on line</speak>",
+        },
+      ];
+
+      return telephony;
+    }
+  
+  // views.js
+
+    const views = {
+      "en-US": {
+        translation: {
+          myTelephony: "{myTelephony}"
+        },
+      };
+    };
+
+  // state.js
+
+    app.onState('someState', {
+      telephony: "myTelephony",
+      flow: "yield",
+      sayp: "Hello!",
+      to: "entry",
+    });
+
+  // Or you can do it directly...
+
+    app.onState('someState', {
+      telephony: {
+          phoneNumber: "+18013739120",
+      },
+      flow: "yield",
+      sayp: "Hello!",
+      to: "entry",
+    });

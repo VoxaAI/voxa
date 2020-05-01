@@ -43,6 +43,7 @@ export {
   TransactionDecision,
   TransactionRequirements,
   UpdatePermission,
+  Telephony,
 } from "./google/directives";
 export {
   FACEBOOK_BUTTONS,
