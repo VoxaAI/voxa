@@ -15,6 +15,7 @@ import {
   MediaResponse,
   SessionEntity,
 } from "../../../src/platforms/dialogflow";
+import { Entity } from "../../../src/platforms/dialogflow/google/directives";
 import { VoxaApp } from "../../../src/VoxaApp";
 import { variables } from "./../../variables";
 import { views } from "./../../views";
@@ -1245,7 +1246,7 @@ describe("Google Assistant Directives", () => {
         throw expect(error).to.not.be.null;
       }
 
-      expect(error.message).to.equal("A name is required for a Session Entity");
+      expect(error.message).to.equal("A name is required for the Entity");
     });
 
     it("should add an object in sesssion entity", async () => {
@@ -1298,7 +1299,7 @@ describe("Google Assistant Directives", () => {
       }
 
       expect(error.message).to.equal(
-        "The Entity Override Mode specified is incorrect, please consider use one of the followings: ENTITY_OVERRIDE_MODE_UNSPECIFIED, ENTITY_OVERRIDE_MODE_OVERRIDE or ENTITY_OVERRIDE_MODE_SUPPLEMENT",
+        "The entityOverrideMode is incorrect, please consider use one of the followings: ENTITY_OVERRIDE_MODE_UNSPECIFIED, ENTITY_OVERRIDE_MODE_OVERRIDE or ENTITY_OVERRIDE_MODE_SUPPLEMENT",
       );
     });
 
@@ -1322,7 +1323,7 @@ describe("Google Assistant Directives", () => {
       }
 
       expect(error.message).to.equal(
-        "The name property for Session Entity Type should be only alphabetic characters",
+        "The name property in googleEntityName can only include alphanumeric and the dash(-) character",
       );
     });
 
@@ -1380,6 +1381,286 @@ describe("Google Assistant Directives", () => {
       let error: Error | null = null;
       try {
         await sessionEntity.writeToReply(reply, googleAssistantEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal(
+        "Please verify your entity it could be empty or is not an array",
+      );
+    });
+  });
+
+  describe("Entity Directive", () => {
+    const entityWithoutName = {
+      entities: [
+        { synonyms: ["apple", "green apple", "crabapple"], value: "APPLE_KEY" },
+        { synonyms: ["orange"], value: "ORANGE_KEY" },
+      ],
+      entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+    };
+
+    const simpleEntityIncorrectMode = {
+      entities: [
+        {
+          synonyms: ["lion", "cat", "wild cat", "simba"],
+          value: "LION_KEY",
+        },
+        {
+          synonyms: ["elephant", "mammoth"],
+          value: "ELEPHANT_KEY",
+        },
+      ],
+      entityOverrideMode: "TEST",
+      name: "animal",
+    };
+
+    const simpleEntityIncorrectName = {
+      entities: [
+        {
+          synonyms: ["lion", "cat", "wild cat", "simba"],
+          value: "LION_KEY",
+        },
+        {
+          synonyms: ["elephant", "mammoth"],
+          value: "ELEPHANT_KEY",
+        },
+      ],
+      name: "projects/project-id/agent/sessions/session-id/entityTypes/animal",
+    };
+
+    const simpleEntityNoEntities = {
+      name: "animal",
+    };
+
+    const simpleEmptyEntity = {
+      entities: [],
+      entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+      name: "animal",
+    };
+
+    it("should add a simple entity", async () => {
+      app.onIntent("LaunchIntent", {
+        entities: "GoogleEntity",
+        flow: "yield",
+        sayp: "Hello!",
+        to: "entry",
+      });
+
+      const reply = await dialogflowAgent.execute(event);
+      expect(_.get(reply, "sessionEntityTypes")).to.deep.equal([
+        {
+          entities: [
+            {
+              synonyms: ["apple", "green apple", "crabapple"],
+              value: "APPLE_KEY",
+            },
+            {
+              synonyms: ["orange"],
+              value: "ORANGE_KEY",
+            },
+          ],
+          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          name:
+            "projects/project/agent/sessions/1525973454075/entityTypes/fruit",
+        },
+      ]);
+    });
+
+    it("should add an array of objects", async () => {
+      app.onIntent("LaunchIntent", {
+        entities: "MultipleGoogleEntities",
+        flow: "yield",
+        sayp: "Hello!",
+        to: "entry",
+      });
+
+      const reply = await dialogflowAgent.execute(event);
+
+      expect(reply.sessionEntityTypes).to.deep.equal([
+        {
+          entities: [
+            {
+              synonyms: ["apple", "green apple", "crabapple"],
+              value: "APPLE_KEY",
+            },
+            {
+              synonyms: ["orange"],
+              value: "ORANGE_KEY",
+            },
+          ],
+          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          name:
+            "projects/project/agent/sessions/1525973454075/entityTypes/fruit",
+        },
+        {
+          entities: [
+            {
+              synonyms: ["lion", "cat", "wild cat", "simba"],
+              value: "LION_KEY",
+            },
+            {
+              synonyms: ["elephant", "mammoth"],
+              value: "ELEPHANT_KEY",
+            },
+          ],
+          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          name:
+            "projects/project/agent/sessions/1525973454075/entityTypes/animal",
+        },
+      ]);
+    });
+
+    it("should throw error due to missing name property", async () => {
+      const reply = new DialogflowReply();
+      const googleAssistantEvent = new GoogleAssistantEvent(event);
+      const entity = new Entity(entityWithoutName);
+
+      let error: Error | null = null;
+      try {
+        await entity.writeToReply(reply, googleAssistantEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal("A name is required for the Entity");
+    });
+
+    it("should add an object", async () => {
+      app.onIntent("LaunchIntent", {
+        entities: "SimpleGoogleEntity",
+        flow: "yield",
+        sayp: "Hello!",
+        to: "entry",
+      });
+
+      const reply = await dialogflowAgent.execute(event);
+
+      expect(reply.sessionEntityTypes).to.deep.equal([
+        {
+          entities: [
+            {
+              synonyms: ["lion", "cat", "wild cat", "simba"],
+              value: "LION_KEY",
+            },
+            {
+              synonyms: ["elephant", "mammoth"],
+              value: "ELEPHANT_KEY",
+            },
+          ],
+          entityOverrideMode: "ENTITY_OVERRIDE_MODE_OVERRIDE",
+          name:
+            "projects/project/agent/sessions/1525973454075/entityTypes/animal",
+        },
+      ]);
+    });
+
+    it("should throw an error due to incorrect Entity Override Mode property", async () => {
+      const reply = new DialogflowReply();
+      const googleAssistantEvent = new GoogleAssistantEvent(event);
+      const entity = new Entity(simpleEntityIncorrectMode);
+
+      let error: Error | null = null;
+      try {
+        await entity.writeToReply(reply, googleAssistantEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal(
+        "The entityOverrideMode is incorrect, please consider use one of the followings: ENTITY_OVERRIDE_MODE_UNSPECIFIED, ENTITY_OVERRIDE_MODE_OVERRIDE or ENTITY_OVERRIDE_MODE_SUPPLEMENT",
+      );
+    });
+
+    it("should throw an error due to incorrect name format", async () => {
+      const reply = new DialogflowReply();
+      const googleAssistantEvent = new GoogleAssistantEvent(event);
+      const entity = new Entity([simpleEntityIncorrectName]);
+
+      let error: Error | null = null;
+      try {
+        await entity.writeToReply(reply, googleAssistantEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal(
+        "The name property in googleEntityName can only include alphanumeric and the dash(-) character",
+      );
+    });
+
+    it("should throw an error due to missing entities property", async () => {
+      const reply = new DialogflowReply();
+      const googleAssistantEvent = new GoogleAssistantEvent(event);
+      const entity = new Entity(simpleEntityNoEntities);
+
+      let error: Error | null = null;
+      try {
+        await entity.writeToReply(reply, googleAssistantEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal(
+        "The entities property is empty or was not provided, please verify",
+      );
+    });
+
+    it("should throw an error due to empty entities property", async () => {
+      const reply = new DialogflowReply();
+      const googleAssistantEvent = new GoogleAssistantEvent(event);
+      const entity = new Entity(simpleEmptyEntity);
+
+      let error: Error | null = null;
+      try {
+        await entity.writeToReply(reply, googleAssistantEvent, {});
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.an("error");
+      if (error == null) {
+        throw expect(error).to.not.be.null;
+      }
+
+      expect(error.message).to.equal(
+        "The entities property is empty or was not provided, please verify",
+      );
+    });
+
+    it("should throw an error due to empty array", async () => {
+      const reply = new DialogflowReply();
+      const googleAssistantEvent = new GoogleAssistantEvent(event);
+      const entity = new Entity([]);
+
+      let error: Error | null = null;
+      try {
+        await entity.writeToReply(reply, googleAssistantEvent, {});
       } catch (e) {
         error = e;
       }

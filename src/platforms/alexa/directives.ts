@@ -34,7 +34,28 @@ import { IDirective } from "../../directives";
 import { ITransition } from "../../StateMachine";
 import { IVoxaEvent } from "../../VoxaEvent";
 import { IVoxaReply } from "../../VoxaReply";
+import { EntityHelper } from "../share";
+import { IDynamicEntity } from "../share/Entity";
 import { AlexaReply } from "./AlexaReply";
+
+function createDynamicEntity(this: any, rawEntity: any): IDynamicEntity[] {
+  const dynamicEntity = rawEntity.reduce(
+    (filteredEntity: any, property: any): any => {
+      let newEntity: IDynamicEntity;
+      const name = this.validateEntityName(property, "alexa");
+      this.validateEntity(property);
+
+      validateAlexaEntityBehavior(property);
+
+      newEntity = this.dynamicEntityObject(property, name);
+
+      filteredEntity.push(newEntity);
+      return filteredEntity;
+    },
+    [],
+  );
+  return dynamicEntity;
+}
 
 function isCard(card: any): card is ui.Card {
   if (!("type" in card)) {
@@ -819,4 +840,84 @@ export class DynamicEntitiesDirective extends AlexaDirective
 
     this.addDirective(reply);
   }
+}
+
+export class Entity extends EntityHelper implements IDirective {
+  public static key: string = "entities";
+  public static platform: string = "alexa";
+  public viewPath?: any | any[];
+  constructor(viewPath: any | any[]) {
+    super();
+    this.viewPath = viewPath;
+  }
+  public async writeToReply(
+    reply: IVoxaReply,
+    event: IVoxaEvent,
+    transition?: ITransition,
+  ): Promise<void> {
+    let entity: any = this.viewPath;
+    entity = await this.getGenericEntity(entity, event, this.viewPath);
+
+    const dynamicEntity = createDynamicEntity.bind(this, entity);
+    entity = dynamicEntity();
+
+    const behavior: er.dynamic.UpdateBehavior = validateAlexaEntityBehavior(
+      _.chain(entity)
+        .map((e) => e.updateBehavior)
+        .find()
+        .value(),
+    );
+
+    entity = {
+      type: "Dialog.UpdateDynamicEntities",
+      types: entity,
+      updateBehavior: behavior,
+    };
+
+    const response: Response = (reply as AlexaReply).response;
+    if (!response.directives) {
+      response.directives = [];
+    }
+    if (_.isArray(response.directives)) {
+      response.directives = _.concat(response.directives, entity);
+    } else {
+      response.directives!.push(entity);
+    }
+  }
+}
+
+function validateAlexaEntityBehavior(property: any): er.dynamic.UpdateBehavior {
+  let behavior: er.dynamic.UpdateBehavior = _.get(property, "updateBehavior");
+
+  let defaultBehavior: er.dynamic.UpdateBehavior;
+  let behaviorList: any;
+  let error: string;
+
+  ({ defaultBehavior, behaviorList, error } = getAlexaBehaviorError());
+
+  behavior = behavior || defaultBehavior;
+
+  if (!_.includes(behaviorList, behavior)) {
+    throw new Error(error);
+  }
+  return behavior;
+}
+
+function getAlexaBehaviorError() {
+  enum UpdateBehavior {
+    Replace = "REPLACE",
+    Clear = "CLEAR",
+  }
+
+  const alexaEntityBehaviorList = [
+    UpdateBehavior.Replace,
+    UpdateBehavior.Clear,
+  ];
+
+  const defaultBehavior = UpdateBehavior.Replace;
+  const behaviorList = alexaEntityBehaviorList;
+  // tslint:disable-next-line: max-line-length
+  const error = `The updateBehavior is incorrect, please consider use one of the followings: ${UpdateBehavior.Replace} or ${UpdateBehavior.Clear}`;
+
+  return { defaultBehavior, behaviorList, error };
 }

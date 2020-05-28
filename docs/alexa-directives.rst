@@ -636,3 +636,86 @@ Dynamic entities are sent with the `alexaDynamicEntities` key in your controller
         },
       };
     });
+
+Entity Directive
+------------------------------------------
+
+The Entity Directive allows to create Dynamic Entities based on a generic structure.
+
+Entities are sent with the `entities` key in your controller. You need to pass a view name with the types array or object.
+
+If the updateBehavior is ommited, the REPLACE value is used by default. Use only one updateBehavior property. In case each entity has an updateBehavior property, just the first coincident will be used. 
+
+The id property is optional an only used for Alexa platform.
+
+The value in alexaEntityName should be the same as the one used for the Slot Types in the Alexa  Developer Console. 
+
+.. code-block:: javascript
+
+ // variables.js
+
+    export function myEntity(voxaEvent: VoxaEvent) {
+      // Do something with the voxaEvent, or not...
+
+      const entityType = [
+        {
+          "entities": [
+            {
+              "synonyms": ["apple", "green apple", "crabapple"],
+              "value": "APPLE_KEY"
+            },
+            {
+              "id": 1,
+              "synonyms": ["orange"],
+              "value": "ORANGE_KEY"
+            }
+          ],
+          "alexaEntityName": "LIST_OF_ANIMALS"
+        }
+      ];
+
+      return entityType;
+    }
+  
+  // views.js
+
+    const views = {
+      "en-US": {
+        translation: {
+          myEntity: "{myEntity}"
+        },
+      };
+    };
+
+  // state.js
+
+    app.onState('someState', {
+      entities: "myEntity",
+      flow: "yield",
+      sayp: "Hello!",
+      to: "entry",
+    });
+
+// Or you can do it directly...
+
+    app.onState('someState', {
+      entities:  [
+        {
+          "entities": [
+            {
+              "synonyms": ["apple", "green apple", "crabapple"],
+              "value": "APPLE_KEY"
+            },
+            {
+              "id": 1,
+              "synonyms": ["orange"],
+              "value": "ORANGE_KEY"
+            }
+          ],
+          "alexaEntityName": "LIST_OF_ANIMALS"
+        }
+      ],
+      flow: "yield",
+      sayp: "Hello!",
+      to: "entry",
+    });

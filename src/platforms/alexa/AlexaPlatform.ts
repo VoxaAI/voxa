@@ -41,6 +41,7 @@ import {
   DialogDelegate,
   DialogElicitSlot,
   DynamicEntitiesDirective,
+  Entity,
   GadgetControllerLightDirective,
   GameEngineStartInputHandler,
   GameEngineStopInputHandler,
@@ -133,6 +134,7 @@ export class AlexaPlatform extends VoxaPlatform {
       APLTTemplate,
       APLTCommand,
       StopAudio,
+      Entity,
     ];
   }
 

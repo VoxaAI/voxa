@@ -171,9 +171,9 @@ export class Renderer {
   private async executeVariables(statement: string, voxaEvent: IVoxaEvent) {
     _.templateSettings.interpolate = tokenRegx;
 
-    const tokenKeys = _.uniq(statement.match(tokenRegx) || []).map(
-      (str: string) => str.substring(1, str.length - 1),
-    );
+    const tokenKeys = _.uniq(
+      statement.match(tokenRegx) || [],
+    ).map((str: string) => str.substring(1, str.length - 1));
 
     const qVariables = _(tokenKeys)
       .map((token) => {

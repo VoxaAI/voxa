@@ -40,6 +40,7 @@ import {
   Context,
   DateTime,
   DeepLink,
+  Entity,
   LinkOutSuggestion,
   List,
   MediaResponse,
@@ -116,6 +117,7 @@ export class GoogleAssistantPlatform extends DialogflowPlatform {
       UpdatePermission,
       Say,
       SessionEntity,
+      Entity,
     ];
   }
 }
