@@ -23,8 +23,18 @@
 import { IDirective } from "../directives";
 
 export interface ITransition {
+  /**
+   * reply: Intent's name to be mapped
+   */
   [propname: string]: any;
+
+  /**
+   * to: State's name to be mapped
+   */
   to?: string; // default to 'entry'
+  /**
+   * flow: Action to be performed (e.g "continue",  "yield", "terminate", "die"); default "continue"
+   */
   flow?: string; // default to continue
 }
 
