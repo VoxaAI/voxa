@@ -101,6 +101,11 @@ export class VoxaApp {
   public states: State[] = [];
   public directiveHandlers: IDirectiveClass[] = [];
 
+  /**
+   * Creates a new Voxa App
+   * @constructor
+   * @param config - Configuration object
+   */
   constructor(config: any) {
     this.i18n = i18n.createInstance();
     this.config = config;
@@ -139,6 +144,10 @@ export class VoxaApp {
     this.directiveHandlers = [Say, SayP, Ask, Reprompt, Tell, Text, TextP];
   }
 
+  /**
+   * Verifies if the config's Model has a serialize and deserialize method
+   * if not throws an error with the unfounded method
+   */
   public validateConfig() {
     if (!this.config.Model.deserialize) {
       throw new Error("Model should have a deserialize method");
@@ -307,6 +316,10 @@ export class VoxaApp {
    * however there are some that don't map exactly to a voxaEvent and we register them in here,
    * override the method to add new events.
    */
+  /**
+   * Register several event handlers like OnRequestStarted, OnSessionStarted, OnSessionEnded,
+   * OnError, OnBeforeStateChanged, OnAfterStatedChanged, OnBeforeReplySent
+   */
   public registerEvents(): void {
     // Called when the request starts.
     this.registerEvent("onRequestStarted");
@@ -330,14 +343,16 @@ export class VoxaApp {
     this.config.onUnhandledState = fn;
   }
 
-  /*
+  /**
    * Create an event handler register for the provided eventName
-   * This will keep 2 separate lists of event callbacks
+   * each handler keeps 2 separate lists of event callbacks
+   * core and coreLast
+   * @param {string} eventName - Event name
    */
   public registerEvent(eventName: string): void {
     this.eventHandlers[eventName] = {
       core: [],
-      coreLast: [], // we keep a separate list of event callbacks to alway execute them last
+      coreLast: [], // we keep a separate list of event callbacks to always execute them last
     };
 
     if (!this[eventName]) {
@@ -387,6 +402,13 @@ export class VoxaApp {
     }
   }
 
+  /**
+   * Creates a new State object and push it to the State Machine
+   * @param {string} stateName - Intent name
+   * @param {IStateHandler | ITransition} handler - State handler function or transition Object
+   * @param {string | string[]} [intents=[]] - Intent array
+   * @param {string} [platform=core] - Platform's name
+   */
   public onState(
     stateName: string,
     handler: IStateHandler | ITransition,
@@ -397,6 +419,12 @@ export class VoxaApp {
     this.states.push(state);
   }
 
+  /**
+   * Creates a new State object and push it to the State Machine
+   * @param {string} intentName - Intent name
+   * @param {IStateHandler | ITransition} handler - State handler function or transition Object
+   * @param {string} [platform=core] - Platform's name
+   */
   public onIntent(
     intentName: string,
     handler: IStateHandler | ITransition,
@@ -405,6 +433,13 @@ export class VoxaApp {
     this.onState(intentName, handler, intentName, platform);
   }
 
+  /**
+   * Creates a new State Machine instance for the Intent triggered
+   * runs the transition associated to the intent and saves the session
+   * @param {IVoxaIntentEvent} voxaEvent - Intent payload
+   * @param {IVoxaReply} response - Intent response
+   * @return {IVoxaReply} Voxa response
+   */
   public async runStateMachine(
     voxaEvent: IVoxaIntentEvent,
     response: IVoxaReply,
@@ -451,6 +486,15 @@ export class VoxaApp {
     return response;
   }
 
+  /**
+   * Transform the Transition object rendering the correct view path
+   * for every directive in the IVoxaReply.
+   * It gets execute after the state has changed
+   * @param {IVoxaEvent} voxaEvent - Intent payload
+   * @param {IVoxaReply} response - Intent response
+   * @param {SystemTransition} transition - Helper transition class
+   * @return {Promise<ITransition>}
+   */
   public async renderDirectives(
     voxaEvent: IVoxaEvent,
     response: IVoxaReply,
@@ -516,6 +560,14 @@ export class VoxaApp {
     }
   }
 
+  /**
+   * Saves the user session data of the Intent executed
+   * It gets execute before the state changes
+   * @param voxaEvent - Intent payload
+   * @param response - Intent response
+   * @param transition - Current state
+   * @return {Pro}
+   */
   public async saveSession(
     voxaEvent: IVoxaEvent,
     response: IVoxaReply,
@@ -544,6 +596,10 @@ export class VoxaApp {
     await response.saveSession(attributes, voxaEvent);
   }
 
+  /**
+   * Transform the voxaEvent object assigning the model, translation and the renderer class
+   * @param {IVoxaEvent} voxaEvent - Intent payload
+   */
   public async transformRequest(voxaEvent: IVoxaEvent): Promise<void> {
     await this.i18nextPromise;
     const data = voxaEvent.session.attributes.model as IBag;
@@ -555,6 +611,13 @@ export class VoxaApp {
     voxaEvent.renderer = this.renderer;
   }
 
+  /**
+   * Gets the reply Object form the view Object merged in the transition param
+   * @param voxaEvent - Intent payload
+   * @param {ITransition} transition - Helper transition class
+   * @return {Promise<ITransition>}
+   * @private
+   */
   private async getReplyTransitions(
     voxaEvent: IVoxaEvent,
     transition: ITransition,
