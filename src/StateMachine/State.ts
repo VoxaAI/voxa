@@ -30,6 +30,14 @@ export class State {
   public intents: string[] = [];
   private handler: IStateHandler;
 
+  /**
+   * Creates a new State instance
+   * @constructor
+   * @param {string} name - Intent name
+   * @param {IStateHandler | ITransition} handler - State handler function or transition Object
+   * @param {string | string[]} [intents=[]] - Intent array
+   * @param {string} [platform=core] - Platform's name
+   */
   constructor(
     public name: string,
     handler: IStateHandler | ITransition,
@@ -49,10 +57,21 @@ export class State {
     }
   }
 
+  /**
+   * Execute the handler function associated to the state
+   * @param {IVoxaIntentEvent} voxaEvent - Voxa Event object
+   * @return {Promise<ITransition>} - Return a promise resolving the Transition object
+   */
   public async handle(voxaEvent: IVoxaIntentEvent): Promise<ITransition> {
     return this.handler(voxaEvent);
   }
 
+  /**
+   * Wraps the Transition object into a promise
+   * @param transition
+   * @protected
+   * @return {Promise<IStateHandler>} - Returns a promise resolving the Transition Object
+   */
   protected getSimpleTransitionHandler(transition: ITransition): IStateHandler {
     return async (voxaEvent: IVoxaIntentEvent) => _.cloneDeep(transition);
   }
