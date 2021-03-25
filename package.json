@@ -54,7 +54,7 @@
     "googleapis": "^40.0.1",
     "i18next": "^17.0.6",
     "lambda-log": "^2.3.0",
-    "lodash": "^4.17.14",
+    "lodash": "^4.17.17",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "snyk": "^1.465.0",
