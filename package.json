@@ -50,7 +50,7 @@
     "bluebird": "^3.5.5",
     "botbuilder": "^3.16",
     "fast-xml-parser": "^3.12.16",
-    "google-auth-library": "1.6.1",
+    "google-auth-library": "3.0.0",
     "googleapis": "^40.0.1",
     "i18next": "^17.0.6",
     "lambda-log": "^2.3.0",
