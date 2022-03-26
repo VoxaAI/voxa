@@ -12,7 +12,7 @@
     "report": "nyc report --reporter=json && nyc report --reporter html && nyc report --reporter=lcov && nyc report --reporter=cobertura",
     "test": "mocha test/*.spec.* test/**/*.spec.* test/**/**/*.spec.*",
     "test-ci": "nyc mocha --colors --reporter mocha-jenkins-reporter test test/*.spec.* test/**/*.spec.* test/**/**/*.spec.*",
-    "snyk-protect": "snyk protect",
+    "snyk-protect": "snyk-protect",
     "prepublish": "npm run snyk-protect",
     "lint:fix": "tslint --fix --config tslint.json --project tsconfig.json --exclude \"**/*.json\""
   },
@@ -54,13 +54,13 @@
     "googleapis": "^40.0.1",
     "i18next": "^17.0.6",
     "lambda-log": "^2.3.0",
-    "lodash": "^4.17.14",
+    "lodash": "^4.17.20",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
-    "snyk": "^1.465.0",
     "striptags": "^3.1.1",
     "url-join": "^4.0.1",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "@snyk/protect": "latest"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
