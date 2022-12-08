@@ -281,10 +281,10 @@ asap@~2.0.3:
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
   integrity sha1-5QNHYR1+aQlDIIu9r+vLwvuGbUY=
 
-ask-sdk-model@^1.18.0:
-  version "1.25.1"
-  resolved "https://registry.yarnpkg.com/ask-sdk-model/-/ask-sdk-model-1.25.1.tgz#691694ec2e90ec255aa3eb910be2e49bef8ae9f2"
-  integrity sha512-/rP8zdsIOdsp7B2THbtZpHq3cPW4VXPFyd18pN3cdaaBtfM4Karl9xDFGYBL160c4LT1mLohB2ke6NDb8izYfQ==
+ask-sdk-model@^1.25.1:
+  version "1.39.0"
+  resolved "https://registry.yarnpkg.com/ask-sdk-model/-/ask-sdk-model-1.39.0.tgz#2c5e12e0971f92d26156f62fef59a69eec7c3ef7"
+  integrity sha512-U3/+Q/EjHTjWpCFv85AX4a+dDBz61PtdUQSGVofsE7l1U2ouz+VS5pBzNFpn2cU/tJ4ehb87oWn8LXIpepBW3g==
 
 asn1@~0.2.3:
   version "0.2.4"
@@ -1796,9 +1796,9 @@ qs@^6.5.2, qs@^6.7.0:
   integrity sha512-Cxm7/SS/y/Z3MHWSxXb8lIFqgqBowP5JMlTUFyJN88y0SGQhVmZnqFK/PeuMX9LzUyWsqqhNxIyg0jlzq946yA==
 
 qs@~6.5.2:
-  version "6.5.2"
-  resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
-  integrity sha512-N5ZAX4/LxJmF+7wN74pUD6qAh9/wnvdQcjq9TZjevvXzSUo7bfmw91saqMjzGS2xq91/odN2dW/WOl7qQHNDGA==
+  version "6.5.3"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.3.tgz#3aeeffc91967ef6e35c0e488ef46fb296ab76aad"
+  integrity sha512-qxXIEh4pCGfHICj1mAJQ2/2XVZkjCDTcEgfoSQxc/fYivUZxTkk7L3bDBJSoNrEzXI17oUO5Dp07ktqE5KzczA==
 
 readable-stream@^2.0.2, readable-stream@~2.3.6:
   version "2.3.6"
@@ -1948,6 +1948,11 @@ signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
   integrity sha1-tf3AjxKH6hF4Yo5BXiUTK3NkbG0=
+
+snyk@^1.465.0:
+  version "1.1069.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1069.0.tgz#8d229aba5994e2dcca0ce14c7a90f6dae0d0e543"
+  integrity sha512-WPgp8oh9tHMGIKwmPh6BbNZZyhDdCN4Tbv3eqdYJfTTY347xYXsIiIqUiRAAgAS0Oo5UABNGhdGV6fsxFWSUhg==
 
 source-map-support@^0.5.12:
   version "0.5.12"
@@ -2192,7 +2197,7 @@ verror@1.10.0:
     extsprintf "^1.2.0"
 
 "voxa@file:..":
-  version "3.3.1"
+  version "3.3.2"
   dependencies:
     "@types/aws-lambda" "^8.10.28"
     "@types/bluebird" "^3.5.27"
@@ -2205,7 +2210,7 @@ verror@1.10.0:
     "@types/url-join" "^4.0.0"
     "@types/uuid" "^3.4.5"
     actions-on-google "^2.12.0"
-    ask-sdk-model "^1.18.0"
+    ask-sdk-model "^1.25.1"
     azure-functions-ts-essentials "^1.3.2"
     bluebird "^3.5.5"
     botbuilder "^3.16"
@@ -2217,6 +2222,7 @@ verror@1.10.0:
     lodash "^4.17.14"
     request "^2.88.0"
     request-promise "^4.2.4"
+    snyk "^1.465.0"
     striptags "^3.1.1"
     url-join "^4.0.1"
     uuid "^3.3.2"
